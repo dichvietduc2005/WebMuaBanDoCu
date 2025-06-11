@@ -48,35 +48,24 @@ try {
     //Check Orderid    
     //Kiểm tra checksum của dữ liệu
     if ($secureHash == $vnp_SecureHash) {
-        // Lấy thông tin đơn hàng từ database
-        $stmt = $pdo->prepare("SELECT id, total_amount, status FROM orders WHERE order_code = ?");
-        $stmt->execute([$orderId]);
-        $order = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        //Lấy thông tin đơn hàng lưu trong Database và kiểm tra trạng thái của đơn hàng, mã đơn hàng là: $orderId            
+        //Việc kiểm tra trạng thái của đơn hàng giúp hệ thống không xử lý trùng lặp, xử lý nhiều lần một giao dịch
+        //Giả sử: $order = mysqli_fetch_assoc($result);   
+
+        $order = NULL;
         if ($order != NULL) {
-            if($order["total_amount"] == $vnp_Amount) // Kiểm tra số tiền thanh toán
+            if($order["Amount"] == $vnp_Amount) //Kiểm tra số tiền thanh toán của giao dịch: giả sử số tiền kiểm tra là đúng. //$order["Amount"] == $vnp_Amount
             {
-                if ($order["status"] == 'pending') {
-                    if ($inputData['vnp_ResponseCode'] == '00') {
+                if ($order["Status"] != NULL && $order["Status"] == 0) {
+                    if ($params['vnp_ResponseCode'] == '00' || $params['vnp_TransactionStatus'] == '00') {
                         $Status = 1; // Trạng thái thanh toán thành công
-                        // Cập nhật trạng thái đơn hàng
-                        $updateStmt = $pdo->prepare("UPDATE orders SET status = 'paid', payment_method = 'vnpay', vnpay_transaction_id = ?, updated_at = NOW() WHERE id = ?");
-                        $updateStmt->execute([$vnpTranId, $order['id']]);
-                        
-                        // Ghi log vào payment_history
-                        $logStmt = $pdo->prepare("INSERT INTO payment_history (order_id, payment_method, amount, status, vnpay_response_code, vnpay_transaction_id, created_at) VALUES (?, 'vnpay', ?, 'success', ?, ?, NOW())");
-                        $logStmt->execute([$order['id'], $vnp_Amount, $inputData['vnp_ResponseCode'], $vnpTranId]);
                     } else {
                         $Status = 2; // Trạng thái thanh toán thất bại / lỗi
-                        // Cập nhật trạng thái đơn hàng thành failed
-                        $updateStmt = $pdo->prepare("UPDATE orders SET status = 'failed', updated_at = NOW() WHERE id = ?");
-                        $updateStmt->execute([$order['id']]);
-                        
-                        // Ghi log vào payment_history
-                        $logStmt = $pdo->prepare("INSERT INTO payment_history (order_id, payment_method, amount, status, vnpay_response_code, vnpay_transaction_id, created_at) VALUES (?, 'vnpay', ?, 'failed', ?, ?, NOW())");
-                        $logStmt->execute([$order['id'], $vnp_Amount, $inputData['vnp_ResponseCode'], $vnpTranId]);
                     }
-                    
+                    //Cài đặt Code cập nhật kết quả thanh toán, tình trạng đơn hàng vào DB
+                    //
+                    //
+                    //
                     //Trả kết quả về cho VNPAY: Website/APP TMĐT ghi nhận yêu cầu thành công                
                     $returnData['RspCode'] = '00';
                     $returnData['Message'] = 'Confirm Success';

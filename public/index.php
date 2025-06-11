@@ -1,5 +1,5 @@
 <?php
-require_once("../config/config.php"); // For $pdo and session_start()
+require_once('../config/config.php'); // For $pdo and session_start()
 require_once('../modules/cart/functions.php'); // For cart functions
 
 // Lấy user_id hiện tại (nếu đã đăng nhập)

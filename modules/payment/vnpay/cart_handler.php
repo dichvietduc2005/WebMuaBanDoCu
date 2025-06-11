@@ -1,7 +1,7 @@
 <?php
-// filepath: c:\wamp64\www\Web_MuaBanDoCu\public\cart\handler.php
-require_once('../../config/config.php'); // For $pdo, session_start(), etc.
-require_once('../../modules/payment/vnpay/cart_functions.php'); // For database-driven cart functions
+// filepath: c:\wamp64\www\Web_MuaBanDoCu\vnpay_php\cart_handler.php
+require_once('../config/config.php'); // For $pdo, session_start(), etc.
+require_once('cart_functions.php'); // For database-driven cart functions
 
 // Lấy user_id hiện tại (nếu đã đăng nhập)
 $user_id = get_current_logged_in_user_id(); 
@@ -72,8 +72,8 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
 } else {
     // Mặc định redirect về trang giỏ hàng
     // Nếu action là 'add', có thể muốn redirect lại trang sản phẩm hoặc trang trước đó
-    // Ví dụ: header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'index.php'));
-    header('Location: index.php');
+    // Ví dụ: header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'cart_view.php'));
+    header('Location: cart_view.php');
 }
 exit;
 ?>

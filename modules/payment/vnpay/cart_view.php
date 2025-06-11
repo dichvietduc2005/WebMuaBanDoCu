@@ -1,8 +1,7 @@
 <?php
-// filepath: c:\wamp64\www\Web_MuaBanDoCu\public\cart\index.php
-// Original source: modules/payment/vnpay/cart_view.php
-require_once('../../config/config.php'); // For $pdo, session_start(), etc.
-require_once('../../modules/payment/vnpay/cart_functions.php');   // For database-driven cart functions
+// filepath: c:\wamp64\www\Web_MuaBanDoCu\vnpay_php\cart_view.php
+require_once('../modules/config.php'); // For $pdo, session_start(), etc.
+require_once('cart_functions.php');   // For database-driven cart functions
 
 // Lấy user_id hiện tại (nếu đã đăng nhập)
 $user_id = get_current_logged_in_user_id();
@@ -23,10 +22,9 @@ $cartItemCount = getCartItemCount($pdo, $user_id);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giỏ hàng của bạn</title>
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="../../assets/css/jumbotron-narrow.css" rel="stylesheet">
-    <script src="../../assets/js/jquery-1.11.3.min.js"></script>
-    <style>
+    <link href="../assets/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../assets/jumbotron-narrow.css" rel="stylesheet">
+    <script src="../assets/jquery-1.11.3.min.js"></script>    <style>
         .product-image-sm { max-width: 80px; max-height: 80px; margin-right: 15px; object-fit: cover; }
         .quantity-input { width: 70px; text-align: center; }
         .cart-summary { margin-top: 20px; padding: 20px; background-color: #f9f9f9; border: 1px solid #eee; border-radius: 5px; }
@@ -116,9 +114,9 @@ $cartItemCount = getCartItemCount($pdo, $user_id);
         <div class="header clearfix">
              <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li><a href="../index.php">Trang chủ</a></li>
-                    <li class="active"><a href="index.php">Giỏ hàng (<span id="header-cart-item-count"><?php echo $cartItemCount; ?></span>)</a></li>
-                    <li><a href="../payment/history.php">Lịch sử GD</a></li>
+                    <li><a href="index.php">Trang chủ</a></li>
+                    <li class="active"><a href="cart_view.php">Giỏ hàng (<span id="header-cart-item-count"><?php echo $cartItemCount; ?></span>)</a></li>
+                    <li><a href="payment_history.php">Lịch sử GD</a></li>
                     <!-- Thêm link đăng nhập/đăng ký nếu cần -->
                 </ul>
             </nav>
@@ -129,7 +127,7 @@ $cartItemCount = getCartItemCount($pdo, $user_id);
 
         <?php if (empty($cartItems)): ?>
             <div class="alert alert-info" style="margin-top: 20px;">
-                Giỏ hàng của bạn hiện đang trống. <a href="../index.php" class="alert-link">Tiếp tục mua sắm</a>.
+                Giỏ hàng của bạn hiện đang trống. <a href="index.php" class="alert-link">Tiếp tục mua sắm</a>.
             </div>
         <?php else: ?>
             <div class="table-responsive" style="margin-top: 20px;">
@@ -148,7 +146,7 @@ $cartItemCount = getCartItemCount($pdo, $user_id);
                         <?php foreach ($cartItems as $item): ?>
                         <tr id="cart-item-row-<?php echo $item['product_id']; ?>">
                             <td>
-                                <img src="<?php echo htmlspecialchars(!empty($item['image']) && file_exists('../../' . $item['image']) ? '../../' . $item['image'] : '../../assets/images/default_product_image.png'); ?>" 
+                                <img src="<?php echo htmlspecialchars(!empty($item['image']) && file_exists('../' . $item['image']) ? '../' . $item['image'] : '../assets/default_product_image.png'); ?>" 
                                      alt="<?php echo htmlspecialchars($item['name']); ?>" class="product-image-sm img-thumbnail">
                             </td>
                             <td><?php echo htmlspecialchars($item['name']); ?></td>
@@ -177,22 +175,21 @@ $cartItemCount = getCartItemCount($pdo, $user_id);
 
             <div class="row cart-actions-summary" style="margin-top:20px;">
                 <div class="col-md-6 col-sm-12">
-                    <a href="../index.php" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Tiếp tục mua sắm</a>
-                    <a href="handler.php?action=clear" class="btn btn-warning clear-cart-btn" style="margin-left:10px;">
+                    <a href="index.php" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Tiếp tục mua sắm</a>
+                    <a href="cart_handler.php?action=clear" class="btn btn-warning clear-cart-btn" style="margin-left:10px;">
                         <span class="glyphicon glyphicon-trash"></span> Xóa hết giỏ hàng
                     </a>
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <div class="cart-summary text-right">
                         <h3>Tổng cộng: <strong id="cart-grand-total" style="color: #d9534f;"><?php echo number_format($cartTotal, 0, ',', '.'); ?> VNĐ</strong></h3>
-                        <a href="../checkout/index.php" class="btn btn-success btn-lg btn-block" style="margin-top:15px;">
+                        <a href="checkout.php" class="btn btn-success btn-lg btn-block" style="margin-top:15px;">
                             Tiến hành thanh toán <span class="glyphicon glyphicon-chevron-right"></span>
                         </a>
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
-        <footer class="footer" style="margin-top: 50px;">
+        <?php endif; ?>        <footer class="footer" style="margin-top: 50px;">
             <p>&copy; Web Mua Ban Do Cu <?php echo date('Y')?></p>
         </footer>
     </div>
@@ -246,19 +243,19 @@ $(document).ready(function() {
         }
 
         if (itemCount === 0) {
-            $('.table-responsive').replaceWith('<div class="alert alert-info" style="margin-top: 20px;">Giỏ hàng của bạn hiện đang trống. <a href="../index.php" class="alert-link">Tiếp tục mua sắm</a>.</div>');
+            $('.table-responsive').replaceWith('<div class="alert alert-info" style="margin-top: 20px;">Giỏ hàng của bạn hiện đang trống. <a href="index.php" class="alert-link">Tiếp tục mua sắm</a>.</div>');
             $('.cart-actions-summary').remove(); // Xóa cả phần tổng tiền và nút
         }
     }
 
     function handleCartAction(productId, quantity, actionType) {
         $.ajax({
-            url: 'handler.php', // Updated path
+            url: 'cart_handler.php',
             type: 'POST',
             data: {
                 action: actionType,
                 product_id: productId,
-                quantity: quantity
+                quantity: quantity // Chỉ dùng cho 'update' và 'add' (mặc dù add thường dùng GET từ trang sản phẩm)
             },
             dataType: 'json',
             success: function(response) {
@@ -269,17 +266,24 @@ $(document).ready(function() {
                         $('#cart-item-row-' + productId).remove();
                         showToast('Đã xóa sản phẩm khỏi giỏ hàng');
                     } else if (actionType === 'update') {
+                        // Cập nhật thành tiền của item
                         var itemRow = $('#cart-item-row-' + productId);
                         var pricePerItemText = itemRow.find('td:nth-child(3)').text();
                         var pricePerItem = parseFloat(pricePerItemText.replace(/[^0-9]/g, ''));
                         if (!isNaN(pricePerItem)) {
                              itemRow.find('.item-total-price').text(new Intl.NumberFormat('vi-VN').format(pricePerItem * quantity) + ' VNĐ');
+                        } else {
+                            // Nếu không lấy được giá từ ô, có thể reload để đảm bảo chính xác
+                            // Hoặc dựa vào response.total để cập nhật tổng, item_count đã cập nhật ở updateCartView
+                            // location.reload(); 
                         }
                         showToast('Đã cập nhật số lượng sản phẩm');
                     }
+                    // Không cần reload nếu thành công, trừ khi có lỗi logic cập nhật giao diện phức tạp
                 } else {
                     showToast(response.message, 'error');
                     if(actionType === 'update'){
+                        // Có thể reload để input số lượng quay về giá trị cũ nếu update lỗi
                         location.reload(); 
                     }
                 }
@@ -296,7 +300,7 @@ $(document).ready(function() {
         var quantity = parseInt($(this).val());
         if (quantity < 1) {
             quantity = 1;
-            $(this).val(1);
+            $(this).val(1); // Reset input về 1 nếu người dùng nhập số nhỏ hơn
         }
         handleCartAction(productId, quantity, 'update');
     });
@@ -305,13 +309,17 @@ $(document).ready(function() {
         e.preventDefault();
         var productId = $(this).data('product-id');
         if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-            handleCartAction(productId, 0, 'remove');
+            handleCartAction(productId, 0, 'remove'); // quantity không quan trọng khi remove
         }
     });
     
     $('.clear-cart-btn').on('click', function(e){
         e.preventDefault();
         if(confirm('Bạn có chắc muốn xóa toàn bộ sản phẩm trong giỏ hàng?')) {
+            // Đối với clear, chúng ta có thể dùng AJAX hoặc để nó redirect như hiện tại
+            // Để dùng AJAX:
+            // handleCartAction(null, null, 'clear');
+            // Hoặc giữ nguyên redirect:
             window.location.href = $(this).attr('href');
         }
     });
