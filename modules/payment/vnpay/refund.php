@@ -8,10 +8,10 @@
         <meta name="author" content="">
         <title>Tra cứu giao dịch</title>
         <!-- Bootstrap core CSS -->
-        <link href="/vnpay_php/assets/bootstrap.min.css" rel="stylesheet"/>
-        <!-- Custom styles for this template -->
-        <link href="/vnpay_php/assets/jumbotron-narrow.css" rel="stylesheet">  
-        <script src="/vnpay_php/assets/jquery-1.11.3.min.js"></script>
+        <link href="../../../assets/css/bootstrap.min.css" rel="stylesheet"/>
+            <!-- Custom styles for this template -->
+            <link href="../../../assets/css/jumbotron-narrow.css" rel="stylesheet">  
+            <script src="../../../assets/js/jquery-1.11.3.min.js"></script>
     </head>
     <body>
         <div class="container">
@@ -48,7 +48,7 @@
                 </form>
             </div>
             <?php
-            require_once("../modules/config.php");
+            require_once(__DIR__ . "/../../../config/config.php");
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $amount = ($_POST["amount"]) * 100;
                 $ipaddr = $_SERVER['REMOTE_ADDR'];

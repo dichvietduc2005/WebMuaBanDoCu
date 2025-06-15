@@ -1,282 +1,272 @@
 <?php
-// filepath: c:\wamp64\www\Web_MuaBanDoCu\vnpay_php\cart_functions.php
+// filepath: c:\wamp64\www\Web_MuaBanDoCu\modules\cart\functions_new.php
 
-// Đảm bảo session đã được khởi động (thường trong config.php)
-// session_start() đã được gọi trong config.php, không cần gọi lại ở đây nếu config.php được include trước.
-// if (session_status() == PHP_SESSION_NONE) {
-//     session_start();
-// }
-
-/**
- * Lấy hoặc tạo cart_id cho người dùng hiện tại (đã đăng nhập hoặc khách).
- *
- * @param PDO $pdo Đối tượng PDO kết nối CSDL.
- * @param int|null $user_id ID của người dùng nếu đã đăng nhập.
- * @return int|false Trả về cart_id nếu thành công, ngược lại false.
- */
-function get_or_create_cart_id(PDO $pdo, $user_id = null) {
-    $cart_id = false;
-
-    if ($user_id !== null) {
-        // Người dùng đã đăng nhập
-        $stmt = $pdo->prepare("SELECT id FROM carts WHERE user_id = ?");
-        $stmt->execute([$user_id]);
-        $cart_id = $stmt->fetchColumn();
-
-        if (!$cart_id) {
-            // Tạo giỏ hàng mới cho người dùng
-            $stmt = $pdo->prepare("INSERT INTO carts (user_id, created_at, updated_at) VALUES (?, NOW(), NOW())");
-            if ($stmt->execute([$user_id])) {
-                $cart_id = $pdo->lastInsertId();
-            }
-        }
-    } else {
-        // Khách (guest)
-        $session_id = session_id();
-        if (empty($session_id)) { // Đảm bảo session_id tồn tại
-            // Nếu không có session_id, có thể là lỗi cấu hình session hoặc session chưa được start đúng cách.
-            // Hoặc có thể tạo một session_id tạm thời nếu cần, nhưng tốt nhất là đảm bảo session hoạt động.
-            error_log("Session ID is empty in get_or_create_cart_id. Ensure session_start() is called.");
-            return false;
-        }
-        $stmt = $pdo->prepare("SELECT id FROM carts WHERE session_id = ?");
-        $stmt->execute([$session_id]);
-        $cart_id = $stmt->fetchColumn();
-
-        if (!$cart_id) {
-            // Tạo giỏ hàng mới cho khách
-            $stmt = $pdo->prepare("INSERT INTO carts (session_id, created_at, updated_at) VALUES (?, NOW(), NOW())");
-            if ($stmt->execute([$session_id])) {
-                $cart_id = $pdo->lastInsertId();
-            }
-        }
+// Hàm lấy session ID cho guest user
+function getGuestSessionId() {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
     }
-    // Cập nhật thời gian updated_at cho giỏ hàng mỗi khi có tương tác
-    if ($cart_id) {
-        $updateStmt = $pdo->prepare("UPDATE carts SET updated_at = NOW() WHERE id = ?");
-        $updateStmt->execute([$cart_id]);
+    
+    if (!isset($_SESSION['guest_cart_id'])) {
+        $_SESSION['guest_cart_id'] = 'guest_' . uniqid() . '_' . time();
     }
-    return $cart_id;
+    
+    return $_SESSION['guest_cart_id'];
 }
 
-/**
- * Thêm sản phẩm vào giỏ hàng hoặc cập nhật số lượng.
- *
- * @param PDO $pdo
- * @param int $product_id
- * @param int $quantity
- * @param int|null $user_id
- * @return bool True nếu thành công, false nếu thất bại.
- */
-function addToCart(PDO $pdo, $product_id, $quantity, $user_id = null) {
-    if ($quantity <= 0) return false; // Số lượng phải lớn hơn 0
-
-    $cart_id = get_or_create_cart_id($pdo, $user_id);
-    if (!$cart_id) {
-        return false;
+// Hàm lấy user ID hiện tại (logged in user hoặc null cho guest)
+function get_current_user_id() {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
     }
+    return $_SESSION["user_id"] ?? null;
+}
 
-    // Lấy thông tin sản phẩm (giá, tình trạng)
-    $stmt_product = $pdo->prepare("SELECT price, condition_status FROM products WHERE id = ? AND status = 'active' AND stock_quantity >= ?");
-    $stmt_product->execute([$product_id, $quantity]); // Kiểm tra cả stock_quantity cơ bản
-    $product_info = $stmt_product->fetch(PDO::FETCH_ASSOC);
+// Hàm kiểm tra user đã đăng nhập chưa
+function isUserLoggedIn() {
+    return get_current_user_id() !== null;
+}
 
-    if (!$product_info) {
-        // Sản phẩm không tồn tại, không hoạt động hoặc không đủ hàng
-        return false;
-    }
-    $added_price = $product_info['price'];
-    $condition_snapshot = $product_info['condition_status'];
-
-    // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-    $stmt_check = $pdo->prepare("SELECT id, quantity FROM cart_items WHERE cart_id = ? AND product_id = ?");
-    $stmt_check->execute([$cart_id, $product_id]);
-    $existing_item = $stmt_check->fetch(PDO::FETCH_ASSOC);
-
-    if ($existing_item) {
-        // Cập nhật số lượng
-        $new_quantity = $existing_item['quantity'] + $quantity;
-        // Kiểm tra lại stock với số lượng mới
-        $stmt_stock_check = $pdo->prepare("SELECT stock_quantity FROM products WHERE id = ?");
-        $stmt_stock_check->execute([$product_id]);
-        $stock = $stmt_stock_check->fetchColumn();
-        if ($stock < $new_quantity) {
-            // Nếu vượt quá stock, có thể thông báo lỗi hoặc chỉ cho phép thêm tối đa
-            // Hiện tại, trả về false
-            return false; 
+// Hàm thêm sản phẩm vào giỏ (chỉ cho phép người dùng đã đăng nhập)
+function addToCart($pdo, $product_id, $quantity = 1, $user_id = null) {
+    try {
+        // Kiểm tra đăng nhập trước khi thêm vào giỏ
+        if (!$user_id) {
+            $user_id = get_current_user_id();
         }
-
-        $stmt_update = $pdo->prepare("UPDATE cart_items SET quantity = ?, updated_at = NOW(), added_price = ?, condition_snapshot = ? WHERE id = ?");
-        return $stmt_update->execute([$new_quantity, $added_price, $condition_snapshot, $existing_item['id']]);
-    } else {
-        // Thêm sản phẩm mới vào giỏ
-        $stmt_insert = $pdo->prepare("INSERT INTO cart_items (cart_id, product_id, quantity, added_price, condition_snapshot, added_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
-        return $stmt_insert->execute([$cart_id, $product_id, $quantity, $added_price, $condition_snapshot]);
+        
+        // CHẶN GUEST - Chỉ cho phép người dùng đã đăng nhập thêm sản phẩm vào giỏ
+        if (!$user_id) {
+            throw new Exception("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng");
+        }
+        
+        // Kiểm tra sản phẩm tồn tại
+        $stmt = $pdo->prepare("SELECT id, title, price, user_id, status, stock_quantity FROM products WHERE id = ?");
+        $stmt->execute([$product_id]);
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$product) {
+            throw new Exception("Product not found");
+        }
+        
+        // Kiểm tra trạng thái sản phẩm
+        if ($product['status'] != 'active') {
+            throw new Exception("Product is not active");
+        }
+        
+        // Kiểm tra tồn kho
+        if ($product['stock_quantity'] < $quantity) {
+            throw new Exception("Not enough stock");        }
+        
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa - chỉ kiểm tra cho logged-in user
+        $stmt = $pdo->prepare("SELECT id, quantity FROM carts WHERE user_id = ? AND product_id = ?");
+        $stmt->execute([$user_id, $product_id]);
+        
+        $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($existing) {
+            // Cập nhật số lượng
+            $new_quantity = $existing["quantity"] + $quantity;
+            
+            // Kiểm tra tổng số lượng không vượt quá tồn kho
+            if ($new_quantity > $product['stock_quantity']) {
+                throw new Exception("Total quantity exceeds stock");
+            }            
+            $stmt = $pdo->prepare("UPDATE carts SET quantity = ?, updated_at = NOW() WHERE id = ?");
+            $result = $stmt->execute([$new_quantity, $existing["id"]]);
+        } else {
+            // Thêm mới - chỉ cho logged-in user
+            $stmt = $pdo->prepare("INSERT INTO carts (user_id, product_id, quantity, created_at) VALUES (?, ?, ?, NOW())");
+            $result = $stmt->execute([$user_id, $product_id, $quantity]);
+        }
+        
+        return $result;
+    } catch (Exception $e) {
+        error_log("addToCart Error: " . $e->getMessage());
+        throw $e;
     }
 }
 
-/**
- * Lấy toàn bộ nội dung giỏ hàng.
- *
- * @param PDO $pdo
- * @param int|null $user_id
- * @return array Danh sách các sản phẩm trong giỏ.
- */
-function getCartContents(PDO $pdo, $user_id = null) {
-    $cart_id = get_or_create_cart_id($pdo, $user_id);
-    if (!$cart_id) {
+// Hàm lấy items trong giỏ hàng
+function getCartItems($pdo, $user_id = null) {
+    try {
+        if (!$user_id) {
+            // Nếu không có user_id truyền vào, thử lấy từ session
+            $user_id = get_current_user_id();
+        }
+
+        $sql = "";
+        $params = [];
+
+        if ($user_id) { // Người dùng đã đăng nhập
+            $sql = "
+                SELECT
+                    c.product_id,
+                    c.quantity,
+                    p.title AS product_name,
+                    p.price AS price,  -- Lấy giá hiện tại từ bảng products
+                    (c.quantity * p.price) AS subtotal
+                FROM carts c
+                JOIN products p ON c.product_id = p.id
+                WHERE c.user_id = ?
+                ORDER BY c.created_at DESC -- Giả sử bảng 'carts' có cột created_at khi item được thêm
+            ";
+            $params = [$user_id];
+        } else { 
+            $guest_session_id = getGuestSessionId();
+            if (!$guest_session_id) {
+                return []; // Không có session ID cho guest, không có giỏ hàng
+            }
+            $sql = "
+                SELECT
+                    c.product_id,
+                    c.quantity,
+                    p.title AS product_name,
+                    p.price AS price, -- Lấy giá hiện tại từ bảng products
+                    (c.quantity * p.price) AS subtotal
+                FROM carts c
+                JOIN products p ON c.product_id = p.id
+                WHERE c.session_id = ?
+                ORDER BY c.created_at DESC -- Giả sử bảng 'carts' có cột created_at khi item được thêm
+            ";
+            $params = [$guest_session_id];
+        }
+
+        if (empty($sql)) {
+            return []; // Không có điều kiện nào được đáp ứng
+        }
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $e) {
+        error_log("getCartItems Error: " . $e->getMessage());
         return [];
     }
-
-    $stmt = $pdo->prepare("
-        SELECT 
-            ci.id as cart_item_id, 
-            ci.product_id, 
-            ci.quantity, 
-            ci.added_price,
-            p.title as name, 
-            p.slug,
-            pi.image_path as image
-        FROM cart_items ci
-        JOIN products p ON ci.product_id = p.id
-        LEFT JOIN (
-            SELECT product_id, image_path, ROW_NUMBER() OVER(PARTITION BY product_id ORDER BY is_primary DESC, id ASC) as rn
-            FROM product_images
-        ) pi ON p.id = pi.product_id AND pi.rn = 1
-        WHERE ci.cart_id = ?
-        ORDER BY ci.added_at DESC
-    ");
-    $stmt->execute([$cart_id]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-/**
- * Cập nhật số lượng của một sản phẩm trong giỏ hàng.
- *
- * @param PDO $pdo
- * @param int $product_id
- * @param int $quantity
- * @param int|null $user_id
- * @return bool True nếu thành công.
- */
-function updateCartQuantity(PDO $pdo, $product_id, $quantity, $user_id = null) {
-    $cart_id = get_or_create_cart_id($pdo, $user_id);
-    if (!$cart_id) {
-        return false;
+// Hàm tính tổng tiền giỏ hàng
+function getCartTotal($pdo, $user_id = null) {
+    $items = getCartItems($pdo, $user_id); // Sử dụng hàm getCartItems đã được cập nhật
+    $total = 0;
+    foreach ($items as $item) {
+        // Nên sử dụng giá hiện tại của sản phẩm (price) để tính tổng cho đơn hàng
+        // added_price chỉ để tham khảo hoặc nếu bạn có logic giá cố định khi thêm vào giỏ
+        $total += ($item['price'] * $item['quantity']); 
     }
-
-    if ($quantity <= 0) {
-        return removeFromCart($pdo, $product_id, $user_id);
-    }
-
-    // Kiểm tra stock trước khi cập nhật
-    $stmt_stock_check = $pdo->prepare("SELECT stock_quantity, price, condition_status FROM products WHERE id = ?");
-    $stmt_stock_check->execute([$product_id]);
-    $product_info = $stmt_stock_check->fetch(PDO::FETCH_ASSOC);
-
-    if (!$product_info || $product_info['stock_quantity'] < $quantity) {
-        // Sản phẩm không tồn tại hoặc không đủ hàng
-        return false;
-    }
-    
-    $added_price = $product_info['price']; // Lấy giá hiện tại khi cập nhật
-    $condition_snapshot = $product_info['condition_status'];
-
-    $stmt = $pdo->prepare("UPDATE cart_items SET quantity = ?, added_price = ?, condition_snapshot = ?, updated_at = NOW() WHERE cart_id = ? AND product_id = ?");
-    return $stmt->execute([$quantity, $added_price, $condition_snapshot, $cart_id, $product_id]);
+    return $total;
 }
 
-/**
- * Xóa một sản phẩm khỏi giỏ hàng.
- *
- * @param PDO $pdo
- * @param int $product_id
- * @param int|null $user_id
- * @return bool True nếu thành công.
- */
-function removeFromCart(PDO $pdo, $product_id, $user_id = null) {
-    $cart_id = get_or_create_cart_id($pdo, $user_id);
-    if (!$cart_id) {
-        return false;
-    }
-    $stmt = $pdo->prepare("DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?");
-    return $stmt->execute([$cart_id, $product_id]);
-}
 
-/**
- * Tính tổng giá trị giỏ hàng.
- *
- * @param PDO $pdo
- * @param int|null $user_id
- * @return float Tổng giá trị.
- */
-function getCartTotal(PDO $pdo, $user_id = null) {
-    $cart_id = get_or_create_cart_id($pdo, $user_id);
-    if (!$cart_id) {
-        return 0.0;
-    }
-
-    $stmt = $pdo->prepare("SELECT SUM(quantity * added_price) as total FROM cart_items WHERE cart_id = ?");
-    $stmt->execute([$cart_id]);
-    $total = $stmt->fetchColumn();
-    return $total ? (float)$total : 0.0;
-}
-
-/**
- * Đếm tổng số lượng các mặt hàng trong giỏ.
- *
- * @param PDO $pdo
- * @param int|null $user_id
- * @return int Tổng số lượng.
- */
-function getCartItemCount(PDO $pdo, $user_id = null) {
-    $cart_id = get_or_create_cart_id($pdo, $user_id);
-    if (!$cart_id) {
+// Hàm đếm số lượng items trong giỏ
+function getCartItemCount($pdo, $user_id = null) {
+    try {
+        if (!$user_id) {
+            $user_id = get_current_user_id();
+        }
+        
+        $is_guest = !$user_id;
+        
+        if ($is_guest) {
+            $guest_session_id = getGuestSessionId();
+            $stmt = $pdo->prepare("SELECT SUM(quantity) as total FROM carts WHERE session_id = ?");
+            $stmt->execute([$guest_session_id]);
+        } else {
+            $stmt = $pdo->prepare("SELECT SUM(quantity) as total FROM carts WHERE user_id = ?");
+            $stmt->execute([$user_id]);
+        }
+        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)($result['total'] ?? 0);
+    } catch (Exception $e) {
+        error_log("getCartItemCount Error: " . $e->getMessage());
         return 0;
     }
-
-    $stmt = $pdo->prepare("SELECT SUM(quantity) as item_count FROM cart_items WHERE cart_id = ?");
-    $stmt->execute([$cart_id]);
-    $count = $stmt->fetchColumn();
-    return $count ? (int)$count : 0;
 }
 
-/**
- * Xóa toàn bộ sản phẩm khỏi giỏ hàng.
- *
- * @param PDO $pdo
- * @param int|null $user_id
- * @return bool True nếu thành công.
- */
-function clearCart(PDO $pdo, $user_id = null) {
-    $cart_id = get_or_create_cart_id($pdo, $user_id);
-    if (!$cart_id) {
-        // Nếu không có cart_id (ví dụ session không hoạt động), coi như đã "clear"
-        return true; 
+// Hàm cập nhật số lượng sản phẩm trong giỏ
+function updateCartItemQuantity($pdo, $product_id, $quantity, $user_id = null) {
+    try {
+        if (!$user_id) {
+            $user_id = get_current_user_id();
+        }
+        
+        $is_guest = !$user_id;
+        
+        if ($quantity <= 0) {
+            // Xóa sản phẩm nếu quantity <= 0
+            return removeCartItem($pdo, $product_id, $user_id);
+        }
+        
+        if ($is_guest) {
+            $guest_session_id = getGuestSessionId();
+            $stmt = $pdo->prepare("UPDATE carts SET quantity = ?, updated_at = NOW() WHERE session_id = ? AND product_id = ?");
+            $result = $stmt->execute([$quantity, $guest_session_id, $product_id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE carts SET quantity = ?, updated_at = NOW() WHERE user_id = ? AND product_id = ?");
+            $result = $stmt->execute([$quantity, $user_id, $product_id]);
+        }
+        
+        return $result;
+    } catch (Exception $e) {
+        error_log("updateCartItemQuantity Error: " . $e->getMessage());
+        return false;
     }
-    $stmt = $pdo->prepare("DELETE FROM cart_items WHERE cart_id = ?");
-    $success = $stmt->execute([$cart_id]);
-    
-    // Cân nhắc: Có nên xóa luôn cart trong bảng `carts` nếu là guest và giỏ hàng trống?
-    if ($success && $user_id === null) {
-        $stmt_delete_cart = $pdo->prepare("DELETE FROM carts WHERE id = ?");
-        $stmt_delete_cart->execute([$cart_id]);
-    }
-    return $success;
 }
 
-/**
- * Lấy user_id hiện tại nếu đã đăng nhập.
- * Hàm này nên được đặt ở một nơi quản lý user session chung hơn.
- * Tạm thời để đây để các hàm cart có thể gọi.
- * @return int|null
- */
+// Hàm xóa sản phẩm khỏi giỏ
+function removeCartItem($pdo, $product_id, $user_id = null) {
+    try {
+        if (!$user_id) {
+            $user_id = get_current_user_id();
+        }
+        
+        $is_guest = !$user_id;
+        
+        if ($is_guest) {
+            $guest_session_id = getGuestSessionId();
+            $stmt = $pdo->prepare("DELETE FROM carts WHERE session_id = ? AND product_id = ?");
+            $result = $stmt->execute([$guest_session_id, $product_id]);
+        } else {
+            $stmt = $pdo->prepare("DELETE FROM carts WHERE user_id = ? AND product_id = ?");
+            $result = $stmt->execute([$user_id, $product_id]);
+        }
+        
+        return $result;
+    } catch (Exception $e) {
+        error_log("removeCartItem Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Hàm xóa sạch giỏ hàng
+function clearCart($pdo, $user_id = null) {
+    try {
+        if ($user_id) {
+            $stmt = $pdo->prepare("DELETE FROM carts WHERE user_id = ?");
+            $stmt->execute([$user_id]);
+            error_log("Cleared cart for user_id: $user_id");
+            return true;
+        } else { // Guest user
+            $guest_session_id = getGuestSessionId(); // Hàm này bạn đã có
+            if ($guest_session_id) {
+                $stmt = $pdo->prepare("DELETE FROM carts WHERE session_id = ?");
+                $stmt->execute([$guest_session_id]);
+                unset($_SESSION['guest_cart_id']); // Quan trọng: Xóa session ID của giỏ hàng guest
+                error_log("Cleared cart for guest session: $guest_session_id");
+                return true;
+            }
+        }
+        return false;
+    } catch (PDOException $e) {
+        error_log("clearCart Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Backward compatibility
 function get_current_logged_in_user_id() {
-    // Giả sử user_id được lưu trong session khi đăng nhập
-    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
-        return (int)$_SESSION['user_id'];
-    }
-    return null;
+    return get_current_user_id();
 }
-
 ?>

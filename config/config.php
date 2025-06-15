@@ -20,7 +20,7 @@ try {
 $vnp_TmnCode = "X4DCQ1UX"; //Website ID in VNPAY System
 $vnp_HashSecret = "MPI8C42IYO31NDYYLS2HN2KYD0XBYIFH"; //Secret key
 $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-$vnp_Returnurl = "http://localhost/Web_MuaBanDoCu/vnpay_php/vnpay_return.php";
+$vnp_Returnurl = "http://localhost/Web_MuaBanDoCu/modules/payment/vnpay/return.php";
 $vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
 //Config input format
 //Expire

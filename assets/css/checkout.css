@@ -1,0 +1,38 @@
+.checkout-summary {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+.form-section {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+.order-item {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+.order-item:last-child {
+  border-bottom: none;
+}
+.product-image-checkout {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+.header .nav-pills > li > a {
+  font-size: 14px;
+}
+.total-summary {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+.has-error {
+  border-color: #a94442;
+}

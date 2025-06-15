@@ -1,0 +1,100 @@
+.product-image-sm {
+  max-width: 80px;
+  max-height: 80px;
+  margin-right: 15px;
+  object-fit: cover;
+}
+.quantity-input {
+  width: 70px;
+  text-align: center;
+}
+.cart-summary {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 5px;
+}
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+.header .nav-pills > li > a {
+  font-size: 14px;
+}
+
+/* Toast Notification Styles */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+.toast {
+  display: none;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 10px;
+  min-width: 300px;
+  max-width: 350px;
+  overflow: hidden;
+  border-left: 4px solid #5cb85c;
+  animation: slideIn 0.3s ease-out;
+}
+.toast.error {
+  border-left-color: #d9534f;
+}
+.toast-header {
+  background: #f8f9fa;
+  padding: 8px 15px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+.toast-body {
+  padding: 12px 15px;
+  font-size: 14px;
+  color: #333;
+}
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toast-close:hover {
+  color: #666;
+}
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+.toast.hiding {
+  animation: slideOut 0.3s ease-in;
+}

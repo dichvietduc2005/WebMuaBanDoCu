@@ -1,0 +1,478 @@
+[14-Jun-2025 21:56:56 Asia/Ho_Chi_Minh] PHP Warning:  Undefined variable $cartItems in C:\wamp64\www\Web_MuaBanDoCu\modules\payment\vnpay\create_payment.php on line 127
+[14-Jun-2025 21:56:56 Asia/Ho_Chi_Minh] PHP Stack trace:
+[14-Jun-2025 21:56:56 Asia/Ho_Chi_Minh] PHP   1. {main}() C:\wamp64\www\Web_MuaBanDoCu\modules\payment\vnpay\create_payment.php:0
+[14-Jun-2025 21:56:56 Asia/Ho_Chi_Minh] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in C:\wamp64\www\Web_MuaBanDoCu\modules\payment\vnpay\create_payment.php:127
+Stack trace:
+#0 {main}
+  thrown in C:\wamp64\www\Web_MuaBanDoCu\modules\payment\vnpay\create_payment.php on line 127
+[14-Jun-2025 21:58:40 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 21:58:40 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 21:58:40 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+    [1] => Array
+        (
+            [product_id] => 2
+            [quantity] => 1
+            [product_name] => Macbook Pro 16 inch 2019
+            [price] => 30000000
+            [subtotal] => 30000000
+        )
+
+)
+
+[14-Jun-2025 21:58:40 Asia/Ho_Chi_Minh] Cart Total: 45000000
+[14-Jun-2025 21:58:40 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 21:58:40 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 2, Cart total: 45000000
+[14-Jun-2025 21:58:40 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [order_notes] => 
+    [order_id] => ORDER_20250614215651_4037
+    [order_type] => billpayment
+    [amount] => 45000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 21:58:51 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 21:58:51 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 21:58:51 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+    [1] => Array
+        (
+            [product_id] => 2
+            [quantity] => 1
+            [product_name] => Macbook Pro 16 inch 2019
+            [price] => 30000000
+            [subtotal] => 30000000
+        )
+
+)
+
+[14-Jun-2025 21:58:51 Asia/Ho_Chi_Minh] Cart Total: 45000000
+[14-Jun-2025 21:58:51 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 21:58:51 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 2, Cart total: 45000000
+[14-Jun-2025 21:58:51 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [order_notes] => 
+    [order_id] => ORDER_20250614215846_8739
+    [order_type] => billpayment
+    [amount] => 45000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 21:59:18 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 21:59:18 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 21:59:18 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 21:59:18 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 21:59:18 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 21:59:18 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 21:59:18 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [order_notes] => 
+    [order_id] => ORDER_20250614215914_1293
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 22:01:55 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 22:01:55 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 22:01:55 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 22:01:55 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 22:01:55 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 22:01:55 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 22:01:55 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [order_notes] => DẤDAD
+    [order_id] => ORDER_20250614215919_5878
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 22:04:44 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 22:04:44 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 22:04:44 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 22:04:44 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 22:04:44 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 22:04:44 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 22:04:44 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [order_notes] => 
+    [order_id] => ORDER_20250614220411_1268
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 22:07:27 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 22:07:27 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 22:07:27 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 22:07:27 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 22:07:27 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 22:07:27 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 22:07:27 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => adasdas
+asdasf
+    [order_notes] => 
+    [order_id] => ORDER_20250614220720_8446
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 22:07:34 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 22:07:34 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 22:07:34 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 22:07:34 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 22:07:34 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 22:07:34 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 22:07:34 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [order_notes] => 
+    [order_id] => ORDER_20250614220729_4883
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 22:08:27 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 22:08:27 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 22:08:27 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 22:08:27 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 22:08:27 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 22:08:27 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 22:08:27 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [order_notes] => 
+    [order_id] => ORDER_20250614220812_6256
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 22:17:06 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 22:17:06 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 22:17:06 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 22:17:06 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 22:17:06 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 22:17:06 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 22:17:06 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => adasdas
+asdasf
+    [order_notes] => kjggfujghhvjhhjv
+    [order_id] => ORDER_20250614221636_8969
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+
+[14-Jun-2025 22:21:07 Asia/Ho_Chi_Minh] === DEBUG CREATE PAYMENT ===
+[14-Jun-2025 22:21:07 Asia/Ho_Chi_Minh] User ID: 6
+[14-Jun-2025 22:21:07 Asia/Ho_Chi_Minh] Cart Items: Array
+(
+    [0] => Array
+        (
+            [product_id] => 1
+            [quantity] => 1
+            [product_name] => iPhone 12 Pro Max Cũ
+            [price] => 15000000
+            [subtotal] => 15000000
+        )
+
+)
+
+[14-Jun-2025 22:21:07 Asia/Ho_Chi_Minh] Cart Total: 15000000
+[14-Jun-2025 22:21:07 Asia/Ho_Chi_Minh] Is array: YES
+[14-Jun-2025 22:21:07 Asia/Ho_Chi_Minh] Creating order - User ID: 6, Cart items count: 1, Cart total: 15000000
+[14-Jun-2025 22:21:07 Asia/Ho_Chi_Minh] Lỗi khi tạo đơn hàng cho user_id = 6: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'shipping_address' in 'field list' | Dữ liệu POST: Array
+(
+    [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+    [txt_billing_email] => nguyenthinhk52005@gmail.com
+    [txt_billing_mobile] => 0945553902
+    [txt_bill_city] => TP.HCM
+    [txt_inv_addr1] => aaaaaaa
+1ssssss
+    [order_notes] => 
+    [order_id] => ORDER_20250614222054_6686
+    [order_type] => billpayment
+    [amount] => 15000000
+    [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [bank_code] => 
+    [language] => vn
+    [txtexpire] => 
+    [txt_bill_country] => VN
+    [txt_bill_state] => 
+    [txt_inv_mobile] => 0945553902
+    [txt_inv_email] => nguyenthinhk52005@gmail.com
+    [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+    [txt_inv_company] => 
+    [txt_inv_taxcode] => 
+    [cbo_inv_type] => I
+    [redirect] => 1
+    [payment_method] => vnpay
+)
+

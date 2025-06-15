@@ -1,15 +1,25 @@
 <?php
 require_once('../../config/config.php');
-require_once('../../modules/payment/vnpay/cart_functions.php');
+require_once('../../modules/cart/functions.php'); // Path is correct
 
-// Lấy user_id hiện tại (nếu đã đăng nhập)
-$user_id = get_current_logged_in_user_id();
-$cartItems = getCartContents($pdo, $user_id);
+// Lấy user_id hiện tại (có thể null cho guest users)
+$user_id = get_current_user_id();
+$is_guest = !$user_id;
+$cartItems = getCartItems($pdo, $user_id);
 $cartTotal = getCartTotal($pdo, $user_id);
 $cartItemCount = getCartItemCount($pdo, $user_id);
 
+// Debug log cho checkout
+error_log("=== CHECKOUT DEBUG ===");
+error_log("User ID: " . ($user_id ? $user_id : 'NULL (guest)'));
+error_log("Is Guest: " . ($is_guest ? 'YES' : 'NO'));
+error_log("Cart Items: " . print_r($cartItems, true));
+error_log("Cart Total: " . $cartTotal);
+error_log("Cart Item Count: " . $cartItemCount);
+
 // Kiểm tra giỏ hàng có trống không
 if (empty($cartItems)) {
+    error_log("CHECKOUT: Cart is empty, redirecting to cart page");
     header('Location: ../cart/index.php'); // Updated path
     exit;
 }
@@ -31,44 +41,8 @@ if ($user_id) {
     <link href="../../assets/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="../../assets/css/jumbotron-narrow.css" rel="stylesheet">
     <script src="../../assets/js/jquery-1.11.3.min.js"></script>
-    <style>
-        .checkout-summary { 
-            background: #f9f9f9; 
-            padding: 20px; 
-            border-radius: 5px; 
-            margin-bottom: 20px; 
-        }
-        .form-section { 
-            background: #fff; 
-            padding: 20px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            margin-bottom: 20px; 
-        }
-        .order-item { 
-            border-bottom: 1px solid #eee; 
-            padding: 10px 0; 
-        }
-        .order-item:last-child { 
-            border-bottom: none; 
-        }
-        .product-image-checkout { 
-            width: 60px; 
-            height: 60px; 
-            object-fit: cover; 
-            margin-right: 10px; 
-        }
-        .header .nav-pills > li > a { font-size: 14px; }
-        .total-summary {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-        .has-error {
-            border-color: #a94442;
-        }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/checkout.css">
+    
 </head>
 <body>
     <div class="container">
@@ -77,7 +51,7 @@ if ($user_id) {
                 <ul class="nav nav-pills pull-right">
                     <li><a href="../index.php">Trang chủ</a></li>
                     <li><a href="../cart/index.php">Giỏ hàng (<?php echo $cartItemCount; ?>)</a></li>
-                    <li><a href="../payment/history.php">Lịch sử GD</a></li>
+                    <li><a href="../user/order_history.php">Lịch sử GD</a></li>
                 </ul>
             </nav>
             <h3 class="text-muted">Thanh toán</h3>
@@ -89,7 +63,7 @@ if ($user_id) {
                 
                 <div class="form-section">
                     <h4>Thông tin người nhận</h4>
-                    <form id="checkout-form" action="../../modules/payment/vnpay/vnpay_create_payment.php" method="post">
+                    <form id="checkout-form" action="../../modules/payment/vnpay/create_payment.php" method="post">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -156,8 +130,7 @@ if ($user_id) {
                         <input type="hidden" name="txt_inv_email" value="">
                         <input type="hidden" name="txt_inv_customer" value="">
                         <input type="hidden" name="txt_inv_company" value="">
-                        <input type="hidden" name="txt_inv_taxcode" value="">
-                        <input type="hidden" name="cbo_inv_type" value="I">
+                        <input type="hidden" name="txt_inv_taxcode" value="">                        <input type="hidden" name="cbo_inv_type" value="I">
                         <input type="hidden" name="redirect" value="1">
                 </div>
             </div>
@@ -165,21 +138,26 @@ if ($user_id) {
             <div class="col-md-4">
                 <h3>Đơn hàng của bạn</h3>
                 
-                <div class="checkout-summary">
-                    <?php foreach ($cartItems as $item): ?>
+                <div class="checkout-summary">                    <?php foreach ($cartItems as $item): ?>
                     <div class="order-item">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <img src="<?php echo htmlspecialchars(!empty($item['image']) && file_exists('../../' . $item['image']) ? '../../' . $item['image'] : '../../assets/images/default_product_image.png'); ?>" 
-                                     alt="<?php echo htmlspecialchars($item['name']); ?>" class="product-image-checkout img-thumbnail">
+                        <div class="row">                            <div class="col-xs-3">
+                                <?php
+                                // Lấy hình ảnh từ bảng product_images
+                                $stmt_img = $pdo->prepare("SELECT image_path FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, id ASC LIMIT 1");
+                                $stmt_img->execute([$item['product_id']]);
+                                $image = $stmt_img->fetch(PDO::FETCH_ASSOC);
+                                $image_path = $image ? $image['image_path'] : '';
+                                ?>
+                                <img src="<?php echo htmlspecialchars(!empty($image_path) && file_exists('../../' . $image_path) ? '../../' . $image_path : '../../assets/images/default_product_image.png'); ?>" 
+                                     alt="<?php echo htmlspecialchars($item['product_name']); ?>" class="product-image-checkout img-thumbnail">
                             </div>
                             <div class="col-xs-9">
-                                <div class="product-name"><strong><?php echo htmlspecialchars($item['name']); ?></strong></div>
+                                <div class="product-name"><strong><?php echo htmlspecialchars($item['product_name']); ?></strong></div>
                                 <div class="product-details">
-                                    Số lượng: <?php echo $item['quantity']; ?> × <?php echo number_format($item['added_price'], 0, ',', '.'); ?> VNĐ
+                                    Số lượng: <?php echo $item['quantity']; ?> × <?php echo number_format($item['price'], 0, ',', '.'); ?> VNĐ
                                 </div>
                                 <div class="product-total text-right">
-                                    <strong><?php echo number_format($item['added_price'] * $item['quantity'], 0, ',', '.'); ?> VNĐ</strong>
+                                    <strong><?php echo number_format($item['subtotal'], 0, ',', '.'); ?> VNĐ</strong>
                                 </div>
                             </div>
                         </div>
@@ -206,56 +184,66 @@ if ($user_id) {
                     <div class="text-muted" style="margin-top: 10px; font-size: 12px;">
                         Bạn sẽ được chuyển đến trang thanh toán an toàn của VNPay
                     </div>
-                </div>
-
-                <button type="submit" class="btn btn-success btn-lg btn-block" style="margin-top: 20px;">
+                </div>                <button type="submit" class="btn btn-success btn-lg btn-block" style="margin-top: 20px;">
                     <span class="glyphicon glyphicon-credit-card"></span>
                     Thanh toán ngay
                 </button>
-                    </form>
+                </form>
             </div>
         </div>
 
         <footer class="footer" style="margin-top: 50px;">
             <p>&copy; Web Mua Ban Do Cu <?php echo date('Y')?></p>
         </footer>
-    </div>
-
-    <script>
+    </div>    <script>
     $(document).ready(function() {
+        console.log('=== CHECKOUT JAVASCRIPT LOADED ===');
+        console.log('jQuery version:', $.fn.jquery);
+        console.log('Form exists:', $('#checkout-form').length);
+        console.log('Submit button exists:', $('button[type="submit"]').length);
+        
         $('#checkout-form').on('submit', function() {
+            console.log('=== FORM SUBMIT EVENT - Step 1 ===');
             $('input[name="txt_inv_mobile"]').val($('input[name="txt_billing_mobile"]').val());
             $('input[name="txt_inv_email"]').val($('input[name="txt_billing_email"]').val());
             $('input[name="txt_inv_customer"]').val($('input[name="txt_billing_fullname"]').val());
+            console.log('=== FORM SUBMIT EVENT - Step 2 ===');
         });
 
         $('#checkout-form').on('submit', function(e) {
+            console.log('=== FORM VALIDATION EVENT ===');
             var isValid = true;
             var errorMessages = [];
             var firstErrorField = null;
 
             $('input[required], select[required], textarea[required]').each(function() {
                 $(this).removeClass('has-error'); // Reset error class
-                if (!$(this).val().trim()) {
+                var fieldValue = $(this).val().trim();
+                var fieldName = $(this).attr('name') || $(this).attr('id');
+                console.log('Checking field:', fieldName, 'Value:', fieldValue);
+                
+                if (!fieldValue) {
                     isValid = false;
                     $(this).addClass('has-error');
                     if (!firstErrorField) firstErrorField = $(this);
+                    console.log('Field validation failed:', fieldName);
                 }
             });
-             if (!isValid && errorMessages.indexOf('Vui lòng điền đầy đủ thông tin bắt buộc.') === -1) {
+            
+            if (!isValid && errorMessages.indexOf('Vui lòng điền đầy đủ thông tin bắt buộc.') === -1) {
                 errorMessages.push('Vui lòng điền đầy đủ thông tin bắt buộc.');
             }
-
 
             var email = $('#txt_billing_email').val();
             var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (email && !emailRegex.test(email)) {
                 isValid = false;
                 $('#txt_billing_email').addClass('has-error');
-                 if (!firstErrorField) firstErrorField = $('#txt_billing_email');
+                if (!firstErrorField) firstErrorField = $('#txt_billing_email');
                 if (errorMessages.indexOf('Email không hợp lệ.') === -1) {
                     errorMessages.push('Email không hợp lệ.');
                 }
+                console.log('Email validation failed:', email);
             }
 
             var phone = $('#txt_billing_mobile').val();
@@ -264,10 +252,13 @@ if ($user_id) {
                 isValid = false;
                 $('#txt_billing_mobile').addClass('has-error');
                 if (!firstErrorField) firstErrorField = $('#txt_billing_mobile');
-                 if (errorMessages.indexOf('Số điện thoại không hợp lệ. Phải có 10 chữ số bắt đầu bằng 0 hoặc +84.') === -1) {
+                if (errorMessages.indexOf('Số điện thoại không hợp lệ. Phải có 10 chữ số bắt đầu bằng 0 hoặc +84.') === -1) {
                     errorMessages.push('Số điện thoại không hợp lệ. Phải có 10 chữ số bắt đầu bằng 0 hoặc +84.');
                 }
+                console.log('Phone validation failed:', phone);
             }
+
+            console.log('Validation result:', isValid, 'Errors:', errorMessages);
 
             if (!isValid) {
                 e.preventDefault();
@@ -276,9 +267,15 @@ if ($user_id) {
                     firstErrorField.focus();
                 }
                 return false;
-            }
-
+            }            console.log('=== FORM VALIDATION PASSED, SUBMITTING ===');
             $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Đang xử lý...');
+        });
+        
+        // Test button click
+        $('button[type="submit"]').on('click', function(e) {
+            console.log('=== SUBMIT BUTTON CLICKED ===');
+            console.log('Button type:', $(this).attr('type'));
+            console.log('Form action:', $('#checkout-form').attr('action'));
         });
     });
     // Add animation for loading icon

@@ -1,10 +1,23 @@
 <?php
 require_once('../config/config.php'); // For $pdo and session_start()
 require_once('../modules/cart/functions.php'); // For cart functions
+require_once('../modules/order/functions.php'); // For order functions
 
 // Lấy user_id hiện tại (nếu đã đăng nhập)
-$user_id = get_current_logged_in_user_id();
+$user_id = get_current_user_id();
 $cartItemCount = getCartItemCount($pdo, $user_id);
+
+// Lấy đơn hàng gần đây nếu đã đăng nhập
+$recent_orders = [];
+if ($user_id) {
+    try {
+        $recent_orders = getOrdersByUserId($pdo, $user_id, 3, 0); // Lấy 3 đơn hàng gần nhất
+    } catch (Exception $e) {
+        error_log("Error getting recent orders: " . $e->getMessage());
+        $recent_orders = [];
+    }
+}
+
 
 // Lấy danh sách sản phẩm từ database
 $products = [];
@@ -39,127 +52,10 @@ try {
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet"/>
     <!-- Custom styles for this template -->
     <link href="../assets/css/jumbotron-narrow.css" rel="stylesheet">  
+    <link rel="stylesheet" href="../assets/css/index.css">
+    <link rel="stylesheet" href="../assets/css/order.css">
     <script src="../assets/js/jquery-1.11.3.min.js"></script>
-    <style>
-        .product-card { 
-            margin-bottom: 20px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            padding: 15px; 
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-        }
-        .product-card img { 
-            width: 100%; 
-            height: 200px; 
-            object-fit: cover; 
-            margin-bottom: 10px; 
-        }
-        .product-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .product-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            flex: 1;
-        }
-        .product-price { 
-            font-weight: bold; 
-            color: #d9534f; 
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .product-condition {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        .header .nav-pills > li > a { font-size: 14px; }
-        .add-to-cart-form {
-            margin-top: auto;
-        }
-
-        /* Toast Notification Styles */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-        .toast {
-            display: none;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            margin-bottom: 10px;
-            min-width: 300px;
-            max-width: 350px;
-            overflow: hidden;
-            border-left: 4px solid #5cb85c;
-            animation: slideIn 0.3s ease-out;
-        }
-        .toast.error {
-            border-left-color: #d9534f;
-        }
-        .toast-header {
-            background: #f8f9fa;
-            padding: 8px 15px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .toast-body {
-            padding: 12px 15px;
-            font-size: 14px;
-            color: #333;
-        }
-        .toast-close {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: #999;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .toast-close:hover {
-            color: #666;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        .toast.hiding {
-            animation: slideOut 0.3s ease-in;
-        }
-    </style>
+    
 </head>
 
 <body>
@@ -169,10 +65,23 @@ try {
                 <ul class="nav nav-pills pull-right">
                     <li class="active"><a href="index.php">Trang chủ</a></li>
                     <li><a href="cart/index.php">Giỏ hàng (<span id="header-cart-count"><?php echo $cartItemCount; ?></span>)</a></li>
-                    <li><a href="payment/history.php">Lịch sử GD</a></li>
+                    <?php if ($user_id): ?>
+                        <li><a href="user/sell_item.php">Đăng bán</a></li> 
+                        <li><a href="user/order_history.php">Lịch sử đơn hàng</a></li>
+                        <li><a href="user/logout.php">Đăng xuất</a></li>
+                    <?php else: ?>
+                        <li><a href="user/login.php">Đăng nhập</a></li>
+                        <li><a href="user/register.php">Đăng ký</a></li>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <h3 class="text-muted">Web Mua Bán Đồ Cũ</h3>
+            <form class="navbar-form navbar-left" role="search" action="search.php" method="GET">
+                <div class="form-group">
+                    <input type="text" name="query" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                </div>
+                <button type="submit" class="btn btn-default">Tìm kiếm</button>
+            </form>
         </div>
 
         <div class="jumbotron">
@@ -211,7 +120,7 @@ try {
                                     | Còn lại: <?php echo $product['stock_quantity']; ?> sản phẩm
                                 </div>
                                 <!-- Form để thêm vào giỏ hàng -->
-                                <form action="cart/handler.php" method="GET" class="add-to-cart-form form-add-to-cart">
+                                <form action="../modules/cart/handler.php" method="POST" class="add-to-cart-form form-add-to-cart">
                                     <input type="hidden" name="action" value="add">
                                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                                     <div class="form-group" style="margin-bottom: 10px;">
@@ -239,6 +148,160 @@ try {
                 </div>
             <?php endif; ?>
         </div>
+
+        <!-- Phần Khám phá danh mục -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="section-title">Khám phá danh mục</h2>
+            </div>
+        </div>
+        <div class="row category-grid">
+            <!-- Danh sách các danh mục -->
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=1">
+                    <img src="../assets/images/categories/bat_dong_san.png" alt="Bất động sản">
+                    <span>Bất động sản</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=2">
+                    <img src="../assets/images/categories/xe_co.png" alt="Xe cộ">
+                    <span>Xe cộ</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=3">
+                    <img src="../assets/images/categories/do_dien_tu.png" alt="Đồ điện tử">
+                    <span>Đồ điện tử</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=4">
+                    <img src="../assets/images/categories/do_gia_dung.png" alt="Đồ gia dụng, nội thất">
+                    <span>Đồ gia dụng, nội thất</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=5">
+                    <img src="../assets/images/categories/giai_tri_the_thao.png" alt="Giải trí, Thể thao">
+                    <span>Giải trí, Thể thao</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=6">
+                    <img src="../assets/images/categories/me_va_be.png" alt="Mẹ và bé">
+                    <span>Mẹ và bé</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=7">
+                    <img src="../assets/images/categories/dich_vu_du_lich.png" alt="Dịch vụ, Du lịch">
+                    <span>Dịch vụ, Du lịch</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=8">
+                    <img src="../assets/images/categories/viec_lam.png" alt="Việc làm">
+                    <span>Việc làm</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=9">
+                    <img src="../assets/images/categories/thu_cung.png" alt="Thú cưng">
+                    <span>Thú cưng</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=10">
+                    <img src="../assets/images/categories/tu_lanh_may_giat.png" alt="Tủ lạnh, máy giặt">
+                    <span>Tủ lạnh, máy giặt</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=11">
+                    <img src="../assets/images/categories/do_van_phong.png" alt="Đồ dùng văn phòng">
+                    <span>Đồ dùng văn phòng</span>
+                </a>
+            </div>
+             <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=12">
+                    <img src="../assets/images/categories/thoi_trang.png" alt="Thời trang, Đồ dùng cá nhân">
+                    <span>Thời trang, Đồ dùng cá nhân</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=13">
+                    <img src="../assets/images/categories/do_an_thuc_pham.png" alt="Đồ ăn, thực phẩm">
+                    <span>Đồ ăn, thực phẩm</span>
+                </a>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 category-item">
+                <a href="category.php?id=14">
+                    <img src="../assets/images/categories/dich_vu_cham_soc_nha_cua.png" alt="Dịch vụ chăm sóc nhà cửa">
+                    <span>Dịch vụ chăm sóc nhà cửa</span>
+                </a>
+            </div>
+        </div>
+        <!-- Kết thúc Phần Khám phá danh mục -->
+
+
+        <!-- Phần hiển thị lịch sử đơn hàng gần đây -->
+        <?php if ($user_id && !empty($recent_orders)): ?>
+        <hr style="margin: 40px 0;">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Đơn hàng gần đây của bạn</h2>
+                <p class="text-muted">Xem các đơn hàng bạn đã đặt gần đây</p>
+            </div>
+        </div>
+        
+        <div class="recent-orders-section">
+            <?php foreach ($recent_orders as $order): ?>
+            <div class="order-summary-card">
+                <div class="order-header">
+                    <div class="order-number">
+                        <strong>Đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?></strong>
+                    </div>
+                    <div class="order-date">
+                        <?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?>
+                    </div>
+                </div>
+                
+                <div class="order-status">
+                    <span class="badge badge-<?php echo getOrderStatusClass($order['status']); ?>">
+                        <?php echo getOrderStatusText($order['status']); ?>
+                    </span>
+                    <span class="badge badge-<?php echo getPaymentStatusClass($order['payment_status']); ?>">
+                        <?php echo getPaymentStatusText($order['payment_status']); ?>
+                    </span>
+                </div>
+                
+                <div class="order-total">
+                    Tổng tiền: <strong><?php echo number_format($order['total_amount'], 0, ',', '.'); ?> VNĐ</strong>
+                </div>
+                
+                <div class="order-actions">
+                    <a href="user/order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-primary">
+                        Xem chi tiết
+                    </a>
+                    <?php if ($order['status'] === 'pending' || $order['status'] === 'confirmed'): ?>
+                    <button type="button" class="btn btn-sm btn-outline-danger cancel-order-btn" 
+                            data-order-id="<?php echo $order['id']; ?>"
+                            data-order-number="<?php echo htmlspecialchars($order['order_number']); ?>">
+                        Hủy đơn
+                    </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+            
+            <div class="text-center" style="margin-top: 20px;">
+                <a href="user/order_history.php" class="btn btn-outline-primary">
+                    Xem tất cả đơn hàng →
+                </a>
+            </div>
+        </div>
+        <?php endif; ?>
 
         <footer class="footer" style="margin-top: 30px;">
             <p>&copy; Web Mua Ban Do Cu <?php echo date('Y')?></p>
