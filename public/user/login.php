@@ -3,7 +3,7 @@ require_once('../../config/config.php');
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
+    header('Location: ../TrangChu.php');
     exit();
 }
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     error_log("User login success: {$user['email']} (ID: {$user['id']})");
 
                     // Ưu tiên chuyển hướng về trang đã lưu trong session, sau đó là GET param, cuối cùng là trang chủ
-                    $redirect_url = '../index.php'; // Mặc định là trang chủ
+                    $redirect_url = '../TrangChu.php'; // Mặc định là trang chủ
                     if (isset($_SESSION['login_redirect_url'])) {
                         $redirect_url = $_SESSION['login_redirect_url'];
                         unset($_SESSION['login_redirect_url']); // Xóa session sau khi sử dụng

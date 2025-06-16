@@ -10,6 +10,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
  * @author xonv
  */
 require_once(__DIR__ . "/../../../config/config.php");
+require_once(__DIR__ . "/vnpay_debug_logger.php"); // <--- THÊM DÒNG NÀY
 require_once(__DIR__ . "/../../cart/functions.php"); // Đảm bảo get_current_user_id, getCartItems, getCartTotal ở đây
 
 // ===== KIỂM TRA ĐĂNG NHẬP =====
@@ -38,7 +39,7 @@ $vnp_Locale = $_POST['language'];
 $vnp_BankCode = $_POST['bank_code'];
 $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
 //Add Params of 2.0.1 Version
-$vnp_ExpireDate = $_POST['txtexpire'];
+$vnp_ExpireDate = $_POST['txtexpire']; // Đọc giá trị từ POST
 //Billing
 $vnp_Bill_Mobile = $_POST['txt_billing_mobile'];
 $vnp_Bill_Email = $_POST['txt_billing_email'];
@@ -52,6 +53,7 @@ $vnp_Bill_Address=$_POST['txt_inv_addr1'];
 $vnp_Bill_City=$_POST['txt_bill_city'];
 $vnp_Bill_Country=$_POST['txt_bill_country'];
 $vnp_Bill_State=$_POST['txt_bill_state'];
+
 $inputData = array(
     "vnp_Version" => "2.1.0",
     "vnp_TmnCode" => $vnp_TmnCode,
@@ -66,6 +68,11 @@ $inputData = array(
     "vnp_ReturnUrl" => $vnp_Returnurl,
     "vnp_TxnRef" => $vnp_TxnRef
 );
+
+// Thêm vnp_ExpireDate vào $inputData nếu có giá trị và không rỗng
+if (isset($vnp_ExpireDate) && $vnp_ExpireDate != "") {
+    $inputData['vnp_ExpireDate'] = $vnp_ExpireDate;
+}
 
 // Chỉ thêm các tham số không rỗng để tránh lỗi hash
 if (isset($vnp_BankCode) && $vnp_BankCode != "") {
@@ -84,7 +91,10 @@ if (isset($vnp_Bill_State) && $vnp_Bill_State != "") {
     $inputData['vnp_Bill_State'] = $vnp_Bill_State;
 }
 
-//var_dump($inputData);
+// LOGGING POINT 1: Before sorting and hashing
+log_vnpay_debug_data("CREATE_PAYMENT - BEFORE HASH", $inputData + get_vnpay_config_for_logging());
+
+
 ksort($inputData);
 $query = "";
 $i = 0;
@@ -99,11 +109,27 @@ foreach ($inputData as $key => $value) {
     $query .= urlencode($key) . "=" . urlencode($value) . '&';
 }
 
+$vnp_Url_original = $vnp_Url; // Store original VNPAY URL for logging
 $vnp_Url = $vnp_Url . "?" . $query;
+$vnpSecureHash = ""; // Initialize
 if (isset($vnp_HashSecret)) {
-    $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//  
+    $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);
     $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
 }
+
+// LOGGING POINT 2: After hashing, before redirect
+log_vnpay_debug_data("CREATE_PAYMENT - AFTER HASH", 
+    [
+        "vnp_Url_base" => $vnp_Url_original,
+        "query_params_string" => rtrim($query, '&'),
+        "final_vnp_Url_to_redirect" => $vnp_Url,
+        "vnp_TmnCode_used" => $vnp_TmnCode,
+        "vnp_HashSecret_used_partial" => substr($vnp_HashSecret, 0, 5) . '...'. substr($vnp_HashSecret, -5)
+    ],
+    $hashdata,
+    $vnpSecureHash
+);
+
 $returnData = array('code' => '00'
     , 'message' => 'success'
     , 'data' => $vnp_Url);
@@ -200,14 +226,6 @@ try {
 
     // Nếu mọi thứ thành công, commit transaction
     $pdo->commit();
-
-    // QUAN TRỌNG: Không xóa giỏ hàng ở đây. Giỏ hàng chỉ nên được xóa sau khi thanh toán thành công (trong return.php hoặc ipn.php).
-    // if (function_exists('clearCart')) {
-    //     clearCart($pdo, $user_id); 
-    //     error_log("Đã xóa giỏ hàng cho user_id = $user_id sau khi tạo đơn hàng $order_number.");
-    // } else {
-    //     error_log("LƯU Ý: Hàm clearCart() không được tìm thấy. Giỏ hàng của user_id = $user_id có thể chưa được xóa sau khi tạo đơn hàng $order_number.");
-    // }
     
     $order_created_successfully = true;
     error_log("Đã tạo đơn hàng (chưa xóa giỏ hàng): Order ID = $order_id, Order Number = $order_number cho user_id = $user_id.");
@@ -217,6 +235,7 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();    }
     error_log("Lỗi khi tạo đơn hàng cho user_id = $user_id: " . $e->getMessage() . " | Dữ liệu POST: " . print_r($_POST, true));
+    log_vnpay_debug_data("CREATE_PAYMENT - ORDER CREATION FAILED", ["error" => $e->getMessage(), "post_data" => $_POST]); // <--- LOG LỖI TẠO ĐƠN HÀNG
     
     // Xử lý lỗi và không redirect sang VNPAY
     if (isset($_POST['redirect'])) {
@@ -236,6 +255,7 @@ if ($order_created_successfully) {
         // Check if $vnp_Url is valid before redirecting
         if (empty($vnp_Url) || !filter_var($vnp_Url, FILTER_VALIDATE_URL)) {
             error_log("VNPAY Create Payment Error: Invalid or empty VNPAY URL. URL was: '" . $vnp_Url . "'");
+            log_vnpay_debug_data("CREATE_PAYMENT - INVALID VNPAY URL", ["vnp_Url" => $vnp_Url]); // <--- LOG URL KHÔNG HỢP LỆ
             $_SESSION['checkout_error_message'] = "Lỗi nghiêm trọng: Không thể tạo URL thanh toán VNPAY. Vui lòng liên hệ quản trị viên.";
             header('Location: ../../../public/cart/index.php');
             exit;

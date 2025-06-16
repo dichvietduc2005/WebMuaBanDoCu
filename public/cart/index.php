@@ -104,21 +104,19 @@ error_log("Cart Item Count: " . $cartItemCount);
                                     </thead>
                                     <tbody id="cart-items">
                                         <?php foreach ($cartItems as $item): ?>
-                                            <tr data-product-id="<?php echo $item['product_id']; ?>">
-                                                <td>
-                                                    <?php if (!empty($item['image_url'])): ?>
-                                                        <img src="<?php echo htmlspecialchars($item['image_url']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                                            <tr data-product-id="<?php echo $item['product_id']; ?>">                                                <td>
+                                                    <?php if (!empty($item['image_path'])): ?>
+                                                        <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>" alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
                                                     <?php endif; ?>
-                                                    <strong><?php echo htmlspecialchars($item['product_name']); ?></strong>
+                                                    <strong><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></strong>
                                                 </td>
-                                                <td class="product-price"><?php echo number_format($item['price'], 0, ',', '.'); ?> VNĐ</td>
+                                                <td class="product-price"><?php echo number_format($item['current_price'] ?? $item['added_price'] ?? 0, 0, ',', '.'); ?> VNĐ</td>
                                                 <td>
                                                     <div class="input-group" style="width: 120px;">
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default btn-sm quantity-decrease" data-product-id="<?php echo $item['product_id']; ?>">-</button>
-                                                        </span>
-                                                        <input type="number" class="form-control text-center quantity-input" 
-                                                               value="<?php echo $item['quantity']; ?>" 
+                                                        </span>                                                        <input type="number" class="form-control text-center quantity-input" 
+                                                               value="<?php echo $item['quantity'] ?? 1; ?>" 
                                                                min="1" 
                                                                data-product-id="<?php echo $item['product_id']; ?>">
                                                         <span class="input-group-btn">
@@ -126,7 +124,7 @@ error_log("Cart Item Count: " . $cartItemCount);
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td class="subtotal"><?php echo number_format($item['subtotal'], 0, ',', '.'); ?> VNĐ</td>
+                                                <td class="subtotal"><?php echo number_format($item['subtotal'] ?? 0, 0, ',', '.'); ?> VNĐ</td>
                                                 <td>
                                                     <button type="button" class="btn btn-danger btn-sm remove-item" data-product-id="<?php echo $item['product_id']; ?>">
                                                         <span class="glyphicon glyphicon-trash"></span> Xóa
@@ -167,7 +165,7 @@ error_log("Cart Item Count: " . $cartItemCount);
                                 <div class="col-xs-6">Tổng tiền:</div>
                                 <div class="col-xs-6 text-right">
                                     <h4 class="text-primary">
-                                        <strong id="total-amount"><?php echo number_format($cartTotal, 0, ',', '.'); ?> VNĐ</strong>
+                                        <strong id="total-amount"><?php echo number_format($cartTotal ?? 0, 0, ',', '.'); ?> VNĐ</strong>
                                     </h4>
                                 </div>
                             </div>

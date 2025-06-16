@@ -3,7 +3,7 @@ require_once('../../config/config.php');
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
+    header('Location: ../TrangChu.php');
     exit();
 }
 
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
               <div class="text-center mt-3">
                 <p>Đã có tài khoản? <a href="login.php">Đăng nhập</a></p>
-                <p><a href="../index.php">Về trang chủ</a></p>
+                <p><a href="../TrangChu.php">Về trang chủ</a></p>
             </div>
         </div>
     </div>

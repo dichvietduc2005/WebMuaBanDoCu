@@ -1,8 +1,9 @@
 <?php
 require_once(__DIR__ . '/../../../config/config.php');
+require_once(__DIR__ . "/vnpay_debug_logger.php"); // <--- THÊM DÒNG NÀY
 require_once(__DIR__ . '/../../cart/functions.php'); // For cart clearing
 
-$vnp_SecureHash = $_GET['vnp_SecureHash'] ?? '';
+$vnp_SecureHash_received = $_GET['vnp_SecureHash'] ?? '';
 $inputData = array();
 foreach ($_GET as $key => $value) {
     if (substr($key, 0, 4) == "vnp_") {
@@ -11,6 +12,15 @@ foreach ($_GET as $key => $value) {
 }
 
 $order_number_from_vnpay = $_GET['vnp_TxnRef'] ?? null;
+
+// LOGGING POINT 1: Received data from VNPAY
+log_vnpay_debug_data("RETURN_URL - RECEIVED DATA", 
+    [
+        "get_params" => $_GET,
+        "vnp_TmnCode_config" => $vnp_TmnCode, // From config.php
+        "vnp_HashSecret_config_partial" => substr($vnp_HashSecret, 0, 5) . '...'. substr($vnp_HashSecret, -5) // From config.php
+    ]
+);
 
 unset($inputData['vnp_SecureHash']);
 ksort($inputData);
@@ -25,14 +35,26 @@ foreach ($inputData as $key => $value) {
     }
 }
 
-$secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+$secureHash_calculated = hash_hmac('sha512', $hashData, $vnp_HashSecret);
 $payment_successful = false;
 $payment_message = "";
 
-if ($secureHash == $vnp_SecureHash) {
+// LOGGING POINT 2: Before signature comparison
+log_vnpay_debug_data("RETURN_URL - BEFORE SIG CHECK", 
+    [
+        "order_number" => $order_number_from_vnpay,
+        "vnp_ResponseCode" => $_GET['vnp_ResponseCode'] ?? 'N/A'
+    ],
+    $hashData, 
+    $secureHash_calculated, 
+    $vnp_SecureHash_received
+);
+
+if ($secureHash_calculated == $vnp_SecureHash_received) {
     if ($_GET['vnp_ResponseCode'] == '00') {
         $payment_successful = true;
         $payment_message = "Thanh toán thành công!";
+        log_vnpay_debug_data("RETURN_URL - SUCCESS", ["order_number" => $order_number_from_vnpay, "message" => $payment_message]);
 
         if ($order_number_from_vnpay) {
             try {
@@ -60,22 +82,35 @@ if ($secureHash == $vnp_SecureHash) {
 
             } catch (PDOException $e) {
                 error_log("VNPay Return: DB error during tentative order update for order_number: " . $order_number_from_vnpay . " - " . $e->getMessage());
+                log_vnpay_debug_data("RETURN_URL - DB UPDATE ERROR (SUCCESS CASE)", ["order_number" => $order_number_from_vnpay, "error" => $e->getMessage()]);
             }
         }
     } else {
         $payment_message = "Thanh toán không thành công. Mã lỗi VNPAY: " . htmlspecialchars($_GET['vnp_ResponseCode']);
+        log_vnpay_debug_data("RETURN_URL - FAILED (VNPAY ERROR CODE)", ["order_number" => $order_number_from_vnpay, "vnp_ResponseCode" => $_GET['vnp_ResponseCode'], "message" => $payment_message]);
         if ($order_number_from_vnpay) {
             try {
                  $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'payment_failed', payment_status = 'failed_via_return', updated_at = NOW() WHERE order_number = ?");
                  $stmt_update_order->execute([$order_number_from_vnpay]);
             } catch (PDOException $e) {
                  error_log("VNPay Return: DB error updating failed payment status for order_number: " . $order_number_from_vnpay . " - " . $e->getMessage());
+                 log_vnpay_debug_data("RETURN_URL - DB UPDATE ERROR (FAIL CASE)", ["order_number" => $order_number_from_vnpay, "error" => $e->getMessage()]);
             }
         }
     }
 } else {
     $payment_message = "Chữ ký không hợp lệ. Giao dịch có thể đã bị thay đổi.";
     error_log("VNPay Return: Invalid signature for order_number: " . $order_number_from_vnpay . " GET data: " . print_r($_GET, true));
+    log_vnpay_debug_data("RETURN_URL - INVALID SIGNATURE", 
+        [
+            "order_number" => $order_number_from_vnpay, 
+            "message" => $payment_message,
+            "hash_data_calculated_from" => $hashData,
+            "secure_hash_calculated" => $secureHash_calculated,
+            "secure_hash_received_from_vnpay" => $vnp_SecureHash_received,
+            "full_get_params" => $_GET
+        ]
+    );
 }
 
 $redirectParams = [];
