@@ -1,3 +1,87 @@
+<?php
+require_once '../config/config.php';
+
+// Lấy sản phẩm nổi bật từ database
+$stmt = $pdo->prepare("
+    SELECT p.*, pi.image_path, c.name as category_name 
+    FROM products p 
+    LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+    LEFT JOIN categories c ON p.category_id = c.id
+    WHERE p.status = 'active' AND p.featured = 1 
+    ORDER BY p.created_at DESC 
+    LIMIT 8
+");
+$stmt->execute();
+$featured_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy danh mục
+$stmt = $pdo->prepare("SELECT * FROM categories ORDER BY name");
+$stmt->execute();
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy đơn hàng gần đây (nếu user đã đăng nhập)
+$recent_orders = [];
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("
+        SELECT o.*, COUNT(oi.id) as item_count
+        FROM orders o 
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.buyer_id = ? 
+        GROUP BY o.id
+        ORDER BY o.created_at DESC 
+        LIMIT 6
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+    $recent_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Đếm số sản phẩm trong giỏ hàng
+$cart_count = 0;
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("
+        SELECT SUM(ci.quantity) as total_quantity
+        FROM carts c 
+        JOIN cart_items ci ON c.id = ci.cart_id 
+        WHERE c.user_id = ?
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $cart_count = $result['total_quantity'] ?? 0;
+}
+
+function formatPrice($price) {
+    return number_format($price, 0, ',', '.') . ' ₫';
+}
+
+function getConditionText($condition) {
+    $conditions = [
+        'new' => 'Mới',
+        'like_new' => 'Như mới',
+        'good' => 'Tốt',
+        'fair' => 'Khá tốt',
+        'poor' => 'Cần sửa chữa'
+    ];
+    return $conditions[$condition] ?? $condition;
+}
+
+function getStatusBadge($status) {
+    $badges = [
+        'pending' => 'status-pending',
+        'success' => 'status-confirmed',
+        'failed' => 'status-cancelled'
+    ];
+    return $badges[$status] ?? 'status-pending';
+}
+
+function getStatusText($status) {
+    $statuses = [
+        'pending' => 'Chờ xử lý',
+        'success' => 'Thành công',
+        'failed' => 'Đã hủy'
+    ];
+    return $statuses[$status] ?? $status;
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -158,11 +242,16 @@
 
         .search-button:hover {
             background: var(--primary-dark);
-        }
-
-        .user-actions {
+        }        .user-actions {
             display: flex;
             gap: 15px;
+            align-items: center;
+        }
+
+        .user-welcome {
+            color: var(--dark);
+            font-weight: 500;
+            white-space: nowrap;
         }
 
         .btn {
@@ -675,7 +764,47 @@
             font-size: 14px;
         }
 
-        /* Responsive Design */
+        /* Toast Styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: slideInRight 0.3s ease;
+            max-width: 350px;
+            margin-bottom: 10px;
+        }
+        .toast-success { border-left: 4px solid #38b000; }
+        .toast-error { border-left: 4px solid #ff595e; }
+        .toast-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .toast-success .toast-header i { color: #38b000; }
+        .toast-error .toast-header i { color: #ff595e; }
+        .toast-header strong { flex: 1; }
+        .close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .toast-body { 
+            padding: 10px 20px 15px; 
+            color: #6c757d; 
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
         @media (max-width: 992px) {
             .hero {
                 padding: 60px 40px;
@@ -767,23 +896,34 @@
                 <i class="fas fa-recycle logo-icon"></i>
                 <h1>MuaBán Đồ Cũ</h1>
             </div>
-            
-            <div class="nav-container">
+              <div class="nav-container">
                 <nav class="nav-menu">
-                    <a href="#" class="nav-link active"><i class="fas fa-home"></i> Trang chủ</a>
-                    <a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i> Giỏ hàng <span class="cart-count">3</span></a>
+                    <a href="TrangChu.php" class="nav-link active"><i class="fas fa-home"></i> Trang chủ</a>
+                    <a href="cart/" class="nav-link cart-link">
+                        <i class="fas fa-shopping-cart"></i> Giỏ hàng 
+                        <?php if ($cart_count > 0): ?>
+                            <span class="cart-count"><?php echo $cart_count; ?></span>
+                        <?php endif; ?>
+                    </a>
                     <a href="#" class="nav-link"><i class="fas fa-store"></i> Đăng bán</a>
-                    <a href="#" class="nav-link"><i class="fas fa-history"></i> Lịch sử</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="user/order_history.php" class="nav-link"><i class="fas fa-history"></i> Lịch sử</a>
+                    <?php endif; ?>
                 </nav>
                 
-                <form class="search-form">
-                    <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm...">
+                <form class="search-form" method="GET" action="search.php">
+                    <input type="text" name="q" class="search-input" placeholder="Tìm kiếm sản phẩm...">
                     <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
                 </form>
                 
                 <div class="user-actions">
-                    <a href="#" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
-                    <a href="#" class="btn btn-primary"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <span class="user-welcome">Xin chào, <?php echo htmlspecialchars($_SESSION['full_name'] ?? 'User'); ?></span>
+                        <a href="user/logout.php" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    <?php else: ?>
+                        <a href="user/login.php" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+                        <a href="user/register.php" class="btn btn-primary"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -794,226 +934,158 @@
         <div class="hero">
             <div class="hero-content">
                 <h2>Mua bán đồ cũ - Tiết kiệm, tiện lợi, bảo vệ môi trường</h2>
-                <p>Tìm kiếm và mua bán các mặt hàng đã qua sử dụng một cách dễ dàng với giá cả hợp lý. Hàng ngàn sản phẩm chất lượng đang chờ bạn!</p>
-                <div class="hero-buttons">
-                    <a href="#" class="hero-btn btn-white"><i class="fas fa-shopping-bag"></i> Mua sắm ngay</a>
-                    <a href="#" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán đồ</a>
+                <p>Tìm kiếm và mua bán các mặt hàng đã qua sử dụng một cách dễ dàng với giá cả hợp lý. Hàng ngàn sản phẩm chất lượng đang chờ bạn!</p>                <div class="hero-buttons">
+                    <a href="#featured-products" class="hero-btn btn-white"><i class="fas fa-shopping-bag"></i> Mua sắm ngay</a>
+                    <a href="sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán đồ</a>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Featured Products -->
+    </div>    <!-- Featured Products -->
     <div class="container">
-        <section class="section">
+        <section class="section" id="featured-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm nổi bật</h2>
-                <a href="#" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <div class="products-grid">
-                <!-- Product 1 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <span class="product-badge">Mới</span>
-                        <img src="https://via.placeholder.com/300x220/e9ecef/6c757d?text=iPhone+12" alt="iPhone 12">
+                <?php if (empty($featured_products)): ?>
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6c757d;">
+                        <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <h3>Chưa có sản phẩm nổi bật</h3>
+                        <p>Hãy quay lại sau để xem các sản phẩm mới nhất!</p>
                     </div>
-                    <div class="product-content">
-                        <h3 class="product-title">iPhone 12 Pro Max 128GB</h3>
-                        <div class="product-price">12.500.000 ₫</div>
-                        <div class="product-meta">
-                            <div class="product-condition"><i class="fas fa-star"></i> Như mới</div>
-                            <div class="product-stock"><i class="fas fa-box"></i> Còn 2 sản phẩm</div>
+                <?php else: ?>
+                    <?php foreach ($featured_products as $product): ?>
+                    <div class="product-card">
+                        <div class="product-image" style="position: relative;">
+                            <?php if ($product['featured']): ?>
+                                <span class="product-badge">Nổi bật</span>
+                            <?php endif; ?>
+                            <?php if ($product['image_path']): ?>
+                                <img src="../<?php echo htmlspecialchars($product['image_path']); ?>" 
+                                     alt="<?php echo htmlspecialchars($product['title']); ?>"
+                                     style="width: 100%; height: 220px; object-fit: cover;">
+                            <?php else: ?>
+                                <div style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                                    <i class="fas fa-image" style="font-size: 48px;"></i>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                        <div class="product-actions">
-                            <form class="add-to-cart-form">
-                                <input type="number" min="1" value="1" class="quantity-input">
-                                <button type="submit" class="btn-add-to-cart"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 2 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://via.placeholder.com/300x220/e9ecef/6c757d?text=Máy+Tính+Bảng" alt="Máy tính bảng">
-                    </div>
-                    <div class="product-content">
-                        <h3 class="product-title">iPad Pro 11 inch 2021</h3>
-                        <div class="product-price">10.900.000 ₫</div>
-                        <div class="product-meta">
-                            <div class="product-condition"><i class="fas fa-star"></i> Tốt</div>
-                            <div class="product-stock"><i class="fas fa-box"></i> Còn 5 sản phẩm</div>
-                        </div>
-                        <div class="product-actions">
-                            <form class="add-to-cart-form">
-                                <input type="number" min="1" value="1" class="quantity-input">
-                                <button type="submit" class="btn-add-to-cart"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 3 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <span class="product-badge">Giảm 15%</span>
-                        <img src="https://via.placeholder.com/300x220/e9ecef/6c757d?text=Laptop" alt="Laptop">
-                    </div>
-                    <div class="product-content">
-                        <h3 class="product-title">Laptop Dell XPS 13 9310</h3>
-                        <div class="product-price">21.750.000 ₫</div>
-                        <div class="product-meta">
-                            <div class="product-condition"><i class="fas fa-star"></i> Mới</div>
-                            <div class="product-stock"><i class="fas fa-box"></i> Còn 1 sản phẩm</div>
-                        </div>
-                        <div class="product-actions">
-                            <form class="add-to-cart-form">
-                                <input type="number" min="1" value="1" class="quantity-input">
-                                <button type="submit" class="btn-add-to-cart"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-                            </form>
+                        <div class="product-content">
+                            <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                            <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
+                            <div class="product-meta">
+                                <div class="product-condition">
+                                    <i class="fas fa-star"></i> <?php echo getConditionText($product['condition_status']); ?>
+                                </div>
+                                <div class="product-stock">
+                                    <i class="fas fa-box"></i> Còn <?php echo $product['stock_quantity']; ?> sản phẩm
+                                </div>
+                            </div>
+                            <div class="product-actions">
+                                <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
+                                    <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1" class="quantity-input" name="quantity">
+                                    <button type="submit" class="btn-add-to-cart">
+                                        <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Product 4 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://via.placeholder.com/300x220/e9ecef/6c757d?text=Máy+Ảnh" alt="Máy ảnh">
-                    </div>
-                    <div class="product-content">
-                        <h3 class="product-title">Máy Ảnh Sony A7 III</h3>
-                        <div class="product-price">25.000.000 ₫</div>
-                        <div class="product-meta">
-                            <div class="product-condition"><i class="fas fa-star"></i> Tốt</div>
-                            <div class="product-stock"><i class="fas fa-box"></i> Còn 3 sản phẩm</div>
-                        </div>
-                        <div class="product-actions">
-                            <form class="add-to-cart-form">
-                                <input type="number" min="1" value="1" class="quantity-input">
-                                <button type="submit" class="btn-add-to-cart"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </section>
-        
-        <!-- Categories Section -->
+          <!-- Categories Section -->
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Danh mục sản phẩm</h2>
-                <a href="#" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="categories.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <div class="categories-grid">
-                <div class="category-card">
-                    <i class="fas fa-mobile-alt category-icon"></i>
-                    <div class="category-name">Điện thoại</div>
-                </div>
+                <?php 
+                $category_icons = [
+                    'dien-thoai-may-tinh-bang' => 'fas fa-mobile-alt',
+                    'laptop-may-tinh' => 'fas fa-laptop',
+                    'thoi-trang-phu-kien' => 'fas fa-tshirt',
+                    'do-gia-dung-noi-that' => 'fas fa-home',
+                    'xe-co-phuong-tien' => 'fas fa-motorcycle',
+                    'sach-van-phong-pham' => 'fas fa-book',
+                    'the-thao-giai-tri' => 'fas fa-gamepad',
+                    'dien-may-cong-nghe' => 'fas fa-tv',
+                    'me-va-be' => 'fas fa-baby'
+                ];
                 
-                <div class="category-card">
-                    <i class="fas fa-laptop category-icon"></i>
-                    <div class="category-name">Laptop</div>
+                foreach ($categories as $category): 
+                    $icon = $category_icons[$category['slug']] ?? 'fas fa-cube';
+                ?>
+                <div class="category-card" onclick="window.location.href='category.php?slug=<?php echo $category['slug']; ?>'">
+                    <i class="<?php echo $icon; ?> category-icon"></i>
+                    <div class="category-name"><?php echo htmlspecialchars($category['name']); ?></div>
                 </div>
-                
-                <div class="category-card">
-                    <i class="fas fa-tablet-alt category-icon"></i>
-                    <div class="category-name">Máy tính bảng</div>
-                </div>
-                
-                <div class="category-card">
-                    <i class="fas fa-camera category-icon"></i>
-                    <div class="category-name">Máy ảnh</div>
-                </div>
-                
-                <div class="category-card">
-                    <i class="fas fa-headphones category-icon"></i>
-                    <div class="category-name">Phụ kiện</div>
-                </div>
-                
-                <div class="category-card">
-                    <i class="fas fa-tshirt category-icon"></i>
-                    <div class="category-name">Thời trang</div>
-                </div>
-                
-                <div class="category-card">
-                    <i class="fas fa-book category-icon"></i>
-                    <div class="category-name">Sách</div>
-                </div>
-                
-                <div class="category-card">
-                    <i class="fas fa-gamepad category-icon"></i>
-                    <div class="category-name">Đồ chơi</div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </section>
-        
-        <!-- Recent Orders -->
+          <!-- Recent Orders -->
+        <?php if (isset($_SESSION['user_id']) && !empty($recent_orders)): ?>
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Đơn hàng gần đây</h2>
+                <a href="user/order_history.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <div class="orders-grid">
+                <?php foreach ($recent_orders as $order): ?>
                 <div class="order-card">
                     <div class="order-header">
-                        <div class="order-number">#ORD-2023-00125</div>
-                        <div class="order-date">15/06/2023</div>
+                        <div class="order-number">#<?php echo htmlspecialchars($order['order_number']); ?></div>
+                        <div class="order-date"><?php echo date('d/m/Y', strtotime($order['created_at'])); ?></div>
                     </div>
                     
                     <div class="order-status">
-                        <div class="status-badge status-confirmed">Đã xác nhận</div>
-                        <div class="status-badge status-pending">Chờ thanh toán</div>
+                        <div class="status-badge <?php echo getStatusBadge($order['status']); ?>">
+                            <?php echo getStatusText($order['status']); ?>
+                        </div>
+                        <?php if ($order['payment_status']): ?>
+                        <div class="status-badge <?php echo getStatusBadge($order['payment_status']); ?>">
+                            <?php 
+                            $payment_statuses = [
+                                'pending' => 'Chờ thanh toán',
+                                'paid' => 'Đã thanh toán',
+                                'failed' => 'Thanh toán thất bại'
+                            ];
+                            echo $payment_statuses[$order['payment_status']] ?? $order['payment_status'];
+                            ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     
-                    <div class="order-total">Tổng tiền: <strong>15.850.000 ₫</strong></div>
+                    <div class="order-total">
+                        Tổng tiền: <strong><?php echo formatPrice($order['total_amount']); ?></strong>
+                        <br><small><?php echo $order['item_count']; ?> sản phẩm</small>
+                    </div>
                     
                     <div class="order-actions">
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> Xem chi tiết</button>
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-times"></i> Hủy đơn</button>
+                        <a href="user/order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-outline btn-sm">
+                            <i class="fas fa-eye"></i> Xem chi tiết
+                        </a>
+                        <?php if ($order['status'] == 'pending'): ?>
+                        <button onclick="cancelOrder(<?php echo $order['id']; ?>)" class="btn btn-outline btn-sm">
+                            <i class="fas fa-times"></i> Hủy đơn
+                        </button>
+                        <?php elseif ($order['status'] == 'success'): ?>
+                        <button onclick="reorder(<?php echo $order['id']; ?>)" class="btn btn-outline btn-sm">
+                            <i class="fas fa-redo"></i> Mua lại
+                        </button>
+                        <?php endif; ?>
                     </div>
                 </div>
-                
-                <div class="order-card">
-                    <div class="order-header">
-                        <div class="order-number">#ORD-2023-00124</div>
-                        <div class="order-date">14/06/2023</div>
-                    </div>
-                    
-                    <div class="order-status">
-                        <div class="status-badge status-delivered">Đã giao hàng</div>
-                        <div class="status-badge status-confirmed">Đã thanh toán</div>
-                    </div>
-                    
-                    <div class="order-total">Tổng tiền: <strong>8.250.000 ₫</strong></div>
-                    
-                    <div class="order-actions">
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> Xem chi tiết</button>
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-redo"></i> Mua lại</button>
-                    </div>
-                </div>
-                
-                <div class="order-card">
-                    <div class="order-header">
-                        <div class="order-number">#ORD-2023-00122</div>
-                        <div class="order-date">12/06/2023</div>
-                    </div>
-                    
-                    <div class="order-status">
-                        <div class="status-badge status-cancelled">Đã hủy</div>
-                    </div>
-                    
-                    <div class="order-total">Tổng tiền: <strong>5.500.000 ₫</strong></div>
-                    
-                    <div class="order-actions">
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> Xem chi tiết</button>
-                        <button class="btn btn-outline btn-sm"><i class="fas fa-shopping-cart"></i> Đặt lại</button>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </section>
+        <?php endif; ?>
     </div>
 
     <!-- Footer -->
@@ -1080,43 +1152,141 @@
                 &copy; 2023 MuaBán Đồ Cũ. Tất cả quyền được bảo lưu.
             </div>
         </div>
-    </footer>
-
-    <script>
-        // Simple JavaScript for interactive elements
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add to cart buttons
-            const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Create a toast notification
-                    const toast = document.createElement('div');
-                    toast.className = 'toast';
-                    toast.innerHTML = `
-                        <div class="toast-header">
-                            <i class="fas fa-check-circle"></i>
-                            <strong>Thêm vào giỏ hàng thành công</strong>
-                            <button type="button" class="close" onclick="this.parentElement.parentElement.remove()">
-                                <span>&times;</span>
-                            </button>
-                        </div>
-                        <div class="toast-body">
-                            Sản phẩm đã được thêm vào giỏ hàng của bạn.
-                        </div>
-                    `;
-                    
-                    document.body.appendChild(toast);
-                    
-                    // Remove toast after 3 seconds
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 3000);
-                });
-            });
+    </footer>    <script>
+        // Add to cart function
+        function addToCart(event, productId) {
+            event.preventDefault();
             
-            // Category cards animation
+            const form = event.target;
+            const quantity = form.querySelector('.quantity-input').value;
+            const button = form.querySelector('.btn-add-to-cart');
+            
+            // Disable button during request
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
+              // Send AJAX request
+            fetch('../modules/cart/handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `action=add&product_id=${productId}&quantity=${quantity}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update cart count in header
+                    const cartCount = document.querySelector('.cart-count');
+                    if (cartCount) {
+                        cartCount.textContent = data.cart_count;
+                    } else if (data.cart_count > 0) {
+                        // Create cart count element if it doesn't exist
+                        const cartLink = document.querySelector('.cart-link');
+                        const span = document.createElement('span');
+                        span.className = 'cart-count';
+                        span.textContent = data.cart_count;
+                        cartLink.appendChild(span);
+                    }
+                    
+                    showToast('success', 'Thêm vào giỏ hàng thành công!', 'Sản phẩm đã được thêm vào giỏ hàng của bạn.');
+                } else {
+                    showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+            })
+            .finally(() => {
+                // Re-enable button
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
+            });
+        }
+          // Show toast notification
+        function showToast(type, title, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <strong>${title}</strong>
+                    <button type="button" class="close" onclick="this.parentElement.parentElement.remove()">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Remove toast after 5 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+        
+        // Cancel order function
+        function cancelOrder(orderId) {
+            if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
+                fetch('../modules/order/cancel_order.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `order_id=${orderId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('success', 'Thành công!', 'Đơn hàng đã được hủy.');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showToast('error', 'Lỗi!', data.message || 'Không thể hủy đơn hàng.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi hủy đơn hàng.');
+                });
+            }
+        }
+        
+        // Reorder function
+        function reorder(orderId) {
+            if (confirm('Bạn có muốn mua lại các sản phẩm trong đơn hàng này?')) {
+                fetch('../modules/order/reorder.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `order_id=${orderId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('success', 'Thành công!', 'Sản phẩm đã được thêm vào giỏ hàng.');
+                        // Update cart count
+                        const cartCount = document.querySelector('.cart-count');
+                        if (cartCount) {
+                            cartCount.textContent = data.cart_count;
+                        }
+                    } else {
+                        showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+                });
+            }
+        }
+
+        // Category cards animation
+        document.addEventListener('DOMContentLoaded', function() {
             const categoryCards = document.querySelectorAll('.category-card');
             categoryCards.forEach(card => {
                 card.addEventListener('mouseenter', function() {

@@ -49,7 +49,7 @@ if ($was_logged_in) {
 }
 
 // Xác định trang redirect
-$redirect_url = '../index.php'; // Mặc định về trang chủ
+$redirect_url = '../TrangChu.php'; // Mặc định về trang chủ
 
 // Kiểm tra tham số redirect từ URL (để có thể quay về trang trước đó)
 if (isset($_GET['redirect']) && !empty($_GET['redirect'])) {
@@ -57,7 +57,7 @@ if (isset($_GET['redirect']) && !empty($_GET['redirect'])) {
     
     // Validate redirect URL để tránh open redirect attack
     $allowed_redirects = [
-        '../index.php',
+        '../TrangChu.php',
         '../cart/index.php',
         '../checkout/index.php',
         'login.php',

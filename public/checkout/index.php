@@ -152,12 +152,11 @@ if ($user_id) {
                                      alt="<?php echo htmlspecialchars($item['product_name']); ?>" class="product-image-checkout img-thumbnail">
                             </div>
                             <div class="col-xs-9">
-                                <div class="product-name"><strong><?php echo htmlspecialchars($item['product_name']); ?></strong></div>
-                                <div class="product-details">
-                                    Số lượng: <?php echo $item['quantity']; ?> × <?php echo number_format($item['price'], 0, ',', '.'); ?> VNĐ
+                                <div class="product-name"><strong><?php echo htmlspecialchars($item['product_name']); ?></strong></div>                                <div class="product-details">
+                                    Số lượng: <?php echo $item['quantity']; ?> × <?php echo number_format($item['current_price'] ?? $item['added_price'] ?? 0, 0, ',', '.'); ?> VNĐ
                                 </div>
                                 <div class="product-total text-right">
-                                    <strong><?php echo number_format($item['subtotal'], 0, ',', '.'); ?> VNĐ</strong>
+                                    <strong><?php echo number_format($item['subtotal'] ?? 0, 0, ',', '.'); ?> VNĐ</strong>
                                 </div>
                             </div>
                         </div>
@@ -167,7 +166,7 @@ if ($user_id) {
                     <div class="total-summary">
                         <div class="row">
                             <div class="col-xs-6"><strong>Tổng cộng:</strong></div>
-                            <div class="col-xs-6 text-right"><strong style="color: #d9534f; font-size: 18px;"><?php echo number_format($cartTotal, 0, ',', '.'); ?> VNĐ</strong></div>
+                            <div class="col-xs-6 text-right"><strong style="color: #d9534f; font-size: 18px;"><?php echo number_format($cartTotal ?? 0, 0, ',', '.'); ?> VNĐ</strong></div>
                         </div>
                     </div>
                 </div>

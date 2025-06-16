@@ -22,14 +22,13 @@ if (!isset($pdo)) {
     switch ($action) {
         case 'add':
             if ($productId > 0 && $quantity > 0) {
-                try {
-                    $result = addToCart($pdo, $productId, $quantity, $user_id);
+                try {                    $result = addToCart($pdo, $productId, $quantity, $user_id);
                     if ($result) {
                         $item_count = getCartItemCount($pdo, $user_id);
                         $response = [
                             'success' => true, 
                             'message' => 'Sản phẩm đã được thêm vào giỏ.', 
-                            'item_count' => $item_count,
+                            'cart_count' => $item_count,
                             'is_guest' => $is_guest
                         ];
                     } else {
@@ -45,15 +44,14 @@ if (!isset($pdo)) {
             
         case 'update':
             if ($productId > 0) {
-                try {
-                    $result = updateCartItemQuantity($pdo, $productId, $quantity, $user_id);
+                try {                    $result = updateCartItemQuantity($pdo, $productId, $quantity, $user_id);
                     if ($result) {
                         $item_count = getCartItemCount($pdo, $user_id);
                         $total = getCartTotal($pdo, $user_id);
                         $response = [
                             'success' => true, 
                             'message' => 'Giỏ hàng đã được cập nhật.', 
-                            'item_count' => $item_count, 
+                            'cart_count' => $item_count, 
                             'total' => $total
                         ];
                     } else {
@@ -70,14 +68,13 @@ if (!isset($pdo)) {
         case 'remove':
             if ($productId > 0) {
                 try {
-                    $result = removeCartItem($pdo, $productId, $user_id);
-                    if ($result) {
+                    $result = removeCartItem($pdo, $productId, $user_id);                    if ($result) {
                         $item_count = getCartItemCount($pdo, $user_id);
                         $total = getCartTotal($pdo, $user_id);
                         $response = [
                             'success' => true, 
                             'message' => 'Sản phẩm đã được xóa khỏi giỏ.', 
-                            'item_count' => $item_count, 
+                            'cart_count' => $item_count, 
                             'total' => $total
                         ];
                     } else {
@@ -95,7 +92,7 @@ if (!isset($pdo)) {
             try {
                 $result = clearCart($pdo, $user_id);
                 if ($result) {
-                    $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.', 'item_count' => 0, 'total' => 0];
+                    $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.', 'cart_count' => 0, 'total' => 0];
                 } else {
                     $response = ['success' => false, 'message' => 'Không thể xóa sạch giỏ hàng.'];
                 }

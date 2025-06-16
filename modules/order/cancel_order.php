@@ -18,17 +18,24 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// Lấy dữ liệu JSON
-$input = json_decode(file_get_contents('php://input'), true);
+// Lấy order_id từ POST data (hỗ trợ cả form data và JSON)
+$order_id = isset($_POST['order_id']) ? (int)$_POST['order_id'] : 0;
+$reason = isset($_POST['reason']) ? trim($_POST['reason']) : 'Khách hàng hủy đơn';
 
-if (!$input || !isset($input['order_id'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ.']);
-    exit();
+// Nếu không có trong POST, thử lấy từ JSON
+if (!$order_id) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if ($input && isset($input['order_id'])) {
+        $order_id = (int)$input['order_id'];
+        $reason = isset($input['reason']) ? trim($input['reason']) : 'Khách hàng hủy đơn';
+    }
 }
 
-$order_id = (int)$input['order_id'];
-$reason = isset($input['reason']) ? trim($input['reason']) : 'Khách hàng hủy đơn';
+if (!$order_id) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'ID đơn hàng không hợp lệ.']);
+    exit();
+}
 $current_user_id = get_current_logged_in_user_id();
 
 try {

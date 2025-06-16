@@ -476,3 +476,395 @@ asdasf
     [payment_method] => vnpay
 )
 
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:03:07
+Stage: CREATE_PAYMENT - BEFORE HASH
+Data:
+Array
+(
+    [vnp_Version] => 2.1.0
+    [vnp_TmnCode] => JX3I05QJ
+    [vnp_Amount] => 1850000000
+    [vnp_Command] => pay
+    [vnp_CreateDate] => 20250615190307
+    [vnp_CurrCode] => VND
+    [vnp_IpAddr] => ::1
+    [vnp_Locale] => vn
+    [vnp_OrderInfo] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [vnp_OrderType] => billpayment
+    [vnp_ReturnUrl] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+    [vnp_TxnRef] => ORDER_20250615190205_6298
+    [vnp_Bill_Mobile] => 0945553902
+    [vnp_Bill_Email] => nguyenthinhk52005@gmail.com
+    [vnp_Bill_FirstName] => Nguyễn
+    [vnp_Bill_LastName] => Thịnh
+    [vnp_Bill_Address] => aaaaaaa
+1ssssss
+    [vnp_Bill_City] => TP.HCM
+    [vnp_Bill_Country] => VN
+    [vnp_TmnCode_from_config] => JX3I05QJ
+    [vnp_HashSecret_from_config_partial] => NOTK7...V4V39
+    [vnp_Url_from_config] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [vnp_ReturnUrl_from_config] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:03:07
+Stage: CREATE_PAYMENT - AFTER HASH
+Data:
+Array
+(
+    [vnp_Url_base] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [query_params_string] => vnp_Amount=1850000000&vnp_Bill_Address=aaaaaaa%0D%0A1ssssss&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190307&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=JX3I05QJ&vnp_TxnRef=ORDER_20250615190205_6298&vnp_Version=2.1.0
+    [final_vnp_Url_to_redirect] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=1850000000&vnp_Bill_Address=aaaaaaa%0D%0A1ssssss&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190307&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=JX3I05QJ&vnp_TxnRef=ORDER_20250615190205_6298&vnp_Version=2.1.0&vnp_SecureHash=8b924da822df4c627c862ad41535ad9f33ad14e8daa62209882c011e8398c2037febc59a3e0c150ae1ef19665ad4416cd698d8627dd570b5dbe6d901de1c2b04
+    [vnp_TmnCode_used] => JX3I05QJ
+    [vnp_HashSecret_used_partial] => NOTK7...V4V39
+)
+
+String to Hash: [vnp_Amount=1850000000&vnp_Bill_Address=aaaaaaa%0D%0A1ssssss&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190307&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=JX3I05QJ&vnp_TxnRef=ORDER_20250615190205_6298&vnp_Version=2.1.0]
+Calculated Hash: [8b924da822df4c627c862ad41535ad9f33ad14e8daa62209882c011e8398c2037febc59a3e0c150ae1ef19665ad4416cd698d8627dd570b5dbe6d901de1c2b04]
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:04:43
+Stage: CREATE_PAYMENT - BEFORE HASH
+Data:
+Array
+(
+    [vnp_Version] => 2.1.0
+    [vnp_TmnCode] => X4DCQ1UX
+    [vnp_Amount] => 1850000000
+    [vnp_Command] => pay
+    [vnp_CreateDate] => 20250615190443
+    [vnp_CurrCode] => VND
+    [vnp_IpAddr] => ::1
+    [vnp_Locale] => vn
+    [vnp_OrderInfo] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [vnp_OrderType] => billpayment
+    [vnp_ReturnUrl] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+    [vnp_TxnRef] => ORDER_20250615190205_6298
+    [vnp_Bill_Mobile] => 0945553902
+    [vnp_Bill_Email] => nguyenthinhk52005@gmail.com
+    [vnp_Bill_FirstName] => Nguyễn
+    [vnp_Bill_LastName] => Thịnh
+    [vnp_Bill_Address] => aaaaaaa
+1ssssss
+    [vnp_Bill_City] => TP.HCM
+    [vnp_Bill_Country] => VN
+    [vnp_TmnCode_from_config] => X4DCQ1UX
+    [vnp_HashSecret_from_config_partial] => MPI8C...BYIFH
+    [vnp_Url_from_config] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [vnp_ReturnUrl_from_config] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:04:43
+Stage: CREATE_PAYMENT - AFTER HASH
+Data:
+Array
+(
+    [vnp_Url_base] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [query_params_string] => vnp_Amount=1850000000&vnp_Bill_Address=aaaaaaa%0D%0A1ssssss&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190443&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615190205_6298&vnp_Version=2.1.0
+    [final_vnp_Url_to_redirect] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=1850000000&vnp_Bill_Address=aaaaaaa%0D%0A1ssssss&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190443&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615190205_6298&vnp_Version=2.1.0&vnp_SecureHash=4969c1554267199706b8c52af6d641580bbfc6c8492a1c45b7feb54402bf482477ea11b00e126e99671915106692886c710c6677888c6a8d7a34c68ecf63c380
+    [vnp_TmnCode_used] => X4DCQ1UX
+    [vnp_HashSecret_used_partial] => MPI8C...BYIFH
+)
+
+String to Hash: [vnp_Amount=1850000000&vnp_Bill_Address=aaaaaaa%0D%0A1ssssss&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190443&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615190205_6298&vnp_Version=2.1.0]
+Calculated Hash: [4969c1554267199706b8c52af6d641580bbfc6c8492a1c45b7feb54402bf482477ea11b00e126e99671915106692886c710c6677888c6a8d7a34c68ecf63c380]
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:04:43
+Stage: CREATE_PAYMENT - ORDER CREATION FAILED
+Data:
+Array
+(
+    [error] => SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'ORDER_20250615190205_6298' for key 'orders.order_number'
+    [post_data] => Array
+        (
+            [txt_billing_fullname] => Nguyễn Hoàng Gia Thịnh
+            [txt_billing_email] => nguyenthinhk52005@gmail.com
+            [txt_billing_mobile] => 0945553902
+            [txt_bill_city] => TP.HCM
+            [txt_inv_addr1] => aaaaaaa
+1ssssss
+            [order_notes] => 
+            [order_id] => ORDER_20250615190205_6298
+            [order_type] => billpayment
+            [amount] => 18500000
+            [order_desc] => Thanh toan don hang tu Web Mua Ban Do Cu
+            [bank_code] => 
+            [language] => vn
+            [txtexpire] => 
+            [txt_bill_country] => VN
+            [txt_bill_state] => 
+            [txt_inv_mobile] => 0945553902
+            [txt_inv_email] => nguyenthinhk52005@gmail.com
+            [txt_inv_customer] => Nguyễn Hoàng Gia Thịnh
+            [txt_inv_company] => 
+            [txt_inv_taxcode] => 
+            [cbo_inv_type] => I
+            [redirect] => 1
+            [payment_method] => vnpay
+        )
+
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:05:05
+Stage: CREATE_PAYMENT - BEFORE HASH
+Data:
+Array
+(
+    [vnp_Version] => 2.1.0
+    [vnp_TmnCode] => X4DCQ1UX
+    [vnp_Amount] => 2090000000
+    [vnp_Command] => pay
+    [vnp_CreateDate] => 20250615190505
+    [vnp_CurrCode] => VND
+    [vnp_IpAddr] => ::1
+    [vnp_Locale] => vn
+    [vnp_OrderInfo] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [vnp_OrderType] => billpayment
+    [vnp_ReturnUrl] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+    [vnp_TxnRef] => ORDER_20250615190459_7432
+    [vnp_Bill_Mobile] => 0945553902
+    [vnp_Bill_Email] => nguyenthinhk52005@gmail.com
+    [vnp_Bill_FirstName] => Nguyễn
+    [vnp_Bill_LastName] => Thịnh
+    [vnp_Bill_Address] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [vnp_Bill_City] => TP.HCM
+    [vnp_Bill_Country] => VN
+    [vnp_TmnCode_from_config] => X4DCQ1UX
+    [vnp_HashSecret_from_config_partial] => MPI8C...BYIFH
+    [vnp_Url_from_config] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [vnp_ReturnUrl_from_config] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:05:05
+Stage: CREATE_PAYMENT - AFTER HASH
+Data:
+Array
+(
+    [vnp_Url_base] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [query_params_string] => vnp_Amount=2090000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190505&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615190459_7432&vnp_Version=2.1.0
+    [final_vnp_Url_to_redirect] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=2090000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190505&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615190459_7432&vnp_Version=2.1.0&vnp_SecureHash=4edc9f6057dd93b9050b786669b52e7330c529b2d00c2f2d61cac94e185581dfd394aeddec9a5725dd7aff0cbac000ef2d4d25890fb3d5e56c1524c2e3b6051a
+    [vnp_TmnCode_used] => X4DCQ1UX
+    [vnp_HashSecret_used_partial] => MPI8C...BYIFH
+)
+
+String to Hash: [vnp_Amount=2090000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615190505&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615190459_7432&vnp_Version=2.1.0]
+Calculated Hash: [4edc9f6057dd93b9050b786669b52e7330c529b2d00c2f2d61cac94e185581dfd394aeddec9a5725dd7aff0cbac000ef2d4d25890fb3d5e56c1524c2e3b6051a]
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:12:13
+Stage: CREATE_PAYMENT - BEFORE HASH
+Data:
+Array
+(
+    [vnp_Version] => 2.1.0
+    [vnp_TmnCode] => X4DCQ1UX
+    [vnp_Amount] => 2090000000
+    [vnp_Command] => pay
+    [vnp_CreateDate] => 20250615191213
+    [vnp_CurrCode] => VND
+    [vnp_IpAddr] => ::1
+    [vnp_Locale] => vn
+    [vnp_OrderInfo] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [vnp_OrderType] => billpayment
+    [vnp_ReturnUrl] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+    [vnp_TxnRef] => ORDER_20250615191206_7933
+    [vnp_Bill_Mobile] => 0945553902
+    [vnp_Bill_Email] => nguyenthinhk52005@gmail.com
+    [vnp_Bill_FirstName] => Nguyễn
+    [vnp_Bill_LastName] => Thịnh
+    [vnp_Bill_Address] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [vnp_Bill_City] => TP.HCM
+    [vnp_Bill_Country] => VN
+    [vnp_TmnCode_from_config] => X4DCQ1UX
+    [vnp_HashSecret_from_config_partial] => MPI8C...BYIFH
+    [vnp_Url_from_config] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [vnp_ReturnUrl_from_config] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:12:13
+Stage: CREATE_PAYMENT - AFTER HASH
+Data:
+Array
+(
+    [vnp_Url_base] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [query_params_string] => vnp_Amount=2090000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615191213&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615191206_7933&vnp_Version=2.1.0
+    [final_vnp_Url_to_redirect] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=2090000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615191213&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615191206_7933&vnp_Version=2.1.0&vnp_SecureHash=867590b5490926bed9e9fba083391155835123be9591fc2e3ed20054fbf7e2a9975a988fbf63eaf5c23b6143fe8688c90172149e330b05167771b41a93514a0a
+    [vnp_TmnCode_used] => X4DCQ1UX
+    [vnp_HashSecret_used_partial] => MPI8C...BYIFH
+)
+
+String to Hash: [vnp_Amount=2090000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615191213&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615191206_7933&vnp_Version=2.1.0]
+Calculated Hash: [867590b5490926bed9e9fba083391155835123be9591fc2e3ed20054fbf7e2a9975a988fbf63eaf5c23b6143fe8688c90172149e330b05167771b41a93514a0a]
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:17:12
+Stage: CREATE_PAYMENT - BEFORE HASH
+Data:
+Array
+(
+    [vnp_Version] => 2.1.0
+    [vnp_TmnCode] => X4DCQ1UX
+    [vnp_Amount] => 3940000000
+    [vnp_Command] => pay
+    [vnp_CreateDate] => 20250615191712
+    [vnp_CurrCode] => VND
+    [vnp_IpAddr] => ::1
+    [vnp_Locale] => vn
+    [vnp_OrderInfo] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [vnp_OrderType] => billpayment
+    [vnp_ReturnUrl] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+    [vnp_TxnRef] => ORDER_20250615191706_3728
+    [vnp_Bill_Mobile] => 0945553902
+    [vnp_Bill_Email] => nguyenthinhk52005@gmail.com
+    [vnp_Bill_FirstName] => Nguyễn
+    [vnp_Bill_LastName] => Thịnh
+    [vnp_Bill_Address] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [vnp_Bill_City] => TP.HCM
+    [vnp_Bill_Country] => VN
+    [vnp_TmnCode_from_config] => X4DCQ1UX
+    [vnp_HashSecret_from_config_partial] => MPI8C...BYIFH
+    [vnp_Url_from_config] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [vnp_ReturnUrl_from_config] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:17:12
+Stage: CREATE_PAYMENT - AFTER HASH
+Data:
+Array
+(
+    [vnp_Url_base] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [query_params_string] => vnp_Amount=3940000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615191712&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615191706_3728&vnp_Version=2.1.0
+    [final_vnp_Url_to_redirect] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=3940000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615191712&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615191706_3728&vnp_Version=2.1.0&vnp_SecureHash=dfbda449e1f341bdcd13ad54b2dacf6da608515d23a0516d07288810dc1512fb77f5c421ca8591dc2458dd4d482b156f6b392d91aba2a6b42ee16c007d8cd8cd
+    [vnp_TmnCode_used] => X4DCQ1UX
+    [vnp_HashSecret_used_partial] => MPI8C...BYIFH
+)
+
+String to Hash: [vnp_Amount=3940000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615191712&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615191706_3728&vnp_Version=2.1.0]
+Calculated Hash: [dfbda449e1f341bdcd13ad54b2dacf6da608515d23a0516d07288810dc1512fb77f5c421ca8591dc2458dd4d482b156f6b392d91aba2a6b42ee16c007d8cd8cd]
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:22:31
+Stage: CREATE_PAYMENT - BEFORE HASH
+Data:
+Array
+(
+    [vnp_Version] => 2.1.0
+    [vnp_TmnCode] => X4DCQ1UX
+    [vnp_Amount] => 3940000000
+    [vnp_Command] => pay
+    [vnp_CreateDate] => 20250615192231
+    [vnp_CurrCode] => VND
+    [vnp_IpAddr] => ::1
+    [vnp_Locale] => vn
+    [vnp_OrderInfo] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [vnp_OrderType] => billpayment
+    [vnp_ReturnUrl] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+    [vnp_TxnRef] => ORDER_20250615192223_6786
+    [vnp_Bill_Mobile] => 0945553902
+    [vnp_Bill_Email] => nguyenthinhk52005@gmail.com
+    [vnp_Bill_FirstName] => Nguyễn
+    [vnp_Bill_LastName] => Thịnh
+    [vnp_Bill_Address] => a
+a
+    [vnp_Bill_City] => TP.HCM
+    [vnp_Bill_Country] => VN
+    [vnp_TmnCode_from_config] => X4DCQ1UX
+    [vnp_HashSecret_from_config_partial] => MPI8C...BYIFH
+    [vnp_Url_from_config] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [vnp_ReturnUrl_from_config] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-15 19:22:31
+Stage: CREATE_PAYMENT - AFTER HASH
+Data:
+Array
+(
+    [vnp_Url_base] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [query_params_string] => vnp_Amount=3940000000&vnp_Bill_Address=a%0D%0Aa&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615192231&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615192223_6786&vnp_Version=2.1.0
+    [final_vnp_Url_to_redirect] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=3940000000&vnp_Bill_Address=a%0D%0Aa&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615192231&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615192223_6786&vnp_Version=2.1.0&vnp_SecureHash=bc17852302f388488a069d74bdfa121625f87888c42a6c00cddcf7b1bdbc955614dd2a25e9023c61c885588d4eb3fcaba98279f4b9de2218aea990e91513f63d
+    [vnp_TmnCode_used] => X4DCQ1UX
+    [vnp_HashSecret_used_partial] => MPI8C...BYIFH
+)
+
+String to Hash: [vnp_Amount=3940000000&vnp_Bill_Address=a%0D%0Aa&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250615192231&vnp_CurrCode=VND&vnp_IpAddr=%3A%3A1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250615192223_6786&vnp_Version=2.1.0]
+Calculated Hash: [bc17852302f388488a069d74bdfa121625f87888c42a6c00cddcf7b1bdbc955614dd2a25e9023c61c885588d4eb3fcaba98279f4b9de2218aea990e91513f63d]
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-16 16:02:14
+Stage: CREATE_PAYMENT - BEFORE HASH
+Data:
+Array
+(
+    [vnp_Version] => 2.1.0
+    [vnp_TmnCode] => X4DCQ1UX
+    [vnp_Amount] => 3940000000
+    [vnp_Command] => pay
+    [vnp_CreateDate] => 20250616160214
+    [vnp_CurrCode] => VND
+    [vnp_IpAddr] => 192.168.253.1
+    [vnp_Locale] => vn
+    [vnp_OrderInfo] => Thanh toan don hang tu Web Mua Ban Do Cu
+    [vnp_OrderType] => billpayment
+    [vnp_ReturnUrl] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+    [vnp_TxnRef] => ORDER_20250616160205_7080
+    [vnp_Bill_Mobile] => 0945553902
+    [vnp_Bill_Email] => nguyenthinhk52005@gmail.com
+    [vnp_Bill_FirstName] => Nguyễn
+    [vnp_Bill_LastName] => Thịnh
+    [vnp_Bill_Address] => 81A, Đường Huỳnh Thị Hai, Phường Tân Chánh Hiệp, Quận 12
+    [vnp_Bill_City] => TP.HCM
+    [vnp_Bill_Country] => VN
+    [vnp_TmnCode_from_config] => X4DCQ1UX
+    [vnp_HashSecret_from_config_partial] => MPI8C...BYIFH
+    [vnp_Url_from_config] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [vnp_ReturnUrl_from_config] => http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php
+)
+
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Timestamp: 2025-06-16 16:02:14
+Stage: CREATE_PAYMENT - AFTER HASH
+Data:
+Array
+(
+    [vnp_Url_base] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    [query_params_string] => vnp_Amount=3940000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250616160214&vnp_CurrCode=VND&vnp_IpAddr=192.168.253.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250616160205_7080&vnp_Version=2.1.0
+    [final_vnp_Url_to_redirect] => https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=3940000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250616160214&vnp_CurrCode=VND&vnp_IpAddr=192.168.253.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250616160205_7080&vnp_Version=2.1.0&vnp_SecureHash=033ac365c4b29b94e819a6606219f23bffcfca29a23078ffc8cfc6d44c4048c5cf040b708cf30cfd2669a1f2984877c7c7dc7023e98f418601c8db4186b42806
+    [vnp_TmnCode_used] => X4DCQ1UX
+    [vnp_HashSecret_used_partial] => MPI8C...BYIFH
+)
+
+String to Hash: [vnp_Amount=3940000000&vnp_Bill_Address=81A%2C+%C4%90%C6%B0%E1%BB%9Dng+Hu%E1%BB%B3nh+Th%E1%BB%8B+Hai%2C+Ph%C6%B0%E1%BB%9Dng+T%C3%A2n+Ch%C3%A1nh+Hi%E1%BB%87p%2C+Qu%E1%BA%ADn+12&vnp_Bill_City=TP.HCM&vnp_Bill_Country=VN&vnp_Bill_Email=nguyenthinhk52005%40gmail.com&vnp_Bill_FirstName=Nguy%E1%BB%85n&vnp_Bill_LastName=Th%E1%BB%8Bnh&vnp_Bill_Mobile=0945553902&vnp_Command=pay&vnp_CreateDate=20250616160214&vnp_CurrCode=VND&vnp_IpAddr=192.168.253.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+tu+Web+Mua+Ban+Do+Cu&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%2FWebMuaBanDoCu%2Fmodules%2Fpayment%2Fvnpay%2Freturn.php&vnp_TmnCode=X4DCQ1UX&vnp_TxnRef=ORDER_20250616160205_7080&vnp_Version=2.1.0]
+Calculated Hash: [033ac365c4b29b94e819a6606219f23bffcfca29a23078ffc8cfc6d44c4048c5cf040b708cf30cfd2669a1f2984877c7c7dc7023e98f418601c8db4186b42806]
+---------------------------------------------------------------------
+

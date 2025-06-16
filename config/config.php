@@ -17,10 +17,12 @@ try {
     die("Kết nối database thất bại: " . $e->getMessage());
 }
   
-$vnp_TmnCode = "X4DCQ1UX"; //Website ID in VNPAY System
-$vnp_HashSecret = "MPI8C42IYO31NDYYLS2HN2KYD0XBYIFH"; //Secret key
+// VNPAY Configuration - Sử dụng thông tin mới nhất và chính xác
+$vnp_TmnCode = "X4DCQ1UX"; // Website ID in VNPAY System (Mã website) - Reverted to original JX3I05QJ
+$vnp_HashSecret = "MPI8C42IYO31NDYYLS2HN2KYD0XBYIFH"; // Secret key - MÃ MỚI
 $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-$vnp_Returnurl = "http://localhost/Web_MuaBanDoCu/modules/payment/vnpay/return.php";
+// Đảm bảo URL này khớp với vị trí file return.php của bạn và đã đăng ký trên VNPAY merchant portal
+$vnp_Returnurl = "http://localhost/WebMuaBanDoCu/modules/payment/vnpay/return.php"; 
 $vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
 //Config input format
 //Expire
