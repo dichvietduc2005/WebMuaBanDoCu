@@ -907,8 +907,10 @@ function getStatusText($status) {
                     </a>
                     <a href="#" class="nav-link"><i class="fas fa-store"></i> Đăng bán</a>
                     <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="My_products.php" class="nav-link"><i class="fas fa-box"></i> Sản phẩm của tôi</a>
                         <a href="user/order_history.php" class="nav-link"><i class="fas fa-history"></i> Lịch sử</a>
                     <?php endif; ?>
+
                 </nav>
                 
                 <form class="search-form" method="GET" action="search.php">

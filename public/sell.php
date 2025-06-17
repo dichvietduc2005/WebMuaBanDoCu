@@ -94,14 +94,8 @@ if (!isset($_SESSION['user_id'])) {
             <h1><i class="fas fa-store"></i> Đăng bán sản phẩm</h1>
             <p>Đăng bán đồ cũ của bạn một cách dễ dàng</p>
         </div>
-        
-        <div class="alert">
-            <i class="fas fa-info-circle"></i> 
-            <strong>Chức năng đang phát triển!</strong> 
-            Trang đăng bán sản phẩm sẽ sớm được hoàn thiện với đầy đủ tính năng upload ảnh, quản lý sản phẩm và nhiều tính năng khác.
-        </div>
-        
-        <form method="POST" action="#" style="opacity: 0.6; pointer-events: none;">
+               
+        <form method="POST" action="../modules/sell/handler.php" >
             <div class="form-group">
                 <label for="title">Tiêu đề sản phẩm</label>
                 <input type="text" id="title" name="title" placeholder="Nhập tiêu đề sản phẩm..." required>
@@ -109,7 +103,7 @@ if (!isset($_SESSION['user_id'])) {
             
             <div class="form-group">
                 <label for="category">Danh mục</label>
-                <select id="category" name="category" required>
+                <select id="category" name="category_id" required>
                     <option value="">Chọn danh mục</option>
                     <option value="1">Điện thoại & Máy tính bảng</option>
                     <option value="2">Laptop & Máy tính</option>
@@ -124,13 +118,18 @@ if (!isset($_SESSION['user_id'])) {
             
             <div class="form-group">
                 <label for="condition">Tình trạng</label>
-                <select id="condition" name="condition" required>
+                <select id="condition" name="condition_status" required>
                     <option value="">Chọn tình trạng</option>
                     <option value="new">Mới</option>
                     <option value="like_new">Như mới</option>
                     <option value="good">Tốt</option>
                     <option value="fair">Khá tốt</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Địa Chỉ</label>
+                <input type="text" id="location" name="location">
             </div>
             
             <div class="form-group">

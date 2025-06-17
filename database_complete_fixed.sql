@@ -248,6 +248,10 @@ ALTER TABLE cart_items AUTO_INCREMENT = 6;
 ALTER TABLE orders AUTO_INCREMENT = 9;
 ALTER TABLE order_items AUTO_INCREMENT = 11;
 
+
+-- Update status
+ALTER TABLE products MODIFY status ENUM('pending', 'active', 'reject', 'sold') DEFAULT 'pending';
+
 -- Bật lại foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;
 
