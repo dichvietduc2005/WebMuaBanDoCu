@@ -39,13 +39,14 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
     <link href="../../assets/css/order.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/index.css">
 </head>
 <body>
     <div class="order-container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../../public/index.php"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="../../public/TrangChu.php"><i class="fas fa-home"></i> Trang chủ</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Lịch sử đơn hàng</li>
             </ol>
         </nav>
@@ -100,7 +101,7 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
                     </div>
                     <h3>Chưa có đơn hàng nào</h3>
                     <p>Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm!</p>
-                    <a href="../../public/index.php" class="btn btn-primary">
+                    <a href="../../public/TrangChu.php" class="btn btn-primary">
                         <i class="fas fa-shopping-bag"></i> Bắt đầu mua sắm
                     </a>
                 </div>
@@ -207,53 +208,7 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        function cancelOrder(orderId) {
-            if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) {
-                // Gửi AJAX request để hủy đơn hàng
-                fetch('../../modules/order/cancel_order.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        reason: 'Khách hàng hủy đơn'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Đơn hàng đã được hủy thành công');
-                        location.reload();
-                    } else {
-                        alert('Có lỗi xảy ra: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    alert('Có lỗi xảy ra khi hủy đơn hàng');
-                    console.error('Error:', error);
-                });
-            }
-        }
-
-        // Animation for cards when loading
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.order-card');
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    card.style.transition = 'all 0.5s ease';
-                    
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 50);
-                }, index * 100);
-            });
-        });
-    </script>
+    <!-- Custom JS for order history -->
+    <script src="../../assets/js/order_history.js"></script>
 </body>
 </html>

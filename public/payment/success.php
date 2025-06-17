@@ -143,12 +143,12 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
                 <?php endif; ?>
 
                 <div class="footer-links">
-                    <a href="/Web_MuaBanDoCu/public/">Tiếp tục mua sắm</a>
+                    <a href="/WebMuaBanDoCu/public/TrangChu.php">Tiếp tục mua sắm</a>
                     <?php if ($payment_successful && $app_order_id !== 'N/A'): ?>
                         <!-- You could link to an order details page if you have one -->
                         <!-- <a href="/Web_MuaBanDoCu/public/order/details.php?order_id=<?php echo urlencode($app_order_id); ?>">Xem chi tiết đơn hàng</a> -->
                     <?php else: ?>
-                         <a href="/Web_MuaBanDoCu/public/cart/">Xem lại giỏ hàng</a>
+                         <a href="/WebMuaBanDoCu/public/cart/">Xem lại giỏ hàng</a>
                     <?php endif; ?>
                 </div>
             </div>

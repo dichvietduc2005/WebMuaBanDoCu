@@ -200,9 +200,9 @@ try {
     // Insert các sản phẩm vào bảng order_items
     // Giả sử bảng order_items có các cột: order_id, product_id, product_title, product_price, quantity, subtotal, created_at
     foreach ($cartItems as $item) {
-        // Đảm bảo $item['product_name'] và $item['price'] tồn tại từ getCartItems()
+        // Đảm bảo $item['product_name'] và $item['added_price'] (hoặc current_price) tồn tại từ getCartItems()
         $product_title = $item['product_name'] ?? 'N/A'; // Hoặc $item['title']
-        $product_price = $item['price'] ?? 0;
+        $product_price = $item['added_price'] ?? 0; // SỬ DỤNG added_price ĐỂ LẤY GIÁ LÚC THÊM VÀO GIỎ
         $quantity = $item['quantity'] ?? 0;
         $subtotal = $product_price * $quantity;
 
@@ -221,6 +221,13 @@ try {
         ]);
         if ($stmt_item->rowCount() == 0) {
             throw new Exception("Không thể lưu chi tiết sản phẩm (ID: {$item['product_id']}) cho đơn hàng.");
+        }
+
+        // Cập nhật tồn kho sản phẩm
+        $update_stock_stmt = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
+        $update_stock_stmt->execute([$quantity, $item['product_id'], $quantity]);
+        if ($update_stock_stmt->rowCount() == 0) {
+            throw new Exception("Không thể cập nhật tồn kho cho sản phẩm (ID: {$item['product_id']}). Có thể số lượng tồn kho không đủ.");
         }
     }
 
@@ -292,5 +299,4 @@ if ($order_created_successfully) {
     }
 }
 
-ob_end_flush(); // Send the output buffer at the very end
 ?>

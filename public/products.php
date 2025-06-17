@@ -1,51 +1,60 @@
 <?php
 require_once '../config/config.php';
+require_once __DIR__ . '/../modules/user/search_functions.php';
 
 // Lấy danh sách sản phẩm
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $per_page = 12;
 $offset = ($page - 1) * $per_page;
 
+// Lấy các tham số tìm kiếm và lọc
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : $search; // Hỗ trợ cả 2 tham số
 $category = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+$condition = isset($_GET['condition']) ? trim($_GET['condition']) : '';
+$min_price = isset($_GET['min_price']) ? (int)$_GET['min_price'] : 0;
+$max_price = isset($_GET['max_price']) ? (int)$_GET['max_price'] : 0;
+$sort_by = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
+$in_stock = isset($_GET['in_stock']) ? (bool)$_GET['in_stock'] : true;
 
-$where_conditions = ["p.status = 'active'"];
-$params = [];
+if ($keyword || $category || $condition || $min_price || $max_price) {
+    // Sử dụng hàm searchProducts nâng cao
+    $products = searchProducts($pdo, $keyword, $category, $condition, $min_price, $max_price, $sort_by, $in_stock, $per_page, $offset);
+    $total_products = countSearchResults($pdo, $keyword, $category, $condition, $min_price, $max_price, $in_stock);
+    $total_pages = ceil($total_products / $per_page);
+} else {
+    $where_conditions = ["p.status = 'active'"];
+    $params = [];
 
-if ($search) {
-    $where_conditions[] = "(p.title LIKE ? OR p.description LIKE ?)";
-    $params[] = '%' . $search . '%';
-    $params[] = '%' . $search . '%';
+    if ($category) {
+        $where_conditions[] = "p.category_id = ?";
+        $params[] = $category;
+    }
+
+    $where_sql = implode(' AND ', $where_conditions);
+
+    // Count total products
+    $count_sql = "SELECT COUNT(*) FROM products p WHERE $where_sql";
+    $count_stmt = $pdo->prepare($count_sql);
+    $count_stmt->execute($params);
+    $total_products = $count_stmt->fetchColumn();
+    $total_pages = ceil($total_products / $per_page);
+
+    // Get products
+    $sql = "
+        SELECT p.*, pi.image_path, c.name as category_name 
+        FROM products p 
+        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE $where_sql
+        ORDER BY p.created_at DESC 
+        LIMIT $per_page OFFSET $offset
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
-if ($category) {
-    $where_conditions[] = "p.category_id = ?";
-    $params[] = $category;
-}
-
-$where_sql = implode(' AND ', $where_conditions);
-
-// Count total products
-$count_sql = "SELECT COUNT(*) FROM products p WHERE $where_sql";
-$count_stmt = $pdo->prepare($count_sql);
-$count_stmt->execute($params);
-$total_products = $count_stmt->fetchColumn();
-$total_pages = ceil($total_products / $per_page);
-
-// Get products
-$sql = "
-    SELECT p.*, pi.image_path, c.name as category_name 
-    FROM products p 
-    LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-    LEFT JOIN categories c ON p.category_id = c.id
-    WHERE $where_sql
-    ORDER BY p.created_at DESC 
-    LIMIT $per_page OFFSET $offset
-";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Helper functions
 function formatPrice($price) {

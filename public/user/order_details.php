@@ -53,7 +53,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../../public/index.php"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="../../public/TrangChu.php"><i class="fas fa-home"></i> Trang chủ</a></li>
                 <li class="breadcrumb-item"><a href="order_history.php">Lịch sử đơn hàng</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng</li>
             </ol>
@@ -227,105 +227,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        function cancelOrder(orderId) {
-            const reason = prompt('Vui lòng nhập lý do hủy đơn hàng:');
-            if (reason !== null && reason.trim() !== '') {
-                // Gửi AJAX request để hủy đơn hàng
-                fetch('../../modules/order/cancel_order.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        reason: reason.trim()
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Đơn hàng đã được hủy thành công');
-                        location.reload();
-                    } else {
-                        alert('Có lỗi xảy ra: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    alert('Có lỗi xảy ra khi hủy đơn hàng');
-                    console.error('Error:', error);
-                });
-            }
-        }
-
-        function reorderItems() {
-            if (confirm('Bạn có muốn thêm tất cả sản phẩm trong đơn hàng này vào giỏ hàng không?')) {
-                // Thực hiện logic thêm lại sản phẩm vào giỏ hàng
-                alert('Chức năng đang được phát triển');
-            }
-        }
-
-        function printOrder() {
-            window.print();
-        }
-
-        // Animation when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const card = document.querySelector('.order-details-card');
-            if (card) {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
-                
-                setTimeout(() => {
-                    card.style.transition = 'all 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, 100);
-            }
-        });
-
-        // Print styles
-        window.addEventListener('beforeprint', function() {
-            document.body.classList.add('printing');
-        });
-
-        window.addEventListener('afterprint', function() {
-            document.body.classList.remove('printing');
-        });
-    </script>
-
-    <style>
-        /* Print styles */
-        @media print {
-            .breadcrumb,
-            .detail-section:last-child,
-            .btn {
-                display: none !important;
-            }
-            
-            .order-details-container {
-                max-width: none;
-                margin: 0;
-                padding: 0;
-            }
-            
-            .order-details-card {
-                box-shadow: none;
-                border: none;
-            }
-            
-            .order-details-header {
-                background: #f8f9fa !important;
-                color: #333 !important;
-                -webkit-print-color-adjust: exact;
-            }
-            
-            .badge {
-                border: 1px solid #333 !important;
-                -webkit-print-color-adjust: exact;
-            }
-        }
-    </style>
+    <!-- Custom JS for order details -->
+    <script src="../../assets/js/order_details.js"></script>
 </body>
 </html>

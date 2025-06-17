@@ -49,7 +49,7 @@ if ($user_id) {
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li><a href="../index.php">Trang chủ</a></li>
+                    <li><a href="../TrangChu.php">Trang chủ</a></li>
                     <li><a href="../cart/index.php">Giỏ hàng (<?php echo $cartItemCount; ?>)</a></li>
                     <li><a href="../user/order_history.php">Lịch sử GD</a></li>
                 </ul>

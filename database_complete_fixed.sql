@@ -252,6 +252,17 @@ ALTER TABLE order_items AUTO_INCREMENT = 11;
 -- Update status
 ALTER TABLE products MODIFY status ENUM('pending', 'active', 'reject', 'sold') DEFAULT 'pending';
 
+
+-- Ẩn sản phẩm nổi bật nếu hết hàng
+SELECT p.*, pi.image_path, c.name as category_name 
+FROM products p 
+LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+LEFT JOIN categories c ON p.category_id = c.id
+WHERE p.status = 'active' AND p.featured = 1 AND p.stock_quantity > 0
+ORDER BY p.created_at DESC 
+LIMIT 8
+
+
 -- Bật lại foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;
 

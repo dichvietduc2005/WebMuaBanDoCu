@@ -41,7 +41,7 @@ error_log("Cart Item Count: " . $cartItemCount);
         <div class="header clearfix">
              <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li><a href="../index.php">Trang chủ</a></li>
+                    <li><a href="../TrangChu.php">Trang chủ</a></li>
                     <li class="active"><a href="index.php">Giỏ hàng (<span id="header-cart-item-count"><?php echo $cartItemCount; ?></span>)</a></li>
                     <?php if ($is_guest): ?>
                         <li><a href="../user/login.php">Đăng nhập</a></li>
@@ -83,7 +83,7 @@ error_log("Cart Item Count: " . $cartItemCount);
 
         <?php if (empty($cartItems)): ?>
             <div class="alert alert-info" style="margin-top: 20px;">
-                Giỏ hàng của bạn hiện đang trống. <a href="../index.php" class="alert-link">Tiếp tục mua sắm</a>.
+                Giỏ hàng của bạn hiện đang trống. <a href="../TrangChu.php" class="alert-link">Tiếp tục mua sắm</a>.
             </div>
         <?php else: ?>
             <div class="row">
@@ -138,7 +138,7 @@ error_log("Cart Item Count: " . $cartItemCount);
                             
                             <div class="row" style="margin-top: 20px;">
                                 <div class="col-md-6">
-                                    <a href="../index.php" class="btn btn-default">
+                                    <a href="../TrangChu.php" class="btn btn-default">
                                         <span class="glyphicon glyphicon-arrow-left"></span> Tiếp tục mua sắm
                                     </a>
                                 </div>
