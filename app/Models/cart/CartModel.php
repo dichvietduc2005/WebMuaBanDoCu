@@ -1,20 +1,12 @@
 <?php
-// Handler for cart AJAX requests
+// filepath: c:\\wamp64\\www\\Web_MuaBanDoCu\\modules\\cart\\handler.php
 
-require_once(__DIR__ . '/../../config/config.php'); // For $pdo, session_start(), etc.
-require_once(__DIR__ . '/../../app/Controllers/cart/CartController.php'); // For database-driven cart functions
-require_once(__DIR__ . '/../../app/helpers.php'); // For helper functions
-
-// Ensure session is started
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Set content type for JSON response
-header('Content-Type: application/json');
+require_once(__DIR__ . '/../../../config/config.php'); // For $pdo, session_start(), etc.
+require_once(__DIR__ . '/../../Controllers/cart/CartController.php'); // For database-driven cart functions with guest support
+require_once(__DIR__ . '/../../helpers.php'); // For helper functions
 
 // Lấy user_id hiện tại (có thể null cho guest users)
-$user_id = $_SESSION['user_id'] ?? null; 
+$user_id = get_current_user_id(); 
 $is_guest = !$user_id;
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
@@ -31,8 +23,7 @@ if (!isset($pdo)) {
     switch ($action) {
         case 'add':
             if ($productId > 0 && $quantity > 0) {
-                try {
-                    $result = addToCart($pdo, $productId, $quantity, $user_id);
+                try {                    $result = addToCart($pdo, $productId, $quantity, $user_id);
                     if ($result) {
                         $item_count = getCartItemCount($pdo, $user_id);
                         $response = [
@@ -48,57 +39,53 @@ if (!isset($pdo)) {
                     $response = ['success' => false, 'message' => $e->getMessage()];
                 }
             } else {
-                $response = ['success' => false, 'message' => 'Thông tin sản phẩm hoặc số lượng không hợp lệ.'];
+                 $response = ['success' => false, 'message' => 'Thông tin sản phẩm hoặc số lượng không hợp lệ.'];
             }
             break;
             
         case 'update':
             if ($productId > 0) {
-                try {
-                    $result = updateCartItemQuantity($pdo, $productId, $quantity, $user_id);
+                try {                    $result = updateCartItemQuantity($pdo, $productId, $quantity, $user_id);
                     if ($result) {
                         $item_count = getCartItemCount($pdo, $user_id);
                         $total = getCartTotal($pdo, $user_id);
                         $response = [
                             'success' => true, 
                             'message' => 'Giỏ hàng đã được cập nhật.', 
-                            'cart_count' => $item_count,
-                            'total' => $total,
-                            'is_guest' => $is_guest
+                            'cart_count' => $item_count, 
+                            'total' => $total
                         ];
                     } else {
-                        $response = ['success' => false, 'message' => 'Không thể cập nhật giỏ hàng. Vui lòng thử lại.'];
+                        $response = ['success' => false, 'message' => 'Không thể cập nhật giỏ hàng.'];
                     }
                 } catch (Exception $e) {
                     $response = ['success' => false, 'message' => $e->getMessage()];
                 }
             } else {
-                $response = ['success' => false, 'message' => 'Thông tin sản phẩm không hợp lệ.'];
+                $response = ['success' => false, 'message' => 'ID sản phẩm không hợp lệ.'];
             }
             break;
             
         case 'remove':
             if ($productId > 0) {
                 try {
-                    $result = removeCartItem($pdo, $productId, $user_id);
-                    if ($result) {
+                    $result = removeCartItem($pdo, $productId, $user_id);                    if ($result) {
                         $item_count = getCartItemCount($pdo, $user_id);
                         $total = getCartTotal($pdo, $user_id);
                         $response = [
                             'success' => true, 
                             'message' => 'Sản phẩm đã được xóa khỏi giỏ.', 
-                            'cart_count' => $item_count,
-                            'total' => $total,
-                            'is_guest' => $is_guest
+                            'cart_count' => $item_count, 
+                            'total' => $total
                         ];
                     } else {
-                        $response = ['success' => false, 'message' => 'Không thể xóa sản phẩm. Vui lòng thử lại.'];
+                        $response = ['success' => false, 'message' => 'Không thể xóa sản phẩm.'];
                     }
                 } catch (Exception $e) {
                     $response = ['success' => false, 'message' => $e->getMessage()];
                 }
             } else {
-                $response = ['success' => false, 'message' => 'Thông tin sản phẩm không hợp lệ.'];
+                $response = ['success' => false, 'message' => 'ID sản phẩm không hợp lệ.'];
             }
             break;
             
@@ -106,45 +93,32 @@ if (!isset($pdo)) {
             try {
                 $result = clearCart($pdo, $user_id);
                 if ($result) {
-                    $response = [
-                        'success' => true, 
-                        'message' => 'Giỏ hàng đã được xóa.', 
-                        'cart_count' => 0,
-                        'total' => 0,
-                        'is_guest' => $is_guest
-                    ];
+                    $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.', 'cart_count' => 0, 'total' => 0];
                 } else {
-                    $response = ['success' => false, 'message' => 'Không thể xóa giỏ hàng. Vui lòng thử lại.'];
+                    $response = ['success' => false, 'message' => 'Không thể xóa sạch giỏ hàng.'];
                 }
             } catch (Exception $e) {
                 $response = ['success' => false, 'message' => $e->getMessage()];
             }
             break;
             
-        case 'get':
-            try {
-                $cartItems = getCartItems($pdo, $user_id);
-                $item_count = getCartItemCount($pdo, $user_id);
-                $total = getCartTotal($pdo, $user_id);
-                $response = [
-                    'success' => true, 
-                    'items' => $cartItems,
-                    'cart_count' => $item_count,
-                    'total' => $total,
-                    'is_guest' => $is_guest
-                ];
-            } catch (Exception $e) {
-                $response = ['success' => false, 'message' => $e->getMessage()];
-            }
-            break;
-            
         default:
-            $response = ['success' => false, 'message' => 'Hành động không hợp lệ.'];
+            $response = ['success' => false, 'message' => 'Hành động không xác định.'];
             break;
     }
 }
 
-// Return JSON response
-echo json_encode($response);
+// Trả về JSON nếu là AJAX request, ngược lại redirect
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    header('Content-Type: application/json');
+    echo json_encode($response);
+} else {
+    // Mặc định redirect về trang giỏ hàng nếu không phải AJAX
+    if ($action === 'add' && isset($_SERVER['HTTP_REFERER'])) {
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
+    } else {
+        header('Location: ../../public/cart/index.php');
+    }
+}
 exit;
 ?>
