@@ -37,191 +37,485 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?> - Web Mua Bán Đồ Cũ</title>
-      <!-- Bootstrap CSS -->
-    <link href="../../../public/assets/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom Order CSS -->
-    <link href="../../../public/assets/css/order.css" rel="stylesheet">
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .order-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .order-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .order-meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .status-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #666;
+        }
+        
+        .status-icon.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-icon.shipping {
+            background: #cce7ff;
+            color: #0066cc;
+        }
+        
+        .status-content {
+            flex: 1;
+        }
+        
+        .status-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .tracking-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .tracking-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .items-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .items-table th {
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .items-table td {
+            padding: 15px 8px;
+            border-bottom: 1px solid #f8f9fa;
+            vertical-align: top;
+        }
+        
+        .product-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        
+        .product-details {
+            flex: 1;
+        }
+        
+        .product-name {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        
+        .product-sku {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .price {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .quantity {
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .summary-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 16px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .address-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .address-block h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        
+        .address-text {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .actions-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .breadcrumb {
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .address-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .product-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .items-table {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="order-details-container">
-        <!-- Breadcrumb -->        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../../../public/TrangChu.php"><i class="fas fa-home"></i> Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="order_history.php">Lịch sử đơn hàng</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng</li>
-            </ol>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="../../../public/TrangChu.php">Trang chủ</a> / 
+            <a href="order_history.php">Lịch sử đơn hàng</a> / 
+            Chi tiết đơn hàng
         </nav>
 
-        <!-- Order Details Card -->
-        <div class="order-details-card fade-in">
-            <!-- Header -->
-            <div class="order-details-header">
-                <h1><i class="fas fa-receipt"></i> Đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?></h1>
-                <div class="d-flex justify-content-center gap-3 mt-3">
-                    <span class="badge <?php echo $status['class']; ?> fs-6">
-                        <?php echo $status['text']; ?>
-                    </span>
-                    <span class="badge <?php echo $payment_status['class']; ?> fs-6">
-                        <?php echo $payment_status['text']; ?>
-                    </span>
-                </div>
+        <!-- Order Header -->
+        <div class="order-header">
+            <h1 class="order-title">Order Details</h1>
+            <div class="order-meta">
+                Order #<?php echo htmlspecialchars($order['order_number']); ?> • Placed on <?php echo date('M j, Y', strtotime($order['created_at'])); ?>
             </div>
+        </div>
 
-            <div class="order-details-body">
-                <!-- Order Information -->
-                <div class="detail-section">
-                    <h2 class="section-title">
-                        <i class="fas fa-info-circle"></i>
-                        Thông tin đơn hàng
-                    </h2>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Mã đơn hàng</span>
-                            <span class="detail-value">#<?php echo htmlspecialchars($order['order_number']); ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Ngày đặt hàng</span>
-                            <span class="detail-value"><?php echo date('d/m/Y H:i:s', strtotime($order['created_at'])); ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Cập nhật lần cuối</span>
-                            <span class="detail-value"><?php echo date('d/m/Y H:i:s', strtotime($order['updated_at'])); ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Trạng thái đơn hàng</span>
-                            <span class="detail-value">
-                                <span class="badge <?php echo $status['class']; ?>">
-                                    <?php echo $status['text']; ?>
-                                </span>
-                            </span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Phương thức thanh toán</span>
-                            <span class="detail-value"><?php echo $payment_method; ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Trạng thái thanh toán</span>
-                            <span class="detail-value">
-                                <span class="badge <?php echo $payment_status['class']; ?>">
-                                    <?php echo $payment_status['text']; ?>
-                                </span>
-                            </span>
-                        </div>
-                    </div>                </div>
-
-                <!-- Notes Section -->
-                <div class="detail-section">
-                    <?php if (!empty($order['notes'])): ?>
-                        <div class="detail-item mb-3">
-                            <span class="detail-label">Ghi chú đơn hàng</span>
-                            <span class="detail-value"><?php echo nl2br(htmlspecialchars($order['notes'])); ?></span>
-                        </div>
-                    <?php endif; ?>
+        <!-- Order Status -->
+        <div class="status-section">
+            <h2 class="section-title">Order Status</h2>
+            <div class="status-item">
+                <div class="status-icon <?php echo strtolower($order['status']) === 'completed' ? 'delivered' : ''; ?>">
+                    <i class="fas fa-truck"></i>
                 </div>
-
-                <!-- Order Items -->
-                <div class="detail-section">
-                    <h2 class="section-title">
-                        <i class="fas fa-box"></i>
-                        Sản phẩm đã đặt (<?php echo count($order['items']); ?> món)
-                    </h2>
-                    
-                    <div class="table-responsive">
-                        <table class="items-table">
-                            <thead>
-                                <tr>
-                                    <th>Sản phẩm</th>
-                                    <th>Đơn giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Thành tiền</th>
-                                </tr>
-                            </thead>                            <tbody>
-                                <?php foreach ($order['items'] as $item): ?>
-                                    <tr>
-                                        <td data-label="Sản phẩm">
-                                            <div class="product-info">
-                                                <?php if (!empty($item['product_image'])): ?>
-                                                    <img src="../../<?php echo htmlspecialchars($item['product_image']); ?>" 
-                                                         alt="<?php echo htmlspecialchars($item['product_title']); ?>" 
-                                                         class="product-image">
-                                                <?php else: ?>
-                                                    <div class="product-placeholder">
-                                                        <i class="fas fa-image"></i>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <div>
-                                                    <h6 class="product-name">
-                                                        <?php echo htmlspecialchars($item['product_title']); ?>
-                                                    </h6>
-                                                    <?php if ($item['product_id'] && !empty($item['current_product_title'])): ?>
-                                                        <small class="text-muted">
-                                                            <a href="../../public/product.php?id=<?php echo $item['product_id']; ?>" target="_blank">
-                                                                Xem sản phẩm hiện tại
-                                                            </a>
-                                                        </small>
-                                                    <?php else: ?>
-                                                        <small class="text-muted">Sản phẩm không còn tồn tại</small>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td data-label="Đơn giá">
-                                            <span class="price"><?php echo number_format($item['product_price']); ?> VND</span>
-                                        </td>
-                                        <td data-label="Số lượng">
-                                            <span class="quantity"><?php echo $item['quantity']; ?></span>
-                                        </td>
-                                        <td data-label="Thành tiền">
-                                            <span class="price"><?php echo number_format($item['subtotal']); ?> VND</span>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Order Total -->
-                    <div class="order-total">
-                        <h4>Tổng cộng: <span class="total-amount"><?php echo number_format($order['total_amount']); ?> VND</span></h4>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="detail-section">
-                    <h2 class="section-title">
-                        <i class="fas fa-cogs"></i>
-                        Thao tác
-                    </h2>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="order_history.php" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Quay lại danh sách
-                        </a>
-                        
-                        <?php if (in_array($order['status'], ['pending', 'confirmed'])): ?>
-                            <button class="btn btn-danger" onclick="cancelOrder(<?php echo $order['id']; ?>)">
-                                <i class="fas fa-times"></i> Hủy đơn hàng
-                            </button>
-                        <?php endif; ?>
-                        
+                <div class="status-content">
+                    <div class="status-title"><?php echo ucfirst($order['status']); ?></div>
+                    <div class="status-desc">
                         <?php if ($order['status'] === 'completed'): ?>
-                            <button class="btn btn-primary" onclick="reorderItems()">
-                                <i class="fas fa-redo"></i> Đặt lại đơn hàng
-                            </button>
+                            Delivered on <?php echo date('M j, Y', strtotime($order['updated_at'])); ?>
+                        <?php else: ?>
+                            Updated on <?php echo date('M j, Y', strtotime($order['updated_at'])); ?>
                         <?php endif; ?>
-                        
-                        <button class="btn btn-outline-secondary" onclick="printOrder()">
-                            <i class="fas fa-print"></i> In đơn hàng
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Tracking Information -->
+        <?php if (!empty($order['tracking_number'])): ?>
+        <div class="tracking-section">
+            <h2 class="section-title">Tracking Information</h2>
+            <div class="tracking-info">
+                <i class="fas fa-shipping-fast"></i>
+                <div>
+                    <strong>Shipping</strong><br>
+                    Tracking number: <?php echo htmlspecialchars($order['tracking_number']); ?>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Items Ordered -->
+        <div class="items-section">
+            <h2 class="section-title">Items Ordered</h2>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($order['items'] as $item): ?>
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                <?php if (!empty($item['product_image'])): ?>
+                                    <img src="../../<?php echo htmlspecialchars($item['product_image']); ?>" 
+                                         alt="<?php echo htmlspecialchars($item['product_title']); ?>" 
+                                         class="product-image">
+                                <?php else: ?>
+                                    <div class="product-image" style="display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+                                        <i class="fas fa-image" style="color: #999;"></i>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="product-details">
+                                    <div class="product-name"><?php echo htmlspecialchars($item['product_title']); ?></div>
+                                    <div class="product-sku">SKU: <?php echo htmlspecialchars($item['product_id']); ?></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="quantity"><?php echo $item['quantity']; ?></td>
+                        <td class="price">$<?php echo number_format($item['product_price'] / 1000, 2); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="summary-section">
+            <h2 class="section-title">Order Summary</h2>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>$<?php echo number_format(($order['total_amount'] - 10000 - 20000) / 1000, 2); ?></span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span>$10.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax</span>
+                <span>$20.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Total</span>
+                <span>$<?php echo number_format($order['total_amount'] / 1000, 2); ?></span>
+            </div>
+        </div>
+
+        <!-- Shipping & Billing Address -->
+        <div class="address-section">
+            <h2 class="section-title">Shipping Address</h2>
+            <div class="address-text">
+                <?php if (!empty($order['shipping_address'])): ?>
+                    <?php echo nl2br(htmlspecialchars($order['shipping_address'])); ?>
+                <?php else: ?>
+                    <?php echo htmlspecialchars($user['username']); ?><br>
+                    Địa chỉ sẽ được cập nhật<br>
+                    Việt Nam
+                <?php endif; ?>
+            </div>
+            
+            <h2 class="section-title" style="margin-top: 30px;">Billing Address</h2>
+            <div class="address-text">
+                <?php if (!empty($order['billing_address'])): ?>
+                    <?php echo nl2br(htmlspecialchars($order['billing_address'])); ?>
+                <?php else: ?>
+                    <?php echo htmlspecialchars($user['username']); ?><br>
+                    Địa chỉ sẽ được cập nhật<br>
+                    Việt Nam
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions-section">
+            <h2 class="section-title">Actions</h2>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <a href="order_history.php" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                
+                <?php if (in_array($order['status'], ['pending', 'confirmed'])): ?>
+                    <button class="btn btn-danger" onclick="cancelOrder(<?php echo $order['id']; ?>)">
+                        <i class="fas fa-times"></i> Hủy đơn hàng
+                    </button>
+                <?php endif; ?>
+                
+                <?php if ($order['status'] === 'completed'): ?>
+                    <button class="btn btn-primary" onclick="reorderItems(<?php echo $order['id']; ?>)">
+                        <i class="fas fa-redo"></i> Đặt lại
+                    </button>
+                <?php endif; ?>
+                
+                <button class="btn btn-outline" onclick="printOrder()">
+                    <i class="fas fa-print"></i> In đơn hàng
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>    <!-- Custom JS for order details -->
     <script src="../../../public/assets/js/order_details.js"></script>
 </body>
 </html>

@@ -119,6 +119,28 @@ if (!function_exists('getConditionText')) {
         .in-stock { background: #d4edda; color: #155724; }
         .out-stock { background: #f8d7da; color: #721c24; }
         .breadcrumb-custom { background: white; padding: 15px 30px; border-radius: 12px; margin-bottom: 20px; }
+
+        /* Customer Reviews Styles */
+        .customer-reviews { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .reviews-header { font-size: 20px; font-weight: 600; margin-bottom: 25px; color: #333; }
+        .review-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
+        .review-item:last-child { border-bottom: none; }
+        .reviewer-info { display: flex; align-items: center; margin-bottom: 12px; }
+        .reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; margin-right: 12px; overflow: hidden; }
+        .reviewer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .reviewer-details { flex: 1; }
+        .reviewer-name { font-weight: 600; color: #333; margin: 0; font-size: 14px; }
+        .review-date { color: #999; font-size: 12px; margin: 0; }
+        .review-rating { display: flex; align-items: center; margin-bottom: 8px; }
+        .star { color: #ffc107; font-size: 14px; margin-right: 2px; }
+        .star.empty { color: #e0e0e0; }
+        .review-text { color: #666; line-height: 1.5; margin-bottom: 12px; font-size: 14px; }
+        .review-actions { display: flex; align-items: center; gap: 15px; }
+        .review-action { display: flex; align-items: center; gap: 5px; color: #999; font-size: 12px; cursor: pointer; transition: color 0.2s; }
+        .review-action:hover { color: #666; }
+        .review-action i { font-size: 12px; }
+        .see-all-reviews { background: none; border: none; color: #007bff; font-size: 14px; padding: 0; margin-top: 15px; cursor: pointer; }
+        .see-all-reviews:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -220,6 +242,46 @@ if (!function_exists('getConditionText')) {
             </div>
         </div>
 
+        <!-- Customer Reviews -->
+        <div class="customer-reviews">
+            <h3 class="reviews-header">Đánh giá của khách hàng</h3>
+            
+            <!-- Review Item Example -->
+            <div class="review-item">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">
+                        <img src="https://via.placeholder.com/40" alt="Reviewer Avatar">
+                    </div>
+                    <div class="reviewer-details">
+                        <div class="reviewer-name">Nguyễn Văn A</div>
+                        <div class="review-date">12/10/2023</div>
+                    </div>
+                </div>
+                <div class="review-rating">
+                    <span class="star">&#9733;</span>
+                    <span class="star">&#9733;</span>
+                    <span class="star">&#9733;</span>
+                    <span class="star">&#9733;</span>
+                    <span class="star empty">&#9733;</span>
+                </div>
+                <div class="review-text">
+                    Sản phẩm rất tốt, tôi rất hài lòng với chất lượng.
+                </div>
+                <div class="review-actions">
+                    <div class="review-action">
+                        <i class="fas fa-reply"></i> Trả lời
+                    </div>
+                    <div class="review-action">
+                        <i class="fas fa-flag"></i> Báo cáo
+                    </div>
+                </div>
+            </div>
+
+            <!-- More reviews... -->
+
+            <button class="see-all-reviews" onclick="showAllReviews()">Xem tất cả đánh giá</button>
+        </div>
+
         <!-- Related Products -->
         <?php if (!empty($related_products)): ?>
         <div class="related-products">
@@ -295,6 +357,12 @@ if (!function_exists('getConditionText')) {
             }).fail(function() {
                 alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
             });
+        }
+
+        function showAllReviews() {
+            // Placeholder function for future implementation
+            alert('Tính năng xem tất cả đánh giá sẽ được triển khai sau');
+            console.log('Show all reviews functionality to be implemented');
         }
     </script>
 </body>

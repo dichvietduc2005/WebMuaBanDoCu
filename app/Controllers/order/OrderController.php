@@ -18,8 +18,7 @@ function getOrdersByUserId(PDO $pdo, $buyer_id, $limit = 50, $offset = 0) {
     // Đảm bảo limit và offset là số nguyên
     $limit = (int)$limit;
     $offset = (int)$offset;
-    
-    $stmt = $pdo->prepare("
+      $stmt = $pdo->prepare("
         SELECT 
             o.id,
             o.order_number,
@@ -27,9 +26,16 @@ function getOrdersByUserId(PDO $pdo, $buyer_id, $limit = 50, $offset = 0) {
             o.status,
             o.payment_method,
             o.payment_status,
+            o.notes,
             o.created_at,
             o.updated_at,
-            COUNT(oi.id) as item_count
+            COUNT(oi.id) as item_count,
+            (SELECT pi.image_path 
+             FROM order_items oi2 
+             LEFT JOIN products p ON oi2.product_id = p.id 
+             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+             WHERE oi2.order_id = o.id 
+             LIMIT 1) as first_product_image
         FROM orders o
         LEFT JOIN order_items oi ON o.id = oi.order_id
         WHERE o.buyer_id = ?
