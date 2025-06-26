@@ -34,24 +34,22 @@ error_log("Cart Item Count: " . $cartItemCount);
     <link rel="stylesheet" href="../../../public/assets/css/cart.css">
     
 </head>
-<body>
-    <div class="container">
-        <div class="header clearfix">
-             <nav>
-                <ul class="nav nav-pills pull-right">
-                    <li><a href="../../../public/TrangChu.php">Trang chủ</a></li>
-                    <li class="active"><a href="index.php">Giỏ hàng (<span id="header-cart-item-count"><?php echo $cartItemCount; ?></span>)</a></li>
+<body>    <div class="container">
+        <!-- Simple navigation bar -->
+        <nav style="background: white; padding: 15px 0; border-bottom: 1px solid #eee; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="../../../public/TrangChu.php" style="text-decoration: none; color: #666; font-size: 14px;">← Tiếp tục mua sắm</a>
+                <div style="display: flex; gap: 20px; align-items: center;">
                     <?php if ($is_guest): ?>
-                        <li><a href="../user/login.php">Đăng nhập</a></li>
-                        <li><a href="../user/register.php">Đăng ký</a></li>
+                        <a href="../user/login.php" style="text-decoration: none; color: #666; font-size: 14px;">Đăng nhập</a>
+                        <a href="../user/register.php" style="text-decoration: none; color: #666; font-size: 14px;">Đăng ký</a>
                     <?php else: ?>
-                        <li><a href="../user/order_history.php">Lịch sử đơn hàng</a></li>
-                        <li><a href="../user/logout.php">Đăng xuất</a></li>
+                        <a href="../user/order_history.php" style="text-decoration: none; color: #666; font-size: 14px;">Lịch sử đơn hàng</a>
+                        <a href="../user/logout.php" style="text-decoration: none; color: #666; font-size: 14px;">Đăng xuất</a>
                     <?php endif; ?>
-                </ul>
-            </nav>
-            <h3 class="text-muted">Giỏ hàng</h3>
-        </div>
+                </div>
+            </div>
+        </nav>
 
         <?php
         // Display checkout error messages if any
@@ -70,122 +68,88 @@ error_log("Cart Item Count: " . $cartItemCount);
                  '</div>';
             unset($_SESSION['error_message']);
         }
-        ?>
+        ?>        <div class="shopping-cart-container">
+            <h1 class="cart-header">Shopping Cart</h1>
 
-        <h2>
-            Giỏ hàng của bạn (<span id="main-cart-item-count"><?php echo $cartItemCount; ?></span> sản phẩm)
-            <?php if ($is_guest): ?>
-                <small class="text-muted">- Khách vãng lai</small>
-            <?php endif; ?>
-        </h2>
-
-        <?php if (empty($cartItems)): ?>
-            <div class="alert alert-info" style="margin-top: 20px;">
-                Giỏ hàng của bạn hiện đang trống. <a href="../TrangChu.php" class="alert-link">Tiếp tục mua sắm</a>.
-            </div>
-        <?php else: ?>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Sản phẩm trong giỏ hàng</div>
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Sản phẩm</th>
-                                            <th>Giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Thành tiền</th>
-                                            <th>Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cart-items">
-                                        <?php foreach ($cartItems as $item): ?>
-                                            <tr data-product-id="<?php echo $item['product_id']; ?>">                                                <td>
-                                                    <?php if (!empty($item['image_path'])): ?>
-                                                        <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>" alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
-                                                    <?php endif; ?>
-                                                    <strong><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></strong>
-                                                </td>
-                                                <td class="product-price"><?php echo number_format($item['current_price'] ?? $item['added_price'] ?? 0, 0, ',', '.'); ?> VNĐ</td>
-                                                <td>
-                                                    <div class="input-group" style="width: 120px;">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-default btn-sm quantity-decrease" data-product-id="<?php echo $item['product_id']; ?>">-</button>
-                                                        </span>                                                        <input type="number" class="form-control text-center quantity-input" 
-                                                               value="<?php echo $item['quantity'] ?? 1; ?>" 
-                                                               min="1" 
-                                                               data-product-id="<?php echo $item['product_id']; ?>">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-default btn-sm quantity-increase" data-product-id="<?php echo $item['product_id']; ?>">+</button>
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td class="subtotal"><?php echo number_format($item['subtotal'] ?? 0, 0, ',', '.'); ?> VNĐ</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-danger btn-sm remove-item" data-product-id="<?php echo $item['product_id']; ?>">
-                                                        <span class="glyphicon glyphicon-trash"></span> Xóa
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="row" style="margin-top: 20px;">
-                                <div class="col-md-6">
-                                    <a href="../TrangChu.php" class="btn btn-default">
-                                        <span class="glyphicon glyphicon-arrow-left"></span> Tiếp tục mua sắm
-                                    </a>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <button type="button" class="btn btn-warning" id="clear-cart">
-                                        <span class="glyphicon glyphicon-remove"></span> Xóa toàn bộ giỏ hàng
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <?php if (empty($cartItems)): ?>
+                <div class="empty-cart">
+                    <h3>Giỏ hàng của bạn hiện đang trống</h3>
+                    <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
+                    <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
                 </div>
-                
-                <div class="col-md-4">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">Tóm tắt đơn hàng</div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-xs-6">Tổng số lượng:</div>
-                                <div class="col-xs-6 text-right"><strong id="total-quantity"><?php echo $cartItemCount; ?></strong></div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-xs-6">Tổng tiền:</div>
-                                <div class="col-xs-6 text-right">
-                                    <h4 class="text-primary">
-                                        <strong id="total-amount"><?php echo number_format($cartTotal ?? 0, 0, ',', '.'); ?> VNĐ</strong>
-                                    </h4>
-                                </div>
-                            </div>
-                            <hr>
-                            
-                            <?php if ($is_guest): ?>
-                                <div class="alert alert-warning">
-                                    <small><strong>Lưu ý:</strong> Bạn đang mua hàng với tư cách khách vãng lai. Đơn hàng sẽ không được lưu trong lịch sử.</small>
+            <?php else: ?>
+                <div class="cart-items-container">
+                    <?php foreach ($cartItems as $item): ?>
+                        <div class="cart-item" data-product-id="<?php echo $item['product_id']; ?>">
+                            <?php if (!empty($item['image_path'])): ?>
+                                <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>" 
+                                     alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>" 
+                                     class="item-image">
+                            <?php else: ?>
+                                <div class="item-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
+                                    <span>No Image</span>
                                 </div>
                             <?php endif; ?>
                             
-                            <a href="../checkout/index.php" class="btn btn-primary btn-lg btn-block">
-                                <span class="glyphicon glyphicon-shopping-cart"></span> Tiến hành thanh toán
-                            </a>
+                            <div class="item-details">
+                                <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
+                                <p class="item-price">$<?php echo number_format(($item['current_price'] ?? $item['added_price'] ?? 0) / 1000, 2); ?></p>
+                            </div>
+                            
+                            <div class="quantity-controls">
+                                <button type="button" class="quantity-btn quantity-decrease" data-product-id="<?php echo $item['product_id']; ?>">−</button>
+                                <input type="number" class="quantity-input" 
+                                       value="<?php echo $item['quantity'] ?? 1; ?>" 
+                                       min="1" 
+                                       data-product-id="<?php echo $item['product_id']; ?>">
+                                <button type="button" class="quantity-btn quantity-increase" data-product-id="<?php echo $item['product_id']; ?>">+</button>
+                            </div>
+                            
+                            <div class="item-total">
+                                $<?php echo number_format(($item['subtotal'] ?? 0) / 1000, 2); ?>
+                            </div>
+                            
+                            <button type="button" class="remove-btn remove-item" data-product-id="<?php echo $item['product_id']; ?>">×</button>
                         </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
-            </div>
-        <?php endif; ?>
-    </div>
 
-    <script>
+                <div class="order-summary">
+                    <h2 class="summary-title">Order Summary</h2>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>Free</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Taxes</span>
+                        <span>Calculated at checkout</span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="total-amount">$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
+                    </div>
+                    
+                    <?php if ($is_guest): ?>
+                        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
+                            <strong>Lưu ý:</strong> Bạn đang mua hàng với tư cách khách vãng lai.
+                        </div>
+                    <?php endif; ?>
+                    
+                    <button type="button" class="checkout-btn" onclick="window.location.href='../checkout/index.php'">
+                        Checkout
+                    </button>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>    <script>
     $(document).ready(function() {
         // Xử lý tăng giảm số lượng
         $('.quantity-increase').click(function() {
@@ -220,16 +184,9 @@ error_log("Cart Item Count: " . $cartItemCount);
             }
         });
         
-        // Xử lý xóa toàn bộ giỏ hàng
-        $('#clear-cart').click(function() {
-            if (confirm('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?')) {
-                clearCart();
-            }
-        });
-        
         function updateQuantity(productId, quantity) {
             $.ajax({
-                url: '../../modules/cart/handler.php', // Path is correct
+                url: '../../modules/cart/handler.php',
                 method: 'POST',
                 data: {
                     action: 'update',
@@ -239,7 +196,7 @@ error_log("Cart Item Count: " . $cartItemCount);
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        location.reload(); // Reload trang để cập nhật
+                        location.reload();
                     } else {
                         alert('Lỗi: ' + response.message);
                     }
@@ -252,7 +209,7 @@ error_log("Cart Item Count: " . $cartItemCount);
         
         function removeItem(productId) {
             $.ajax({
-                url: '../../modules/cart/handler.php', // Path is correct
+                url: '../../modules/cart/handler.php',
                 method: 'POST',
                 data: {
                     action: 'remove',
@@ -261,34 +218,13 @@ error_log("Cart Item Count: " . $cartItemCount);
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        location.reload(); // Reload trang để cập nhật
+                        location.reload();
                     } else {
                         alert('Lỗi: ' + response.message);
                     }
                 },
                 error: function() {
                     alert('Có lỗi xảy ra khi xóa sản phẩm.');
-                }
-            });
-        }
-        
-        function clearCart() {
-            $.ajax({
-                url: '../../modules/cart/handler.php', // Path is correct
-                method: 'POST',
-                data: {
-                    action: 'clear'
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        location.reload(); // Reload trang để cập nhật
-                    } else {
-                        alert('Lỗi: ' + response.message);
-                    }
-                },
-                error: function() {
-                    alert('Có lỗi xảy ra khi xóa giỏ hàng.');
                 }
             });
         }

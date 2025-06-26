@@ -30,177 +30,631 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lịch sử đơn hàng - Web Mua Bán Đồ Cũ</title>
-      <!-- Bootstrap CSS -->
-    <link href="../../../public/assets/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom Order CSS -->
-    <link href="../../../public/assets/css/order.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../../../public/assets/css/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .modern-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .section-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+          .order-item {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .order-item:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        .order-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .order-main-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            flex: 1;
+        }
+        
+        .order-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        
+        .order-details {
+            flex: 1;
+        }
+        
+        .order-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+        
+        .order-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .order-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .meta-item i {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .order-status-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .payment-paid {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .payment-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .payment-failed {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .summary-row:last-child {
+            margin-bottom: 0;
+            padding-top: 8px;
+            border-top: 1px solid #dee2e6;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .order-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        
+        .view-details-btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .view-details-btn:hover {
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        
+        .order-notes-preview {
+            font-size: 13px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            border-left: 3px solid #007bff;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .order-placeholder {
+            width: 70px;
+            height: 70px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stats-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb-separator {
+            color: #999;
+            margin: 0 8px;
+        }
+          .order-placeholder {
+            width: 70px;
+            height: 70px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stats-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (max-width: 768px) {
+            .modern-container {
+                padding: 15px;
+            }
+            
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .order-main-info {
+                width: 100%;
+                margin-bottom: 12px;
+            }
+            
+            .order-actions {
+                align-items: flex-start;
+                width: 100%;
+            }
+            
+            .order-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="order-container">        <!-- Breadcrumb -->        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../TrangChu.php"><i class="fas fa-home"></i> Trang chủ</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Lịch sử đơn hàng</li>
-            </ol>
-        </nav>
-
-        <!-- Header -->
-        <div class="order-header">
-            <h1><i class="fas fa-shopping-bag"></i> Lịch sử đơn hàng</h1>
-            <p>Quản lý và theo dõi tất cả đơn hàng của bạn</p>
-        </div>
-
-        <!-- Statistics -->
-        <div class="row mb-4">
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-primary"><?php echo $total_orders; ?></h3>
-                        <p class="mb-0">Tổng đơn hàng</p>
-                    </div>
+    <div class="modern-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="../TrangChu.php">Trang chủ</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>Lịch sử đơn hàng</span>
+        </nav>        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Lịch sử đơn hàng</h1>
+            <p class="page-subtitle">Theo dõi và quản lý tất cả đơn hàng của bạn</p>
+        </div><!-- Order Statistics -->
+        <div class="stats-section">
+            <div class="section-header">Thống kê đơn hàng</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number"><?php echo $total_orders; ?></div>
+                    <div class="stat-label">Tổng đơn hàng</div>
                 </div>
-            </div>            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-warning">0</h3>
-                        <p class="mb-0">Chờ xác nhận</p>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-number"><?php echo $success_count; ?></div>
+                    <div class="stat-label">Thành công</div>
                 </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-success"><?php echo $success_count; ?></h3>
-                        <p class="mb-0">Hoàn thành</p>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-number"><?php echo $failed_count; ?></div>
+                    <div class="stat-label">Thất bại</div>
                 </div>
-            </div>
-            <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-danger"><?php echo $failed_count; ?></h3>
-                        <p class="mb-0">Đã hủy</p>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-number"><?php echo number_format(array_sum(array_column($orders, 'total_amount')) / 1000000, 1); ?>M</div>
+                    <div class="stat-label">Tổng giá trị (VNĐ)</div>
                 </div>
             </div>
         </div>
+
+        <!-- Past Orders Section -->
+        <div class="section-header">Lịch sử đơn hàng</div>
 
         <!-- Orders List -->
-        <div class="order-list">
-            <?php if (empty($orders)): ?>
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>                    <h3>Chưa có đơn hàng nào</h3>
-                    <p>Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm!</p>
-                    <a href="../TrangChu.php" class="btn btn-primary">
-                        <i class="fas fa-shopping-bag"></i> Bắt đầu mua sắm
-                    </a>
+        <?php if (empty($orders)): ?>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
-            <?php else: ?>
-                <?php foreach ($orders as $order): ?>
-                    <?php
-                    $status = formatOrderStatus($order['status']);
-                    $payment_status = formatPaymentStatus($order['payment_status']);
-                    $payment_method = formatPaymentMethod($order['payment_method']);
-                    ?>
-                    <div class="order-card fade-in">
-                        <div class="order-card-header">
-                            <div>
-                                <h3 class="order-number">#<?php echo htmlspecialchars($order['order_number']); ?></h3>
-                                <p class="order-date">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?>
-                                </p>
-                            </div>
-                            <div class="order-status-group">
-                                <span class="badge <?php echo $status['class']; ?>">
-                                    <?php echo $status['text']; ?>
-                                </span>
-                                <span class="badge <?php echo $payment_status['class']; ?>">
-                                    <?php echo $payment_status['text']; ?>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="order-card-body">
-                            <div class="order-summary">
-                                <div class="summary-item">
-                                    <span class="label">Số sản phẩm</span>
-                                    <span class="value"><?php echo $order['item_count']; ?> món</span>
+                <h3>Chưa có đơn hàng nào</h3>
+                <p>Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm!</p>
+                <a href="../../../public/TrangChu.php" class="btn-primary">
+                    <i class="fas fa-shopping-bag"></i> Bắt đầu mua sắm
+                </a>
+            </div>
+        <?php else: ?>
+            <?php foreach ($orders as $order): ?>
+                <div class="order-item">
+                    <div class="order-header">
+                        <div class="order-main-info">
+                            <?php if (!empty($order['first_product_image']) && file_exists("../../" . $order['first_product_image'])): ?>
+                                <img src="../../<?php echo htmlspecialchars($order['first_product_image']); ?>" 
+                                     alt="Order Product" 
+                                     class="order-image">
+                            <?php else: ?>
+                                <div class="order-placeholder">
+                                    <i class="fas fa-box"></i>
                                 </div>
-                                <div class="summary-item">
-                                    <span class="label">Tổng tiền</span>
-                                    <span class="value price"><?php echo number_format($order['total_amount']); ?> VND</span>
+                            <?php endif; ?>
+                            
+                            <div class="order-details">
+                                <div class="order-number">
+                                    Đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?>
                                 </div>
-                                <div class="summary-item">
-                                    <span class="label">Phương thức thanh toán</span>
-                                    <span class="value"><?php echo $payment_method; ?></span>
+                                <div class="order-date">
+                                    <i class="fas fa-calendar"></i>
+                                    Đặt hàng: <?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?>
                                 </div>
-                                <div class="summary-item">
-                                    <span class="label">Cập nhật lần cuối</span>
-                                    <span class="value"><?php echo date('d/m/Y', strtotime($order['updated_at'])); ?></span>
-                                </div>
-                            </div>
-
-                            <div class="order-actions">
-                                <a href="order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-primary">
-                                    <i class="fas fa-eye"></i> Xem chi tiết
-                                </a>
                                 
-                                <?php if (in_array($order['status'], ['pending', 'confirmed'])): ?>
-                                    <button class="btn btn-danger" onclick="cancelOrder(<?php echo $order['id']; ?>)">
-                                        <i class="fas fa-times"></i> Hủy đơn
-                                    </button>
+                                <div class="order-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-box"></i>
+                                        <span><?php echo $order['item_count']; ?> sản phẩm</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-credit-card"></i>
+                                        <span><?php echo $order['payment_method'] == 'vnpay' ? 'VNPay' : ucfirst($order['payment_method']); ?></span>
+                                    </div>
+                                    <?php if ($order['updated_at'] != $order['created_at']): ?>
+                                        <div class="meta-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>Cập nhật: <?php echo date('d/m/Y H:i', strtotime($order['updated_at'])); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="order-status-section">
+                                    <?php
+                                    $statusClass = '';
+                                    switch($order['status']) {
+                                        case 'success':
+                                            $statusClass = 'status-success';
+                                            $statusText = 'Thành công';
+                                            break;
+                                        case 'pending':
+                                            $statusClass = 'status-pending';
+                                            $statusText = 'Chờ xử lý';
+                                            break;
+                                        case 'failed':
+                                            $statusClass = 'status-failed';
+                                            $statusText = 'Thất bại';
+                                            break;
+                                        case 'cancelled':
+                                            $statusClass = 'status-cancelled';
+                                            $statusText = 'Đã hủy';
+                                            break;
+                                        default:
+                                            $statusClass = 'status-pending';
+                                            $statusText = ucfirst($order['status']);
+                                    }
+                                    
+                                    $paymentClass = '';
+                                    switch($order['payment_status']) {
+                                        case 'paid':
+                                        case 'paid_via_return':
+                                            $paymentClass = 'payment-paid';
+                                            $paymentText = 'Đã thanh toán';
+                                            break;
+                                        case 'pending':
+                                            $paymentClass = 'payment-pending';
+                                            $paymentText = 'Chờ thanh toán';
+                                            break;
+                                        case 'failed':
+                                            $paymentClass = 'payment-failed';
+                                            $paymentText = 'Thanh toán thất bại';
+                                            break;
+                                        default:
+                                            $paymentClass = 'payment-pending';
+                                            $paymentText = ucfirst($order['payment_status']);
+                                    }
+                                    ?>
+                                    <span class="status-badge <?php echo $statusClass; ?>">
+                                        <?php echo $statusText; ?>
+                                    </span>
+                                    <span class="status-badge <?php echo $paymentClass; ?>">
+                                        <?php echo $paymentText; ?>
+                                    </span>
+                                </div>
+                                
+                                <?php if (!empty($order['notes'])): ?>
+                                    <div class="order-notes-preview">
+                                        <strong>Ghi chú:</strong> <?php echo mb_substr(htmlspecialchars($order['notes']), 0, 100); ?><?php echo mb_strlen($order['notes']) > 100 ? '...' : ''; ?>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
+                        
+                        <div class="order-actions">
+                            <div class="order-summary">
+                                <div class="summary-row">
+                                    <span>Tổng tiền:</span>
+                                    <span style="font-weight: 600; color: #007bff;"><?php echo number_format($order['total_amount'], 0, ',', '.'); ?> VNĐ</span>
+                                </div>
+                            </div>
+                            
+                            <a href="order_details.php?id=<?php echo $order['id']; ?>" class="view-details-btn">
+                                <i class="fas fa-eye"></i> Xem chi tiết
+                            </a>
+                        </div>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-
-        <!-- Pagination -->
-        <?php if ($total_pages > 1): ?>
-            <nav aria-label="Phân trang đơn hàng" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    <!-- Previous Page -->
-                    <?php if ($page > 1): ?>
-                        <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $page - 1; ?>">
-                                <i class="fas fa-chevron-left"></i> Trước
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                    <!-- Page Numbers -->
-                    <?php
-                    $start = max(1, $page - 2);
-                    $end = min($total_pages, $page + 2);
-                    
-                    for ($i = $start; $i <= $end; $i++):
-                    ?>
-                        <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                        </li>
+                </div>
+            <?php endforeach; ?>
+            
+            <!-- Pagination -->
+            <?php if ($total_pages > 1): ?>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>" 
+                           style="padding: 8px 12px; background: <?php echo $i == $page ? '#007bff' : '#f8f9fa'; ?>; 
+                                  color: <?php echo $i == $page ? 'white' : '#666'; ?>; 
+                                  border-radius: 6px; text-decoration: none; font-size: 14px;">
+                            <?php echo $i; ?>
+                        </a>
                     <?php endfor; ?>
-
-                    <!-- Next Page -->
-                    <?php if ($page < $total_pages): ?>
-                        <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $page + 1; ?>">
-                                Sau <i class="fas fa-chevron-right"></i>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                </ul>
-            </nav>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
-    </div>    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS for order history -->
-    <script src="../../../public/assets/js/order_history.js"></script>
+    </div>
 </body>
 </html>
