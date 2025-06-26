@@ -316,6 +316,15 @@ ORDER BY p.created_at DESC
 LIMIT 8
 
 
+-- Bảng Notification
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Bật lại foreign key checks
 
 -- bỏ vào thấy lỗi

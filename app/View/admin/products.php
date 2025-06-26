@@ -1,6 +1,7 @@
 <?php
 require_once '../../../config/config.php';
-require_once '/../app/Controllers/product/ProductController.php';
+
+require_once '../../Controllers/product/ProductController.php';
 $_SESSION['role'] = 'admin';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: ../user/login.php');
@@ -102,9 +103,9 @@ $pending_products = getPendingProducts($pdo);
                 <td><?= number_format($product['price']) ?> VNĐ</td>
                 <td><?= htmlspecialchars($product['created_at']) ?></td>
                 <td class="actions">
-                    <a href="../../modules/admin/product/handler.php?action=approve&id=<?= $product['id'] ?>">Duyệt</a>
-                    <a href="../../modules/admin/product/handler.php?action=reject&id=<?= $product['id'] ?>">Từ chối</a>
-                    <a href="../../modules/admin/product/handler.php?action=delete&id=<?= $product['id'] ?>"
+                    <a href="../../Models/admin/AdminModel.php?action=approve&id=<?= $product['id'] ?>">Duyệt</a>
+                    <a href="../../Models/admin/AdminModel.php?action=reject&id=<?= $product['id'] ?>">Từ chối</a>
+                    <a href="../../Models/admin/AdminModel.php?action=delete&id=<?= $product['id'] ?>"
                         class="delete" onclick="return confirm('Bạn chắc chắn muốn xóa?');">Xóa</a>
                 </td>
             </tr>

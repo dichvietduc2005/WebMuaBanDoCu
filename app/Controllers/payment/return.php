@@ -67,6 +67,19 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                     $order_id = $current_order_data['id'];
                     $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'processing', payment_status = 'paid_via_return', updated_at = NOW() WHERE id = ?");
                     $stmt_update_order->execute([$order_id]);
+
+                     // Lấy danh sách sản phẩm trong đơn hàng và gửi thông báo cho từng người bán
+                    $stmt_items = $pdo->prepare("SELECT oi.product_id, oi.product_title, p.user_id as seller_id FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
+                    $stmt_items->execute([$order_id]);
+                    $order_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($order_items as $item) {
+                        $seller_id = $item['seller_id'];
+                        $product_title = $item['product_title'];
+                        $message = "Sản phẩm <b>$product_title</b> của bạn đã được bán và thanh toán thành công!";
+                        $stmt_noti = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+                        $stmt_noti->execute([$seller_id, $message]);
+                    }
                     
                     // Xóa giỏ hàng sau khi thanh toán thành công
                     $buyer_id = $current_order_data['buyer_id'];

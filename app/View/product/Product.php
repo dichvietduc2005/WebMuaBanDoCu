@@ -16,15 +16,16 @@ $products = getUserProducts($pdo, $user_id);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sản phẩm của tôi - Web Mua Bán Đồ Cũ</title>    
+    <title>Sản phẩm của tôi - Web Mua Bán Đồ Cũ</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="../../../public/assets/css/Product.css">
+    <link rel="stylesheet" href="../../../public/assets/css/Product.css">
 
-    
+
 </head>
 
-<body>    <div class="container">
+<body>
+    <div class="container">
         <a href="../Home.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
         <div class="header">
             <h1><i class="fas fa-box"></i> Sản phẩm của tôi</h1>
@@ -35,6 +36,10 @@ $products = getUserProducts($pdo, $user_id);
             <tr>
                 <th>Tiêu đề</th>
                 <th>Giá</th>
+                <th>Danh mục</th>
+                <th>Tình trạng</th>
+                <th>Địa chỉ</th>
+                <th>Mô tả</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
@@ -45,6 +50,10 @@ $products = getUserProducts($pdo, $user_id);
                 data-description="<?= htmlspecialchars($product['description']) ?>">
                 <td class="title"><?= htmlspecialchars($product['title']) ?></td>
                 <td class="price"><?= number_format($product['price']) ?> VNĐ</td>
+                <td class="category"><?= htmlspecialchars($product['category_id']) ?></td>
+                <td class="condition"><?= htmlspecialchars($product['condition_status']) ?></td>
+                <td class="location"><?= htmlspecialchars($product['location']) ?></td>
+                <td class="description"><?= htmlspecialchars($product['description']) ?></td>
                 <td class="status"><?= htmlspecialchars($product['status']) ?></td>
                 <td class="actions">
                     <a href="#" class="edit-btn" data-id="<?= $product['id'] ?>"><i class="fas fa-edit"></i> Sửa</a>
@@ -101,6 +110,6 @@ $products = getUserProducts($pdo, $user_id);
         </div>
     </div>
     <div class="toast" id="toast"></div>
-<script src="../../../public/assets/js/my_products.js"></script>
+    <script src="../../../public/assets/js/my_products.js"></script>
 
 </html>

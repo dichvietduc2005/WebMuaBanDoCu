@@ -94,7 +94,7 @@ if (!isset($_SESSION['user_id'])) {
             <p>Đăng bán đồ cũ của bạn một cách dễ dàng</p>
         </div>
                
-        <form method="POST" action="../modules/sell/handler.php" >
+        <form method="POST" action="../../Models/sell/SellModel.php" >
             <div class="form-group">
                 <label for="title">Tiêu đề sản phẩm</label>
                 <input type="text" id="title" name="title" placeholder="Nhập tiêu đề sản phẩm..." required>

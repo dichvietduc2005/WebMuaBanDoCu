@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../../../config/config.php'); // For $pdo, session_start(), etc.
-require_once(__DIR__ . '/../../Controllers/product/ProductController.php'); // For product-related functions
+require_once(__DIR__ . '/../../Controllers/product/ProductUserController.php'); // For product-related functions
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../../public/user/login.php');
     exit;

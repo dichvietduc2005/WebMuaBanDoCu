@@ -132,6 +132,12 @@ if (isset($_SESSION['user_id'])) {
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $cart_count = $result['total_quantity'] ?? 0;
 }
+$unread_notifications = 0;
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+    $stmt->execute([$_SESSION['user_id']]);
+    $unread_notifications = (int)$stmt->fetchColumn();
+}
 
 ?>
 <!DOCTYPE html>
@@ -181,9 +187,15 @@ if (isset($_SESSION['user_id'])) {
                 <div class="d-flex align-items-center gap-3">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <!-- Notifications -->
-                        <button class="btn btn-link text-dark p-2" title="Thông báo">
-                            <i class="fas fa-bell" style="font-size: 20px;"></i>
-                        </button>
+                    <a href="extra/notifications.php" class="btn btn-link text-dark p-2 position-relative"
+                        title="Thông báo">
+                        <i class="fas fa-bell" style="font-size: 20px;"></i>
+                        <?php if ($unread_notifications > 0): ?>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <?php echo $unread_notifications; ?>
+                        </span>
+                        <?php endif; ?>
+                    </a>
 
                         <!-- Messages -->
                         <button class="btn btn-link text-dark p-2" title="Tin nhắn">

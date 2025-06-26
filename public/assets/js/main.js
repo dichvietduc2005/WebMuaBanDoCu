@@ -11,7 +11,7 @@ function addToCart(event, productId) {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
     }
 
-    fetch('../../modules/cart/handler.php', {
+    fetch('../../../Models/cart/CartModel.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

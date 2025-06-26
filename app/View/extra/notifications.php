@@ -1,0 +1,42 @@
+<?php
+require_once('../../../config/config.php');
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../user/login.php');
+    exit;
+}
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC");
+$stmt->execute([$user_id]);
+$notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$stmt = $pdo->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0");
+$stmt->execute([$user_id]);
+?>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông báo của tôi</title>
+    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <style>
+        .notification { border-bottom: 1px solid #eee; padding: 16px 0; }
+        .notification.unread { background: #e9f5ff; }
+        .notification .time { color: #888; font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Thông báo</h2>
+    <?php if (empty($notifications)): ?>
+        <p>Không có thông báo nào.</p>
+    <?php else: ?>
+        <?php foreach ($notifications as $noti): ?>
+            <div class="notification<?php echo !$noti['is_read'] ? ' unread' : ''; ?>">
+                <div><?php echo $noti['message']; ?></div>
+                <div class="time"><?php echo date('d/m/Y H:i', strtotime($noti['created_at'])); ?></div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+</body>
+</html>
