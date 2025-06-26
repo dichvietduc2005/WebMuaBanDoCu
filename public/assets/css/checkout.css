@@ -1,38 +1,167 @@
+/* Tổng thể */
+body {
+  background: #f5f7fb;
+  font-family: 'Inter', Arial, sans-serif;
+  color: #222;
+  font-size: 18px !important; /* Tăng kích thước chữ mặc định */
+}
+
+
+
+/* Tiêu đề */
+h2, h3, h4 {
+  color: #1a237e;
+  font-weight: 600;
+  margin-bottom: 18px;
+    font-size: 1.25rem !important; /* Tăng kích thước chữ mặc định */
+
+}
+
 .checkout-summary {
   background: #f9f9f9;
-  padding: 20px;
-  border-radius: 5px;
-  margin-bottom: 20px;
+  padding: 20px 18px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
 }
+
 .form-section {
   background: #fff;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-bottom: 20px;
+  padding: 20px 18px;
+  border: 1px solid #e3eafc;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.03);
 }
+
 .order-item {
-  border-bottom: 1px solid #eee;
-  padding: 10px 0;
+  border-bottom: 1px solid #e3eafc;
+  padding: 14px 0;
+  display: flex;
+  align-items: center;
 }
+
 .order-item:last-child {
   border-bottom: none;
 }
+
 .product-image-checkout {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
-  margin-right: 10px;
+  margin-right: 16px;
+  border-radius: 8px;
+  border: 1px solid #e3eafc;
+  background: #fff;
 }
-.header .nav-pills > li > a {
+
+.product-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #222;
+}
+
+.product-details {
   font-size: 14px;
+  color: #555;
 }
+
+.product-total {
+  font-size: 15px;
+  color: #1a237e;
+  font-weight: 600;
+}
+
 .total-summary {
   background: #f8f9fa;
-  padding: 15px;
-  border-radius: 5px;
-  margin-top: 15px;
+  padding: 18px 16px;
+  border-radius: 8px;
+  margin-top: 18px;
+  border: 1px solid #e3eafc;
 }
-.has-error {
-  border-color: #a94442;
+
+.total-summary .row {
+  align-items: center;
+}
+
+.total-summary strong {
+  font-size: 18px;
+  color: #d9534f;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #1a237e;
+  margin-bottom: 6px;
+  font-size: 1.25rem !important;
+}
+
+.form-control, select.form-control, textarea.form-control {
+  border-radius: 6px;
+  border: 1px solid #b6c6e6;
+  font-size: 17px !important;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #f9f9fc;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus {
+  border-color: #1976d2;
+  background: #fff;
+  outline: none;
+}
+
+.has-error, .form-control.has-error {
+  border-color: #d32f2f !important;
+  background: #fff0f0;
+}
+
+.btn-success {
+  background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-size: 17px;
+  box-shadow: 0 2px 8px rgba(67,206,162,0.08);
+  transition: background 0.2s;
+}
+
+.btn-success:hover, .btn-success:focus {
+  background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
+  color: #fff;
+}
+
+.radio label {
+  font-size: 15px;
+  color: #222;
+  font-weight: 500;
+}
+
+@media (max-width: 991px) {
+  .container {
+    max-width: 100%;
+    padding: 10px;
+  }
+  .checkout-summary, .form-section {
+    padding: 14px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .checkout-summary, .form-section {
+    padding: 10px 2px;
+    border-radius: 0;
+  }
+  .product-image-checkout {
+    width: 48px;
+    height: 48px;
+  }
 }

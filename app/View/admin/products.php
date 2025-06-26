@@ -2,6 +2,8 @@
 require_once '../../../config/config.php';
 
 require_once '../../Controllers/product/ProductController.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
+include_once __DIR__ . '/../../Components/header/Header.php';
 $_SESSION['role'] = 'admin';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: ../user/login.php');
@@ -16,74 +18,18 @@ $pending_products = getPendingProducts($pdo);
 <head>
     <meta charset="UTF-8">
     <title>Quản lý sản phẩm chờ duyệt</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f7fb;
-    }
 
-    .container {
-        max-width: 900px;
-        margin: 40px auto;
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px #0001;
-        padding: 30px;
-    }
-
-    h2 {
-        color: #3a86ff;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    th,
-    td {
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-        text-align: left;
-    }
-
-    th {
-        background: #3a86ff;
-        color: #fff;
-    }
-
-    tr:hover {
-        background: #f0f8ff;
-    }
-
-    .actions a {
-        margin-right: 10px;
-        text-decoration: none;
-        color: #3a86ff;
-        font-weight: bold;
-    }
-
-    .actions a.delete {
-        color: #e63946;
-    }
-
-    .back-link {
-        display: inline-block;
-        margin-bottom: 20px;
-        color: #3a86ff;
-        text-decoration: none;
-    }
-
-    .back-link:hover {
-        text-decoration: underline;
-    }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../../../public/assets/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../public/assets/css/products_admin.css">
 </head>
 
-<body>    <div class="container">
-        <a href="../../../public/TrangChu.php" class="back-link">&larr; Về trang chủ</a>
+<body>
+    <?php renderHeader($pdo); ?>   
+     <div class="container1">
+        
         <h2>Sản phẩm chờ duyệt</h2>
         <?php if (empty($pending_products)): ?>
         <p>Không có sản phẩm nào chờ duyệt.</p>
@@ -113,6 +59,7 @@ $pending_products = getPendingProducts($pdo);
         </table>
         <?php endif; ?>
     </div>
+    <?php footer(); ?>
 </body>
 
 </html>

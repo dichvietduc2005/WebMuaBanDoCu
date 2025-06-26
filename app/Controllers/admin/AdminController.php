@@ -11,6 +11,6 @@
 
     function deleteProduct($pdo, $product_id) {
         $stmt = $pdo->prepare("DELETE FROM products WHERE id=?" );
-        return $stmt->execute(($product_id));
+        return $stmt->execute([$product_id]);
     }
 ?>

@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../../config/config.php';
 require_once "../../app/Controllers/extra/ExtraController.php";
+include_once __DIR__ . '/../Components/footer/Footer.php';
+include_once __DIR__ . '/../Components/header/Header.php';
 // Helper functions
 if (!function_exists('formatPrice')) {
     function formatPrice($price) {
@@ -142,191 +144,102 @@ if (isset($_SESSION['user_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Mua Bán Đồ Cũ</title>    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Web Mua Bán Đồ Cũ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../public/assets/css/index.css">
-<body>    <!-- Header với layout giống chợTỐT -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-        <div class="container-fluid px-4">
-            <div class="d-flex align-items-center w-100">
-                <!-- Logo -->
-                <a class="navbar-brand d-flex align-items-center me-4" href="TrangChu.php">
-                    <i class="fas fa-recycle text-primary me-2" style="font-size: 28px;"></i>
-                    <h1 class="mb-0 fw-bold text-gradient" style="font-size: 24px;">Mua Bán đồ cũ</h1>
-                </a>
 
-                <!-- Categories Dropdown -->
-                <div class="dropdown me-3">
-                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-bars me-2"></i>
-                        <span>Danh mục</span>
-                    </button>
-                    <ul class="dropdown-menu">                        <?php foreach ($categories as $category): ?>
-                        <li><a class="dropdown-item" href="product/category.php?slug=<?php echo $category['slug']; ?>"><?php echo htmlspecialchars($category['name']); ?></a></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-
-                <!-- Location Dropdown -->                <!-- Search Form - Expanded -->
-                <form id="search-form" class="flex-grow-1 me-4" method="GET" action="extra/search.php" style="max-width: 500px;">
-                    <div class="input-group">
-                        <input type="text" class="form-control form-control-lg" id="search-input" name="keyword" 
-                               placeholder="Tìm kiếm sản phẩm" 
-                               value="<?php echo isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : ''; ?>">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Right side actions -->
-                <div class="d-flex align-items-center gap-3">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <!-- Notifications -->
-                    <a href="extra/notifications.php" class="btn btn-link text-dark p-2 position-relative"
-                        title="Thông báo">
-                        <i class="fas fa-bell" style="font-size: 20px;"></i>
-                        <?php if ($unread_notifications > 0): ?>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            <?php echo $unread_notifications; ?>
-                        </span>
-                        <?php endif; ?>
-                    </a>
-
-                        <!-- Messages -->
-                        <button class="btn btn-link text-dark p-2" title="Tin nhắn">
-                            <i class="fas fa-comment" style="font-size: 20px;"></i>
-                        </button>                        <!-- Cart -->
-                        <a href="cart/index.php" class="btn btn-link text-dark p-2 position-relative" title="Giỏ hàng">
-                            <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
-                            <?php if ($cart_count > 0): ?>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count">
-                                    <?php echo $cart_count; ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-
-                        <!-- Account Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-2"></i>
-                                <span>Quản lý tin</span>
-                            </button>                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="product/Product.php"><i class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
-                                <li><a class="dropdown-item" href="order/order_history.php"><i class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="user/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Account Info Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-2"></i>
-                                <span>Tài khoản</span>
-                            </button>                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Cài đặt</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="user/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
-                            </ul>
-                        </div>                        <!-- Post Ad Button -->                        <a href="product/sell.php" class="btn btn-warning fw-bold px-4 py-2">
-                            <i class="fas fa-plus me-2"></i>ĐĂNG TIN
-                        </a>
-
-                    <?php else: ?>
-                        <!-- Guest user buttons -->                        <a href="user/login.php" class="btn btn-outline-primary">
-                            <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
-                        </a>
-                        <a href="user/register.php" class="btn btn-primary">
-                            <i class="fas fa-user-plus me-2"></i>Đăng ký
-                        </a>                        <a href="product/sell.php" class="btn btn-warning fw-bold px-4">
-                            <i class="fas fa-plus me-2"></i>ĐĂNG TIN
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body>
+    <?php  renderHeader($pdo); ?>
 
     <!-- Hero Section -->
     <div class="container">
         <div class="hero">
             <div class="hero-content">
                 <h2>Mua bán đồ cũ - Tiết kiệm, tiện lợi, bảo vệ môi trường</h2>
-                <p>Tìm kiếm và mua bán các mặt hàng đã qua sử dụng một cách dễ dàng với giá cả hợp lý. Hàng ngàn sản phẩm chất lượng đang chờ bạn!</p>                <div class="hero-buttons">
-                    <a href="#featured-products" class="hero-btn btn-white"><i class="fas fa-shopping-bag"></i> Mua sắm ngay</a>
-                    <a href="product/sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán đồ</a>
+                <p>Tìm kiếm và mua bán các mặt hàng đã qua sử dụng một cách dễ dàng với giá cả hợp lý. Hàng ngàn sản
+                    phẩm chất lượng đang chờ bạn!</p>
+                <div class="hero-buttons">
+                    <a href="#featured-products" class="hero-btn btn-white"><i class="fas fa-shopping-bag"></i> Mua sắm
+                        ngay</a>
+                    <a href="product/sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán
+                        đồ</a>
                 </div>
             </div>
         </div>
-    </div>    <!-- Featured Products -->
+    </div> <!-- Featured Products -->
     <div class="container">
         <section class="section" id="featured-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm nổi bật</h2>
-                        <a href="product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
-            
+
             <div class="products-grid">
                 <?php if (empty($featured_products)): ?>
-                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6c757d;">
-                        <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
-                        <h3>Chưa có sản phẩm nổi bật</h3>
-                        <p>Hãy quay lại sau để xem các sản phẩm mới nhất!</p>
-                    </div>                <?php else: ?>                    <?php foreach ($featured_products as $product): ?>
-                    <div class="product-card" style="cursor: pointer;" onclick="window.location.href='product/Product_detail.php?id=<?php echo $product['id']; ?>'">
-                        <div class="product-image" style="position: relative;">
-                            <?php if ($product['featured']): ?>
-                                <span class="product-badge">Nổi bật</span>
-                            <?php endif; ?>
-                            <?php if ($product['image_path']): ?>
-                                <img src="../../public/<?php echo htmlspecialchars($product['image_path']); ?>" 
-                                     alt="<?php echo htmlspecialchars($product['title']); ?>"
-                                     style="width: 100%; height: 220px; object-fit: cover;">
-                            <?php else: ?>
-                                <div style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
-                                    <i class="fas fa-image" style="font-size: 48px;"></i>
-                                </div>
-                            <?php endif; ?>
+                <div class="no-products"
+                    style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6c757d;">
+                    <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3>Chưa có sản phẩm nổi bật</h3>
+                    <p>Hãy quay lại sau để xem các sản phẩm mới nhất!</p>
+                </div> <?php else: ?> <?php foreach ($featured_products as $product): ?>
+                <div class="product-card" style="cursor: pointer;"
+                    onclick="window.location.href='product/Product_detail.php?id=<?php echo $product['id']; ?>'">
+                    <div class="product-image" style="position: relative;">
+                        <?php if ($product['featured']): ?>
+                        <span class="product-badge">Nổi bật</span>
+                        <?php endif; ?>
+                        <?php if ($product['image_path']): ?>
+                        <img src="../../public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                            alt="<?php echo htmlspecialchars($product['title']); ?>"
+                            style="width: 100%; height: 220px; object-fit: cover;">
+                        <?php else: ?>
+                        <div
+                            style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                            <i class="fas fa-image" style="font-size: 48px;"></i>
                         </div>
-                        <div class="product-content">
-                            <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
-                            <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
-                            <div class="product-meta">
-                                <div class="product-condition">
-                                    <i class="fas fa-star"></i> <?php echo getConditionText($product['condition_status']); ?>
-                                </div>
-                                <div class="product-stock">
-                                    <i class="fas fa-box"></i> 
-                                    <?php if ($product['stock_quantity'] > 0): ?>
-                                        Còn <?php echo $product['stock_quantity']; ?> sản phẩm
-                                    <?php else: ?>
-                                        <span class="text-danger fw-bold">Hết hàng</span>
-                                    <?php endif; ?>
-                                </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                        <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
+                        <div class="product-meta">
+                            <div class="product-condition">
+                                <i class="fas fa-star"></i>
+                                <?php echo getConditionText($product['condition_status']); ?>
                             </div>
-                            <div class="product-actions" onclick="event.stopPropagation();">
+                            <div class="product-stock">
+                                <i class="fas fa-box"></i>
                                 <?php if ($product['stock_quantity'] > 0): ?>
-                                    <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                        <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1" class="quantity-input" name="quantity">
-                                        <button type="submit" class="btn-add-to-cart">
-                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
-                                        </button>
-                                    </form>
+                                Còn <?php echo $product['stock_quantity']; ?> sản phẩm
                                 <?php else: ?>
-                                    <button type="button" class="btn-add-to-cart btn-disabled" disabled>
-                                        <i class="fas fa-ban"></i> Hết hàng
-                                    </button>
+                                <span class="text-danger fw-bold">Hết hàng</span>
                                 <?php endif; ?>
                             </div>
                         </div>
+                        <div class="product-actions" onclick="event.stopPropagation();">
+                            <?php if ($product['stock_quantity'] > 0): ?>
+                            <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
+                                <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1"
+                                    class="quantity-input" name="quantity">
+                                <button type="submit" class="btn-add-to-cart">
+                                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                </button>
+                            </form>
+                            <?php else: ?>
+                            <button type="button" class="btn-add-to-cart btn-disabled" disabled>
+                                <i class="fas fa-ban"></i> Hết hàng
+                            </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <?php endforeach; ?>
+                </div>
+                <?php endforeach; ?>
                 <?php endif; ?>
             </div>
         </section>
@@ -337,69 +250,74 @@ if (isset($_SESSION['user_id'])) {
                 <h2 class="section-title">Sản phẩm mới nhất</h2>
                 <a href="product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
-            
+
             <div class="products-grid">
                 <?php if (empty($regular_products)): ?>
-                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6c757d;">
-                        <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
-                        <h3>Chưa có sản phẩm</h3>
-                        <p>Hãy quay lại sau để xem các sản phẩm mới nhất!</p>
-                    </div>                <?php else: ?>
-                    <?php foreach ($regular_products as $product): ?>
-                    <div class="product-card" style="cursor: pointer;" onclick="window.location.href='product/Product_detail.php?id=<?php echo $product['id']; ?>'">
-                        <div class="product-image" style="position: relative;">
-                            <?php if ($product['image_path']): ?>
-                                <img src="../../public/<?php echo htmlspecialchars($product['image_path']); ?>" 
-                                     alt="<?php echo htmlspecialchars($product['title']); ?>"
-                                     style="width: 100%; height: 220px; object-fit: cover;">
-                            <?php else: ?>
-                                <div style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
-                                    <i class="fas fa-image" style="font-size: 48px;"></i>
-                                </div>
-                            <?php endif; ?>
+                <div class="no-products"
+                    style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6c757d;">
+                    <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3>Chưa có sản phẩm</h3>
+                    <p>Hãy quay lại sau để xem các sản phẩm mới nhất!</p>
+                </div> <?php else: ?>
+                <?php foreach ($regular_products as $product): ?>
+                <div class="product-card" style="cursor: pointer;"
+                    onclick="window.location.href='product/Product_detail.php?id=<?php echo $product['id']; ?>'">
+                    <div class="product-image" style="position: relative;">
+                        <?php if ($product['image_path']): ?>
+                        <img src="../../public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                            alt="<?php echo htmlspecialchars($product['title']); ?>"
+                            style="width: 100%; height: 220px; object-fit: cover;">
+                        <?php else: ?>
+                        <div
+                            style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                            <i class="fas fa-image" style="font-size: 48px;"></i>
                         </div>
-                        <div class="product-content">
-                            <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
-                            <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
-                            <div class="product-meta">
-                                <div class="product-condition">
-                                    <i class="fas fa-star"></i> <?php echo getConditionText($product['condition_status']); ?>
-                                </div>
-                                <div class="product-stock">
-                                    <i class="fas fa-box"></i> 
-                                    <?php if ($product['stock_quantity'] > 0): ?>
-                                        Còn <?php echo $product['stock_quantity']; ?> sản phẩm
-                                    <?php else: ?>
-                                        <span class="text-danger fw-bold">Hết hàng</span>
-                                    <?php endif; ?>
-                                </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                        <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
+                        <div class="product-meta">
+                            <div class="product-condition">
+                                <i class="fas fa-star"></i>
+                                <?php echo getConditionText($product['condition_status']); ?>
                             </div>
-                            <div class="product-actions" onclick="event.stopPropagation();">
+                            <div class="product-stock">
+                                <i class="fas fa-box"></i>
                                 <?php if ($product['stock_quantity'] > 0): ?>
-                                    <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                        <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1" class="quantity-input" name="quantity">
-                                        <button type="submit" class="btn-add-to-cart">
-                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
-                                        </button>
-                                    </form>
+                                Còn <?php echo $product['stock_quantity']; ?> sản phẩm
                                 <?php else: ?>
-                                    <button type="button" class="btn-add-to-cart btn-disabled" disabled>
-                                        <i class="fas fa-ban"></i> Hết hàng
-                                    </button>
+                                <span class="text-danger fw-bold">Hết hàng</span>
                                 <?php endif; ?>
                             </div>
                         </div>
+                        <div class="product-actions" onclick="event.stopPropagation();">
+                            <?php if ($product['stock_quantity'] > 0): ?>
+                            <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
+                                <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1"
+                                    class="quantity-input" name="quantity">
+                                <button type="submit" class="btn-add-to-cart">
+                                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                </button>
+                            </form>
+                            <?php else: ?>
+                            <button type="button" class="btn-add-to-cart btn-disabled" disabled>
+                                <i class="fas fa-ban"></i> Hết hàng
+                            </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <?php endforeach; ?>
+                </div>
+                <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-        </section>          <!-- Categories Section -->
+        </section> <!-- Categories Section -->
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Danh mục sản phẩm</h2>
                 <a href="product/categories.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
-            
+
             <div class="categories-grid">
                 <?php 
                 $category_icons = [
@@ -417,21 +335,22 @@ if (isset($_SESSION['user_id'])) {
                 foreach ($categories as $category): 
                     $icon = $category_icons[$category['slug']] ?? 'fas fa-cube';
                 ?>
-                <div class="category-card" onclick="window.location.href='product/category.php?slug=<?php echo $category['slug']; ?>'">
+                <div class="category-card"
+                    onclick="window.location.href='product/category.php?slug=<?php echo $category['slug']; ?>'">
                     <i class="<?php echo $icon; ?> category-icon"></i>
                     <div class="category-name"><?php echo htmlspecialchars($category['name']); ?></div>
                 </div>
                 <?php endforeach; ?>
             </div>
         </section>
-          <!-- Recent Orders -->
+        <!-- Recent Orders -->
         <?php if (isset($_SESSION['user_id']) && !empty($recent_orders)): ?>
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Đơn hàng gần đây</h2>
                 <a href="order/order_history.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
-            
+
             <div class="orders-grid">
                 <?php foreach ($recent_orders as $order): ?>
                 <div class="order-card">
@@ -439,7 +358,7 @@ if (isset($_SESSION['user_id'])) {
                         <div class="order-number">#<?php echo htmlspecialchars($order['order_number']); ?></div>
                         <div class="order-date"><?php echo date('d/m/Y', strtotime($order['created_at'])); ?></div>
                     </div>
-                    
+
                     <div class="order-status">
                         <div class="status-badge <?php echo getStatusBadge($order['status']); ?>">
                             <?php echo getStatusText($order['status']); ?>
@@ -457,12 +376,12 @@ if (isset($_SESSION['user_id'])) {
                         </div>
                         <?php endif; ?>
                     </div>
-                    
+
                     <div class="order-total">
                         Tổng tiền: <strong><?php echo formatPrice($order['total_amount']); ?></strong>
                         <br><small><?php echo $order['item_count']; ?> sản phẩm</small>
                     </div>
-                    
+
                     <div class="order-actions">
                         <a href="order/order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-outline btn-sm">
                             <i class="fas fa-eye"></i> Xem chi tiết
@@ -484,10 +403,12 @@ if (isset($_SESSION['user_id'])) {
         <?php endif; ?>
     </div>
 
-
-    <!-- jQuery phải load trước các script khác -->    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <?php footer(); ?>
+    <!-- jQuery phải load trước các script khác -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../../public/assets/js/main.js"></script>
     <script src="../../public/assets/js/search.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

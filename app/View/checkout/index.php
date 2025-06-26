@@ -1,6 +1,8 @@
 <?php
 require_once '../../../config/config.php';
 require_once(__DIR__ . '/../..//../app/Controllers/cart/CartController.php'); // For cart-related functions
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 // Lấy user_id hiện tại (có thể null cho guest users)
 $user_id = get_current_user_id();
 $is_guest = !$user_id;
@@ -36,31 +38,22 @@ if ($user_id) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toán - Web Mua Bán Đồ Cũ</title>    <link href="../../../public/assets/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="../../../public/assets/css/jumbotron-narrow.css" rel="stylesheet">
-    <script src="../../../public/assets/js/jquery-1.11.3.min.js"></script>
-    <link rel="stylesheet" href="../../../public/assets/css/checkout.css">
-    
+    <title>Thanh toán - Web Mua Bán Đồ Cũ</title>    <link href="../../../public/assets/css/bootstrap.min.css" rel="stylesheet"/>   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../public/assets/css/index.css" rel="stylesheet">
+
+     <link rel="stylesheet" href="../../../public/assets/css/checkout.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <?php renderHeader($pdo); ?>
     <div class="container">
-        <div class="header clearfix">
-            <nav>
-                <ul class="nav nav-pills pull-right">
-                    <li><a href="../TrangChu.php">Trang chủ</a></li>
-                    <li><a href="../cart/index.php">Giỏ hàng (<?php echo $cartItemCount; ?>)</a></li>
-                    <li><a href="../user/order_history.php">Lịch sử GD</a></li>
-                </ul>
-            </nav>
-            <h3 class="text-muted">Thanh toán</h3>
-        </div>
-
         <div class="row">
             <div class="col-md-8">
                 <h2>Thông tin thanh toán</h2>
                   <div class="form-section">
                     <h4>Thông tin người nhận</h4>
-                    <form id="checkout-form" action="../../modules/payment/vnpay/create_payment.php" method="post">
+                    <form id="checkout-form" action="../../Controllers/payment/create_payment.php" method="post"></form>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -188,10 +181,9 @@ if ($user_id) {
             </div>
         </div>
 
-        <footer class="footer" style="margin-top: 50px;">
-            <p>&copy; Web Mua Ban Do Cu <?php echo date('Y')?></p>
-        </footer>
-    </div>    <script>
+        
+    </div>    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
     $(document).ready(function() {
         console.log('=== CHECKOUT JAVASCRIPT LOADED ===');
         console.log('jQuery version:', $.fn.jquery);
@@ -274,8 +266,10 @@ if ($user_id) {
             console.log('Form action:', $('#checkout-form').attr('action'));
         });
     });
+    
     // Add animation for loading icon
     $("<style type='text/css'> .glyphicon-refresh-animate { -animation: spin .7s infinite linear; -webkit-animation: spin2 .7s infinite linear; } @-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg);} to { -webkit-transform: rotate(360deg);}} @keyframes spin { from { transform: scale(1) rotate(0deg);} to { transform: scale(1) rotate(360deg);}} </style>").appendTo("head");
     </script>
+    <?php footer(); ?>
 </body>
 </html>

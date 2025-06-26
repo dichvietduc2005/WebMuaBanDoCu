@@ -1,0 +1,75 @@
+/* Định dạng container */
+.container1 {
+    max-width: 1000px;
+    margin: 40px auto 0 auto;
+    background: #fff;
+    padding: 32px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+
+/* Tiêu đề */
+h2 {
+    margin-bottom: 24px;
+    font-weight: 600;
+    color: #1a237e;
+}
+
+/* Bảng sản phẩm */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    background: #fafbfc;
+}
+
+th, td {
+    padding: 12px 10px;
+    text-align: left;
+}
+
+th {
+    background: #e3eafc;
+    color: #1a237e;
+    font-weight: 600;
+    border-bottom: 2px solid #b6c6e6;
+}
+
+tr:nth-child(even) {
+    background: #f5f7fa;
+}
+
+tr:hover {
+    background: #e3eafc;
+}
+
+.actions a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #1976d2;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.actions a.delete {
+    color: #d32f2f;
+}
+
+.actions a:hover {
+    text-decoration: underline;
+    color: #0d47a1;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #0d47a1;
+    text-decoration: underline;
+}   
