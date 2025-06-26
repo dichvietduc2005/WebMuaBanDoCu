@@ -121,7 +121,6 @@ error_log("Cart Item Count: " . $cartItemCount);
                     <?php if ($is_guest): ?>
                         <div
                             style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
-                            <strong>Lưu ý:</strong> Bạn đang mua hàng với tư cách khách vãng lai.
                         </div>
                     <?php endif; ?>
 
