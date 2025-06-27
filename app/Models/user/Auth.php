@@ -8,6 +8,7 @@ class Auth {
         $this->pdo = $pdo;
     }
     
+    
     /**
      * Đăng ký tài khoản mới
      */

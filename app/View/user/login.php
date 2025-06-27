@@ -55,89 +55,72 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - Web Mua Bán Đồ Cũ</title>    <link href="../../../assets/css/bootstrap.min.css" rel="stylesheet">
+    <title>Clerk.js Quickstart</title>
     <style>
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
+        /* Tùy chỉnh CSS cơ bản để nhìn rõ hơn */
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        #app {
+            background-color: #fff;
             padding: 30px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .error-message {
-            color: #dc3545;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .success-message {
-            color: #28a745;
-            margin-bottom: 15px;
-            text-align: center;
-            padding: 10px;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-container">
-            <div class="login-header">
-                <h2>Đăng nhập</h2>
-                <p class="text-muted">Web Mua Bán Đồ Cũ</p>
-            </div>
-              <?php if ($success_message): ?>
-                <div class="success-message"><?php echo htmlspecialchars($success_message); ?></div>
-            <?php endif; ?>
-            
-            <?php if ($error_message): ?>
-                <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
-            <?php endif; ?>
-            
-            <form method="POST">
-                <div class="form-group mb-3">
-                    <label for="email">Email:</label>
-                    <input type="email" 
-                           class="form-control" 
-                           id="email" 
-                           name="email" 
-                           value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" 
-                           required>
-                </div>
-                  <div class="form-group mb-3">
-                    <label for="password">Mật khẩu:</label>
-                    <input type="password" 
-                           class="form-control" 
-                           id="password" 
-                           name="password" 
-                           required>
-                </div>
-                
-                <div class="form-group mb-3">
-                    <input type="checkbox" 
-                           id="remember_me" 
-                           name="remember_me" 
-                           class="form-check-input">
-                    <label for="remember_me" class="form-check-label">Ghi nhớ đăng nhập</label>
-                </div>
-                
-                <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
-            </form>
-              <div class="text-center mt-3">
-                <p>Chưa có tài khoản? <a href="register.php">Đăng ký ngay</a></p>
-                <p><a href="../../../public/TrangChu.php">Về trang chủ</a></p>
-            </div>
-        </div>
+    
+    <div id="app">
+        Đang tải Clerk...
     </div>
+
+    <script
+        async
+        crossorigin="anonymous"
+        data-clerk-publishable-key="pk_test_ZWFnZXItZm9hbC05OS5jbGVyay5hY2NvdW50cy5kZXYk"
+        src="https://eager-foal-99.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        type="text/javascript"
+    ></script>
+
+    <script>
+        // Lắng nghe sự kiện 'load' của cửa sổ để đảm bảo DOM đã sẵn sàng
+        window.addEventListener('load', async function () {
+            // Tải và khởi tạo Clerk.js
+            await Clerk.load();
+            console.log('ClerkJS đã được tải và sẵn sàng.');
+
+            // Lấy phần tử app để mount UI của Clerk
+            const appDiv = document.getElementById('app');
+            appDiv.innerHTML = ''; // Xóa nội dung "Đang tải Clerk..."
+
+            // Kiểm tra trạng thái người dùng
+            if (Clerk.user) {
+                // Nếu người dùng đã đăng nhập, hiển thị nút người dùng (User Button)
+                const userButtonDiv = document.createElement('div');
+                userButtonDiv.id = 'user-button';
+                appDiv.appendChild(userButtonDiv);
+                Clerk.mountUserButton(userButtonDiv);
+                console.log('Người dùng đã đăng nhập, hiển thị User Button.');
+            } else {
+                // Nếu người dùng chưa đăng nhập, hiển thị widget Đăng nhập (Sign In)
+                const signInDiv = document.createElement('div');
+                signInDiv.id = 'sign-in';
+                appDiv.appendChild(signInDiv);
+                Clerk.mountSignIn(signInDiv);
+                console.log('Người dùng chưa đăng nhập, hiển thị Sign In widget.');
+            }
+        });
+    </script>
 </body>
 </html>
