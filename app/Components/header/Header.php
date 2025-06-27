@@ -45,7 +45,7 @@ function renderHeader($pdo,$categories = [], $cart_count = 0, $unread_notificati
                 <!-- Logo -->
                 <a class="navbar-brand d-flex align-items-center me-4" href="TrangChu.php">
                     <i class="fas fa-recycle text-primary me-2" style="font-size: 28px;"></i>
-                    <h1 class="mb-0 fw-bold text-gradient" style="font-size: 24px;">Mua Bán đồ cũ</h1>
+                    <h1 class="mb-0 fw-bold text-gradient" style="font-size: 24px;">HIHand Shop</h1>
                 </a>
 
                 <!-- Categories Dropdown -->
