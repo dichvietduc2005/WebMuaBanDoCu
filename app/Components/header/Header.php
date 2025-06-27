@@ -158,6 +158,7 @@ function renderHeader($pdo,$categories = [], $cart_count = 0, $unread_notificati
                         <a href="product/sell.php" class="btn btn-warning fw-bold px-4">
                             <i class="fas fa-plus me-2"></i>ĐĂNG TIN
                         </a>
+                        
                     <?php endif; ?>
                 </div>
             </div>

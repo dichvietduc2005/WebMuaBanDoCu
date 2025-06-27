@@ -153,11 +153,10 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../public/assets/css/index.css">
-
+</head>
 <body>
     <?php  renderHeader($pdo); ?>
 
-    <!-- Hero Section -->
     <div class="container">
         <div class="hero">
             <div class="hero-content">
@@ -167,12 +166,21 @@ if (isset($_SESSION['user_id'])) {
                 <div class="hero-buttons">
                     <a href="#featured-products" class="hero-btn btn-white"><i class="fas fa-shopping-bag"></i> Mua sắm
                         ngay</a>
-                    <a href="product/sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán
-                        đồ</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="product/sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán đồ</a>
+                    <?php else: ?>
+                        <button type="button" class="hero-btn btn-transparent" id="openClerkAuth"><i class="fas fa-sign-in-alt"></i> Đăng nhập / Đăng ký</button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
-    </div> <!-- Featured Products -->
+    </div> 
+    
+    <div id="clerk-auth-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div id="sign-in-widget-container" style="background: white; padding: 20px; border-radius: 8px;"></div>
+    </div>
+
+
     <div class="container">
         <section class="section" id="featured-products">
             <div class="section-header">
@@ -244,7 +252,6 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </section>
 
-        <!-- Regular Products -->
         <section class="section" id="regular-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm mới nhất</h2>
@@ -311,8 +318,7 @@ if (isset($_SESSION['user_id'])) {
                 <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-        </section> <!-- Categories Section -->
-        <section class="section">
+        </section> <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Danh mục sản phẩm</h2>
                 <a href="product/categories.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
@@ -343,7 +349,6 @@ if (isset($_SESSION['user_id'])) {
                 <?php endforeach; ?>
             </div>
         </section>
-        <!-- Recent Orders -->
         <?php if (isset($_SESSION['user_id']) && !empty($recent_orders)): ?>
         <section class="section">
             <div class="section-header">
@@ -404,11 +409,20 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
     <?php footer(); ?>
-    <!-- jQuery phải load trước các script khác -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../../public/assets/js/main.js"></script>
     <script src="../../public/assets/js/search.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   
+    <script
+        async
+        crossorigin="anonymous"
+        data-clerk-publishable-key="pk_test_ZWFnZXItZm9hbC05OS5jbGVyay5hY2NvdW50cy5kZXYk"
+        src="https://eager-foal-99.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        type="text/javascript"
+    ></script>
+
+   
 </body>
 
 </html>
