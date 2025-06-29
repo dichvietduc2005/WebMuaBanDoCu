@@ -1,7 +1,7 @@
 <?php
 function footer() {
     ?>
-    <footer>
+    <footer class="footer">
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-column">

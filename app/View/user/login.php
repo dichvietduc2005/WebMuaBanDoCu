@@ -56,71 +56,80 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clerk.js Quickstart</title>
     <style>
-        /* Tùy chỉnh CSS cơ bản để nhìn rõ hơn */
-        body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f0f2f5;
-        }
-        #app {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
+    /* Tùy chỉnh CSS cơ bản để nhìn rõ hơn */
+    body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f0f2f5;
+    }
+
+    #app {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
     </style>
 </head>
+
 <body>
-    
+
     <div id="app">
         Đang tải Clerk...
     </div>
 
-    <script
-        async
-        crossorigin="anonymous"
+    <script async crossorigin="anonymous"
         data-clerk-publishable-key="pk_test_ZWFnZXItZm9hbC05OS5jbGVyay5hY2NvdW50cy5kZXYk"
         src="https://eager-foal-99.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-        type="text/javascript"
-    ></script>
+        type="text/javascript"></script>
 
     <script>
-        // Lắng nghe sự kiện 'load' của cửa sổ để đảm bảo DOM đã sẵn sàng
-        window.addEventListener('load', async function () {
-            // Tải và khởi tạo Clerk.js
-            await Clerk.load();
-            console.log('ClerkJS đã được tải và sẵn sàng.');
+    // Lắng nghe sự kiện 'load' của cửa sổ để đảm bảo DOM đã sẵn sàng
+    window.addEventListener('load', async function() {
+        // Tải và khởi tạo Clerk.js
+        await Clerk.load();
+        console.log('ClerkJS đã được tải và sẵn sàng.');
 
-            // Lấy phần tử app để mount UI của Clerk
-            const appDiv = document.getElementById('app');
-            appDiv.innerHTML = ''; // Xóa nội dung "Đang tải Clerk..."
+        // Lấy phần tử app để mount UI của Clerk
+        const appDiv = document.getElementById('app');
+        appDiv.innerHTML = ''; // Xóa nội dung "Đang tải Clerk..."
 
-            // Kiểm tra trạng thái người dùng
-            if (Clerk.user) {
-                // Nếu người dùng đã đăng nhập, hiển thị nút người dùng (User Button)
-                const userButtonDiv = document.createElement('div');
-                userButtonDiv.id = 'user-button';
-                appDiv.appendChild(userButtonDiv);
-                Clerk.mountUserButton(userButtonDiv);
-                console.log('Người dùng đã đăng nhập, hiển thị User Button.');
-            } else {
-                // Nếu người dùng chưa đăng nhập, hiển thị widget Đăng nhập (Sign In)
-                const signInDiv = document.createElement('div');
-                signInDiv.id = 'sign-in';
-                appDiv.appendChild(signInDiv);
-                Clerk.mountSignIn(signInDiv);
-                console.log('Người dùng chưa đăng nhập, hiển thị Sign In widget.');
+        // Kiểm tra trạng thái người dùng
+        if (Clerk.user) {
+            // Nếu người dùng đã đăng nhập, hiển thị nút người dùng (User Button)
+            const userButtonDiv = document.createElement('div');
+            userButtonDiv.id = 'user-button';
+            appDiv.appendChild(userButtonDiv);
+            Clerk.mountUserButton(userButtonDiv);
+            console.log('Người dùng đã đăng nhập, hiển thị User Button.');
+            window.location.href = '../../../public/TrangChu.php';
+            return;
+        } else {
+            // Nếu người dùng chưa đăng nhập, hiển thị widget Đăng nhập (Sign In)
+            const signInDiv = document.createElement('div');
+            signInDiv.id = 'sign-in';
+            appDiv.appendChild(signInDiv);
+            Clerk.mountSignIn(signInDiv);
+            console.log('Người dùng chưa đăng nhập, hiển thị Sign In widget.');
+        }
+        Clerk.addListener('user', async (event) => {
+            if (event && event.id) {
+                // Đăng nhập thành công, chuyển hướng về trang chủ
+                window.location.href = '../../../public/TrangChu.php';
             }
         });
+    });
     </script>
 </body>
+
 </html>

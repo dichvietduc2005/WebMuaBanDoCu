@@ -1,123 +1,115 @@
 <?php
 require_once '../../../config/config.php';
-
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 // Kiểm tra đăng nhập
 if (!isset($_SESSION['user_id'])) {
     header('Location: user/login.php');
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng bán sản phẩm - Web Mua Bán Đồ Cũ</title>
+    <title>Đăng bán sản phẩm - Web Mua Bán Đồ Cũ</title> 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+           <link href="../../../public/assets/css/footer.css" rel="stylesheet">
+
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f7fb;
-            color: #333;
+            /* background: #f5f7fb; */
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        .sell-card {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(58,134,255,0.10);
+            padding: 36px 32px 28px 32px;
         }
-        .header {
+        .sell-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            gap: 12px;
+        }
+        .sell-title i {
+            font-size: 2.2rem;
+            color: #3a86ff;
+        }
+        .sell-desc {
             text-align: center;
-            margin-bottom: 30px;
+            color: #666;
+            margin-bottom: 32px;
+        }
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .form-control, select {
+            border-radius: 10px;
+            font-size: 1.1rem;
+            padding: 12px;
+            margin-bottom: 18px;
+        }
+        .btn-sell {
+            width: 100%;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            font-weight: 600;
         }
         .back-link {
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             color: #3a86ff;
             text-decoration: none;
         }
         .back-link:hover {
             text-decoration: underline;
         }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        textarea {
-            height: 120px;
-            resize: vertical;
-        }
-        .btn {
-            background: #3a86ff;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn:hover {
-            background: #2667cc;
-        }
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
     </style>
 </head>
-<body>    <div class="container">
+<body>
+    <?php renderHeader($pdo); ?>
+    <div class="sell-card">
         <a href="../../../public/TrangChu.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
-        
-        <div class="header">
-            <h1><i class="fas fa-store"></i> Đăng bán sản phẩm</h1>
-            <p>Đăng bán đồ cũ của bạn một cách dễ dàng</p>
+        <div class="sell-title">
+            <i class="fas fa-store"></i> Đăng bán sản phẩm
         </div>
-               
-        <form method="POST" action="../../Models/sell/SellModel.php" >
-            <div class="form-group">
-                <label for="title">Tiêu đề sản phẩm</label>
-                <input type="text" id="title" name="title" placeholder="Nhập tiêu đề sản phẩm..." required>
+        <div class="sell-desc">
+            Đăng bán đồ cũ của bạn một cách dễ dàng
+        </div>
+        <form method="POST" action="../../Models/sell/SellModel.php" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="title" class="form-label">Tiêu đề sản phẩm</label>
+                <input type="text" id="title" name="title" class="form-control" placeholder="Nhập tiêu đề sản phẩm..." required>
             </div>
-            
-            <div class="form-group">
-                <label for="category">Danh mục</label>
-                <select id="category" name="category_id" required>
+            <div class="mb-3">
+                <label for="category" class="form-label">Danh mục</label>
+                <select id="category" name="category_id" class="form-control" required>
                     <option value="">Chọn danh mục</option>
                     <option value="1">Điện thoại & Máy tính bảng</option>
                     <option value="2">Laptop & Máy tính</option>
                     <option value="3">Thời trang & Phụ kiện</option>
                 </select>
             </div>
-            
-            <div class="form-group">
-                <label for="price">Giá bán (VNĐ)</label>
-                <input type="number" id="price" name="price" placeholder="0" min="1000" required>
+            <div class="mb-3">
+                <label for="price" class="form-label">Giá bán (VNĐ)</label>
+                <input type="number" id="price" name="price" class="form-control" placeholder="0" min="1000" required>
             </div>
-            
-            <div class="form-group">
-                <label for="condition">Tình trạng</label>
-                <select id="condition" name="condition_status" required>
+            <div class="mb-3">
+                <label for="condition" class="form-label">Tình trạng</label>
+                <select id="condition" name="condition_status" class="form-control" required>
                     <option value="">Chọn tình trạng</option>
                     <option value="new">Mới</option>
                     <option value="like_new">Như mới</option>
@@ -125,26 +117,23 @@ if (!isset($_SESSION['user_id'])) {
                     <option value="fair">Khá tốt</option>
                 </select>
             </div>
-
-            <div class="form-group">
-                <label for="location">Địa Chỉ</label>
-                <input type="text" id="location" name="location">
+            <div class="mb-3">
+                <label for="location" class="form-label">Địa Chỉ</label>
+                <input type="text" id="location" name="location" class="form-control">
             </div>
-            
-            <div class="form-group">
-                <label for="description">Mô tả sản phẩm</label>
-                <textarea id="description" name="description" placeholder="Mô tả chi tiết về sản phẩm..." required></textarea>
+            <div class="mb-3">
+                <label for="description" class="form-label">Mô tả sản phẩm</label>
+                <textarea id="description" name="description" class="form-control" placeholder="Mô tả chi tiết về sản phẩm..." required></textarea>
             </div>
-            
-            <div class="form-group">
-                <label for="images">Hình ảnh sản phẩm</label>
-                <input type="file" id="images" name="images[]" accept="image/*" multiple>
+            <div class="mb-3">
+                <label for="images" class="form-label">Hình ảnh sản phẩm</label>
+                <input type="file" id="images" name="images[]" class="form-control" accept="image/*" multiple>
             </div>
-            
-            <button type="submit" class="btn">
+            <button type="submit" class="btn btn-primary btn-sell">
                 <i class="fas fa-upload"></i> Đăng bán sản phẩm
             </button>
         </form>
     </div>
+    <?php footer(); ?>
 </body>
 </html>

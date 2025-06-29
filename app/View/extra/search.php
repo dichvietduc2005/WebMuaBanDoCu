@@ -1,6 +1,8 @@
 <?php
 require_once('../../../config/config.php');
 require_once('../../Controllers/extra/ExtraController.php');
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 $query = $_GET['q'] ?? '';
 $results = [];
@@ -15,9 +17,11 @@ if (!empty($query)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tìm kiếm - Web Mua Bán Đồ Cũ</title>
-    <link rel="stylesheet" href="../../../public/assets/css/index.css">
+    <link rel="stylesheet" href="../../../public/assets/css/search.css">
+    <link rel="stylesheet" href="../../../public/assets/css/footer.css">
 </head>
 <body>
+    <?php renderHeader($pdo); ?>
     <div class="container">
         <h1>Kết quả tìm kiếm</h1>
         
@@ -33,6 +37,7 @@ if (!empty($query)) {
                             <p class="price"><?= number_format($product['price']) ?> VNĐ</p>
                         </div>
                     <?php endforeach; ?>
+                    
                 </div>
             <?php else: ?>
                 <p>Không tìm thấy sản phẩm nào.</p>
@@ -43,5 +48,9 @@ if (!empty($query)) {
         
         <a href="../../../public/TrangChu.php">Về trang chủ</a>
     </div>
+    
+    
+    value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
+    <?php footer(); ?>
 </body>
 </html>

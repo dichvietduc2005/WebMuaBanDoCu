@@ -3,7 +3,9 @@
 require_once '../../../config/config.php';
 require_once('../../Controllers/auth_helper.php'); // For Auth functions
 require_once('../../Controllers/order/OrderController.php'); // For order-related functions
-require_once('../../Controllers/cart/CartController.php'); // For cart-related functions
+require_once('../../Controllers/cart/CartController.php'); // For cart-related 
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 // Kiểm tra đăng nhập bằng Auth helper
 $user = requireLogin();
@@ -33,6 +35,9 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="../../../public/assets/css/footer.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -475,6 +480,9 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
     </style>
 </head>
 <body>
+     <?php
+    renderHeader($pdo);
+    ?>
     <div class="modern-container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb" aria-label="breadcrumb">
@@ -656,5 +664,6 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
             <?php endif; ?>
         <?php endif; ?>
     </div>
+       <?php footer(); ?>
 </body>
 </html>

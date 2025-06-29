@@ -4,6 +4,8 @@ require_once '../../../config/config.php';
 require_once('../../Controllers/auth_helper.php'); // For Auth functions
 require_once('../../Controllers/order/OrderController.php'); // For order-related functions
 require_once('../../Controllers/cart/CartController.php'); // For cart-related functions
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 // Kiểm tra đăng nhập bằng Auth helper
 $user = requireLogin();
@@ -38,7 +40,11 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?> - Web Mua Bán Đồ Cũ</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -354,6 +360,9 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     </style>
 </head>
 <body>
+     <?php
+    renderHeader($pdo);
+    ?>
     <div class="container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
@@ -517,5 +526,6 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     </div>
 
     <script src="../../../public/assets/js/order_details.js"></script>
+    <?php footer(); ?>
 </body>
 </html>

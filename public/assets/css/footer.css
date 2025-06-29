@@ -1,4 +1,8 @@
-
+:root {
+  --dark: #212529;
+  --primary: #3a86ff;
+  /* ... */
+}
 
 @media (min-width: 768px) {
   .footer {
@@ -9,8 +13,8 @@
 
 /* Footer */
 footer {
-  background: var(--dark);
-  color: white;
+  background: var(--dark) !important;
+  color: white !important;
   padding: 60px 0 30px;
   margin-top: 60px;
 }

@@ -2,6 +2,11 @@
 // modules/user/search_functions.php
 // Hàm tìm kiếm sản phẩm cho user
 
+require_once(__DIR__ . '/../../Models/extra/Search.php');
+
+
+
+
 /**
  * Tìm kiếm sản phẩm nâng cao
  * 
