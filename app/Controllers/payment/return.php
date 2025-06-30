@@ -1,7 +1,7 @@
 <?php
-session_start();
 require_once(__DIR__ . '/../../../config/config.php');
-require_once(__DIR__ . "/vnpay_debug_logger.php");
+require_once(__DIR__ . "/../../Models/cart/CartModel.php");
+require_once(__DIR__ . "/../../Controllers/cart/CartController.php");
 require_once(__DIR__ . '/../../helpers.php'); // For helper functions
 
 $vnp_SecureHash_received = $_GET['vnp_SecureHash'] ?? '';
@@ -84,13 +84,15 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                     // Xóa giỏ hàng sau khi thanh toán thành công
                     $buyer_id = $current_order_data['buyer_id'];
                     if ($buyer_id) {
-                        // Logged-in user - clear by user_id
-                        clearCart($pdo, $buyer_id);
-                        error_log("Cleared cart for user_id: $buyer_id after successful payment for order: $order_id (order_number: $order_number_from_vnpay)");
-                    } else {
-                        // Guest user - clear by session
-                        clearCart($pdo, null);
-                        error_log("Cleared guest cart after successful payment for order: $order_id (order_number: $order_number_from_vnpay)");
+                        try {
+                            // Set session user_id để CartController có thể clear đúng cart
+                            $_SESSION['user_id'] = $buyer_id;
+                            $cartController = new CartController($pdo);
+                            $cartController->clearCart();
+                            error_log("Cleared cart for user_id: $buyer_id after successful payment for order: $order_id (order_number: $order_number_from_vnpay)");
+                        } catch (Exception $e) {
+                            error_log("Error clearing cart for user $buyer_id: " . $e->getMessage());
+                        }
                     }
                 }
 
@@ -143,6 +145,14 @@ if ($order_number_from_vnpay) {
 
 $queryString = http_build_query($redirectParams);
 $successPageUrl = '/WebMuaBanDoCu/app/View/payment/success.php';
+
+// Debug log
+error_log("VNPAY Return - Redirecting to: " . $successPageUrl . '?' . $queryString);
+
+// Clear any output buffer before redirect
+if (ob_get_level()) {
+    ob_end_clean();
+}
 
 header('Location: ' . $successPageUrl . '?' . $queryString);
 exit;

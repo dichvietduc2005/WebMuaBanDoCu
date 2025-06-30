@@ -1,7 +1,10 @@
 <?php
-session_start();
 require_once '../../../config/config.php';
 require_once('../../helpers.php'); // For helper functions
+
+// Debug logging
+error_log("SUCCESS.PHP: Loaded successfully");
+error_log("SUCCESS.PHP: GET parameters: " . print_r($_GET, true));
 
 // Retrieve VNPAY parameters from URL
 $vnp_TxnRef = htmlspecialchars($_GET['vnp_TxnRef'] ?? 'N/A');
@@ -17,19 +20,8 @@ $payment_status_message = htmlspecialchars($_GET['payment_status_message'] ?? 'K
 $payment_successful = isset($_GET['payment_successful']) && $_GET['payment_successful'] === '1';
 $app_order_id = htmlspecialchars($_GET['app_order_id'] ?? $vnp_TxnRef); // Use app_order_id if available
 
-// Cập nhật trạng thái đơn hàng dựa trên kết quả thanh toán
-if ($payment_successful && $vnp_ResponseCode === '00') {
-    // Thanh toán thành công
-    $order_status = 'success';
-    $payment_status = 'paid';
-} else {
-    // Thanh toán thất bại
-    $order_status = 'failed';
-    $payment_status = 'failed';
-}
-
-// Cập nhật trạng thái trong database
-updateOrderStatusByNumber($pdo, $vnp_TxnRef, $order_status, $payment_status, $vnp_TransactionNo);
+// Trạng thái đơn hàng đã được cập nhật trong return.php
+// Chỉ hiển thị thông tin từ URL parameters
 
 // Format amount (VNPAY amount is x100)
 $display_amount = number_format((int)$vnp_Amount / 100, 0, ',', '.') . ' VNĐ';
@@ -142,19 +134,19 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
                 <?php endif; ?>
 
                 <div class="footer-links">
-                    <a href="/WebMuaBanDoCu/public/TrangChu.php">Tiếp tục mua sắm</a>
+                    <a href="../../../public/TrangChu.php">Tiếp tục mua sắm</a>
                     <?php if ($payment_successful && $app_order_id !== 'N/A'): ?>
                         <!-- You could link to an order details page if you have one -->
-                        <!-- <a href="/Web_MuaBanDoCu/public/order/details.php?order_id=<?php echo urlencode($app_order_id); ?>">Xem chi tiết đơn hàng</a> -->
+                        <!-- <a href="../order/details.php?order_id=<?php echo urlencode($app_order_id); ?>">Xem chi tiết đơn hàng</a> -->
                     <?php else: ?>
-                         <a href="/WebMuaBanDoCu/public/cart/">Xem lại giỏ hàng</a>
+                         <a href="../cart/index.php">Xem lại giỏ hàng</a>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../../assets/js/jquery-1.11.3.min.js"></script>
-    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../../public/assets/js/jquery-1.11.3.min.js"></script>
+    <script src="../../../public/assets/js/bootstrap.min.js"></script>
 </body>
 </html>

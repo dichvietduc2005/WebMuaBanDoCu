@@ -1,163 +1,143 @@
 <?php
-require_once '../../../config/config.php';
+/**
+ * View cho trang thanh toán
+ */
+require_once(__DIR__ . '/../../../config/config.php');
+require_once(__DIR__ . '/../../Models/cart/CartModel.php');
 require_once(__DIR__ . '/../../Controllers/cart/CartController.php');
 
-$user_id = get_current_user_id();
-$is_guest = !$user_id;
-
-if (!isset($pdo)) {
-    die("Lỗi kết nối cơ sở dữ liệu. Vui lòng thử lại sau.");
+// Kiểm tra đăng nhập
+$user_id = $_SESSION['user_id'] ?? null;
+if (!$user_id) {
+    $_SESSION['error_message'] = 'Bạn cần đăng nhập để thanh toán.';
+    header('Location: ../auth/login.php');
+    exit;
 }
 
-$cartItems = getCartItems($pdo, $user_id);
-$cartTotal = getCartTotal($pdo, $user_id);
-$cartItemCount = getCartItemCount($pdo, $user_id);
+// Lấy thông tin giỏ hàng
+$cartController = new CartController($pdo);
+$cartItems = $cartController->getCartItems();
+$cartTotal = $cartController->getCartTotal();
 
+// Kiểm tra giỏ hàng có sản phẩm không
+if (empty($cartItems)) {
+    $_SESSION['error_message'] = 'Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.';
+    header('Location: ../cart/index.php');
+    exit;
+}
+
+// Lấy thông tin user từ database
+$stmt = $pdo->prepare("SELECT full_name, email, phone, address FROM users WHERE id = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+// Import các thành phần UI
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ hàng của bạn - Web Mua Bán Đồ Cũ</title>
+    <title>Thanh toán</title>
+    <link href="../../../public/assets/css/checkout.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../../public/assets/css/checkout.css">
-    <link rel="stylesheet" href="../../../public/assets/css/footer.css">
 </head>
-
 <body>
-    <?php
-    include_once __DIR__ . '/../../Components/header/Header.php';
-    renderHeader($pdo);
-    ?>
+    <?php renderHeader($pdo); ?>
 
-    <!-- Cart Content -->
-    <div class="cart-container">
-        <div class="cart-header">
-            <h1 class="cart-title">Giỏ hàng của bạn</h1>
-            <a href="../TrangChu.php" class="continue-shopping">
-                <i class="fas fa-arrow-left me-1"></i> Tiếp tục mua sắm
-            </a>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="cart-items-container">
-                    <?php if (empty($cartItems)): ?>
-                    <div class="empty-cart">
-                        <span class="empty-cart-icon"><i class="fas fa-box-open"></i></span>
-                        <h3>Giỏ hàng của bạn hiện đang trống</h3>
-                        <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
-                        <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
+    <div class="container mt-5">
+        <form action="../../Controllers/payment/create_payment.php" method="POST" id="checkout-form">
+            <input type="hidden" name="redirect" value="true">
+            <input type="hidden" name="order_id" value="<?php echo 'ORD-' . date('Ymd') . '-' . strtoupper(uniqid()); ?>">
+            <input type="hidden" name="amount" value="<?php echo $cartTotal; ?>">
+            <input type="hidden" name="order_desc" value="Thanh toan don hang">
+            <input type="hidden" name="language" value="vn">
+            <input type="hidden" name="order_type" value="billpayment">
+            <input type="hidden" name="bank_code" value="">
+            <input type="hidden" name="txtexpire" value="">
+            <input type="hidden" name="txt_bill_country" value="VN">
+            <input type="hidden" name="txt_bill_state" value="">
+            
+            <div class="row">
+                <!-- Cột thông tin khách hàng -->
+                <div class="col-md-7">
+                    <h2>Thông tin thanh toán</h2>
+                    <div class="mb-3">
+                        <label for="txt_billing_fullname" class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" id="txt_billing_fullname" name="txt_billing_fullname" value="<?php echo htmlspecialchars($user['full_name'] ?? ''); ?>" required>
                     </div>
-                    <?php else: ?>
-                    <?php foreach ($cartItems as $item): ?>
-                    <div class="cart-item">
-                        <div class="item-image-container">
-                            <?php if (!empty($item['image_path'])): ?>
-                            <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>"
-                                alt="<?php echo htmlspecialchars($item['product_name'] ?? 'Sản phẩm'); ?>" class="item-image">
-                            <?php else: ?>
-                            <div class="item-image"
-                                style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; width: 100%; height: 100%;">
-                                <span>No Image</span>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="item-details">
-                            <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
-
-                            <div class="item-price">
-                                <span class="price-label">Giá:</span>
-                                <span><?php echo number_format($item['current_price'] ?? $item['added_price'] ?? 0, 0, ',', '.') . ' VNĐ'; ?></span>
-                            </div>
-
-                            <div class="item-meta">
-                                <span><i class="fas fa-tag"></i> <?php echo htmlspecialchars($item['category_name'] ?? ''); ?></span>
-                                <span><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($item['location'] ?? ''); ?></span>
-                            </div>
-
-                            <div class="quantity-controls">
-                                <button class="quantity-btn quantity-decrease" data-product-id="<?php echo $item['product_id']; ?>">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number" class="quantity-input" value="<?php echo $item['quantity'] ?? 1; ?>" min="1" data-product-id="<?php echo $item['product_id']; ?>">
-                                <button class="quantity-btn quantity-increase" data-product-id="<?php echo $item['product_id']; ?>">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="item-total-container">
-                            <div class="item-total-label">Thành tiền</div>
-                            <div class="item-total"><?php echo number_format($item['subtotal'] ?? 0, 0, ',', '.') . ' VNĐ'; ?></div>
-                        </div>
-
-                        <button class="remove-btn" data-product-id="<?php echo $item['product_id']; ?>">
-                            <i class="fas fa-times"></i>
-                        </button>
+                    <div class="mb-3">
+                        <label for="txt_billing_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="txt_billing_email" name="txt_billing_email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required>
                     </div>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
+                    <div class="mb-3">
+                        <label for="txt_billing_mobile" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="txt_billing_mobile" name="txt_billing_mobile" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="txt_inv_addr1" class="form-label">Địa chỉ nhận hàng</label>
+                        <textarea class="form-control" id="txt_inv_addr1" name="txt_inv_addr1" rows="3" required><?php echo htmlspecialchars($user['address'] ?? ''); ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="txt_bill_city" class="form-label">Thành phố</label>
+                        <input type="text" class="form-control" id="txt_bill_city" name="txt_bill_city" value="" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="order_notes" class="form-label">Ghi chú đơn hàng (tùy chọn)</label>
+                        <textarea class="form-control" id="order_notes" name="order_notes" rows="3"></textarea>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-lg-4">
-                <div class="order-summary">
-                    <h2 class="summary-title">Tóm tắt đơn hàng</h2>
+                <!-- Cột tóm tắt đơn hàng -->
+                <div class="col-md-5">
+                    <div class="order-summary">
+                        <h2>Đơn hàng của bạn</h2>
+                        <ul class="list-group mb-3">
+                            <?php foreach ($cartItems as $item): ?>
+                                <li class="list-group-item d-flex justify-content-between lh-sm">
+                                    <div>
+                                        <h6 class="my-0"><?php echo htmlspecialchars($item['product_name']); ?></h6>
+                                        <small class="text-muted">Số lượng: <?php echo htmlspecialchars($item['quantity']); ?></small>
+                                    </div>
+                                    <span class="text-muted"><?php echo number_format($item['subtotal']); ?> VNĐ</span>
+                                </li>
+                            <?php endforeach; ?>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Tổng cộng (VNĐ)</span>
+                                <strong><?php echo number_format($cartTotal); ?> VNĐ</strong>
+                            </li>
+                        </ul>
 
-                    <div class="summary-row">
-                        <span>Tạm tính</span>
-                        <span class="summary-value"><?php echo number_format($cartTotal, 0, ',', '.') . ' VNĐ'; ?></span>
-                    </div>
-
-                    <div class="summary-row">
-                        <span>Phí vận chuyển</span>
-                        <span class="summary-value">Miễn phí</span>
-                    </div>
-
-                    <div class="summary-row">
-                        <span>Giảm giá</span>
-                        <span class="summary-value">0 VNĐ</span>
-                    </div>
-
-                    <div class="summary-row total">
-                        <span>Tổng cộng</span>
-                        <span class="summary-total-value"><?php echo number_format($cartTotal, 0, ',', '.') . ' VNĐ'; ?></span>
-                    </div>
-
-                    <button class="checkout-btn">
-                        <i class="fas fa-lock me-1"></i> Thanh toán ngay
-                    </button>
-
-                    <div class="mt-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="termsCheck" checked>
-                            <label class="form-check-label small" for="termsCheck">
-                                Tôi đồng ý với <a href="#" class="text-primary">Điều khoản & Điều kiện</a>
-                                và <a href="#" class="text-primary">Chính sách bảo mật</a>
-                            </label>
+                        <h4>Phương thức thanh toán</h4>
+                        <div class="my-3">
+                            <div class="form-check">
+                                <input id="vnpay" name="payment_method" type="radio" class="form-check-input" value="vnpay" checked required>
+                                <label class="form-check-label" for="vnpay">Thanh toán qua VNPAY</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="cod" name="payment_method" type="radio" class="form-check-input" value="cod" required disabled>
+                                <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD) - Tạm khóa</label>
+                            </div>
                         </div>
+                        <hr class="my-4">
+                        <button class="w-100 btn btn-primary btn-lg" type="submit">Thanh toán qua VNPAY</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Toast Container -->
     <div class="toast-container">
         <!-- Toast notifications will appear here -->
     </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script src="../../../public/assets/js/checkout.js"></script>
-<?php
-    include_once __DIR__ . '/../../Components/footer/Footer.php';
-    Footer();
-    
-?>
-</body>
 
+    <?php footer(); ?>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="../../../public/assets/js/checkout.js"></script>
+</body>
 </html>

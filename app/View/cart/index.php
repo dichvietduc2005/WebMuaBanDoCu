@@ -1,29 +1,43 @@
 <?php
-// filepath: c:\wamp64\www\Web_MuaBanDoCu\public\cart\index.php
+/**
+ * View hiển thị giỏ hàng cho trang web WebMuaBanDoCu
+ * 
+ * File này hiển thị các sản phẩm trong giỏ hàng của người dùng,
+ * cho phép người dùng cập nhật số lượng, xóa sản phẩm và thanh toán
+ * 
+ * @package WebMuaBanDoCu
+ * @author  Developer
+ */
+
+// Đường dẫn tới file cấu hình
 require_once '../../../config/config.php';
-require_once(__DIR__ . '/../..//../app/Controllers/cart/CartController.php'); // For cart-related functions
-// Lấy user_id hiện tại (có thể null cho guest users)
+
+// Import CartModel (phải được import trước CartController)
+require_once(__DIR__ . '/../../Models/cart/CartModel.php');
+
+// Import CartController
+require_once(__DIR__ . '/../../Controllers/cart/CartController.php'); 
+
+// Import các thành phần UI
 include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
-$user_id = get_current_user_id();
-$is_guest = !$user_id;
-
+// Kiểm tra kết nối CSDL
 if (!isset($pdo)) {
     die("Lỗi kết nối cơ sở dữ liệu. Vui lòng thử lại sau.");
 }
 
-$cartItems = getCartItems($pdo, $user_id);
-$cartTotal = getCartTotal($pdo, $user_id);
-$cartItemCount = getCartItemCount($pdo, $user_id);
+// Khởi tạo CartController
+$cartController = new CartController($pdo);
 
-// Debug log cho cart
-error_log("=== CART DEBUG ===");
-error_log("User ID: " . ($user_id ? $user_id : 'NULL (guest)'));
-error_log("Is Guest: " . ($is_guest ? 'YES' : 'NO'));
-error_log("Cart Items: " . print_r($cartItems, true));
-error_log("Cart Total: " . $cartTotal);
-error_log("Cart Item Count: " . $cartItemCount);
+// Lấy thông tin user hiện tại
+$user_id = $cartController->getCurrentUserId();
+$is_guest = !$user_id;
+
+// Sử dụng phương thức từ đối tượng CartController
+$cartItems = $cartController->getCartItems();
+$cartTotal = $cartController->getCartTotal();
+$cartItemCount = $cartController->getCartItemCount();
 
 ?>
 <!DOCTYPE html>
@@ -72,10 +86,7 @@ error_log("Cart Item Count: " . $cartItemCount);
                             <div class="item-details">
                                 <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
                                 <p class="item-price">
-                                    <?php 
-                                    $price = $item['current_price'] ?? $item['added_price'] ?? 0;
-                                    echo number_format($price, 0, ',', '.') . ' VNĐ';
-                                    ?>
+                                    $<?php echo number_format(($item['current_price'] ?? $item['added_price'] ?? 0) / 1000, 2); ?>
                                 </p>
                             </div>
 
@@ -89,10 +100,7 @@ error_log("Cart Item Count: " . $cartItemCount);
                             </div>
 
                             <div class="item-total">
-                                <?php 
-                                $total = ($item['current_price'] ?? $item['added_price'] ?? 0) * ($item['quantity'] ?? 1);
-                                echo number_format($total, 0, ',', '.') . ' VNĐ';
-                                ?>
+                                $<?php echo number_format(($item['subtotal'] ?? 0) / 1000, 2); ?>
                             </div>
 
                             <button type="button" class="remove-btn remove-item"
@@ -105,30 +113,33 @@ error_log("Cart Item Count: " . $cartItemCount);
                     <h2 class="summary-title">Order Summary</h2>
 
                     <div class="summary-row">
-                        <span>Tạm tính</span>
-                        <span><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
+                        <span>Subtotal</span>
+                        <span>$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
                     </div>
 
                     <div class="summary-row">
                         <span>Shipping</span>
-                        <span>Miễn Phí</span>
+                        <span>Free</span>
                     </div>
 
-                    
+                    <div class="summary-row">
+                        <span>Taxes</span>
+                        <span>Calculated at checkout</span>
                     </div>
 
                     <div class="summary-row total">
-                        <span>Tổng tiền</span>
-                        <span id="total-amount"><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
+                        <span>Total</span>
+                        <span id="total-amount">$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
                     </div>
 
                     <?php if ($is_guest): ?>
                         <div
                             style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
+                            Vui lòng <a href="../auth/login.php">đăng nhập</a> để tiếp tục thanh toán.
                         </div>
                     <?php endif; ?>
 
-                    <button type="button" class="checkout-btn" onclick="window.location.href='../checkout/index.php'">
+                    <button type="button" class="checkout-btn" onclick="window.location.href='../checkout/index.php'"<?php echo $is_guest ? ' disabled' : ''; ?>>
                         Checkout
                     </button>
                 </div>
@@ -136,8 +147,8 @@ error_log("Cart Item Count: " . $cartItemCount);
         </div>
     </div>
     <?php footer(); ?>
+    <!-- Script JavaScript xử lý tính năng giỏ hàng -->
     <script src="../../../public/assets/js/cart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

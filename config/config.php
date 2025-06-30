@@ -22,7 +22,7 @@ $vnp_TmnCode = "X4DCQ1UX"; // Website ID in VNPAY System
 $vnp_HashSecret = "MPI8C42IYO31NDYYLS2HN2KYD0XBYIFH"; // Secret key
 $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 // Đảm bảo URL này khớp với vị trí file return.php của bạn
-$vnp_Returnurl = "http://localhost:8080/WebMuaBanDoCu/app/Controllers/payment/return.php"; 
+$vnp_Returnurl = "http://localhost/WebMuaBanDoCu/app/Controllers/payment/return.php"; 
 $vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
 //Config input format
 //Expire

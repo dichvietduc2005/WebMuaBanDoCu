@@ -87,118 +87,19 @@ if (!function_exists('getStatusBadge')) {
 
 /**
  * Cart helper functions
+ * Sử dụng lại các hàm từ CartController để tránh trùng lặp mã
  */
-if (!function_exists('getCartItems')) {
-    function getCartItems($pdo, $user_id = null) {
-        try {
-            if (!$user_id) {
-                // Nếu không có user_id truyền vào, thử lấy từ session
-                $user_id = get_current_user_id();
-            }
-
-            if (!$user_id) {
-                return []; // Guest không có giỏ hàng
-            }
-
-            $sql = "
-                SELECT
-                    ci.id as cart_item_id,
-                    ci.product_id,
-                    ci.quantity,
-                    ci.added_price,
-                    ci.condition_snapshot,
-                    p.title AS product_name,
-                    p.price AS current_price,
-                    p.stock_quantity,
-                    p.status as product_status,
-                    pi.image_path,
-                    (ci.quantity * ci.added_price) AS subtotal
-                FROM cart_items ci
-                JOIN carts c ON ci.cart_id = c.id
-                JOIN products p ON ci.product_id = p.id
-                LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-                WHERE c.user_id = ?
-                ORDER BY ci.added_at DESC
-            ";
-
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$user_id]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        } catch (Exception $e) {
-            error_log("getCartItems Error: " . $e->getMessage());
-            return [];
-        }
-    }
-}
-
-if (!function_exists('calculateCartTotal')) {
-    function calculateCartTotal($cartItems) {
-        $total = 0;
-        foreach ($cartItems as $item) {
-            // Use added_price (price when added to cart) for calculation
-            $price = isset($item['added_price']) ? $item['added_price'] : $item['current_price'];
-            $total += $price * $item['quantity'];
-        }
-        return $total;
-    }
-}
-
-if (!function_exists('getCartTotal')) {
-    function getCartTotal($pdo, $user_id = null) {
-        try {
-            if (!$user_id) {
-                $user_id = get_current_user_id();
-            }
-            
-            if (!$user_id) {
-                return 0; // Guest không có giỏ hàng
-            }
-            
-            $stmt = $pdo->prepare("
-                SELECT SUM(ci.added_price * ci.quantity) as total
-                FROM cart_items ci
-                JOIN carts c ON ci.cart_id = c.id
-                WHERE c.user_id = ?
-            ");
-            $stmt->execute([$user_id]);
-            
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return (float)($result['total'] ?? 0);
-        } catch (Exception $e) {
-            error_log("getCartTotal Error: " . $e->getMessage());
-            return 0;
-        }
-    }
-}
-
-if (!function_exists('getCartItemCount')) {
-    function getCartItemCount($pdo, $user_id = null) {
-        try {
-            if (!$user_id) {
-                $user_id = get_current_user_id();
-            }
-            
-            if (!$user_id) {
-                return 0; // Guest không có giỏ hàng
-            }
-            
-            $stmt = $pdo->prepare("
-                SELECT SUM(ci.quantity) as total 
-                FROM cart_items ci
-                JOIN carts c ON ci.cart_id = c.id 
-                WHERE c.user_id = ?
-            ");
-            $stmt->execute([$user_id]);
-            
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return (int)($result['total'] ?? 0);
-        } catch (Exception $e) {
-            error_log("getCartItemCount Error: " . $e->getMessage());
-            return 0;
-        }
-    }
-}
+// if (!function_exists('calculateCartTotal')) {
+//     function calculateCartTotal($cartItems) {
+//         $total = 0;
+//         foreach ($cartItems as $item) {
+//             // Use added_price (price when added to cart) for calculation
+//             $price = isset($item['added_price']) ? $item['added_price'] : $item['current_price'];
+//             $total += $price * $item['quantity'];
+//         }
+//         return $total;
+//     }
+// }
 
 /**
  * VNPAY helper functions
@@ -222,29 +123,6 @@ if (!function_exists('get_vnpay_config_for_logging')) {
             'vnp_Url' => $vnp_Url ?? 'NOT_SET', 
             'vnp_Returnurl' => $vnp_Returnurl ?? 'NOT_SET'
         ];
-    }
-}
-
-/**
- * Clear cart after successful payment
- */
-if (!function_exists('clearCart')) {
-    function clearCart($pdo, $user_id = null) {
-        try {
-            if ($user_id) {
-                // Clear cart for logged-in user
-                $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
-                $stmt->execute([$user_id]);
-            } else {
-                // For guest users, we would need session-based cart
-                // Currently this system seems to require login, so just return
-                return true;
-            }
-            return true;
-        } catch (Exception $e) {
-            error_log("Error clearing cart: " . $e->getMessage());
-            return false;
-        }
     }
 }
 

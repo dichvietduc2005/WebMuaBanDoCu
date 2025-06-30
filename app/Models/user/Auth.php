@@ -224,13 +224,13 @@ class Auth {
     /**
      * Cập nhật thông tin profile
      */
-    public function updateProfile($user_id, $full_name, $phone = null) {
+    public function updateProfile($user_id, $full_name, $phone = null, $address = null) {
         try {
             $stmt = $this->pdo->prepare("
-                UPDATE users SET full_name = ?, phone = ?, updated_at = NOW() 
+                UPDATE users SET full_name = ?, phone = ?, address = ?, updated_at = NOW() 
                 WHERE id = ?
             ");
-            $result = $stmt->execute([$full_name, $phone, $user_id]);
+            $result = $stmt->execute([$full_name, $phone, $address, $user_id]);
             
             if ($result) {
                 // Cập nhật session
@@ -331,6 +331,12 @@ class Auth {
             error_log("Password reset error: " . $e->getMessage());
             return ['success' => false, 'message' => 'Có lỗi hệ thống. Vui lòng thử lại sau.'];
         }
+    }
+    
+    public function getUserById($user_id) {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
     
     // =============== PRIVATE METHODS ===============

@@ -11,7 +11,7 @@ function addToCart(event, productId) {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
     }
 
-    fetch('../../../Models/cart/CartModel.php', {
+    fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -21,32 +21,17 @@ function addToCart(event, productId) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("Response data:", data);
         if (data.success) {
             showToast('success', 'Thành công!', 'Sản phẩm đã được thêm vào giỏ hàng.');
-
-            const cartIconLink = document.querySelector('a[href="cart/index.php"][title="Giỏ hàng"]');
-            if (cartIconLink) {
-                let cartCountBadge = cartIconLink.querySelector('.cart-count');
-                if (data.cart_count > 0) {
-                    if (!cartCountBadge) {
-                        cartCountBadge = document.createElement('span');
-                        cartCountBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count';
-                        cartIconLink.appendChild(cartCountBadge);
-                        // Ensure the parent link has position-relative if not already set by Bootstrap
-                        if (!cartIconLink.classList.contains('position-relative')) {
-                            cartIconLink.classList.add('position-relative');
-                        }
-                    }
-                    cartCountBadge.textContent = data.cart_count;
-                    cartCountBadge.style.display = '';
-                } else {
-                    if (cartCountBadge) {
-                        cartCountBadge.style.display = 'none';
-                    }
-                }
-            }
+            updateCartIcon(data.cart_count);
         } else {
-            showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+            // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
+            if (data.message && data.message.includes("Bạn cần đăng nhập")) {
+                 showLoginPromptToast();
+            } else {
+                showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+            }
         }
     })
     .catch(error => {
@@ -58,6 +43,64 @@ function addToCart(event, productId) {
             button.disabled = false;
             button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
         }
+    });
+}
+
+/**
+ * Cập nhật số lượng trên icon giỏ hàng
+ * @param {number} cart_count 
+ */
+function updateCartIcon(cart_count) {
+    const cartIconLink = document.querySelector('a[href*="cart/index.php"][title="Giỏ hàng"]');
+    if (cartIconLink) {
+        let cartCountBadge = cartIconLink.querySelector('.cart-count');
+        if (cart_count > 0) {
+            if (!cartCountBadge) {
+                cartCountBadge = document.createElement('span');
+                cartCountBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count';
+                cartIconLink.appendChild(cartCountBadge);
+                if (!cartIconLink.classList.contains('position-relative')) {
+                    cartIconLink.classList.add('position-relative');
+                }
+            }
+            cartCountBadge.textContent = cart_count;
+            cartCountBadge.style.display = '';
+        } else {
+            if (cartCountBadge) {
+                cartCountBadge.style.display = 'none';
+            }
+        }
+    }
+}
+
+/**
+ * Hiển thị thông báo yêu cầu đăng nhập
+ */
+function showLoginPromptToast() {
+    const toastContainer = document.getElementById('toast-container') || createToastContainer();
+    const toastEl = document.createElement('div');
+    toastEl.className = `toast align-items-center text-white bg-warning border-0`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+
+    // Xác định đường dẫn đến trang đăng nhập một cách linh hoạt
+    const loginPath = window.location.pathname.includes('/app/View/') ? '../auth/login.php' : 'app/View/auth/login.php';
+
+    toastEl.innerHTML = `
+        <div class="toast-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>Bạn cần đăng nhập để tiếp tục.</span>
+                <a href="${loginPath}" class="btn btn-light btn-sm ms-2">Đăng nhập</a>
+            </div>
+        </div>
+    `;
+    toastContainer.appendChild(toastEl);
+
+    const toast = new bootstrap.Toast(toastEl, { delay: 7000 });
+    toast.show();
+    toastEl.addEventListener('hidden.bs.toast', function () {
+        toastEl.remove();
     });
 }
 
@@ -104,7 +147,7 @@ function createToastContainer() {
 // Cancel order function
 function cancelOrder(orderId) {
     if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
-        fetch('../modules/order/cancel_order.php', {
+        fetch('/WebMuaBanDoCu/modules/order/cancel_order.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -131,7 +174,7 @@ function cancelOrder(orderId) {
 // Reorder function
 function reorder(orderId) {
     if (confirm('Bạn có muốn mua lại các sản phẩm trong đơn hàng này?')) {
-        fetch('../modules/order/reorder.php', {
+        fetch('/WebMuaBanDoCu/modules/order/reorder.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

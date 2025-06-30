@@ -11,6 +11,8 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
  */
 require_once(__DIR__ . "/../../../config/config.php");
 require_once(__DIR__ . "/../../helpers.php");
+require_once(__DIR__ . "/../../Models/cart/CartModel.php"); // Cần cho CartController
+require_once(__DIR__ . "/../../Controllers/cart/CartController.php"); // Import CartController
 require_once(__DIR__ . "/../../Models/user/Auth.php"); // Add Auth functions
 
 // ===== KIỂM TRA ĐĂNG NHẬP =====
@@ -24,7 +26,7 @@ if (!$user_id) {
         exit;
     }
       // Nếu là form submission trực tiếp, chuyển hướng đến trang đăng nhập
-    $_SESSION['login_redirect_url'] = '/WebMuaBanDoCu/app/router.php?controller=checkout&action=index';
+    $_SESSION['login_redirect_url'] = '/WebMuaBanDoCu/app/View/checkout/index.php';
     $_SESSION['error_message'] = 'Bạn cần đăng nhập để thanh toán.';
     header('Location: /WebMuaBanDoCu/app/router.php?controller=user&action=login');
     exit;
@@ -36,7 +38,7 @@ global $vnp_TmnCode, $vnp_HashSecret, $vnp_Url, $vnp_Returnurl, $pdo;
 
 $vnp_TxnRef = $_POST['order_id']; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
 $vnp_OrderInfo = $_POST['order_desc'];
-$vnp_OrderType = $_POST['order_type'];
+$vnp_OrderType = $_POST['order_type'] ?? 'billpayment';
 $vnp_Amount = $_POST['amount'] * 100;
 $vnp_Locale = $_POST['language'];
 $vnp_BankCode = $_POST['bank_code'];
@@ -120,18 +122,7 @@ if (isset($vnp_HashSecret)) {
     $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
 }
 
-// LOGGING POINT 2: After hashing, before redirect
-log_vnpay_debug_data("CREATE_PAYMENT - AFTER HASH", 
-    [
-        "vnp_Url_base" => $vnp_Url_original,
-        "query_params_string" => rtrim($query, '&'),
-        "final_vnp_Url_to_redirect" => $vnp_Url,
-        "vnp_TmnCode_used" => $vnp_TmnCode,
-        "vnp_HashSecret_used_partial" => substr($vnp_HashSecret, 0, 5) . '...'. substr($vnp_HashSecret, -5)
-    ],
-    $hashdata,
-    $vnpSecureHash
-);
+
 
 $returnData = array('code' => '00'
     , 'message' => 'success'
@@ -140,11 +131,10 @@ $returnData = array('code' => '00'
 // ===== INSERT THÔNG TIN ĐƠN HÀNG VÀO DATABASE =====
 $order_created_successfully = false;
 try {    // $user_id đã được lấy ở trên và chắc chắn có giá trị
-    // Lấy thông tin giỏ hàng
-    // Giả định getCartItems() trả về mảng các item, mỗi item có:
-    // product_id, quantity, product_name (hoặc title), price (giá bán của sản phẩm)
-    $cartItems = getCartItems($pdo, $user_id);
-    $cartTotal = getCartTotal($pdo, $user_id);
+    // Lấy thông tin giỏ hàng bằng CartController mới
+    $cartController = new CartController($pdo);
+    $cartItems = $cartController->getCartItems();
+    $cartTotal = $cartController->getCartTotal();
 
     if (empty($cartItems)) {
         throw new Exception("Giỏ hàng trống. Không thể tạo đơn hàng.");
@@ -248,7 +238,7 @@ try {    // $user_id đã được lấy ở trên và chắc chắn có giá tr
       // Xử lý lỗi và không redirect sang VNPAY
     if (isset($_POST['redirect'])) {
         $_SESSION['checkout_error_message'] = "Lỗi khi tạo đơn hàng: " . $e->getMessage();
-        header('Location: /WebMuaBanDoCu/app/router.php?controller=checkout&action=index');
+        header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
         exit;
     } else {
         echo json_encode(['code' => '99', 'message' => 'Lỗi khi tạo đơn hàng: ' . $e->getMessage(), 'data' => null]);
@@ -264,7 +254,7 @@ if ($order_created_successfully) {
         if (empty($vnp_Url) || !filter_var($vnp_Url, FILTER_VALIDATE_URL)) {            error_log("VNPAY Create Payment Error: Invalid or empty VNPAY URL. URL was: '" . $vnp_Url . "'");
             log_vnpay_debug_data("CREATE_PAYMENT - INVALID VNPAY URL", ["vnp_Url" => $vnp_Url]); // <--- LOG URL KHÔNG HỢP LỆ
             $_SESSION['checkout_error_message'] = "Lỗi nghiêm trọng: Không thể tạo URL thanh toán VNPAY. Vui lòng liên hệ quản trị viên.";
-            header('Location: /WebMuaBanDoCu/app/router.php?controller=checkout&action=index');
+            header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
             exit;
         }
         header('Location: ' . $vnp_Url);
@@ -282,7 +272,7 @@ if ($order_created_successfully) {
         if (empty($_SESSION['checkout_error_message'])) {
             // Fallback error message if not set by the catch block
             $_SESSION['checkout_error_message'] = "Không thể khởi tạo thanh toán. Đã xảy ra lỗi không xác định.";
-        }        header('Location: /WebMuaBanDoCu/app/router.php?controller=checkout&action=index');
+        }        header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
         exit;
     } else {
         // AJAX response for failure
