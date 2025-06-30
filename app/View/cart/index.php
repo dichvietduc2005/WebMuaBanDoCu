@@ -72,7 +72,10 @@ error_log("Cart Item Count: " . $cartItemCount);
                             <div class="item-details">
                                 <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
                                 <p class="item-price">
-                                    $<?php echo number_format(($item['current_price'] ?? $item['added_price'] ?? 0) / 1000, 2); ?>
+                                    <?php 
+                                    $price = $item['current_price'] ?? $item['added_price'] ?? 0;
+                                    echo number_format($price, 0, ',', '.') . ' VNĐ';
+                                    ?>
                                 </p>
                             </div>
 
@@ -86,7 +89,10 @@ error_log("Cart Item Count: " . $cartItemCount);
                             </div>
 
                             <div class="item-total">
-                                $<?php echo number_format(($item['subtotal'] ?? 0) / 1000, 2); ?>
+                                <?php 
+                                $total = ($item['current_price'] ?? $item['added_price'] ?? 0) * ($item['quantity'] ?? 1);
+                                echo number_format($total, 0, ',', '.') . ' VNĐ';
+                                ?>
                             </div>
 
                             <button type="button" class="remove-btn remove-item"
@@ -99,23 +105,21 @@ error_log("Cart Item Count: " . $cartItemCount);
                     <h2 class="summary-title">Order Summary</h2>
 
                     <div class="summary-row">
-                        <span>Subtotal</span>
-                        <span>$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
+                        <span>Tạm tính</span>
+                        <span><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
                     </div>
 
                     <div class="summary-row">
                         <span>Shipping</span>
-                        <span>Free</span>
+                        <span>Miễn Phí</span>
                     </div>
 
-                    <div class="summary-row">
-                        <span>Taxes</span>
-                        <span>Calculated at checkout</span>
+                    
                     </div>
 
                     <div class="summary-row total">
-                        <span>Total</span>
-                        <span id="total-amount">$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
+                        <span>Tổng tiền</span>
+                        <span id="total-amount"><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
                     </div>
 
                     <?php if ($is_guest): ?>
@@ -133,6 +137,7 @@ error_log("Cart Item Count: " . $cartItemCount);
     </div>
     <?php footer(); ?>
     <script src="../../../public/assets/js/cart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

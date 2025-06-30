@@ -20,8 +20,6 @@ $stmt->execute([$user_id]);
 <head>
     <meta charset="UTF-8">
     <title>Thông báo của tôi</title>
-    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
-    <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../public/assets/css/footer.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -49,6 +47,7 @@ $stmt->execute([$user_id]);
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
    <?php footer(); ?>
 </body>
 </html>

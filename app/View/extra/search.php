@@ -51,6 +51,7 @@ if (!empty($query)) {
     
     
     value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php footer(); ?>
 </body>
 </html>

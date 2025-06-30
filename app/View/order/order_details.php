@@ -445,7 +445,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                             </div>
                         </td>
                         <td class="quantity"><?php echo $item['quantity']; ?></td>
-                        <td class="price">$<?php echo number_format($item['product_price'] / 1000, 2); ?></td>
+                        <td class="price"><?php echo number_format($item['product_price'], 0, ',', '.'); ?> VNĐ</td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -81,7 +81,7 @@ function renderHeader($pdo,$categories = [], $cart_count = 0, $unread_notificati
             <div class="d-flex align-items-center gap-3">
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <!-- Notifications -->
-                <a href="extra/notifications.php" class="btn btn-link text-dark p-2 position-relative"
+                <a href="/WebMuaBanDoCu/app/View/extra/notifications.php" class="btn btn-link text-dark p-2 position-relative"
                     title="Thông báo">
                     <i class="fas fa-bell" style="font-size: 20px;"></i>
                     <?php if ($unread_notifications > 0): ?>
@@ -96,7 +96,7 @@ function renderHeader($pdo,$categories = [], $cart_count = 0, $unread_notificati
                     <i class="fas fa-comment" style="font-size: 20px;"></i>
                 </button>
                 <!-- Cart -->
-                <a href="cart/index.php" class="btn btn-link text-dark p-2 position-relative" title="Giỏ hàng">
+                <a href="/WebMuaBanDoCu/app/View/cart/index.php" class="btn btn-link text-dark p-2 position-relative" title="Giỏ hàng">
                     <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
                     <?php if ($cart_count > 0): ?>
                     <span
@@ -114,9 +114,9 @@ function renderHeader($pdo,$categories = [], $cart_count = 0, $unread_notificati
                         <span>Quản lý tin</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="product/Product.php"><i class="fas fa-box me-2"></i>Tin đăng
+                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i class="fas fa-box me-2"></i>Tin đăng
                                 của tôi</a></li>
-                        <li><a class="dropdown-item" href="order/order_history.php"><i
+                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/order/order_history.php"><i
                                     class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -139,16 +139,16 @@ function renderHeader($pdo,$categories = [], $cart_count = 0, $unread_notificati
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="user/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Đăng
+                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Đăng
                                 xuất</a></li>
                     </ul>
                 </div>
                 <!-- Post Ad Button -->
-                <a href="product/sell.php" class="btn btn-warning fw-bold px-4 py-2">
+                <a href="/WebMuaBanDoCu/app/View/product/sell.php" class="btn btn-warning fw-bold px-4 py-2">
                     <i class="fas fa-plus me-2"></i>ĐĂNG TIN
                 </a>
                 <?php else: ?>
-                <!-- Guest user buttons -->
+                <!-- Guest user buttons --> 
                 <a href="user/login.php" class="btn btn-outline-primary">
                     <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
                 </a>
