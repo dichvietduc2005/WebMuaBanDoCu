@@ -1,9 +1,10 @@
 <?php
 require_once '../../../config/config.php';
 
-require_once '../../Controllers/product/ProductController.php';
-include_once __DIR__ . '/../../Components/footer/Footer.php';
+require_once '../../Controllers/admin/AdminController.php';
 include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
+
 $_SESSION['role'] = 'admin';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: ../user/login.php');
