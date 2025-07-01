@@ -586,12 +586,12 @@ if (!function_exists('getConditionText')) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     function changeMainImage(imagePath, thumbnail) {
-        document.getElementById('mainImage').src = '../' + imagePath;
+    document.getElementById('mainImage').src = '/WebMuaBanDoCu/public/' + imagePath;
 
-        // Update active thumbnail
-        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-        thumbnail.classList.add('active');
-    }
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+    thumbnail.classList.add('active');
+}
 
     function changeQuantity(delta) {
         const qtyInput = document.getElementById('quantity');

@@ -19,31 +19,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
     $slug = generateUniqueSlug($pdo, $data['title']);
 
-    $uploadDir = '../../../public/uploads/products/';
-    if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
+    $main_image_path = '';
+    if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
+    $fileName = uniqid() . '_' . basename($_FILES['main_image']['name']);
+    $targetPath = '../../../public/uploads/products/' . $fileName;
+        if (move_uploaded_file($_FILES['main_image']['tmp_name'], $targetPath)) {
+        $main_image_path = 'uploads/products/' . $fileName;
+        }
     }
-    $image_paths = [];
+$image_paths = [];
 if (!empty($_FILES['images']['name'][0])) {
+    $count = count($_FILES['images']['name']);
+    if ($count > 3) {
+        session_start();
+        $_SESSION['sell_error'] = "Chỉ được phép tải lên tối đa 3 ảnh mô tả!";
+        header("Location: ../../View/product/sell.php");
+        exit;
+    }
     foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
         if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
             $fileName = uniqid() . '_' . basename($_FILES['images']['name'][$key]);
-            $targetPath = $uploadDir . $fileName;
+            $targetPath = '../../../public/uploads/products/' . $fileName;
             if (move_uploaded_file($tmp_name, $targetPath)) {
-                // Lưu đường dẫn tương đối để dùng cho web
                 $image_paths[] = 'uploads/products/' . $fileName;
             }
         }
     }
 }
+
+    $uploadDir = '../../../public/uploads/products/';
+    if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+    }
+   
     
     if (addProduct($pdo, $user_id, $data, $slug)) {
         $product_id = $pdo->lastInsertId();
-        foreach ($image_paths as $idx => $path) {
-            $is_primary = $idx === 0 ? 1 : 0;
-            $stmt = $pdo->prepare("INSERT INTO product_images (product_id, image_path, is_primary, created_at) VALUES (?, ?, ?, NOW())");
-            $stmt->execute([$product_id, $path, $is_primary]);
-        }
+    // Lưu ảnh đại diện
+    if ($main_image_path) {
+        $stmt = $pdo->prepare("INSERT INTO product_images (product_id, image_path, is_primary, created_at) VALUES (?, ?, 1, NOW())");
+        $stmt->execute([$product_id, $main_image_path]);
+    }
+    // Lưu ảnh mô tả
+    foreach ($image_paths as $path) {
+        $stmt = $pdo->prepare("INSERT INTO product_images (product_id, image_path, is_primary, created_at) VALUES (?, ?, 0, NOW())");
+        $stmt->execute([$product_id, $path]);
+    }
         echo "Đăng bán thành công, chờ admin duyệt!";
     } else {
         echo "Có lỗi xảy ra, vui lòng thử lại!";

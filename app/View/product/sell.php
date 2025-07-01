@@ -9,12 +9,14 @@ if (!isset($_SESSION['user_id'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng bán sản phẩm - Web Mua Bán Đồ Cũ</title> 
+    <title>Đăng bán sản phẩm - Web Mua Bán Đồ Cũ</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
@@ -22,63 +24,74 @@ if (!isset($_SESSION['user_id'])) {
 
 
     <style>
-        body {
-            /* background: #f5f7fb; */
-        }
-        .sell-card {
-            max-width: 600px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(58,134,255,0.10);
-            padding: 36px 32px 28px 32px;
-        }
-        .sell-title {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            gap: 12px;
-        }
-        .sell-title i {
-            font-size: 2.2rem;
-            color: #3a86ff;
-        }
-        .sell-desc {
-            text-align: center;
-            color: #666;
-            margin-bottom: 32px;
-        }
-        .form-label {
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-        .form-control, select {
-            border-radius: 10px;
-            font-size: 1.1rem;
-            padding: 12px;
-            margin-bottom: 18px;
-        }
-        .btn-sell {
-            width: 100%;
-            padding: 14px 0;
-            font-size: 1.1rem;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 18px;
-            color: #3a86ff;
-            text-decoration: none;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+    body {
+        /* background: #f5f7fb; */
+    }
+
+    .sell-card {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(58, 134, 255, 0.10);
+        padding: 36px 32px 28px 32px;
+    }
+
+    .sell-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        gap: 12px;
+    }
+
+    .sell-title i {
+        font-size: 2.2rem;
+        color: #3a86ff;
+    }
+
+    .sell-desc {
+        text-align: center;
+        color: #666;
+        margin-bottom: 32px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    .form-control,
+    select {
+        border-radius: 10px;
+        font-size: 1.1rem;
+        padding: 12px;
+        margin-bottom: 18px;
+    }
+
+    .btn-sell {
+        width: 100%;
+        padding: 14px 0;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 18px;
+        color: #3a86ff;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
     </style>
 </head>
+
 <body>
     <?php renderHeader($pdo); ?>
     <div class="sell-card">
@@ -92,7 +105,8 @@ if (!isset($_SESSION['user_id'])) {
         <form method="POST" action="../../Models/sell/SellModel.php" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="title" class="form-label">Tiêu đề sản phẩm</label>
-                <input type="text" id="title" name="title" class="form-control" placeholder="Nhập tiêu đề sản phẩm..." required>
+                <input type="text" id="title" name="title" class="form-control" placeholder="Nhập tiêu đề sản phẩm..."
+                    required>
             </div>
             <div class="mb-3">
                 <label for="category" class="form-label">Danh mục</label>
@@ -123,18 +137,36 @@ if (!isset($_SESSION['user_id'])) {
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label">Mô tả sản phẩm</label>
-                <textarea id="description" name="description" class="form-control" placeholder="Mô tả chi tiết về sản phẩm..." required></textarea>
+                <textarea id="description" name="description" class="form-control"
+                    placeholder="Mô tả chi tiết về sản phẩm..." required></textarea>
             </div>
             <div class="mb-3">
-                <label for="images" class="form-label">Hình ảnh sản phẩm</label>
-                <input type="file" id="images" name="images[]" class="form-control" accept="image/*" multiple>
+                <label for="main_image" class="form-label">Hình ảnh đại diện sản phẩm</label>
+                <input type="file" id="main_image" name="main_image" class="form-control" accept="image/*" required>
+            </div>
+            <div class="mb-3">
+                <label for="images_desc" class="form-label">Thêm ảnh mô tả (tối đa 3 ảnh)</label>
+                <input type="file" id="images_desc" name="images[]" class="form-control" accept="image/*" multiple>
+                <div id="images_desc_error" class="text-danger mt-1" style="font-size: 14px;"></div>
             </div>
             <button type="submit" class="btn btn-primary btn-sell">
                 <i class="fas fa-upload"></i> Đăng bán sản phẩm
             </button>
         </form>
     </div>
+    <script>
+    document.getElementById('images_desc').addEventListener('change', function(e) {
+        const errorDiv = document.getElementById('images_desc_error');
+        if (this.files.length > 3) {
+            errorDiv.textContent = 'Bạn chỉ được chọn tối đa 3 ảnh mô tả!';
+            this.value = '';
+        } else {
+            errorDiv.textContent = '';
+        }
+    });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php footer(); ?>
 </body>
+
 </html>
