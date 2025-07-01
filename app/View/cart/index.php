@@ -64,91 +64,98 @@ $cartItemCount = $cartController->getCartItemCount();
             <h1 class="cart-header">Shopping Cart</h1>
 
             <?php if (empty($cartItems)): ?>
-                <div class="empty-cart">
-                    <h3>Giỏ hàng của bạn hiện đang trống</h3>
-                    <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
-                    <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
-                </div>
+            <div class="empty-cart">
+                <h3>Giỏ hàng của bạn hiện đang trống</h3>
+                <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
+                <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
+            </div>
             <?php else: ?>
-                <div class="cart-items-container">
-                    <?php foreach ($cartItems as $item): ?>
-                        <div class="cart-item" data-product-id="<?php echo $item['product_id']; ?>">
-                            <?php if (!empty($item['image_path'])): ?>
-                                <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>"
-                                    alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>" class="item-image">
-                            <?php else: ?>
-                                <div class="item-image"
-                                    style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
-                                    <span>No Image</span>
-                                </div>
-                            <?php endif; ?>
-
-                            <div class="item-details">
-                                <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
-                                <p class="item-price">
-                                    $<?php echo number_format(($item['current_price'] ?? $item['added_price'] ?? 0) / 1000, 2); ?>
-                                </p>
-                            </div>
-
-                            <div class="quantity-controls">
-                                <button type="button" class="quantity-btn quantity-decrease"
-                                    data-product-id="<?php echo $item['product_id']; ?>">−</button>
-                                <input type="number" class="quantity-input" value="<?php echo $item['quantity'] ?? 1; ?>"
-                                    min="1" data-product-id="<?php echo $item['product_id']; ?>">
-                                <button type="button" class="quantity-btn quantity-increase"
-                                    data-product-id="<?php echo $item['product_id']; ?>">+</button>
-                            </div>
-
-                            <div class="item-total">
-                                $<?php echo number_format(($item['subtotal'] ?? 0) / 1000, 2); ?>
-                            </div>
-
-                            <button type="button" class="remove-btn remove-item"
-                                data-product-id="<?php echo $item['product_id']; ?>">×</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <div class="order-summary">
-                    <h2 class="summary-title">Order Summary</h2>
-
-                    <div class="summary-row">
-                        <span>Subtotal</span>
-                        <span>$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
+            <div class="cart-items-container">
+                <?php foreach ($cartItems as $item): ?>
+                <div class="cart-item" data-product-id="<?php echo $item['product_id']; ?>">
+                    <?php if (!empty($item['image_path'])): ?>
+                    <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>"
+                        alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>" class="item-image">
+                    <?php else: ?>
+                    <div class="item-image"
+                        style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
+                        <span>No Image</span>
                     </div>
-
-                    <div class="summary-row">
-                        <span>Shipping</span>
-                        <span>Free</span>
-                    </div>
-
-                    <div class="summary-row">
-                        <span>Taxes</span>
-                        <span>Calculated at checkout</span>
-                    </div>
-
-                    <div class="summary-row total">
-                        <span>Total</span>
-                        <span id="total-amount">$<?php echo number_format(($cartTotal ?? 0) / 1000, 2); ?></span>
-                    </div>
-
-                    <?php if ($is_guest): ?>
-                        <div
-                            style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
-                            Vui lòng <a href="../auth/login.php">đăng nhập</a> để tiếp tục thanh toán.
-                        </div>
                     <?php endif; ?>
 
-                    <button type="button" class="checkout-btn" onclick="window.location.href='../checkout/index.php'"<?php echo $is_guest ? ' disabled' : ''; ?>>
-                        Checkout
+                    <div class="item-details">
+                        <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
+                        <p class="item-price">
+                            <?php
+                                    $price = $item['current_price'] ?? $item['added_price'] ?? 0;
+                                    echo number_format($price, 0, ',', '.') . ' VNĐ';
+                                    ?>
+                        </p>
+                    </div>
+
+                    <div class="quantity-controls">
+                        <button type="button" class="quantity-btn quantity-decrease"
+                            data-product-id="<?php echo $item['product_id']; ?>">−</button>
+                        <input type="number" class="quantity-input" value="<?php echo $item['quantity'] ?? 1; ?>"
+                            min="1" data-product-id="<?php echo $item['product_id']; ?>">
+                        <button type="button" class="quantity-btn quantity-increase"
+                            data-product-id="<?php echo $item['product_id']; ?>">+</button>
+                    </div>
+
+                    <div class="item-total">
+                        <?php
+                                $total = ($item['current_price'] ?? $item['added_price'] ?? 0) * ($item['quantity'] ?? 1);
+                                echo number_format($total, 0, ',', '.') . ' VNĐ';
+                                ?> </div>
+
+                    <button type="button" class="remove-btn remove-item"
+                        data-product-id="<?php echo $item['product_id']; ?>">
+                        <i class="fas fa-trash"></i>    
                     </button>
                 </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="order-summary">
+                <h2 class="summary-title">Order Summary</h2>
+
+                <div class="summary-row">
+                    <span>Tạm tính</span>
+                    <span><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Shipping</span>
+                     <span>Miễn Phí</span>
+                </div>
+
+        
+
+                <div class="summary-row total">
+                    <span>Tổng tiền</span>
+                        <span id="total-amount"><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
+                </div>
+
+                <?php if ($is_guest): ?>
+                <div
+                    style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
+                    Vui lòng <a href="../auth/login.php">đăng nhập</a> để tiếp tục thanh toán.
+                </div>
+                <?php endif; ?>
+
+                <button type="button" class="checkout-btn" onclick="window.location.href='../checkout/index.php'"
+                    <?php echo $is_guest ? ' disabled' : ''; ?>>
+                    Thanh Toán
+                </button>
+            </div>
             <?php endif; ?>
         </div>
     </div>
     <?php footer(); ?>
     <!-- Script JavaScript xử lý tính năng giỏ hàng -->
     <script src="../../../public/assets/js/cart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

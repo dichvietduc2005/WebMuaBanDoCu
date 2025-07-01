@@ -27,15 +27,16 @@ $pending_products = getPendingProducts($pdo);
 </head>
 
 <body>
-    <?php renderHeader($pdo); ?>   
-     <div class="container1">
-        
+    <?php renderHeader($pdo); ?>
+    <div class="container1">
+
         <h2>Sản phẩm chờ duyệt</h2>
         <?php if (empty($pending_products)): ?>
         <p>Không có sản phẩm nào chờ duyệt.</p>
         <?php else: ?>
         <table>
             <tr>
+                <th>Hình ảnh</th>
                 <th>Tiêu đề</th>
                 <th>Người đăng</th>
                 <th>Giá</th>
@@ -44,6 +45,17 @@ $pending_products = getPendingProducts($pdo);
             </tr>
             <?php foreach ($pending_products as $product): ?>
             <tr>
+                <td>
+                    <?php if (!empty($product['image_path'])): ?>
+                    <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                        alt="Ảnh sản phẩm" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                    <?php else: ?>
+                    <div
+                        style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;">
+                        <i class="fas fa-image text-muted"></i>
+                    </div>
+                    <?php endif; ?>
+                </td>
                 <td><?= htmlspecialchars($product['title']) ?></td>
                 <td><?= htmlspecialchars($product['username']) ?></td>
                 <td><?= number_format($product['price']) ?> VNĐ</td>
@@ -51,8 +63,8 @@ $pending_products = getPendingProducts($pdo);
                 <td class="actions">
                     <a href="../../Models/admin/AdminModel.php?action=approve&id=<?= $product['id'] ?>">Duyệt</a>
                     <a href="../../Models/admin/AdminModel.php?action=reject&id=<?= $product['id'] ?>">Từ chối</a>
-                    <a href="../../Models/admin/AdminModel.php?action=delete&id=<?= $product['id'] ?>"
-                        class="delete" onclick="return confirm('Bạn chắc chắn muốn xóa?');">Xóa</a>
+                    <a href="../../Models/admin/AdminModel.php?action=delete&id=<?= $product['id'] ?>" class="delete"
+                        onclick="return confirm('Bạn chắc chắn muốn xóa?');">Xóa</a>
                 </td>
             </tr>
             <?php endforeach; ?>

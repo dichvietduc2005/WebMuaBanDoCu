@@ -15,6 +15,7 @@ $products = getUserProducts($pdo, $user_id);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,15 +27,19 @@ $products = getUserProducts($pdo, $user_id);
 
 <body>
     <?php renderHeader($pdo); ?>
-    <div class="container" style="max-width: 1000px; margin: 40px auto 0 auto; background: #fff; padding: 32px 24px; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);">
+    <div class="container"
+        style="max-width: 1000px; margin: 40px auto 0 auto; background: #fff; padding: 32px 24px; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);">
         <h2 style="margin-bottom: 24px; font-weight: 600; color: #1a237e;">Sản phẩm của tôi</h2>
-        <a href="sell.php" class="btn btn-primary btn-sell mb-3 w-100" style="padding: 14px 0; font-size: 1.1rem; border-radius: 10px; font-weight: 600;">
+        <a href="sell.php" class="btn btn-primary btn-sell mb-3 w-100"
+            style="padding: 14px 0; font-size: 1.1rem; border-radius: 10px; font-weight: 600;">
             <i class="fas fa-plus"></i> Đăng sản phẩm mới
         </a>
         <div class="table-responsive">
-            <table class="table table-hover align-middle" id="products-table" style="border-radius: 12px; overflow: hidden; background: #fafbfc;">
+            <table class="table table-hover align-middle" id="products-table"
+                style="border-radius: 12px; overflow: hidden; background: #fafbfc;">
                 <thead style="background: #e3eafc; color: #1a237e; font-weight: 600; border-bottom: 2px solid #b6c6e6;">
                     <tr>
+                        <th>Hình ảnh</th>
                         <th>Tiêu đề</th>
                         <th>Giá</th>
                         <th>Danh mục</th>
@@ -46,11 +51,22 @@ $products = getUserProducts($pdo, $user_id);
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($products as $product): ?>
-                    <tr id="row-<?= $product['id'] ?>" data-category_id="<?= htmlspecialchars($product['category_id']) ?>"
+                    <?php foreach ($products as $product): ?>
+                    <tr id="row-<?= $product['id'] ?>"
+                        data-category_id="<?= htmlspecialchars($product['category_id']) ?>"
                         data-condition_status="<?= htmlspecialchars($product['condition_status']) ?>"
                         data-location="<?= htmlspecialchars($product['location']) ?>"
                         data-description="<?= htmlspecialchars($product['description']) ?>">
+                        <td>
+                            <?php if (!empty($product['image_path'])): ?>
+                            <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>" alt="Ảnh sản phẩm" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">                              
+                            <?php else: ?>
+                            <div
+                                style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;">
+                                <i class="fas fa-image text-muted"></i>
+                            </div>
+                            <?php endif; ?>
+                        </td>
                         <td><?= htmlspecialchars($product['title']) ?></td>
                         <td><?= number_format($product['price'], 0, ',', '.') ?> VNĐ</td>
                         <td><?= htmlspecialchars($product['category_id']) ?></td>
@@ -60,16 +76,17 @@ $products = getUserProducts($pdo, $user_id);
                             <?= htmlspecialchars($product['description']) ?>
                         </td>
                         <td>
-                            <span class="badge bg-<?php echo ($product['status'] == 'active') ? 'success' : 'secondary'; ?>">
+                            <span
+                                class="badge bg-<?php echo ($product['status'] == 'active') ? 'success' : 'secondary'; ?>">
                                 <?= htmlspecialchars($product['status']) ?>
                             </span>
                         </td>
                         <td class="actions">
-                            <a href="#" class="edit-btn text-primary me-2" data-id="<?= $product['id'] ?>"><i class="fas fa-edit"></i> Sửa</a>
-                            <a href="#" class="delete-btn delete text-danger" data-id="<?= $product['id'] ?>"><i class="fas fa-trash"></i> Xóa</a>
+                            <a href="#" class="delete-btn delete text-danger" data-id="<?= $product['id'] ?>"><i
+                                    class="fas fa-trash"></i> Xóa</a>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -123,4 +140,5 @@ $products = getUserProducts($pdo, $user_id);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php footer(); ?>
 </body>
+
 </html>
