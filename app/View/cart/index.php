@@ -63,37 +63,41 @@ if (!$is_guest) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        .empty-cart {
-            text-align: center;
-            padding: 40px 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-        .empty-cart i {
-            color: #999;
-        }
-        .empty-cart p {
-            font-size: 18px;
-            margin-top: 15px;
-            color: #666;
-        }
-        .item-loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.7);
-            z-index: 10;
-        }
-        .item-loading-overlay i {
-            color: #007bff;
-            font-size: 24px;
-        }
+    .empty-cart {
+        text-align: center;
+        padding: 40px 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    .empty-cart i {
+        color: #999;
+    }
+
+    .empty-cart p {
+        font-size: 18px;
+        margin-top: 15px;
+        color: #666;
+    }
+
+    .item-loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 10;
+    }
+
+    .item-loading-overlay i {
+        color: #007bff;
+        font-size: 24px;
+    }
     </style>
 </head>
 
@@ -107,39 +111,33 @@ if (!$is_guest) {
             <h1 class="cart-header">Shopping Cart</h1>
 
             <?php if (empty($cartItems)): ?>
-                <div class="empty-cart">
-                    <h3>Giỏ hàng của bạn hiện đang trống</h3>
-                    <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
-                    <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
-                </div>
+            <div class="empty-cart">
+                <h3>Giỏ hàng của bạn hiện đang trống</h3>
+                <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
+                <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
+            </div>
             <?php else: ?>
-                <div class="cart-items-container">
-                    <?php foreach ($cartItems as $item): ?>
-                        <div class="cart-item" data-product-id="<?php echo $item['product_id']; ?>">
-                            <?php if (!empty($item['image_path'])): ?>
-                                <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>"
-                                    alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>" class="item-image">
-                            <?php else: ?>
-                                <div class="item-image"
-                                    style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
-                                    <span>No Image</span>
-                                </div>
-                            <?php endif; ?>
+            <div class="cart-items-container">
+                <?php foreach ($cartItems as $item): ?>
+                <div class="cart-item" data-product-id="<?php echo $item['product_id']; ?>">
+                    <?php if (!empty($item['image_path'])): ?>
+                    <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($item['image_path']); ?>"
+                        alt="Ảnh sản phẩm" class="item-image" >
+                    <?php else: ?>
+                    <div
+                        style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;">
+                        <i class="fas fa-image text-muted"></i>
+                    </div>
+                    <?php endif; ?>
 
-                            <div class="item-details">
-                                <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
-                                <p class="item-price">
-                                    $<?php echo number_format(($item['current_price'] ?? $item['added_price'] ?? 0) / 1000, 2); ?>
-                                </p>
-                            </div>
+                    <div class="item-details">
+                        <h3 class="item-name"><?php echo htmlspecialchars($item['product_title'] ?? ''); ?></h3>
+                    </div>
 
                     <div class="quantity-controls">
-                        <button type="button" class="quantity-btn quantity-decrease"
-                            data-product-id="<?php echo $item['product_id']; ?>">−</button>
                         <input type="number" class="quantity-input" value="<?php echo $item['quantity'] ?? 1; ?>"
                             min="1" data-product-id="<?php echo $item['product_id']; ?>">
-                        <button type="button" class="quantity-btn quantity-increase"
-                            data-product-id="<?php echo $item['product_id']; ?>">+</button>
+                        
                     </div>
 
                     <div class="item-total">
@@ -150,14 +148,14 @@ if (!$is_guest) {
 
                     <button type="button" class="remove-btn remove-item"
                         data-product-id="<?php echo $item['product_id']; ?>">
-                        <i class="fas fa-trash"></i>    
+                        <i class="fas fa-trash"></i>
                     </button>
                 </div>
                 <?php endforeach; ?>
             </div>
 
             <div class="order-summary">
-                <h2 class="summary-title">Order Summary</h2>
+                <h2 class="summary-title">Đơn Hàng</h2>
 
                 <div class="summary-row">
                     <span>Tạm tính</span>
@@ -166,22 +164,22 @@ if (!$is_guest) {
 
                 <div class="summary-row">
                     <span>Shipping</span>
-                     <span>Miễn Phí</span>
+                    <span>Miễn Phí</span>
                 </div>
 
-        
+
 
                 <div class="summary-row total">
                     <span>Tổng tiền</span>
-                        <span id="total-amount"><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
+                    <span id="total-amount"><?php echo number_format(($cartTotal ?? 0), 0, ',', '.'); ?> VNĐ</span>
                 </div>
 
-                    <?php if ($is_guest): ?>
-                        <div
-                            style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
-                            Vui lòng <a href="../auth/login.php">đăng nhập</a> để tiếp tục thanh toán.
-                        </div>
-                    <?php endif; ?>
+                <?php if ($is_guest): ?>
+                <div
+                    style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
+                    Vui lòng <a href="../auth/login.php">đăng nhập</a> để tiếp tục thanh toán.
+                </div>
+                <?php endif; ?>
 
                 <button type="button" class="checkout-btn" onclick="window.location.href='../checkout/index.php'"
                     <?php echo $is_guest ? ' disabled' : ''; ?>>
@@ -200,7 +198,8 @@ if (!$is_guest) {
     function showToast(type, title, message) {
         const toastContainer = document.getElementById('toast-container') || createToastContainer();
         const toastEl = document.createElement('div');
-        toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+        toastEl.className =
+            `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
         toastEl.setAttribute('role', 'alert');
         toastEl.setAttribute('aria-live', 'assertive');
         toastEl.setAttribute('aria-atomic', 'true');
@@ -215,9 +214,11 @@ if (!$is_guest) {
         `;
         toastContainer.appendChild(toastEl);
 
-        const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+        const toast = new bootstrap.Toast(toastEl, {
+            delay: 5000
+        });
         toast.show();
-        toastEl.addEventListener('hidden.bs.toast', function () {
+        toastEl.addEventListener('hidden.bs.toast', function() {
             toastEl.remove();
         });
     }
@@ -247,7 +248,7 @@ if (!$is_guest) {
 
         // Tạo ID duy nhất cho modal
         const modalId = 'confirmModal-' + Date.now();
-        
+
         // Tạo HTML cho modal
         const modalHTML = `
             <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}-label" aria-hidden="true" data-bs-backdrop="static">
@@ -268,14 +269,14 @@ if (!$is_guest) {
                 </div>
             </div>
         `;
-        
+
         // Thêm modal vào container
         modalContainer.innerHTML = modalHTML;
-        
+
         // Lấy reference đến modal
         const modalElement = document.getElementById(modalId);
         const modal = new bootstrap.Modal(modalElement);
-        
+
         // Thêm sự kiện cho nút xác nhận
         const confirmBtn = modalElement.querySelector('.confirm-btn');
         confirmBtn.addEventListener('click', function() {
@@ -284,12 +285,12 @@ if (!$is_guest) {
                 confirmCallback();
             }
         });
-        
+
         // Xóa modal sau khi đóng để tránh tràn DOM
-        modalElement.addEventListener('hidden.bs.modal', function () {
+        modalElement.addEventListener('hidden.bs.modal', function() {
             modalElement.remove();
         });
-        
+
         // Hiển thị modal
         modal.show();
     }

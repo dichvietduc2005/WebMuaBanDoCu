@@ -28,13 +28,13 @@
 }
 
 .item-image {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: cover; /* Đảm bảo ảnh luôn hiển thị hết */
   margin-right: 20px;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: #1688fa;
+  border: 3px solid #e9ecef;
 }
 
 .item-details {
@@ -86,8 +86,7 @@
   height: 32px;
   text-align: center;
   border: 1px solid #ddd;
-  border-left: none;
-  border-right: none;
+  border-radius: 8px;
   background: white;
   font-size: 14px;
   margin: 0;
@@ -96,6 +95,15 @@
 .quantity-input:focus {
   outline: none;
   border-color: #007bff;
+}
+/* Ẩn nút tăng giảm trên input type="number" cho mọi trình duyệt */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.quantity-input {
+  -moz-appearance: textfield; /* Firefox */
 }
 
 .item-total {
@@ -295,12 +303,6 @@
     padding: 15px;
   }
   
-  .item-image {
-    width: 100%;
-    height: 200px;
-    margin-bottom: 15px;
-    margin-right: 0;
-  }
   
   .item-details {
     width: 100%;
