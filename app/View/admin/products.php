@@ -1,7 +1,8 @@
 <?php
 require_once '../../../config/config.php';
 
-require_once '../../Controllers/product/ProductController.php';
+require_once '../../Controllers/admin/AdminController.php';
+include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 $_SESSION['role'] = 'admin';
