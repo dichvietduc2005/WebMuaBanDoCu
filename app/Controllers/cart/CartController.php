@@ -142,7 +142,7 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
     header('Content-Type: application/json');
     $cartController = new CartController($pdo);
     
-    $action = $_POST['action'] ?? '';
+    $action = $_POST['action'] ?? $_GET['action'] ?? '';
     $response = ['success' => false, 'message' => 'Hành động không hợp lệ.'];
 
     try {
@@ -196,6 +196,13 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
             case 'clear':
                 $cartController->clearCart();
                 $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.'];
+                break;
+
+            case 'count':
+                $response = [
+                    'success' => true,
+                    'count' => $cartController->getCartItemCount()
+                ];
                 break;
         }
     } catch (\Exception $e) {

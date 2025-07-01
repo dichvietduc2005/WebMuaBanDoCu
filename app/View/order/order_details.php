@@ -2,8 +2,7 @@
 // Config already starts session, so we don't need to start it again
 require_once '../../../config/config.php';
 require_once('../../Controllers/auth_helper.php'); // For Auth functions
-require_once('../../Controllers/order/OrderController.php'); // For order-related functions
-require_once('../../Controllers/cart/CartController.php'); // For cart-related functions
+// Autoloader sẽ tự động load OrderController và CartController
 include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 

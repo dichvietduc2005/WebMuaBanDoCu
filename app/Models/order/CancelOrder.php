@@ -1,11 +1,11 @@
 <?php
 // Config already starts session, so we don't need to start it again
 require_once(__DIR__ . '/../../../config/config.php'); // For $pdo, session_start(), etc.
-require_once(__DIR__ . '/../../Controllers/cart/CartController.php'); // For database-driven cart functions with guest support
-require_once(__DIR__ . '/../../Controllers/order/OrderController.php'); // For order-related functions
+require_once(__DIR__ . '/../../Controllers/order/OrderController.php'); // For helper functions
+// Autoloader sẽ tự động load CartController
 
 // Kiểm tra đăng nhập
-if (!isUserLoggedIn()) {
+if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Bạn cần đăng nhập để thực hiện thao tác này.']);
     exit();
@@ -36,7 +36,7 @@ if (!$order_id) {
     echo json_encode(['success' => false, 'message' => 'ID đơn hàng không hợp lệ.']);
     exit();
 }
-$current_user_id = get_current_logged_in_user_id();
+$current_user_id = $_SESSION['user_id'];
 
 try {
     // Thực hiện hủy đơn hàng

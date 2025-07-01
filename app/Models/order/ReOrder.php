@@ -1,10 +1,11 @@
 <?php
 require_once(__DIR__ . '/../../../config/config.php'); // For $pdo, session_start(), etc.
-require_once(__DIR__ . '/../../Controllers/cart/CartController.php'); // For database-driven cart functions with guest support
-require_once(__DIR__ . '/../../Controllers/order/OrderController.php'); // For order-related functions
+require_once(__DIR__ . '/../../Controllers/order/OrderController.php'); // For helper functions
+// Autoloader sẽ tự động load CartController
 
 // Kiểm tra đăng nhập
-if (!isUserLoggedIn()) {
+session_start();
+if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Bạn cần đăng nhập để thực hiện thao tác này.']);
     exit();
@@ -26,7 +27,7 @@ if (!$order_id) {
     exit();
 }
 
-$current_user_id = get_current_logged_in_user_id();
+$current_user_id = $_SESSION['user_id'];
 
 try {
     // Lấy thông tin đơn hàng
@@ -63,21 +64,27 @@ try {
             $unavailable_items[] = $item['title'] . ' (chỉ còn ' . $item['stock_quantity'] . ' sản phẩm)';
             // Thêm số lượng có sẵn
             if ($item['stock_quantity'] > 0) {
-                $result = addToCart($pdo, $item['product_id'], $item['stock_quantity'], $current_user_id);
+                $cartController = new CartController($pdo);
+            $_SESSION['user_id'] = $current_user_id; // Ensure session is set
+            $result = $cartController->addToCart($item['product_id'], $item['stock_quantity']);
                 if ($result) {
                     $added_items++;
                 }
             }
         } else {
             // Thêm đủ số lượng như đơn hàng cũ
-            $result = addToCart($pdo, $item['product_id'], $item['quantity'], $current_user_id);
+            $cartController = new CartController($pdo);
+            $_SESSION['user_id'] = $current_user_id; // Ensure session is set  
+            $result = $cartController->addToCart($item['product_id'], $item['quantity']);
             if ($result) {
                 $added_items++;
             }
         }
     }
     
-    $cart_count = getCartItemCount($pdo, $current_user_id);
+    $cartController = new CartController($pdo);
+    $_SESSION['user_id'] = $current_user_id; // Ensure session is set
+    $cart_count = $cartController->getCartItemCount();
     
     if ($added_items > 0) {
         $message = "Đã thêm {$added_items} sản phẩm vào giỏ hàng.";

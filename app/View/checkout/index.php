@@ -3,8 +3,7 @@
  * View cho trang thanh toán
  */
 require_once(__DIR__ . '/../../../config/config.php');
-require_once(__DIR__ . '/../../Models/cart/CartModel.php');
-require_once(__DIR__ . '/../../Controllers/cart/CartController.php');
+// Autoloader sẽ tự động load CartModel và CartController
 
 // Kiểm tra đăng nhập
 $user_id = $_SESSION['user_id'] ?? null;
@@ -98,7 +97,7 @@ include_once __DIR__ . '/../../Components/footer/Footer.php';
                             <?php foreach ($cartItems as $item): ?>
                                 <li class="list-group-item d-flex justify-content-between lh-sm">
                                     <div>
-                                        <h6 class="my-0"><?php echo htmlspecialchars($item['product_name']); ?></h6>
+                                        <h6 class="my-0"><?php echo htmlspecialchars($item['product_title']); ?></h6>
                                         <small class="text-muted">Số lượng: <?php echo htmlspecialchars($item['quantity']); ?></small>
                                     </div>
                                     <span class="text-muted"><?php echo number_format($item['subtotal']); ?> VNĐ</span>

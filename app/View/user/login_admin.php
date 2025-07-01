@@ -1,6 +1,6 @@
 <?php
 require_once('../../../config/config.php');
-require_once('../../Models/user/Auth.php');
+// Autoloader sẽ tự động load Auth class
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {

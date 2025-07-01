@@ -1,6 +1,6 @@
 <?php
 require_once '../../../config/config.php';
-require_once __DIR__ . '/../../Controllers/extra/ExtraController.php';
+// Autoloader sẽ tự động load ExtraController
 
 // Lấy danh sách sản phẩm
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;

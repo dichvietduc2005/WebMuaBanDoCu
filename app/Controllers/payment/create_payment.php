@@ -11,9 +11,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
  */
 require_once(__DIR__ . "/../../../config/config.php");
 require_once(__DIR__ . "/../../helpers.php");
-require_once(__DIR__ . "/../../Models/cart/CartModel.php"); // Cần cho CartController
-require_once(__DIR__ . "/../../Controllers/cart/CartController.php"); // Import CartController
-require_once(__DIR__ . "/../../Models/user/Auth.php"); // Add Auth functions
+// Autoloader sẽ tự động load CartModel, CartController, và Auth
 
 // ===== KIỂM TRA ĐĂNG NHẬP =====
 session_start();
@@ -192,8 +190,8 @@ try {    // $user_id đã được lấy ở trên và chắc chắn có giá tr
     // Insert các sản phẩm vào bảng order_items
     // Giả sử bảng order_items có các cột: order_id, product_id, product_title, product_price, quantity, subtotal, created_at
     foreach ($cartItems as $item) {
-        // Đảm bảo $item['product_name'] và $item['added_price'] (hoặc current_price) tồn tại từ getCartItems()
-        $product_title = $item['product_name'] ?? 'N/A'; // Hoặc $item['title']
+        // Đảm bảo $item['product_title'] và $item['added_price'] (hoặc current_price) tồn tại từ getCartItems()
+        $product_title = $item['product_title'] ?? 'N/A'; // Sử dụng product_title
         $product_price = $item['added_price'] ?? 0; // SỬ DỤNG added_price ĐỂ LẤY GIÁ LÚC THÊM VÀO GIỎ
         $quantity = $item['quantity'] ?? 0;
         $subtotal = $product_price * $quantity;
@@ -215,11 +213,14 @@ try {    // $user_id đã được lấy ở trên và chắc chắn có giá tr
             throw new Exception("Không thể lưu chi tiết sản phẩm (ID: {$item['product_id']}) cho đơn hàng.");
         }
 
-        // Cập nhật tồn kho sản phẩm
-        $update_stock_stmt = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
-        $update_stock_stmt->execute([$quantity, $item['product_id'], $quantity]);
-        if ($update_stock_stmt->rowCount() == 0) {
-            throw new Exception("Không thể cập nhật tồn kho cho sản phẩm (ID: {$item['product_id']}). Có thể số lượng tồn kho không đủ.");
+        // ✅ KHÔNG trừ stock ở đây - chỉ trừ khi thanh toán thành công
+        // Kiểm tra stock có đủ không (nhưng không trừ)
+        $check_stock_stmt = $pdo->prepare("SELECT stock_quantity FROM products WHERE id = ?");
+        $check_stock_stmt->execute([$item['product_id']]);
+        $current_stock = $check_stock_stmt->fetchColumn();
+        
+        if ($current_stock < $quantity) {
+            throw new Exception("Sản phẩm (ID: {$item['product_id']}) không đủ số lượng. Còn lại: $current_stock, yêu cầu: $quantity");
         }
     }
 

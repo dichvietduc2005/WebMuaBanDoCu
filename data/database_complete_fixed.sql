@@ -9,6 +9,9 @@ USE muabandocu;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Xóa các bảng nếu tồn tại (theo thứ tự dependency)
+DROP TABLE IF EXISTS rate_limits;
+DROP TABLE IF EXISTS product_status_logs;
+DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS password_resets;
 DROP TABLE IF EXISTS user_logs;
 DROP TABLE IF EXISTS remember_tokens;
@@ -21,10 +24,8 @@ DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS users;
 
--- Bật lại foreign key checks
-SET FOREIGN_KEY_CHECKS = 1;
-
 -- Bảng người dùng
+
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -41,11 +42,7 @@ CREATE TABLE users (
     locked_until DATETIME DEFAULT NULL,
     email_verified_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_email` (`email`),
-    INDEX `idx_username` (`username`),
-    INDEX `idx_status` (`status`),
-    INDEX `idx_last_login` (`last_login`)
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Bảng danh mục sản phẩm
@@ -196,12 +193,45 @@ CREATE TABLE order_items (
     FOREIGN KEY (product_id) REFERENCES products(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Bảng thông báo
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng cho rate limiting (bảo mật)
+CREATE TABLE rate_limits (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    action VARCHAR(50) NOT NULL,
+    identifier VARCHAR(255) NOT NULL COMMENT 'Email hoặc IP address',
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_action_identifier (action, identifier),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng cho product status logging
+CREATE TABLE product_status_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    old_status VARCHAR(20),
+    new_status VARCHAR(20),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_product_id (product_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_changed_at (changed_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ================================
 -- DỮ LIỆU MẪU
 -- ================================
-
--- Tắt foreign key checks tạm thời
-SET FOREIGN_KEY_CHECKS = 0;
 
 -- Thêm dữ liệu mẫu cho bảng users
 INSERT INTO users (username, email, password, full_name, phone, address, role, status) VALUES
@@ -288,6 +318,13 @@ INSERT INTO order_items (order_id, product_id, product_title, product_price, qua
 (7, 9, 'Bộ sách Harry Potter tiếng Việt', 450000, 1, 450000),
 (8, 10, 'Bàn bi-a mini', 2500000, 1, 2500000);
 
+-- Thêm một số sample notifications
+INSERT INTO notifications (user_id, message, is_read) VALUES
+(2, 'Sản phẩm iPhone 12 Pro Max của bạn đã được duyệt', 1),
+(3, 'Đơn hàng ORD-2023-00002 đã được thanh toán thành công', 1),
+(4, 'Có người quan tâm đến sản phẩm Dell XPS 13 của bạn', 0),
+(5, 'Sản phẩm iPad Pro 11 inch đã được bán thành công', 0);
+
 -- Cập nhật AUTO_INCREMENT cho các bảng
 ALTER TABLE users AUTO_INCREMENT = 7;
 ALTER TABLE categories AUTO_INCREMENT = 10;
@@ -300,34 +337,11 @@ ALTER TABLE carts AUTO_INCREMENT = 8;
 ALTER TABLE cart_items AUTO_INCREMENT = 6;
 ALTER TABLE orders AUTO_INCREMENT = 9;
 ALTER TABLE order_items AUTO_INCREMENT = 11;
-
-
--- Update status
-ALTER TABLE products MODIFY status ENUM('pending', 'active', 'reject', 'sold') DEFAULT 'pending';
-
-
--- Ẩn sản phẩm nổi bật nếu hết hàng
-SELECT p.*, pi.image_path, c.name as category_name 
-FROM products p 
-LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-LEFT JOIN categories c ON p.category_id = c.id
-WHERE p.status = 'active' AND p.featured = 1 AND p.stock_quantity > 0
-ORDER BY p.created_at DESC 
-LIMIT 8
-
-
--- Bảng Notification
-CREATE TABLE notifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    message VARCHAR(255) NOT NULL,
-    is_read TINYINT(1) DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+ALTER TABLE notifications AUTO_INCREMENT = 5;
+ALTER TABLE rate_limits AUTO_INCREMENT = 1;
+ALTER TABLE product_status_logs AUTO_INCREMENT = 1;
 
 -- Bật lại foreign key checks
+SET FOREIGN_KEY_CHECKS = 1;
 
--- bỏ vào thấy lỗi
--- SET FOREIGN_KEY_CHECKS = 1;
-
--- COMMIT;
+COMMIT;

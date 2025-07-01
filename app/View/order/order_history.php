@@ -2,8 +2,11 @@
 // Config already starts session, so we don't need to start it again
 require_once '../../../config/config.php';
 require_once('../../Controllers/auth_helper.php'); // For Auth functions
-require_once('../../Controllers/order/OrderController.php'); // For order-related functions
-require_once('../../Controllers/cart/CartController.php'); // For cart-related 
+
+// Load OrderController và CartController
+require_once('../../Controllers/order/OrderController.php');
+require_once('../../Controllers/cart/CartController.php');
+
 include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
@@ -24,6 +27,7 @@ $total_pages = ceil($total_orders / $limit);
 // Lấy thống kê nhanh  
 $success_count = getOrderCountByStatus($pdo, $current_user_id, 'success');
 $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
+$pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
 ?>
 
 <!DOCTYPE html>
@@ -510,8 +514,8 @@ $failed_count = getOrderCountByStatus($pdo, $current_user_id, 'failed');
                     <div class="stat-label">Thất bại</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number"><?php echo number_format(array_sum(array_column($orders, 'total_amount')) / 1000000, 1); ?>M</div>
-                    <div class="stat-label">Tổng giá trị (VNĐ)</div>
+                    <div class="stat-number"><?php echo $pending_count; ?></div>
+                    <div class="stat-label">Chờ xử lý</div>
                 </div>
             </div>
         </div>

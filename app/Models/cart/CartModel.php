@@ -55,7 +55,7 @@ class CartModel
         $sql = "
             SELECT
                 ci.product_id, ci.quantity, ci.added_price,
-                p.title AS product_name, p.price AS current_price, p.stock_quantity, p.status as product_status,
+                p.title AS product_title, p.price AS current_price, p.stock_quantity, p.status as product_status,
                 pi.image_path, (ci.quantity * ci.added_price) AS subtotal
             FROM cart_items ci
             JOIN carts c ON ci.cart_id = c.id

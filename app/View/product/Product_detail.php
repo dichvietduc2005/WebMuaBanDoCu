@@ -218,7 +218,7 @@ if (!function_exists('getConditionText')) {
                             <button class="btn btn-add-cart" onclick="addToCart(<?php echo $product['id']; ?>)">
                                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
                             </button>
-                            <button class="btn btn-buy-now">
+                            <button class="btn btn-buy-now" onclick="buyNow(<?php echo $product['id']; ?>)">
                                 <i class="fas fa-shopping-bag"></i> Mua ngay
                             </button>
                         </div>
@@ -336,27 +336,83 @@ if (!function_exists('getConditionText')) {
             
             <?php if (!isset($_SESSION['user_id'])): ?>
             alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-            window.location.href = 'user/login.php';
+            window.location.href = '../user/login.php';
             return;
             <?php endif; ?>
 
             // AJAX call to add to cart
-            $.post('../../../modules/cart/handler.php', {
-                action: 'add',
-                product_id: productId,
-                quantity: quantity
-            }, function(response) {
-                const data = JSON.parse(response);
-                if (data.success) {
-                    alert('Đã thêm sản phẩm vào giỏ hàng!');
-                    // Update cart count if needed
-                    location.reload();
-                } else {
-                    alert('Có lỗi xảy ra: ' + data.message);
+            $.ajax({
+                url: '../../../app/Controllers/cart/CartController.php',
+                method: 'POST',
+                data: {
+                    action: 'add',
+                    product_id: productId,
+                    quantity: quantity
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        alert('Đã thêm sản phẩm vào giỏ hàng!');
+                        // Update cart count if needed
+                        updateCartCount();
+                    } else {
+                        alert('Có lỗi xảy ra: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
                 }
-            }).fail(function() {
-                alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
             });
+        }
+
+        function buyNow(productId) {
+            const quantity = document.getElementById('quantity').value;
+            
+            <?php if (!isset($_SESSION['user_id'])): ?>
+            alert('Vui lòng đăng nhập để mua hàng');
+            window.location.href = '../user/login.php';
+            return;
+            <?php endif; ?>
+
+            // Add to cart first, then redirect to checkout
+            $.ajax({
+                url: '../../../app/Controllers/cart/CartController.php',
+                method: 'POST',
+                data: {
+                    action: 'add',
+                    product_id: productId,
+                    quantity: quantity
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Redirect to checkout
+                        window.location.href = '../checkout/index.php';
+                    } else {
+                        alert('Có lỗi xảy ra: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
+                }
+            });
+        }
+
+        function updateCartCount() {
+            // Update cart count in header if present
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                $.ajax({
+                    url: '../../../app/Controllers/cart/CartController.php?action=count',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.success) {
+                            cartCountElement.textContent = data.count;
+                        }
+                    }
+                });
+            }
         }
 
         function showAllReviews() {

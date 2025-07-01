@@ -146,7 +146,7 @@ function createToastContainer() {
 
 // Cancel order function
 function cancelOrder(orderId) {
-    if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
+    showConfirmDialog('Xác nhận hủy đơn', 'Bạn có chắc muốn hủy đơn hàng này?', function() {
         fetch('/WebMuaBanDoCu/modules/order/cancel_order.php', {
             method: 'POST',
             headers: {
@@ -168,12 +168,12 @@ function cancelOrder(orderId) {
             console.error('Error:', error);
             showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi hủy đơn hàng.');
         });
-    }
+    });
 }
 
 // Reorder function
 function reorder(orderId) {
-    if (confirm('Bạn có muốn mua lại các sản phẩm trong đơn hàng này?')) {
+    showConfirmDialog('Xác nhận mua lại', 'Bạn có muốn mua lại các sản phẩm trong đơn hàng này?', function() {
         fetch('/WebMuaBanDoCu/modules/order/reorder.php', {
             method: 'POST',
             headers: {
@@ -215,7 +215,71 @@ function reorder(orderId) {
             console.error('Error:', error);
             showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
         });
+    });
+}
+
+/**
+ * Hiển thị dialog xác nhận thay thế cho confirm của trình duyệt
+ * @param {string} title - Tiêu đề dialog
+ * @param {string} message - Nội dung thông báo
+ * @param {function} confirmCallback - Hàm callback khi người dùng xác nhận
+ */
+function showConfirmDialog(title, message, confirmCallback) {
+    // Tạo container nếu chưa tồn tại
+    let modalContainer = document.getElementById('confirm-dialog-container');
+    if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'confirm-dialog-container';
+        document.body.appendChild(modalContainer);
     }
+
+    // Tạo ID duy nhất cho modal
+    const modalId = 'confirmModal-' + Date.now();
+    
+    // Tạo HTML cho modal
+    const modalHTML = `
+        <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="${modalId}-label">${title}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ${message}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary confirm-btn">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Thêm modal vào container
+    modalContainer.innerHTML = modalHTML;
+    
+    // Lấy reference đến modal
+    const modalElement = document.getElementById(modalId);
+    const modal = new bootstrap.Modal(modalElement);
+    
+    // Thêm sự kiện cho nút xác nhận
+    const confirmBtn = modalElement.querySelector('.confirm-btn');
+    confirmBtn.addEventListener('click', function() {
+        modal.hide();
+        if (typeof confirmCallback === 'function') {
+            confirmCallback();
+        }
+    });
+    
+    // Xóa modal sau khi đóng để tránh tràn DOM
+    modalElement.addEventListener('hidden.bs.modal', function () {
+        modalElement.remove();
+    });
+    
+    // Hiển thị modal
+    modal.show();
 }
 
 // Category cards animation
