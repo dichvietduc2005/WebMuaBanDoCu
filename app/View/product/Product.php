@@ -24,7 +24,12 @@ $products = getUserProducts($pdo, $user_id);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
-
+    <style>
+        #products-table th, #products-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
 <body>
     <?php renderHeader($pdo); ?>
     <div class="container"
@@ -42,7 +47,6 @@ $products = getUserProducts($pdo, $user_id);
                         <th>Hình ảnh</th>
                         <th>Tiêu đề</th>
                         <th>Giá</th>
-                        <th>Danh mục</th>
                         <th>Tình trạng</th>
                         <th>Địa chỉ</th>
                         <th>Mô tả</th>
@@ -53,7 +57,6 @@ $products = getUserProducts($pdo, $user_id);
                 <tbody>
                     <?php foreach ($products as $product): ?>
                     <tr id="row-<?= $product['id'] ?>"
-                        data-category_id="<?= htmlspecialchars($product['category_id']) ?>"
                         data-condition_status="<?= htmlspecialchars($product['condition_status']) ?>"
                         data-location="<?= htmlspecialchars($product['location']) ?>"
                         data-description="<?= htmlspecialchars($product['description']) ?>">
@@ -69,10 +72,9 @@ $products = getUserProducts($pdo, $user_id);
                         </td>
                         <td><?= htmlspecialchars($product['title']) ?></td>
                         <td><?= number_format($product['price'], 0, ',', '.') ?> VNĐ</td>
-                        <td><?= htmlspecialchars($product['category_id']) ?></td>
                         <td><?= htmlspecialchars($product['condition_status']) ?></td>
                         <td><?= htmlspecialchars($product['location']) ?></td>
-                        <td style="max-width: 180px; white-space: pre-line; overflow: hidden; text-overflow: ellipsis;">
+                        <td >
                             <?= htmlspecialchars($product['description']) ?>
                         </td>
                         <td>

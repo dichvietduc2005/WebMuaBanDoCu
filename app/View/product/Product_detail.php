@@ -129,6 +129,8 @@ if (!function_exists('getConditionText')) {
         gap: 10px;
         margin-top: 15px;
         overflow-x: auto;
+        justify-content: center;   /* Thêm dòng này để căn giữa */
+    align-items: center;
     }
 
     .thumbnail {
@@ -194,7 +196,15 @@ if (!function_exists('getConditionText')) {
         border: 1px solid #ddd;
         border-radius: 6px;
     }
-
+    /* Ẩn nút tăng giảm trên input type="number" cho mọi trình duyệt */
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.qty-input {
+  -moz-appearance: textfield; /* Firefox */
+}
     .action-buttons {
         display: flex;
         gap: 15px;
@@ -463,28 +473,18 @@ if (!function_exists('getConditionText')) {
                                 <i class="fas fa-star text-warning"></i>
                                 <span>Tình trạng: <?php echo getConditionText($product['condition_status']); ?></span>
                             </div>
-                            <div class="meta-item">
-                                <i class="fas fa-box"></i>
-                                <span>Còn lại: <?php echo $product['stock_quantity']; ?> sản phẩm</span>
-                            </div>
+                            
                             <div class="meta-item">
                                 <i class="fas fa-user"></i>
                                 <span>Người bán: <?php echo htmlspecialchars($product['seller_name']); ?></span>
                             </div>
                         </div>
 
-                        <div
-                            class="stock-status <?php echo $product['stock_quantity'] > 0 ? 'in-stock' : 'out-stock'; ?> d-inline-block mb-3">
-                            <?php echo $product['stock_quantity'] > 0 ? 'Còn hàng' : 'Hết hàng'; ?>
-                        </div>
-
                         <?php if ($product['stock_quantity'] > 0): ?>
                         <div class="quantity-selector">
                             <span>Số lượng:</span>
-                            <button class="qty-btn" onclick="changeQuantity(-1)">-</button>
                             <input type="number" class="qty-input" id="quantity" value="1" min="1"
                                 max="<?php echo $product['stock_quantity']; ?>">
-                            <button class="qty-btn" onclick="changeQuantity(1)">+</button>
                         </div>
 
                         <div class="action-buttons">

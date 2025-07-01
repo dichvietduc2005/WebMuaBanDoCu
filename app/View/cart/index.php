@@ -18,7 +18,7 @@ require_once '../../../config/config.php';
 include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
-// Kiểm tra kết nối CSDL
+// Kiểm tra kết nối CSDL 
 if (!isset($pdo)) {
     die("Lỗi kết nối cơ sở dữ liệu. Vui lòng thử lại sau.");
 }

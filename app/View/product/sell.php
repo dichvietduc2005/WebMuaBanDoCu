@@ -141,6 +141,15 @@ if (!isset($_SESSION['user_id'])) {
                     placeholder="Mô tả chi tiết về sản phẩm..." required></textarea>
             </div>
             <div class="mb-3">
+                <label for="purchase_date" class="form-label">Mua từ bao giờ <span style="color:red">*</span></label>
+                <input type="date" id="purchase_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="attachments" class="form-label">Sản phẩm đính kèm <span style="color:red">*</span></label>
+                <input type="text" id="attachments" class="form-control"
+                    placeholder="Ví dụ: Sạc, hộp, giấy tờ,không có..." required>
+            </div>
+            <div class="mb-3">
                 <label for="main_image" class="form-label">Hình ảnh đại diện sản phẩm</label>
                 <input type="file" id="main_image" name="main_image" class="form-control" accept="image/*" required>
             </div>
@@ -165,6 +174,31 @@ if (!isset($_SESSION['user_id'])) {
         }
     });
     </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('.sell-card form');
+    if (!form) {
+        alert('Không tìm thấy form!');
+        return;
+    }
+    form.addEventListener('submit', function(e) {
+        var desc = document.getElementById('description').value.trim();
+        var date = document.getElementById('purchase_date').value;
+        var attach = document.getElementById('attachments').value.trim();
+
+        var fullDesc = desc;
+        if (date) {
+            fullDesc += "\nMua từ: " + date;
+        }
+        if (attach) {
+            fullDesc += "\nSản phẩm đính kèm: " + attach;
+        }
+
+        document.getElementById('description').value = fullDesc;
+
+    });
+});
+</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php footer(); ?>
 </body>
