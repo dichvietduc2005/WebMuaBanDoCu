@@ -1,7 +1,6 @@
 <?php
 require_once '../../../config/config.php';
-
-require_once '../../Controllers/product/ProductController.php';
+// Autoloader sẽ tự động load ProductController
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 include_once __DIR__ . '/../../Components/header/Header.php';
 $_SESSION['role'] = 'admin';

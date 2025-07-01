@@ -114,25 +114,61 @@ document.addEventListener('DOMContentLoaded', function () {
         const itemElement = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
         if (!itemElement) return;
 
+        // Hiển thị loading state
+        itemElement.style.opacity = '0.7';
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'item-loading-overlay';
+        loadingOverlay.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        loadingOverlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); z-index: 10;';
+        itemElement.style.position = 'relative';
+        itemElement.appendChild(loadingOverlay);
+
         const response = await callCartApi('remove', productId);
 
         if (response && response.success) {
             showToast('success', 'Thành công!', response.message);
             
-            itemElement.style.transition = 'opacity 0.5s ease';
+            itemElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
             itemElement.style.opacity = '0';
+            itemElement.style.transform = 'translateX(30px)';
 
             setTimeout(() => {
-                itemElement.remove();
-                updateCartSummary(response.total);
-                updateCartIconCount(response.cart_count);
-                
-                // Check if cart is now empty
-                if (document.querySelectorAll('.cart-item').length === 0) {
-                    location.reload(); // Reload to show the "empty cart" message
-                }
-            }, 500);
+                // Animate height collapse
+                const height = itemElement.offsetHeight;
+                itemElement.style.height = height + 'px';
+                itemElement.style.overflow = 'hidden';
+                setTimeout(() => {
+                    itemElement.style.transition = 'height 0.3s ease';
+                    itemElement.style.height = '0';
+                    
+                    // After animation completes
+                    setTimeout(() => {
+                        itemElement.remove();
+                        updateCartSummary(response.total);
+                        updateCartIconCount(response.cart_count);
+                        
+                        // Kiểm tra nếu giỏ hàng trống và hiển thị thông báo
+                        if (document.querySelectorAll('.cart-item').length === 0) {
+                            const cartItemsContainer = document.querySelector('.cart-items-container');
+                            if (cartItemsContainer) {
+                                cartItemsContainer.innerHTML = `
+                                    <div class="empty-cart">
+                                        <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                                        <p>Giỏ hàng của bạn đang trống</p>
+                                        <a href="../product/products.php" class="btn btn-primary mt-3">
+                                            Tiếp tục mua sắm
+                                        </a>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }, 300);
+                }, 10);
+            }, 300);
         } else {
+            // Remove loading state and restore original appearance
+            itemElement.style.opacity = '1';
+            loadingOverlay.remove();
             showToast('error', 'Lỗi!', response ? response.message : 'Không thể xóa sản phẩm.');
         }
     }
@@ -166,9 +202,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (target.matches('.remove-item')) {
-            if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-                handleRemoveItem(productId);
-            }
+            showConfirmDialog(
+                'Xác nhận xóa',
+                'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
+                function() {
+                    handleRemoveItem(productId);
+                }
+            );
         }
     });
 

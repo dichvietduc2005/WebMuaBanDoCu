@@ -136,7 +136,7 @@ if (!function_exists('updateOrderStatusByNumber')) {
             $params = [$order_status, $payment_status];
             
             if ($transaction_no) {
-                $sql .= ", transaction_id = ?";
+                $sql .= ", vnpay_transaction_id = ?";
                 $params[] = $transaction_no;
             }
             

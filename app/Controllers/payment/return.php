@@ -1,8 +1,7 @@
 <?php
 require_once(__DIR__ . '/../../../config/config.php');
-require_once(__DIR__ . "/../../Models/cart/CartModel.php");
-require_once(__DIR__ . "/../../Controllers/cart/CartController.php");
 require_once(__DIR__ . '/../../helpers.php'); // For helper functions
+// Autoloader sẽ tự động load CartModel và CartController
 
 $vnp_SecureHash_received = $_GET['vnp_SecureHash'] ?? '';
 $inputData = array();
@@ -65,7 +64,25 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
 
                 if ($current_order_data && ($current_order_data['payment_status'] == 'pending' || $current_order_data['payment_status'] == '')) {
                     $order_id = $current_order_data['id'];
-                    $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'processing', payment_status = 'paid_via_return', updated_at = NOW() WHERE id = ?");
+                    
+                    // ✅ TRỪNG STOCK KHI THANH TOÁN THÀNH CÔNG
+                    // Lấy danh sách sản phẩm cần trừ stock trước
+                    $stmt_get_items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?");
+                    $stmt_get_items->execute([$order_id]);
+                    $order_items_for_stock = $stmt_get_items->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    // Trừ stock cho từng sản phẩm
+                    foreach ($order_items_for_stock as $item) {
+                        $update_stock_stmt = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
+                        $update_stock_stmt->execute([$item['quantity'], $item['product_id'], $item['quantity']]);
+                        
+                        if ($update_stock_stmt->rowCount() == 0) {
+                            error_log("WARNING: Không thể trừ stock cho product_id {$item['product_id']} với quantity {$item['quantity']} - có thể stock không đủ");
+                        }
+                    }
+                    
+                    // Cập nhật trạng thái đơn hàng
+                    $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'success', payment_status = 'paid', updated_at = NOW() WHERE id = ?");
                     $stmt_update_order->execute([$order_id]);
 
                      // Lấy danh sách sản phẩm trong đơn hàng và gửi thông báo cho từng người bán
@@ -106,8 +123,8 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
         // log_vnpay_debug_data("RETURN_URL - FAILED (VNPAY ERROR CODE)", ["order_number" => $order_number_from_vnpay, "vnp_ResponseCode" => $_GET['vnp_ResponseCode'], "message" => $payment_message]);
         if ($order_number_from_vnpay) {
             try {
-                 $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'payment_failed', payment_status = 'failed_via_return', updated_at = NOW() WHERE order_number = ?");
-                 $stmt_update_order->execute([$order_number_from_vnpay]);
+                              $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'failed', payment_status = 'failed', updated_at = NOW() WHERE order_number = ?");
+             $stmt_update_order->execute([$order_number_from_vnpay]);
             } catch (PDOException $e) {
                  error_log("VNPay Return: DB error updating failed payment status for order_number: " . $order_number_from_vnpay . " - " . $e->getMessage());
                 //  log_vnpay_debug_data("RETURN_URL - DB UPDATE ERROR (FAIL CASE)", ["order_number" => $order_number_from_vnpay, "error" => $e->getMessage()]);

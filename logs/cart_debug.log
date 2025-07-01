@@ -90,3 +90,83 @@
 2025-07-01 03:46:37 - CartController initialized for logged-in users
 2025-07-01 03:46:40 - CartController initialized for logged-in users
 2025-07-01 03:46:56 - CartController initialized for logged-in users
+2025-07-01 10:12:06 - CartController initialized for logged-in users
+2025-07-01 10:27:15 - CartController initialized for logged-in users
+2025-07-01 10:27:15 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-01 10:27:15 - addToCart - Exception - Data: {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`muabandocu`.`carts`, CONSTRAINT `fk_carts_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)"}
+2025-07-01 10:36:01 - CartController initialized for logged-in users
+2025-07-01 10:36:01 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-01 10:36:01 - addToCart - Exception - Data: {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`muabandocu`.`carts`, CONSTRAINT `fk_carts_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)"}
+2025-07-01 10:36:08 - CartController initialized for logged-in users
+2025-07-01 10:36:08 - addToCart - Start - Data: {"product_id":2,"quantity":1,"user_id":7}
+2025-07-01 10:36:08 - addToCart - Exception - Data: {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`muabandocu`.`carts`, CONSTRAINT `fk_carts_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)"}
+2025-07-01 10:36:11 - CartController initialized for logged-in users
+2025-07-01 10:37:32 - CartController initialized for logged-in users
+2025-07-01 10:37:32 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-01 10:37:32 - addToCart - Exception - Data: {"error":"SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`muabandocu`.`carts`, CONSTRAINT `fk_carts_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)"}
+2025-07-01 10:41:59 - CartController initialized for logged-in users
+2025-07-01 10:41:59 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":8}
+2025-07-01 10:42:00 - CartController initialized for logged-in users
+2025-07-01 10:42:28 - CartController initialized for logged-in users
+2025-07-01 10:42:36 - CartController initialized for logged-in users
+2025-07-01 10:42:50 - CartController initialized for logged-in users
+2025-07-01 10:43:02 - CartController initialized for logged-in users
+2025-07-01 10:43:43 - CartController initialized for logged-in users
+2025-07-01 10:45:39 - CartController initialized for logged-in users
+2025-07-01 10:46:19 - CartController initialized for logged-in users
+2025-07-01 10:47:21 - CartController initialized for logged-in users
+2025-07-01 10:50:46 - CartController initialized for logged-in users
+2025-07-01 10:50:48 - CartController initialized for logged-in users
+2025-07-01 10:54:33 - CartController initialized for logged-in users
+2025-07-01 10:54:52 - CartController initialized for logged-in users
+2025-07-01 11:00:12 - CartController initialized for logged-in users
+2025-07-01 11:07:54 - CartController initialized for logged-in users
+2025-07-01 11:07:57 - CartController initialized for logged-in users
+2025-07-01 11:08:00 - CartController initialized for logged-in users
+2025-07-01 11:12:02 - CartController initialized for logged-in users
+2025-07-01 11:12:04 - CartController initialized for logged-in users
+2025-07-01 11:12:04 - CartController initialized for logged-in users
+2025-07-01 11:12:36 - CartController initialized for logged-in users
+2025-07-01 11:12:37 - CartController initialized for logged-in users
+2025-07-01 11:12:40 - CartController initialized for logged-in users
+2025-07-01 11:12:41 - CartController initialized for logged-in users
+2025-07-01 11:12:42 - CartController initialized for logged-in users
+2025-07-01 11:12:45 - CartController initialized for logged-in users
+2025-07-01 11:12:45 - addToCart - Start - Data: {"product_id":2,"quantity":1,"user_id":8}
+2025-07-01 11:12:46 - CartController initialized for logged-in users
+2025-07-01 11:12:47 - CartController initialized for logged-in users
+2025-07-01 11:12:50 - CartController initialized for logged-in users
+2025-07-01 11:16:41 - CartController initialized for logged-in users
+2025-07-01 11:20:25 - CartController initialized for logged-in users
+2025-07-01 11:20:34 - CartController initialized for logged-in users
+2025-07-01 11:28:44 - CartController initialized for logged-in users
+2025-07-01 11:28:44 - addToCart - Start - Data: {"product_id":3,"quantity":1,"user_id":7}
+2025-07-01 11:28:48 - CartController initialized for logged-in users
+2025-07-01 11:28:48 - addToCart - Start - Data: {"product_id":3,"quantity":1,"user_id":7}
+2025-07-01 11:28:48 - addToCart - Exception - Data: {"error":"Số lượng trong giỏ vượt quá số lượng tồn kho."}
+2025-07-01 11:29:00 - CartController initialized for logged-in users
+2025-07-01 11:29:03 - CartController initialized for logged-in users
+2025-07-01 11:34:09 - CartController initialized for logged-in users
+2025-07-01 11:34:12 - CartController initialized for logged-in users
+2025-07-01 11:34:12 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-01 11:34:14 - CartController initialized for logged-in users
+2025-07-01 11:34:16 - CartController initialized for logged-in users
+2025-07-01 11:34:16 - CartController initialized for logged-in users
+2025-07-01 11:34:20 - CartController initialized for logged-in users
+2025-07-01 11:34:20 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-01 11:34:22 - CartController initialized for logged-in users
+2025-07-01 11:36:41 - CartController initialized for logged-in users
+2025-07-01 11:36:42 - CartController initialized for logged-in users
+2025-07-01 11:36:46 - CartController initialized for logged-in users
+2025-07-01 11:36:46 - CartController initialized for logged-in users
+2025-07-01 11:36:46 - CartController initialized for logged-in users
+2025-07-01 11:36:47 - CartController initialized for logged-in users
+2025-07-01 11:36:47 - CartController initialized for logged-in users
+2025-07-01 11:36:50 - CartController initialized for logged-in users
+2025-07-01 11:36:51 - CartController initialized for logged-in users
+2025-07-01 11:36:55 - CartController initialized for logged-in users
+2025-07-01 11:36:55 - addToCart - Start - Data: {"product_id":3,"quantity":1,"user_id":7}
+2025-07-01 11:37:02 - CartController initialized for logged-in users
+2025-07-01 11:37:09 - CartController initialized for logged-in users
+2025-07-01 11:37:09 - addToCart - Start - Data: {"product_id":4,"quantity":1,"user_id":7}
+2025-07-01 11:37:09 - CartController initialized for logged-in users

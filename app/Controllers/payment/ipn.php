@@ -12,7 +12,10 @@
 
 require_once(__DIR__ . "/../../../config/config.php");
 require_once(__DIR__ . "/vnpay_debug_logger.php"); // <--- THÊM DÒNG NÀY
-require_once(__DIR__ . "/../../cart/functions.php"); 
+
+// Load CartController và dependencies
+require_once(__DIR__ . "/../cart/CartController.php");
+require_once(__DIR__ . "/../../Models/cart/CartModel.php"); 
 
 $inputData = array();
 $returnData = array();
@@ -32,7 +35,7 @@ foreach ($_GET as $key => $value) {
     }
 }
 
-$vnp_SecureHash = $inputData['vnp_SecureHash'];
+$vnp_SecureHash_received = $inputData['vnp_SecureHash'];
 unset($inputData['vnp_SecureHash']);
 ksort($inputData);
 $i = 0;
@@ -46,26 +49,15 @@ foreach ($inputData as $key => $value) {
     }
 }
 
-$secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+$secureHash_calculated = hash_hmac('sha512', $hashData, $vnp_HashSecret);
 $vnpTranId = $inputData['vnp_TransactionNo']; //Mã giao dịch tại VNPAY
 $vnp_BankCode = $inputData['vnp_BankCode']; //Ngân hàng thanh toán
-$vnp_Amount = $inputData['vnp_Amount']/100; // Số tiền thanh toán VNPAY phản hồi
+$vnp_Amount_from_vnpay = $inputData['vnp_Amount']/100; // Số tiền thanh toán VNPAY phản hồi
 
 $Status = 0; // Là trạng thái thanh toán của giao dịch chưa có IPN lưu tại hệ thống của merchant chiều khởi tạo URL thanh toán.
 $order_number = $inputData['vnp_TxnRef']; // Sử dụng order_number thay vì orderId
 
-// LOGGING POINT 2: Before signature comparison for IPN
-log_vnpay_debug_data("IPN_URL - BEFORE SIG CHECK", 
-    [
-        "order_number" => $order_number,
-        "vnp_ResponseCode" => $inputData['vnp_ResponseCode'] ?? 'N/A',
-        "vnp_TransactionNo" => $vnpTranId,
-        "amount_from_vnpay_calculated" => $vnp_Amount_from_vnpay
-    ],
-    $hashData, 
-    $secureHash_calculated, 
-    $vnp_SecureHash_received
-);
+
 
 try {
     if ($secureHash_calculated == $vnp_SecureHash_received) {
@@ -91,14 +83,51 @@ try {
                         $Status = 1; // Trạng thái thanh toán thành công
                         log_vnpay_debug_data("IPN_URL - VNPAY RESPONSE CODE 00 (SUCCESS)", ["order_number" => $order_number]);
                         
+                        // ✅ TRỪNG STOCK KHI THANH TOÁN THÀNH CÔNG (giống return.php)
+                        // Lấy danh sách sản phẩm cần trừ stock trước
+                        $stmt_get_items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?");
+                        $stmt_get_items->execute([$order['id']]);
+                        $order_items_for_stock = $stmt_get_items->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        // Trừ stock cho từng sản phẩm
+                        foreach ($order_items_for_stock as $item) {
+                            $update_stock_stmt = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
+                            $update_stock_stmt->execute([$item['quantity'], $item['product_id'], $item['quantity']]);
+                            
+                            if ($update_stock_stmt->rowCount() == 0) {
+                                error_log("IPN WARNING: Không thể trừ stock cho product_id {$item['product_id']} với quantity {$item['quantity']} - có thể stock không đủ");
+                            }
+                        }
+                        
                         $stmt_update = $pdo->prepare("UPDATE orders SET status = 'success', payment_status = 'paid', vnpay_transaction_id = ?, updated_at = NOW() WHERE id = ?");
                         $stmt_update->execute([$vnpTranId, $order['id']]);
                         log_vnpay_debug_data("IPN_URL - DB UPDATED TO SUCCESS/PAID", ["order_number" => $order_number, "order_id" => $order['id']]);
                         
+                        // Gửi thông báo cho người bán
+                        $stmt_items = $pdo->prepare("SELECT oi.product_id, oi.product_title, p.user_id as seller_id FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
+                        $stmt_items->execute([$order['id']]);
+                        $notification_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+                        foreach ($notification_items as $item) {
+                            $seller_id = $item['seller_id'];
+                            $product_title = $item['product_title'];
+                            $message = "Sản phẩm <b>$product_title</b> của bạn đã được bán và thanh toán thành công!";
+                            $stmt_noti = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+                            $stmt_noti->execute([$seller_id, $message]);
+                        }
+                        
                         if ($order['buyer_id']) {
-                            clearCart($pdo, $order['buyer_id']);
-                            error_log("IPN: Cleared cart for user_id: {$order['buyer_id']} after successful payment for order: {$order['id']}");
-                            log_vnpay_debug_data("IPN_URL - CART CLEARED", ["order_number" => $order_number, "buyer_id" => $order['buyer_id']]);
+                            try {
+                                // Set session user_id để CartController có thể clear đúng cart
+                                $_SESSION['user_id'] = $order['buyer_id'];
+                                $cartController = new CartController($pdo);
+                                $cartController->clearCart();
+                                error_log("IPN: Cleared cart for user_id: {$order['buyer_id']} after successful payment for order: {$order['id']}");
+                                log_vnpay_debug_data("IPN_URL - CART CLEARED", ["order_number" => $order_number, "buyer_id" => $order['buyer_id']]);
+                            } catch (Exception $e) {
+                                error_log("IPN: Error clearing cart for user {$order['buyer_id']}: " . $e->getMessage());
+                                log_vnpay_debug_data("IPN_URL - CART CLEAR ERROR", ["order_number" => $order_number, "buyer_id" => $order['buyer_id'], "error" => $e->getMessage()]);
+                            }
                         }
                         
                     } else {

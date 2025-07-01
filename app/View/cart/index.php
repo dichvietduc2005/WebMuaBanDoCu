@@ -9,14 +9,10 @@
  * @author  Developer
  */
 
-// Đường dẫn tới file cấu hình
+// Đường dẫn tới file cấu hình (đã bao gồm Autoloader)
 require_once '../../../config/config.php';
 
-// Import CartModel (phải được import trước CartController)
-require_once(__DIR__ . '/../../Models/cart/CartModel.php');
-
-// Import CartController
-require_once(__DIR__ . '/../../Controllers/cart/CartController.php'); 
+// Autoloader sẽ tự động load CartModel và CartController khi cần 
 
 // Import các thành phần UI
 include_once __DIR__ . '/../../Components/header/Header.php';
@@ -34,10 +30,25 @@ $cartController = new CartController($pdo);
 $user_id = $cartController->getCurrentUserId();
 $is_guest = !$user_id;
 
-// Sử dụng phương thức từ đối tượng CartController
-$cartItems = $cartController->getCartItems();
-$cartTotal = $cartController->getCartTotal();
-$cartItemCount = $cartController->getCartItemCount();
+// Sử dụng phương thức từ đối tượng CartController với error handling
+$cartItems = [];
+$cartTotal = 0;
+$cartItemCount = 0;
+
+if (!$is_guest) {
+    try {
+        $cartItems = $cartController->getCartItems();
+        $cartTotal = $cartController->getCartTotal();
+        $cartItemCount = $cartController->getCartItemCount();
+    } catch (Exception $e) {
+        // Log error và set default values
+        error_log("Cart error for user {$user_id}: " . $e->getMessage());
+        $cartItems = [];
+        $cartTotal = 0;
+        $cartItemCount = 0;
+        $is_guest = true; // Treat as guest if error
+    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -51,7 +62,39 @@ $cartItemCount = $cartController->getCartItemCount();
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
+    <style>
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .empty-cart i {
+            color: #999;
+        }
+        .empty-cart p {
+            font-size: 18px;
+            margin-top: 15px;
+            color: #666;
+        }
+        .item-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.7);
+            z-index: 10;
+        }
+        .item-loading-overlay i {
+            color: #007bff;
+            font-size: 24px;
+        }
+    </style>
 </head>
 
 <body>
@@ -65,9 +108,16 @@ $cartItemCount = $cartController->getCartItemCount();
 
             <?php if (empty($cartItems)): ?>
                 <div class="empty-cart">
-                    <h3>Giỏ hàng của bạn hiện đang trống</h3>
-                    <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
-                    <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
+                    <?php if ($is_guest): ?>
+                        <h3>Vui lòng đăng nhập để xem giỏ hàng</h3>
+                        <p>Bạn cần đăng nhập để sử dụng tính năng giỏ hàng.</p>
+                        <a href="../user/login.php" class="btn btn-primary">Đăng nhập</a>
+                        <a href="../TrangChu.php" class="btn btn-secondary">Tiếp tục mua sắm</a>
+                    <?php else: ?>
+                        <h3>Giỏ hàng của bạn hiện đang trống</h3>
+                        <p>Hãy thêm một số sản phẩm vào giỏ hàng của bạn để tiếp tục.</p>
+                        <a href="../TrangChu.php" class="btn btn-primary">Tiếp tục mua sắm</a>
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
                 <div class="cart-items-container">
@@ -75,7 +125,7 @@ $cartItemCount = $cartController->getCartItemCount();
                         <div class="cart-item" data-product-id="<?php echo $item['product_id']; ?>">
                             <?php if (!empty($item['image_path'])): ?>
                                 <img src="../../<?php echo htmlspecialchars($item['image_path']); ?>"
-                                    alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>" class="item-image">
+                                    alt="<?php echo htmlspecialchars($item['product_title'] ?? ''); ?>" class="item-image">
                             <?php else: ?>
                                 <div class="item-image"
                                     style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
@@ -84,7 +134,7 @@ $cartItemCount = $cartController->getCartItemCount();
                             <?php endif; ?>
 
                             <div class="item-details">
-                                <h3 class="item-name"><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></h3>
+                                <h3 class="item-name"><?php echo htmlspecialchars($item['product_title'] ?? ''); ?></h3>
                                 <p class="item-price">
                                     $<?php echo number_format(($item['current_price'] ?? $item['added_price'] ?? 0) / 1000, 2); ?>
                                 </p>
@@ -135,7 +185,7 @@ $cartItemCount = $cartController->getCartItemCount();
                     <?php if ($is_guest): ?>
                         <div
                             style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin: 15px 0; font-size: 14px;">
-                            Vui lòng <a href="../auth/login.php">đăng nhập</a> để tiếp tục thanh toán.
+                            Vui lòng <a href="../user/login.php">đăng nhập</a> để tiếp tục thanh toán.
                         </div>
                     <?php endif; ?>
 
@@ -148,6 +198,107 @@ $cartItemCount = $cartController->getCartItemCount();
     </div>
     <?php footer(); ?>
     <!-- Script JavaScript xử lý tính năng giỏ hàng -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Định nghĩa hàm showToast và showConfirmDialog trước khi load file cart.js
+    function showToast(type, title, message) {
+        const toastContainer = document.getElementById('toast-container') || createToastContainer();
+        const toastEl = document.createElement('div');
+        toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+
+        toastEl.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body text-white">
+                    <strong>${title}</strong> ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        toastContainer.appendChild(toastEl);
+
+        const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+        toast.show();
+        toastEl.addEventListener('hidden.bs.toast', function () {
+            toastEl.remove();
+        });
+    }
+
+    function createToastContainer() {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.style.position = 'fixed';
+            container.style.top = '20px';
+            container.style.right = '20px';
+            container.style.zIndex = '1090';
+            document.body.appendChild(container);
+        }
+        return container;
+    }
+
+    function showConfirmDialog(title, message, confirmCallback) {
+        // Tạo container nếu chưa tồn tại
+        let modalContainer = document.getElementById('confirm-dialog-container');
+        if (!modalContainer) {
+            modalContainer = document.createElement('div');
+            modalContainer.id = 'confirm-dialog-container';
+            document.body.appendChild(modalContainer);
+        }
+
+        // Tạo ID duy nhất cho modal
+        const modalId = 'confirmModal-' + Date.now();
+        
+        // Tạo HTML cho modal
+        const modalHTML = `
+            <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}-label" aria-hidden="true" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="${modalId}-label">${title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ${message}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-primary confirm-btn">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Thêm modal vào container
+        modalContainer.innerHTML = modalHTML;
+        
+        // Lấy reference đến modal
+        const modalElement = document.getElementById(modalId);
+        const modal = new bootstrap.Modal(modalElement);
+        
+        // Thêm sự kiện cho nút xác nhận
+        const confirmBtn = modalElement.querySelector('.confirm-btn');
+        confirmBtn.addEventListener('click', function() {
+            modal.hide();
+            if (typeof confirmCallback === 'function') {
+                confirmCallback();
+            }
+        });
+        
+        // Xóa modal sau khi đóng để tránh tràn DOM
+        modalElement.addEventListener('hidden.bs.modal', function () {
+            modalElement.remove();
+        });
+        
+        // Hiển thị modal
+        modal.show();
+    }
+    </script>
     <script src="../../../public/assets/js/cart.js"></script>
 </body>
 
