@@ -1,6 +1,7 @@
 <?php
 require_once '../../../config/config.php';
-
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 // Lấy ID sản phẩm từ URL
 $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -82,74 +83,345 @@ if (!function_exists('getConditionText')) {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($product['title']); ?> - Web Mua Bán Đồ Cũ</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f5f7fb; }
-        .product-detail-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .product-main { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .product-images { position: relative; }
-        .main-image { width: 100%; height: 400px; object-fit: cover; border-radius: 12px; border: 1px solid #eee; }
-        .image-thumbnails { display: flex; gap: 10px; margin-top: 15px; overflow-x: auto; }
-        .thumbnail { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
-        .thumbnail.active { border-color: #007bff; }
-        .product-info h1 { font-size: 28px; font-weight: 600; margin-bottom: 15px; }
-        .price { font-size: 32px; font-weight: 700; color: #ee4d2d; margin-bottom: 20px; }
-        .product-meta { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 25px; }
-        .meta-item { display: flex; align-items: center; gap: 8px; color: #666; }
-        .quantity-selector { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; }
-        .qty-btn { width: 40px; height: 40px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 6px; }
-        .qty-input { width: 80px; height: 40px; text-align: center; border: 1px solid #ddd; border-radius: 6px; }
-        .action-buttons { display: flex; gap: 15px; margin-bottom: 30px; }
-        .btn-add-cart { background: #ffb449; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; }
-        .btn-buy-now { background: #ee4d2d; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; }
-        .product-description { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .related-products { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .related-item { border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: transform 0.2s; }
-        .related-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .related-image { width: 100%; height: 200px; object-fit: cover; }
-        .related-content { padding: 15px; }
-        .stock-status { padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; }
-        .in-stock { background: #d4edda; color: #155724; }
-        .out-stock { background: #f8d7da; color: #721c24; }
-        .breadcrumb-custom { background: white; padding: 15px 30px; border-radius: 12px; margin-bottom: 20px; }
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f5f7fb;
+    }
 
-        /* Customer Reviews Styles */
-        .customer-reviews { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .reviews-header { font-size: 20px; font-weight: 600; margin-bottom: 25px; color: #333; }
-        .review-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
-        .review-item:last-child { border-bottom: none; }
-        .reviewer-info { display: flex; align-items: center; margin-bottom: 12px; }
-        .reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; margin-right: 12px; overflow: hidden; }
-        .reviewer-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .reviewer-details { flex: 1; }
-        .reviewer-name { font-weight: 600; color: #333; margin: 0; font-size: 14px; }
-        .review-date { color: #999; font-size: 12px; margin: 0; }
-        .review-rating { display: flex; align-items: center; margin-bottom: 8px; }
-        .star { color: #ffc107; font-size: 14px; margin-right: 2px; }
-        .star.empty { color: #e0e0e0; }
-        .review-text { color: #666; line-height: 1.5; margin-bottom: 12px; font-size: 14px; }
-        .review-actions { display: flex; align-items: center; gap: 15px; }
-        .review-action { display: flex; align-items: center; gap: 5px; color: #999; font-size: 12px; cursor: pointer; transition: color 0.2s; }
-        .review-action:hover { color: #666; }
-        .review-action i { font-size: 12px; }
-        .see-all-reviews { background: none; border: none; color: #007bff; font-size: 14px; padding: 0; margin-top: 15px; cursor: pointer; }
-        .see-all-reviews:hover { text-decoration: underline; }
+    .product-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .product-main {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-images {
+        position: relative;
+    }
+
+    .main-image {
+        width: 100%;
+        height: 400px;
+        object-fit: contain;
+        border-radius: 12px;
+        border: 1px solid #eee;
+    }
+
+    .image-thumbnails {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        overflow-x: auto;
+    }
+
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .thumbnail.active {
+        border-color: #007bff;
+    }
+
+    .product-info h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .price {
+        font-size: 32px;
+        font-weight: 700;
+        color: #ee4d2d;
+        margin-bottom: 20px;
+    }
+
+    .product-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+        border-radius: 6px;
+    }
+
+    .qty-input {
+        width: 80px;
+        height: 40px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .btn-add-cart {
+        background: #ffb449;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-buy-now {
+        background: #ee4d2d;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .product-description {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-products {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .related-item {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .related-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .related-content {
+        padding: 15px;
+    }
+
+    .stock-status {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .in-stock {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .out-stock {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .breadcrumb-custom {
+        background: white;
+        padding: 15px 30px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    /* Customer Reviews Styles */
+    .customer-reviews {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .reviews-header {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .review-item {
+        padding: 20px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .review-item:last-child {
+        border-bottom: none;
+    }
+
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .reviewer-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #f0f0f0;
+        margin-right: 12px;
+        overflow: hidden;
+    }
+
+    .reviewer-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .reviewer-details {
+        flex: 1;
+    }
+
+    .reviewer-name {
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .review-date {
+        color: #999;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .review-rating {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .star {
+        color: #ffc107;
+        font-size: 14px;
+        margin-right: 2px;
+    }
+
+    .star.empty {
+        color: #e0e0e0;
+    }
+
+    .review-text {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .review-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .review-action {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #999;
+        font-size: 12px;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .review-action:hover {
+        color: #666;
+    }
+
+    .review-action i {
+        font-size: 12px;
+    }
+
+    .see-all-reviews {
+        background: none;
+        border: none;
+        color: #007bff;
+        font-size: 14px;
+        padding: 0;
+        margin-top: 15px;
+        cursor: pointer;
+    }
+
+    .see-all-reviews:hover {
+        text-decoration: underline;
+    }
     </style>
 </head>
+
 <body>
+    <?php renderHeader($pdo); ?>
     <div class="product-detail-container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb-custom">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="TrangChu.php">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="products.php?category=<?php echo $product['category_id']; ?>"><?php echo htmlspecialchars($product['category_name']); ?></a></li>
+                <li class="breadcrumb-item"><a
+                        href="products.php?category=<?php echo $product['category_id']; ?>"><?php echo htmlspecialchars($product['category_name']); ?></a>
+                </li>
                 <li class="breadcrumb-item active"><?php echo htmlspecialchars($product['title']); ?></li>
             </ol>
         </nav>
@@ -160,33 +432,32 @@ if (!function_exists('getConditionText')) {
                 <div class="col-md-6">
                     <div class="product-images">
                         <?php if (!empty($product_images)): ?>
-                            <img src="../<?php echo htmlspecialchars($product_images[0]['image_path']); ?>" 
-                                 alt="<?php echo htmlspecialchars($product['title']); ?>" 
-                                 class="main-image" id="mainImage">
-                            
-                            <?php if (count($product_images) > 1): ?>
-                            <div class="image-thumbnails">
-                                <?php foreach ($product_images as $index => $image): ?>
-                                <img src="../<?php echo htmlspecialchars($image['image_path']); ?>" 
-                                     alt="Ảnh <?php echo $index + 1; ?>" 
-                                     class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>"
-                                     onclick="changeMainImage('<?php echo htmlspecialchars($image['image_path']); ?>', this)">
-                                <?php endforeach; ?>
-                            </div>
-                            <?php endif; ?>
+                        <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product_images[0]['image_path']); ?>"
+                            alt="<?php echo htmlspecialchars($product['title']); ?>" class="main-image" id="mainImage">
+
+                        <?php if (count($product_images) > 1): ?>
+                        <div class="image-thumbnails">
+                            <?php foreach ($product_images as $index => $image): ?>
+                            <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($image['image_path']); ?>"
+                                alt="Ảnh <?php echo $index + 1; ?>"
+                                class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>"
+                                onclick="changeMainImage('<?php echo htmlspecialchars($image['image_path']); ?>', this)">
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                         <?php else: ?>
-                            <div class="main-image d-flex align-items-center justify-content-center bg-light">
-                                <i class="fas fa-image fa-3x text-muted"></i>
-                            </div>
+                        <div class="main-image d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                        </div>
                         <?php endif; ?>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="product-info">
                         <h1><?php echo htmlspecialchars($product['title']); ?></h1>
                         <div class="price"><?php echo formatPrice($product['price']); ?></div>
-                        
+
                         <div class="product-meta">
                             <div class="meta-item">
                                 <i class="fas fa-star text-warning"></i>
@@ -202,7 +473,8 @@ if (!function_exists('getConditionText')) {
                             </div>
                         </div>
 
-                        <div class="stock-status <?php echo $product['stock_quantity'] > 0 ? 'in-stock' : 'out-stock'; ?> d-inline-block mb-3">
+                        <div
+                            class="stock-status <?php echo $product['stock_quantity'] > 0 ? 'in-stock' : 'out-stock'; ?> d-inline-block mb-3">
                             <?php echo $product['stock_quantity'] > 0 ? 'Còn hàng' : 'Hết hàng'; ?>
                         </div>
 
@@ -210,7 +482,8 @@ if (!function_exists('getConditionText')) {
                         <div class="quantity-selector">
                             <span>Số lượng:</span>
                             <button class="qty-btn" onclick="changeQuantity(-1)">-</button>
-                            <input type="number" class="qty-input" id="quantity" value="1" min="1" max="<?php echo $product['stock_quantity']; ?>">
+                            <input type="number" class="qty-input" id="quantity" value="1" min="1"
+                                max="<?php echo $product['stock_quantity']; ?>">
                             <button class="qty-btn" onclick="changeQuantity(1)">+</button>
                         </div>
 
@@ -245,7 +518,7 @@ if (!function_exists('getConditionText')) {
         <!-- Customer Reviews -->
         <div class="customer-reviews">
             <h3 class="reviews-header">Đánh giá của khách hàng</h3>
-            
+
             <!-- Review Item Example -->
             <div class="review-item">
                 <div class="reviewer-info">
@@ -288,15 +561,15 @@ if (!function_exists('getConditionText')) {
             <h3 class="mb-4">Sản phẩm liên quan</h3>
             <div class="related-grid">
                 <?php foreach ($related_products as $related): ?>
-                <div class="related-item" onclick="window.location.href='product_detail.php?id=<?php echo $related['id']; ?>'">
+                <div class="related-item"
+                    onclick="window.location.href='product_detail.php?id=<?php echo $related['id']; ?>'">
                     <?php if ($related['image_path']): ?>
-                        <img src="../<?php echo htmlspecialchars($related['image_path']); ?>" 
-                             alt="<?php echo htmlspecialchars($related['title']); ?>" 
-                             class="related-image">
+                    <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($related['image_path']); ?>"
+                        alt="<?php echo htmlspecialchars($related['title']); ?>" class="related-image">
                     <?php else: ?>
-                        <div class="related-image d-flex align-items-center justify-content-center bg-light">
-                            <i class="fas fa-image fa-2x text-muted"></i>
-                        </div>
+                    <div class="related-image d-flex align-items-center justify-content-center bg-light">
+                        <i class="fas fa-image fa-2x text-muted"></i>
+                    </div>
                     <?php endif; ?>
                     <div class="related-content">
                         <h6><?php echo htmlspecialchars($related['title']); ?></h6>
@@ -308,118 +581,119 @@ if (!function_exists('getConditionText')) {
         </div>
         <?php endif; ?>
     </div>
-
+    <?php footer(); ?>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function changeMainImage(imagePath, thumbnail) {
-            document.getElementById('mainImage').src = '../' + imagePath;
-            
-            // Update active thumbnail
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-            thumbnail.classList.add('active');
-        }
+    function changeMainImage(imagePath, thumbnail) {
+        document.getElementById('mainImage').src = '../' + imagePath;
 
-        function changeQuantity(delta) {
-            const qtyInput = document.getElementById('quantity');
-            const currentQty = parseInt(qtyInput.value);
-            const newQty = currentQty + delta;
-            const maxQty = parseInt(qtyInput.max);
-            
-            if (newQty >= 1 && newQty <= maxQty) {
-                qtyInput.value = newQty;
+        // Update active thumbnail
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        thumbnail.classList.add('active');
+    }
+
+    function changeQuantity(delta) {
+        const qtyInput = document.getElementById('quantity');
+        const currentQty = parseInt(qtyInput.value);
+        const newQty = currentQty + delta;
+        const maxQty = parseInt(qtyInput.max);
+
+        if (newQty >= 1 && newQty <= maxQty) {
+            qtyInput.value = newQty;
+        }
+    }
+
+    function addToCart(productId) {
+        const quantity = document.getElementById('quantity').value;
+
+        <?php if (!isset($_SESSION['user_id'])): ?>
+        alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+        window.location.href = '../user/login.php';
+        return;
+        <?php endif; ?>
+
+        // AJAX call to add to cart
+        $.ajax({
+            url: '../../../app/Controllers/cart/CartController.php',
+            method: 'POST',
+            data: {
+                action: 'add',
+                product_id: productId,
+                quantity: quantity
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert('Đã thêm sản phẩm vào giỏ hàng!');
+                    // Update cart count if needed
+                    updateCartCount();
+                } else {
+                    alert('Có lỗi xảy ra: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
             }
-        }
+        });
+    }
 
-        function addToCart(productId) {
-            const quantity = document.getElementById('quantity').value;
-            
-            <?php if (!isset($_SESSION['user_id'])): ?>
-            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-            window.location.href = '../user/login.php';
-            return;
-            <?php endif; ?>
+    function buyNow(productId) {
+        const quantity = document.getElementById('quantity').value;
 
-            // AJAX call to add to cart
+        <?php if (!isset($_SESSION['user_id'])): ?>
+        alert('Vui lòng đăng nhập để mua hàng');
+        window.location.href = '../user/login.php';
+        return;
+        <?php endif; ?>
+
+        // Add to cart first, then redirect to checkout
+        $.ajax({
+            url: '../../../app/Controllers/cart/CartController.php',
+            method: 'POST',
+            data: {
+                action: 'add',
+                product_id: productId,
+                quantity: quantity
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Redirect to checkout
+                    window.location.href = '../checkout/index.php';
+                } else {
+                    alert('Có lỗi xảy ra: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
+            }
+        });
+    }
+
+    function updateCartCount() {
+        // Update cart count in header if present
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
             $.ajax({
-                url: '../../../app/Controllers/cart/CartController.php',
-                method: 'POST',
-                data: {
-                    action: 'add',
-                    product_id: productId,
-                    quantity: quantity
-                },
+                url: '../../../app/Controllers/cart/CartController.php?action=count',
+                method: 'GET',
                 dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        alert('Đã thêm sản phẩm vào giỏ hàng!');
-                        // Update cart count if needed
-                        updateCartCount();
-                    } else {
-                        alert('Có lỗi xảy ra: ' + response.message);
+                success: function(data) {
+                    if (data.success) {
+                        cartCountElement.textContent = data.count;
                     }
-                },
-                error: function() {
-                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
                 }
             });
         }
+    }
 
-        function buyNow(productId) {
-            const quantity = document.getElementById('quantity').value;
-            
-            <?php if (!isset($_SESSION['user_id'])): ?>
-            alert('Vui lòng đăng nhập để mua hàng');
-            window.location.href = '../user/login.php';
-            return;
-            <?php endif; ?>
-
-            // Add to cart first, then redirect to checkout
-            $.ajax({
-                url: '../../../app/Controllers/cart/CartController.php',
-                method: 'POST',
-                data: {
-                    action: 'add',
-                    product_id: productId,
-                    quantity: quantity
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        // Redirect to checkout
-                        window.location.href = '../checkout/index.php';
-                    } else {
-                        alert('Có lỗi xảy ra: ' + response.message);
-                    }
-                },
-                error: function() {
-                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
-                }
-            });
-        }
-
-        function updateCartCount() {
-            // Update cart count in header if present
-            const cartCountElement = document.querySelector('.cart-count');
-            if (cartCountElement) {
-                $.ajax({
-                    url: '../../../app/Controllers/cart/CartController.php?action=count',
-                    method: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.success) {
-                            cartCountElement.textContent = data.count;
-                        }
-                    }
-                });
-            }
-        }
-
-        function showAllReviews() {
-            // Placeholder function for future implementation
-            alert('Tính năng xem tất cả đánh giá sẽ được triển khai sau');
-            console.log('Show all reviews functionality to be implemented');
-        }
+    function showAllReviews() {
+        // Placeholder function for future implementation
+        alert('Tính năng xem tất cả đánh giá sẽ được triển khai sau');
+        console.log('Show all reviews functionality to be implemented');
+    }
     </script>
 </body>
+
 </html>

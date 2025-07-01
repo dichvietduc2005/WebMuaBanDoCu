@@ -98,3 +98,21 @@
 2025-07-01 13:22:05 - CartController initialized for logged-in users
 2025-07-01 13:26:51 - CartController initialized for logged-in users
 2025-07-01 13:28:37 - CartController initialized for logged-in users
+2025-07-01 14:38:26 - CartController initialized for logged-in users
+2025-07-01 14:38:31 - CartController initialized for logged-in users
+2025-07-01 14:50:24 - CartController initialized for logged-in users
+2025-07-01 14:50:24 - addToCart - Start - Data: {"product_id":18,"quantity":1,"user_id":7}
+2025-07-01 14:53:31 - CartController initialized for logged-in users
+2025-07-01 14:53:39 - CartController initialized for logged-in users
+2025-07-01 14:53:44 - CartController initialized for logged-in users
+2025-07-01 14:53:44 - addToCart - Start - Data: {"product_id":18,"quantity":1,"user_id":7}
+2025-07-01 14:53:45 - CartController initialized for logged-in users
+2025-07-01 14:53:46 - CartController initialized for logged-in users
+2025-07-01 14:53:52 - CartController initialized for logged-in users
+2025-07-01 14:53:56 - CartController initialized for logged-in users
+2025-07-01 14:53:56 - addToCart - Start - Data: {"product_id":18,"quantity":1,"user_id":7}
+2025-07-01 14:53:56 - CartController initialized for logged-in users
+2025-07-01 14:54:36 - CartController initialized for logged-in users
+2025-07-01 14:55:03 - CartController initialized for logged-in users
+2025-07-01 14:55:33 - CartController initialized for logged-in users
+2025-07-01 14:56:15 - CartController initialized for logged-in users

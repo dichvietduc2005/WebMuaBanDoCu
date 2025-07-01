@@ -1,9 +1,9 @@
 <?php
-/**
- * View cho trang thanh toán
- */
+
 require_once(__DIR__ . '/../../../config/config.php');
-// Autoloader sẽ tự động load CartModel và CartController
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
+
 
 // Kiểm tra đăng nhập
 $user_id = $_SESSION['user_id'] ?? null;
@@ -30,9 +30,7 @@ $stmt = $pdo->prepare("SELECT full_name, email, phone, address FROM users WHERE 
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
-// Import các thành phần UI
-include_once __DIR__ . '/../../Components/header/Header.php';
-include_once __DIR__ . '/../../Components/footer/Footer.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -41,6 +39,7 @@ include_once __DIR__ . '/../../Components/footer/Footer.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh toán</title>
     <link href="../../../public/assets/css/checkout.css" rel="stylesheet">
+    <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
