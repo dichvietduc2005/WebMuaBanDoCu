@@ -378,6 +378,7 @@ class Auth {
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_name'] = $user['full_name'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['user_role'] = $user['role'];
         $_SESSION['login_time'] = time();
     }
     
