@@ -7,7 +7,7 @@ include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 $_SESSION['role'] = 'admin';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../user/login.php');
+    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
     exit;
 }
 

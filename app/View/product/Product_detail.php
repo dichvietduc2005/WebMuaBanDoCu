@@ -574,7 +574,7 @@ if (isset($_SESSION['user_id'])) {
 
         <?php if (!isset($_SESSION['user_id'])): ?>
         alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-        window.location.href = '../user/login.php';
+        window.location.href = '/WebMuaBanDoCu/app/View/user/login.php';
         return;
         <?php endif; ?>
 
@@ -608,7 +608,7 @@ if (isset($_SESSION['user_id'])) {
 
         <?php if (!isset($_SESSION['user_id'])): ?>
         alert('Vui lòng đăng nhập để mua hàng');
-        window.location.href = '../user/login.php';
+        window.location.href = '/WebMuaBanDoCu/app/View/user/login.php';
         return;
         <?php endif; ?>
 

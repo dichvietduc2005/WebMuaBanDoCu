@@ -3,7 +3,7 @@ require_once(__DIR__ . '/../../../config/config.php');// For $pdo, session_start
 require_once(__DIR__ . '/../../Controllers/admin/AdminController.php');
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../user/login.php');
+    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
     exit;
 }
 
