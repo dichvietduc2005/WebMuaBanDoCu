@@ -1,57 +1,6 @@
 <?php
-require_once __DIR__ . '/../../config/config.php';
-require_once "../../app/Controllers/extra/ExtraController.php";
-include_once __DIR__ . '/../Components/footer/Footer.php';
-include_once __DIR__ . '/../Components/header/Header.php';
-// Helper functions
-if (!function_exists('formatPrice')) {
-    function formatPrice($price) {
-        return number_format($price, 0, ',', '.') . ' VNĐ';
-    }
-}
-
-if (!function_exists('getConditionText')) {
-    function getConditionText($condition) {
-        $conditions = [
-            'new' => 'Mới',
-            'like_new' => 'Như mới',
-            'good' => 'Tốt',
-            'fair' => 'Khá',
-            'poor' => 'Cũ'
-        ];
-        return $conditions[$condition] ?? 'Không xác định';
-    }
-}
-
-if (!function_exists('getStatusText')) {
-    function getStatusText($status) {
-        $statuses = [
-            'pending' => 'Chờ xử lý',
-            'confirmed' => 'Đã xác nhận',
-            'shipping' => 'Đang giao hàng',
-            'delivered' => 'Đã giao hàng',
-            'cancelled' => 'Đã hủy',
-            'success' => 'Thành công'
-        ];
-        return $statuses[$status] ?? 'Không xác định';
-    }
-}
-
-if (!function_exists('getStatusBadge')) {
-    function getStatusBadge($status) {
-        $badges = [
-            'pending' => 'badge-warning',
-            'confirmed' => 'badge-info',
-            'shipping' => 'badge-primary',
-            'delivered' => 'badge-success',
-            'cancelled' => 'badge-danger',
-            'success' => 'badge-success',
-            'paid' => 'badge-success',
-            'failed' => 'badge-danger'
-        ];
-        return $badges[$status] ?? 'badge-secondary';
-    }
-}
+// Sử dụng bootstrap để tăng hiệu suất tải trang
+require_once __DIR__ . '/../../config/bootstrap.php';
 
 // Debug: Kiểm tra kết nối database
 if (!isset($pdo)) {
@@ -103,6 +52,7 @@ try {
     error_log("Database error in Home.php: " . $e->getMessage());
     $featured_products = [];
     $categories = [];
+    $regular_products = [];
 }
 
 // Lấy đơn hàng gần đây (nếu user đã đăng nhập)
@@ -141,6 +91,9 @@ if (isset($_SESSION['user_id'])) {
     $unread_notifications = (int)$stmt->fetchColumn();
 }
 
+// Gọi header và footer từ components
+require_once __DIR__ . '/../Components/header/Header.php';
+require_once __DIR__ . '/../Components/footer/Footer.php';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -152,10 +105,10 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../public/assets/css/index.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/index.css">
 </head>
 <body>
-    <?php  renderHeader($pdo); ?>
+    <?php renderHeader($pdo); ?>
 
     <div class="container">
         <div class="hero">
@@ -167,7 +120,7 @@ if (isset($_SESSION['user_id'])) {
                     <a href="#featured-products" class="hero-btn btn-white"><i class="fas fa-shopping-bag"></i> Mua sắm
                         ngay</a>
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a href="product/sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán đồ</a>
+                        <a href="<?php echo BASE_URL; ?>app/View/product/sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán đồ</a>
                     <?php else: ?>
                         <button type="button" class="hero-btn btn-transparent" id="openClerkAuth"><i class="fas fa-sign-in-alt"></i> Đăng nhập / Đăng ký</button>
                     <?php endif; ?>
@@ -185,7 +138,7 @@ if (isset($_SESSION['user_id'])) {
         <section class="section" id="featured-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm nổi bật</h2>
-                <a href="product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="products-grid">
@@ -197,13 +150,13 @@ if (isset($_SESSION['user_id'])) {
                     <p>Hãy quay lại sau để xem các sản phẩm mới nhất!</p>
                 </div> <?php else: ?> <?php foreach ($featured_products as $product): ?>
                 <div class="product-card" style="cursor: pointer;"
-                    onclick="window.location.href='product/Product_detail.php?id=<?php echo $product['id']; ?>'">
+                    onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $product['id']; ?>'">
                     <div class="product-image" style="position: relative;">
                         <?php if ($product['featured']): ?>
                         <span class="product-badge">Nổi bật</span>
                         <?php endif; ?>
                         <?php if ($product['image_path']): ?>
-                        <img src="../../public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                        <img src="<?php echo BASE_URL . htmlspecialchars($product['image_path']); ?>"
                             alt="<?php echo htmlspecialchars($product['title']); ?>"
                             style="width: 100%; height: 220px; object-fit: cover;">
                         <?php else: ?>
@@ -255,7 +208,7 @@ if (isset($_SESSION['user_id'])) {
         <section class="section" id="regular-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm mới nhất</h2>
-                <a href="product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="products-grid">
@@ -268,10 +221,10 @@ if (isset($_SESSION['user_id'])) {
                 </div> <?php else: ?>
                 <?php foreach ($regular_products as $product): ?>
                 <div class="product-card" style="cursor: pointer;"
-                    onclick="window.location.href='product/Product_detail.php?id=<?php echo $product['id']; ?>'">
+                    onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $product['id']; ?>'">
                     <div class="product-image" style="position: relative;">
                         <?php if ($product['image_path']): ?>
-                        <img src="../../public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                        <img src="<?php echo BASE_URL . htmlspecialchars($product['image_path']); ?>"
                             alt="<?php echo htmlspecialchars($product['title']); ?>"
                             style="width: 100%; height: 220px; object-fit: cover;">
                         <?php else: ?>
@@ -321,7 +274,7 @@ if (isset($_SESSION['user_id'])) {
         </section> <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Danh mục sản phẩm</h2>
-                <a href="product/categories.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/product/categories.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="categories-grid">
@@ -342,7 +295,7 @@ if (isset($_SESSION['user_id'])) {
                     $icon = $category_icons[$category['slug']] ?? 'fas fa-cube';
                 ?>
                 <div class="category-card"
-                    onclick="window.location.href='product/category.php?slug=<?php echo $category['slug']; ?>'">
+                    onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo $category['slug']; ?>'">
                     <i class="<?php echo $icon; ?> category-icon"></i>
                     <div class="category-name"><?php echo htmlspecialchars($category['name']); ?></div>
                 </div>
@@ -353,7 +306,7 @@ if (isset($_SESSION['user_id'])) {
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Đơn hàng gần đây</h2>
-                <a href="order/order_history.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/order/order_history.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="orders-grid">
@@ -388,7 +341,7 @@ if (isset($_SESSION['user_id'])) {
                     </div>
 
                     <div class="order-actions">
-                        <a href="order/order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-outline btn-sm">
+                        <a href="<?php echo BASE_URL; ?>app/View/order/order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-outline btn-sm">
                             <i class="fas fa-eye"></i> Xem chi tiết
                         </a>
                         <?php if ($order['status'] == 'pending'): ?>
@@ -408,21 +361,34 @@ if (isset($_SESSION['user_id'])) {
         <?php endif; ?>
     </div>
 
-    <?php footer(); ?>
-    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-    <script src="../../public/assets/js/main.js"></script>
-    <script src="../../public/assets/js/search.js"></script>
+    <?php renderFooter(); ?>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-   
-    <script
-        async
-        crossorigin="anonymous"
-        data-clerk-publishable-key="pk_test_ZWFnZXItZm9hbC05OS5jbGVyay5hY2NvdW50cy5kZXYk"
-        src="https://eager-foal-99.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-        type="text/javascript"
-    ></script>
-
-   
+    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
+    <script>
+        // Mã JavaScript xử lý thêm vào giỏ hàng
+        function addToCart(event, productId) {
+            event.preventDefault();
+            const form = event.target;
+            const quantity = form.querySelector('.quantity-input').value;
+            
+            $.ajax({
+                url: '<?php echo BASE_URL; ?>app/Controllers/cart/CartController.php?action=add',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    quantity: quantity
+                },
+                success: function(response) {
+                    alert('Đã thêm sản phẩm vào giỏ hàng!');
+                    location.reload();
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
+                }
+            });
+        }
+    </script>
 </body>
-
 </html>

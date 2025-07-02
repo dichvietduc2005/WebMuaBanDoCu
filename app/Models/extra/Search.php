@@ -68,4 +68,47 @@ class SearchModel
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function countSearchResults($pdo, $keyword = '', $category_id = 0, $condition = '', $min_price = 0, $max_price = 0, $in_stock = true) 
+    {
+        $where_conditions = ["p.status = 'active'"];
+        $params = [];
+
+        if (!empty($keyword)) {
+            $where_conditions[] = "(p.title LIKE ? OR p.description LIKE ? OR c.name LIKE ?)";
+            $keyword_param = "%$keyword%";
+            $params[] = $keyword_param;
+            $params[] = $keyword_param;
+            $params[] = $keyword_param;
+        }
+        if ($category_id > 0) {
+            $where_conditions[] = "p.category_id = ?";
+            $params[] = $category_id;
+        }
+        if (!empty($condition)) {
+            $where_conditions[] = "p.condition_status = ?";
+            $params[] = $condition;
+        }
+        if ($min_price > 0) {
+            $where_conditions[] = "p.price >= ?";
+            $params[] = $min_price;
+        }
+        if ($max_price > 0) {
+            $where_conditions[] = "p.price <= ?";
+            $params[] = $max_price;
+        }
+        if ($in_stock) {
+            $where_conditions[] = "p.stock_quantity > 0";
+        }
+
+        $where_sql = implode(' AND ', $where_conditions);
+
+        $sql = "SELECT COUNT(*) FROM products p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE $where_sql";
+                
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchColumn();
+    }
 }

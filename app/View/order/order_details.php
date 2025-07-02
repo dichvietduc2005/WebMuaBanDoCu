@@ -3,8 +3,8 @@
 require_once '../../../config/config.php';
 require_once('../../Controllers/auth_helper.php'); // For Auth functions
 // Autoloader sẽ tự động load OrderController và CartController
-include_once __DIR__ . '/../../Components/header/Header.php';
-include_once __DIR__ . '/../../Components/footer/Footer.php';
+require_once __DIR__ . '/../../Components/header/Header.php';
+require_once __DIR__ . '/../../Components/footer/Footer.php';
 
 // Kiểm tra đăng nhập bằng Auth helper
 $user = requireLogin();

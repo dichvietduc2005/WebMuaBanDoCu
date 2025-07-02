@@ -1,8 +1,4 @@
--- File SQL hoàn chỉnh cho Web Mua Bán Đồ Cũ
--- Tạo database và cấu trúc bảng theo đúng yêu cầu của code
 
--- Tạo database
-CREATE DATABASE IF NOT EXISTS muabandocu CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE muabandocu;
 
 -- Tắt foreign key checks tạm thời
@@ -276,23 +272,6 @@ INSERT INTO product_images (product_id, image_path, is_primary, sort_order) VALU
 (5, 'uploads/products/ipad_pro_11.jpg', 1, 1),
 (6, 'uploads/products/sony_a7_iii.jpg', 1, 1);
 
--- Thêm dữ liệu mẫu cho bảng carts
-INSERT INTO carts (user_id, session_id) VALUES
-(2, NULL),
-(3, NULL),
-(4, NULL),
-(5, NULL),
-(6, NULL),
-(NULL, 'guest_session_001'),
-(NULL, 'guest_session_002');
-
--- Thêm dữ liệu mẫu cho bảng cart_items
-INSERT INTO cart_items (cart_id, product_id, quantity, added_price, condition_snapshot) VALUES
-(1, 1, 1, 15000000, 'like_new'),
-(1, 3, 1, 30000000, 'good'),
-(2, 2, 1, 18500000, 'good'),
-(3, 4, 1, 21750000, 'like_new'),
-(3, 5, 1, 20900000, 'like_new');
 
 -- Thêm dữ liệu mẫu cho bảng orders
 INSERT INTO orders (order_number, buyer_id, total_amount, status, payment_method, payment_status, notes, created_at) VALUES

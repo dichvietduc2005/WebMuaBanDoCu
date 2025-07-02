@@ -7,39 +7,217 @@
 class ProductModel 
 {
     private $db;
+    private $pdo;
     
-    public function __construct($database = null) 
+    public function __construct() 
     {
-        $this->db = $database ?: Database::getInstance();
+        $this->db = Database::getInstance();
+        $this->pdo = $this->db->getConnection();
     }
     
     /**
-     * Tạo sản phẩm mới
+     * Lấy danh sách sản phẩm với cache
+     */
+    public function getProducts($limit = 12, $offset = 0, $featured = null, $categoryId = null) 
+    {
+        $params = [];
+        $sql = "SELECT p.*, pi.image_path, c.name as category_name 
+                FROM products p 
+                LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.status = 'active' AND p.stock_quantity > 0";
+        
+        if ($featured !== null) {
+            $sql .= " AND p.featured = ?";
+            $params[] = $featured ? 1 : 0;
+        }
+        
+        if ($categoryId !== null) {
+            $sql .= " AND p.category_id = ?";
+            $params[] = $categoryId;
+        }
+        
+        $sql .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        return $this->db->query($sql, $params);
+    }
+    
+    /**
+     * Lấy chi tiết sản phẩm với cache
+     */
+    public function getProductById($id) 
+    {
+        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as seller_name, u.email as seller_email
+                FROM products p 
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN users u ON p.user_id = u.id
+                WHERE p.id = ? AND p.status = 'active'";
+                
+        return $this->db->queryOne($sql, [$id]);
+    }
+    
+    /**
+     * Lấy hình ảnh sản phẩm với cache
+     */
+    public function getProductImages($productId) 
+    {
+        $sql = "SELECT * FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, id ASC";
+        return $this->db->query($sql, [$productId]);
+    }
+    
+    /**
+     * Lấy sản phẩm liên quan với cache
+     */
+    public function getRelatedProducts($categoryId, $productId, $limit = 4) 
+    {
+        $sql = "SELECT p.*, pi.image_path 
+                FROM products p 
+                LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+                WHERE p.category_id = ? AND p.id != ? AND p.status = 'active' AND p.stock_quantity > 0
+                ORDER BY p.created_at DESC 
+                LIMIT ?";
+                
+        return $this->db->query($sql, [$categoryId, $productId, $limit]);
+    }
+    
+    /**
+     * Đếm tổng số sản phẩm với cache
+     */
+    public function countProducts($featured = null, $categoryId = null) 
+    {
+        $params = [];
+        $sql = "SELECT COUNT(*) FROM products WHERE status = 'active' AND stock_quantity > 0";
+        
+        if ($featured !== null) {
+            $sql .= " AND featured = ?";
+            $params[] = $featured ? 1 : 0;
+        }
+        
+        if ($categoryId !== null) {
+            $sql .= " AND category_id = ?";
+            $params[] = $categoryId;
+        }
+        
+        return $this->db->queryValue($sql, $params);
+    }
+    
+    /**
+     * Thêm sản phẩm mới (không cache)
      */
     public function createProduct($data) 
     {
-        try {
-                    $sql = "INSERT INTO products (
-                    title, description, price, category_id, condition_status, 
-                    user_id, stock_quantity, status, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), NOW())";
+        // Xóa cache khi thêm sản phẩm mới
+        $this->db->clearCache();
+        
+        $sql = "INSERT INTO products (user_id, category_id, title, description, price, condition_status, 
+                stock_quantity, location, featured, status, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
                 
-        $stmt = $this->db->query($sql, [
+        $this->db->execute($sql, [
+            $data['user_id'],
+            $data['category_id'],
             $data['title'],
-                $data['description'],
-                $data['price'],
-                $data['category_id'],
-                $data['condition_status'],
-                $data['user_id'],
-                $data['stock_quantity'] ?? 1
-            ]);
-            
-            return $this->db->lastInsertId();
-            
-        } catch (Exception $e) {
-            error_log("Error creating product: " . $e->getMessage());
-            throw new Exception("Không thể tạo sản phẩm mới.");
-        }
+            $data['description'],
+            $data['price'],
+            $data['condition_status'],
+            $data['stock_quantity'],
+            $data['location'],
+            $data['featured'] ?? 0,
+            $data['status'] ?? 'active'
+        ]);
+        
+        return $this->db->lastInsertId();
+    }
+    
+    /**
+     * Cập nhật sản phẩm (không cache)
+     */
+    public function updateProduct($id, $data) 
+    {
+        // Xóa cache khi cập nhật sản phẩm
+        $this->db->clearCache();
+        
+        $sql = "UPDATE products SET 
+                category_id = ?, 
+                title = ?, 
+                description = ?, 
+                price = ?, 
+                condition_status = ?, 
+                stock_quantity = ?, 
+                location = ?, 
+                featured = ?, 
+                status = ?, 
+                updated_at = NOW() 
+                WHERE id = ?";
+                
+        return $this->db->execute($sql, [
+            $data['category_id'],
+            $data['title'],
+            $data['description'],
+            $data['price'],
+            $data['condition_status'],
+            $data['stock_quantity'],
+            $data['location'],
+            $data['featured'] ?? 0,
+            $data['status'] ?? 'active',
+            $id
+        ]);
+    }
+    
+    /**
+     * Xóa sản phẩm (không cache)
+     */
+    public function deleteProduct($id) 
+    {
+        // Xóa cache khi xóa sản phẩm
+        $this->db->clearCache();
+        
+        $sql = "UPDATE products SET status = 'deleted', updated_at = NOW() WHERE id = ?";
+        return $this->db->execute($sql, [$id]);
+    }
+    
+    /**
+     * Thêm ảnh sản phẩm (không cache)
+     */
+    public function addProductImage($productId, $imagePath, $isPrimary = 0) 
+    {
+        // Xóa cache khi thêm ảnh
+        $this->invalidateProductCache($productId);
+        
+        $sql = "INSERT INTO product_images (product_id, image_path, is_primary, created_at) 
+                VALUES (?, ?, ?, NOW())";
+                
+        return $this->db->execute($sql, [$productId, $imagePath, $isPrimary]);
+    }
+    
+    /**
+     * Cập nhật số lượng sản phẩm (không cache)
+     */
+    public function updateStock($id, $quantity) 
+    {
+        // Xóa cache khi cập nhật số lượng
+        $this->invalidateProductCache($id);
+        
+        $sql = "UPDATE products SET stock_quantity = ?, updated_at = NOW() WHERE id = ?";
+        return $this->db->execute($sql, [$quantity, $id]);
+    }
+    
+    /**
+     * Xóa cache liên quan đến sản phẩm
+     */
+    private function invalidateProductCache($productId) 
+    {
+        // Xóa cache của sản phẩm cụ thể
+        $this->db->invalidateCache("SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as seller_name, u.email as seller_email
+                FROM products p 
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN users u ON p.user_id = u.id
+                WHERE p.id = ? AND p.status = 'active'", [$productId]);
+                
+        // Xóa cache của hình ảnh sản phẩm
+        $this->db->invalidateCache("SELECT * FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, id ASC", [$productId]);
     }
     
     /**
@@ -183,35 +361,6 @@ class ProductModel
     }
     
     /**
-     * Cập nhật sản phẩm
-     */
-    public function update($id, $data) 
-    {
-        try {
-                    $sql = "UPDATE products SET 
-                    title = ?, description = ?, price = ?, category_id = ?,
-                    condition_status = ?, stock_quantity = ?, updated_at = NOW()
-                WHERE id = ?";
-                
-        $stmt = $this->db->query($sql, [
-            $data['title'],
-                $data['description'],
-                $data['price'],
-                $data['category_id'],
-                $data['condition_status'],
-                $data['stock_quantity'] ?? 1,
-                $id
-            ]);
-            
-            return $stmt->rowCount() > 0;
-            
-        } catch (Exception $e) {
-            error_log("Error updating product: " . $e->getMessage());
-            throw new Exception("Không thể cập nhật sản phẩm.");
-        }
-    }
-    
-    /**
      * Cập nhật trạng thái sản phẩm
      */
     public function updateStatus($id, $status) 
@@ -224,22 +373,6 @@ class ProductModel
         } catch (Exception $e) {
             error_log("Error updating product status: " . $e->getMessage());
             throw new Exception("Không thể cập nhật trạng thái sản phẩm.");
-        }
-    }
-    
-    /**
-     * Cập nhật stock quantity
-     */
-    public function updateStock($id, $quantity) 
-    {
-        try {
-            $sql = "UPDATE products SET stock_quantity = ?, updated_at = NOW() WHERE id = ?";
-            $stmt = $this->db->query($sql, [$quantity, $id]);
-            return $stmt->rowCount() > 0;
-            
-        } catch (Exception $e) {
-            error_log("Error updating product stock: " . $e->getMessage());
-            throw new Exception("Không thể cập nhật số lượng tồn kho.");
         }
     }
     

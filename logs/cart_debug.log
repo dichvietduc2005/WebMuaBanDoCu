@@ -183,3 +183,35 @@
 2025-07-01 22:09:58 - CartController initialized for logged-in users
 2025-07-01 22:32:29 - CartController initialized for logged-in users
 2025-07-01 23:17:05 - CartController initialized for logged-in users
+2025-07-02 11:34:25 - CartController initialized for logged-in users
+2025-07-02 11:34:43 - CartController initialized for logged-in users
+2025-07-02 11:34:52 - CartController initialized for logged-in users
+2025-07-02 11:37:38 - CartController initialized for logged-in users
+2025-07-02 11:37:38 - addToCart - Start - Data: {"product_id":3,"quantity":1,"user_id":8}
+2025-07-02 11:37:40 - CartController initialized for logged-in users
+2025-07-02 11:37:40 - addToCart - Start - Data: {"product_id":3,"quantity":1,"user_id":8}
+2025-07-02 11:37:40 - addToCart - Exception - Data: {"error":"Số lượng trong giỏ vượt quá số lượng tồn kho."}
+2025-07-02 11:37:45 - CartController initialized for logged-in users
+2025-07-02 11:37:54 - CartController initialized for logged-in users
+2025-07-02 11:37:57 - CartController initialized for logged-in users
+2025-07-02 11:38:01 - CartController initialized for logged-in users
+2025-07-02 11:38:01 - addToCart - Start - Data: {"product_id":3,"quantity":1,"user_id":8}
+2025-07-02 11:38:01 - CartController initialized for logged-in users
+2025-07-02 11:38:05 - CartController initialized for logged-in users
+2025-07-02 11:38:08 - CartController initialized for logged-in users
+2025-07-02 11:38:43 - CartController initialized for logged-in users
+2025-07-02 11:38:48 - CartController initialized for logged-in users
+2025-07-02 11:38:51 - CartController initialized for logged-in users
+2025-07-02 11:38:51 - CartController initialized for logged-in users
+2025-07-02 11:38:54 - CartController initialized for logged-in users
+2025-07-02 11:38:54 - CartController initialized for logged-in users
+2025-07-02 11:38:54 - CartController initialized for logged-in users
+2025-07-02 11:39:41 - CartController initialized for logged-in users
+2025-07-02 11:39:41 - CartController initialized for logged-in users
+2025-07-02 11:39:41 - CartController initialized for logged-in users
+2025-07-02 11:39:42 - CartController initialized for logged-in users
+2025-07-02 11:39:44 - CartController initialized for logged-in users
+2025-07-02 11:50:10 - CartController initialized for logged-in users
+2025-07-02 11:50:10 - addToCart - Start - Data: {"product_id":6,"quantity":1,"user_id":8}
+2025-07-02 11:50:10 - CartController initialized for logged-in users
+2025-07-02 11:50:15 - CartController initialized for logged-in users

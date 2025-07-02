@@ -1,5 +1,9 @@
 <?php
-require_once '../../../config/config.php';
+// Sử dụng đường dẫn tuyệt đối thay vì đường dẫn tương đối
+$root_path = $_SERVER['DOCUMENT_ROOT'] . '/WebMuaBanDoCu';
+require_once $root_path . '/config/config.php';
+// Include file Search.php chứa class SearchModel
+require_once $root_path . '/app/Models/extra/Search.php';
 // Autoloader sẽ tự động load ExtraController
 
 // Lấy danh sách sản phẩm
@@ -18,9 +22,11 @@ $sort_by = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
 $in_stock = isset($_GET['in_stock']) ? (bool)$_GET['in_stock'] : true;
 
 if ($keyword || $category || $condition || $min_price || $max_price) {
-    // Sử dụng hàm searchProducts nâng cao
-    $products = searchProducts($pdo, $keyword, $category, $condition, $min_price, $max_price, $sort_by, $in_stock, $per_page, $offset);
-    $total_products = countSearchResults($pdo, $keyword, $category, $condition, $min_price, $max_price, $in_stock);
+    // Sử dụng SearchModel::searchProducts thay vì hàm searchProducts
+    $products = SearchModel::searchProducts($pdo, $keyword, $category, $condition, $min_price, $max_price, $sort_by, $in_stock, $per_page, $offset);
+    
+    // Sử dụng SearchModel::countSearchResults thay vì hàm tự định nghĩa
+    $total_products = SearchModel::countSearchResults($pdo, $keyword, $category, $condition, $min_price, $max_price, $in_stock);
     $total_pages = ceil($total_products / $per_page);
 } else {
     $where_conditions = ["p.status = 'active'"];
