@@ -194,6 +194,7 @@
 2025-07-02 13:06:54 - CartController initialized for logged-in users
 2025-07-02 13:06:54 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
 2025-07-02 15:47:34 - CartController initialized for logged-in users
+<<<<<<< HEAD
 2025-07-02 18:50:19 - CartController initialized for logged-in users
 2025-07-02 18:55:51 - CartController initialized for logged-in users
 2025-07-02 18:55:52 - CartController initialized for logged-in users
@@ -202,3 +203,6 @@
 2025-07-02 18:58:16 - CartController initialized for logged-in users
 2025-07-02 18:58:17 - CartController initialized for logged-in users
 2025-07-02 18:58:20 - CartController initialized for logged-in users
+=======
+2025-07-02 18:00:03 - CartController initialized for logged-in users
+>>>>>>> 20b80d6be7b0e1f1a8d419bfc148ba17e30aee13
