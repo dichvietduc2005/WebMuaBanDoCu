@@ -4,7 +4,7 @@ include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../user/login.php');
+    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
