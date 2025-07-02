@@ -17,37 +17,53 @@ $stmt->execute([$user_id]);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Thông báo của tôi</title>
     <link rel="stylesheet" href="../../../public/assets/css/footer.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
     <style>
-        .notification { border-bottom: 1px solid #eee; padding: 16px 0; }
-        .notification.unread { background: #e9f5ff; }
-        .notification .time { color: #888; font-size: 13px; }
+        .notification {
+            border-bottom: 1px solid #eee;
+            padding: 16px 0;
+        }
+
+        .notification.unread {
+            background: #e9f5ff;
+        }
+
+        .notification .time {
+            color: #888;
+            font-size: 13px;
+        }
     </style>
 </head>
+
 <body>
-     <?php
+    <?php
     renderHeader($pdo);
     ?>
-<div class="container mt-5">
-    <h2>Thông báo</h2>
-    <?php if (empty($notifications)): ?>
-        <p>Không có thông báo nào.</p>
-    <?php else: ?>
-        <?php foreach ($notifications as $noti): ?>
-            <div class="notification<?php echo !$noti['is_read'] ? ' unread' : ''; ?>">
-                <div><?php echo $noti['message']; ?></div>
-                <div class="time"><?php echo date('d/m/Y H:i', strtotime($noti['created_at'])); ?></div>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-   <?php footer(); ?>
+    <div class="container mt-5">
+        <h2>Thông báo</h2>
+        <?php if (empty($notifications)): ?>
+            <p>Không có thông báo nào.</p>
+        <?php else: ?>
+            <?php foreach ($notifications as $noti): ?>
+                <div class="notification<?php echo !$noti['is_read'] ? ' unread' : ''; ?>">
+                    <div><?php echo $noti['message']; ?></div>
+                    <div class="time"><?php echo date('d/m/Y H:i', strtotime($noti['created_at'])); ?></div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+    <script>userId = <?php echo $_SESSION['user_id'] ?></script>
+    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <?php footer(); ?>
 </body>
+
 </html>

@@ -101,10 +101,12 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                         </a>
 
                         <!-- Messages -->
-                        <button class="btn btn-link text-dark p-2" title="Tin nhắn">
+                        <button class="btn btn-link text-dark p-2" title="Tin nhắn" id="button-chat" onclick="toggleChat()">
                             <i class="fas fa-comment" style="font-size: 20px;"></i>
                         </button>
+                        <?php require_once __DIR__ . '/../../View/user/ChatView.php'; ?>
                         
+
                         <!-- Cart -->
                         <a href="/WebMuaBanDoCu/app/View/cart/index.php" class="btn btn-link text-dark p-2 position-relative" title="Giỏ hàng">
                             <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
@@ -127,7 +129,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                 <li><h6 class="dropdown-header">Xin chào, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></h6></li>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/order/order_history.php"><i class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/ProfileUserView.php"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Cài đặt</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
