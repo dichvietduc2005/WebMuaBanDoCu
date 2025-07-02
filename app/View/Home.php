@@ -107,6 +107,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/index.css">
 </head>
+
 <body>
     <?php renderHeader($pdo); ?>
 
@@ -120,16 +121,19 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                     <a href="#featured-products" class="hero-btn btn-white"><i class="fas fa-shopping-bag"></i> Mua sắm
                         ngay</a>
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a href="<?php echo BASE_URL; ?>app/View/product/sell.php" class="hero-btn btn-transparent"><i class="fas fa-store"></i> Đăng bán đồ</a>
+                    <a href="<?php echo BASE_URL; ?>app/View/product/sell.php" class="hero-btn btn-transparent"><i
+                            class="fas fa-store"></i> Đăng bán đồ</a>
                     <?php else: ?>
-                        <button type="button" class="hero-btn btn-transparent" id="openClerkAuth"><i class="fas fa-sign-in-alt"></i> Đăng nhập / Đăng ký</button>
+                    <button type="button" class="hero-btn btn-transparent" id="openClerkAuth"><i
+                            class="fas fa-sign-in-alt"></i> Đăng nhập / Đăng ký</button>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
-    </div> 
-    
-    <div id="clerk-auth-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+    </div>
+
+    <div id="clerk-auth-container"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
         <div id="sign-in-widget-container" style="background: white; padding: 20px; border-radius: 8px;"></div>
     </div>
 
@@ -138,7 +142,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
         <section class="section" id="featured-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm nổi bật</h2>
-                <a href="<?php echo BASE_URL; ?>app/View/product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/product/products.php" class="view-all">Xem tất cả <i
+                        class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="products-grid">
@@ -208,7 +213,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
         <section class="section" id="regular-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm mới nhất</h2>
-                <a href="<?php echo BASE_URL; ?>app/View/product/products.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/product/products.php" class="view-all">Xem tất cả <i
+                        class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="products-grid">
@@ -224,7 +230,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                     onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $product['id']; ?>'">
                     <div class="product-image" style="position: relative;">
                         <?php if ($product['image_path']): ?>
-                        <img src="<?php echo BASE_URL . htmlspecialchars($product['image_path']); ?>"
+
+                        <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
                             alt="<?php echo htmlspecialchars($product['title']); ?>"
                             style="width: 100%; height: 220px; object-fit: cover;">
                         <?php else: ?>
@@ -271,10 +278,12 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                 <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-        </section> <section class="section">
+        </section>
+        <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Danh mục sản phẩm</h2>
-                <a href="<?php echo BASE_URL; ?>app/View/product/categories.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/product/categories.php" class="view-all">Xem tất cả <i
+                        class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="categories-grid">
@@ -306,7 +315,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Đơn hàng gần đây</h2>
-                <a href="<?php echo BASE_URL; ?>app/View/order/order_history.php" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo BASE_URL; ?>app/View/order/order_history.php" class="view-all">Xem tất cả <i
+                        class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="orders-grid">
@@ -341,7 +351,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                     </div>
 
                     <div class="order-actions">
-                        <a href="<?php echo BASE_URL; ?>app/View/order/order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-outline btn-sm">
+                        <a href="<?php echo BASE_URL; ?>app/View/order/order_details.php?id=<?php echo $order['id']; ?>"
+                            class="btn btn-outline btn-sm">
                             <i class="fas fa-eye"></i> Xem chi tiết
                         </a>
                         <?php if ($order['status'] == 'pending'): ?>
@@ -367,28 +378,29 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
     <script>
-        // Mã JavaScript xử lý thêm vào giỏ hàng
-        function addToCart(event, productId) {
-            event.preventDefault();
-            const form = event.target;
-            const quantity = form.querySelector('.quantity-input').value;
-            
-            $.ajax({
-                url: '<?php echo BASE_URL; ?>app/Controllers/cart/CartController.php?action=add',
-                type: 'POST',
-                data: {
-                    product_id: productId,
-                    quantity: quantity
-                },
-                success: function(response) {
-                    alert('Đã thêm sản phẩm vào giỏ hàng!');
-                    location.reload();
-                },
-                error: function() {
-                    alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
-                }
-            });
-        }
+    // Mã JavaScript xử lý thêm vào giỏ hàng
+    function addToCart(event, productId) {
+        event.preventDefault();
+        const form = event.target;
+        const quantity = form.querySelector('.quantity-input').value;
+
+        $.ajax({
+            url: '<?php echo BASE_URL; ?>app/Controllers/cart/CartController.php?action=add',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                quantity: quantity
+            },
+            success: function(response) {
+                alert('Đã thêm sản phẩm vào giỏ hàng!');
+                location.reload();
+            },
+            error: function() {
+                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
+            }
+        });
+    }
     </script>
 </body>
+
 </html>
