@@ -6,6 +6,11 @@ class Auth {
     
     public function __construct($pdo) {
         $this->pdo = $pdo;
+        
+        // Cleanup expired tokens occasionally (10% chance)
+        if (rand(1, 10) === 1) {
+            $this->cleanupExpiredTokens();
+        }
     }
     
     
@@ -150,13 +155,23 @@ class Auth {
      * Kiểm tra xem người dùng đã đăng nhập chưa
      */
     public function isLoggedIn() {
+        // Kiểm tra session trước
         if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+            error_log("User logged in via session: " . $_SESSION['user_id']);
             return true;
         }
         
-        // Kiểm tra Remember Me token
-        if (isset($_COOKIE['remember_token'])) {
-            return $this->checkRememberMeToken($_COOKIE['remember_token']);
+        // Nếu không có session, kiểm tra Remember Me token
+        if (isset($_COOKIE['remember_token']) && !empty($_COOKIE['remember_token'])) {
+            error_log("Checking remember token: " . substr($_COOKIE['remember_token'], 0, 10) . "...");
+            if ($this->checkRememberMeToken($_COOKIE['remember_token'])) {
+                error_log("Remember token is valid, user logged in");
+                return true;
+            } else {
+                error_log("Remember token is invalid");
+            }
+        } else {
+            error_log("No remember token found in cookies");
         }
         
         return false;
@@ -378,6 +393,7 @@ class Auth {
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_name'] = $user['full_name'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['user_role'] = $user['role'];
         $_SESSION['login_time'] = time();
     }
     
@@ -395,15 +411,21 @@ class Auth {
         $expires_at = date('Y-m-d H:i:s', strtotime('+30 days'));
         
         try {
-            // Lưu token vào database
+            // Log for debugging
+            error_log("Setting remember token for user_id: $user_id");
+            
+            // Sử dụng REPLACE INTO để thay thế token cũ nếu có
             $stmt = $this->pdo->prepare("
-                INSERT INTO remember_tokens (user_id, token, expires_at, created_at) 
+                REPLACE INTO remember_tokens (user_id, token, expires_at, created_at) 
                 VALUES (?, ?, ?, NOW())
             ");
-            $stmt->execute([$user_id, hash('sha256', $token), $expires_at]);
+            $hashed_token = hash('sha256', $token);
+            $stmt->execute([$user_id, $hashed_token, $expires_at]);
             
-            // Set cookie
-            setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', false, true);
+            // Set cookie với các tham số bảo mật
+            $cookie_result = setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', false, true);
+            
+            error_log("Remember token set - Database: " . ($stmt->rowCount() > 0 ? 'Success' : 'Failed') . ", Cookie: " . ($cookie_result ? 'Success' : 'Failed'));
             
         } catch (PDOException $e) {
             error_log("Remember me token error: " . $e->getMessage());
@@ -414,7 +436,7 @@ class Auth {
         try {
             $hashed_token = hash('sha256', $token);
             $stmt = $this->pdo->prepare("
-                SELECT rt.user_id, u.email, u.full_name, u.username, u.status
+                SELECT rt.user_id, u.id, u.email, u.full_name, u.username, u.status
                 FROM remember_tokens rt
                 JOIN users u ON rt.user_id = u.id
                 WHERE rt.token = ? AND rt.expires_at > NOW() AND u.status = 'active'
@@ -423,9 +445,19 @@ class Auth {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($result) {
+                // Khởi tạo session cho user
                 $this->startUserSession($result);
                 $this->updateLastLogin($result['user_id']);
+                
+                // Log activity
+                $this->logActivity($result['user_id'], 'auto_login', 'Auto-login via remember token');
+                
                 return true;
+            } else {
+                // Token không hợp lệ hoặc hết hạn, xóa cookie
+                if (isset($_COOKIE['remember_token'])) {
+                    setcookie('remember_token', '', time() - 3600, '/');
+                }
             }
             
         } catch (PDOException $e) {
@@ -435,6 +467,15 @@ class Auth {
         return false;
     }
     
+    private function cleanupExpiredTokens() {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM remember_tokens WHERE expires_at < NOW()");
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Cleanup expired tokens error: " . $e->getMessage());
+        }
+    }
+
     private function clearRememberMeToken($user_id) {
         try {
             $stmt = $this->pdo->prepare("DELETE FROM remember_tokens WHERE user_id = ?");

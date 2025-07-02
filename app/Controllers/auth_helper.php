@@ -20,7 +20,9 @@ if (!function_exists('getAuth')) {
  * Kiểm tra user đã đăng nhập chưa
  */
 function isLoggedIn() {
-    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+    global $pdo;
+    $auth = new Auth($pdo);
+    return $auth->isLoggedIn();
 }
 
 /**

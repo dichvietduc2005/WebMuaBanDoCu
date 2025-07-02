@@ -1,0 +1,51 @@
+body{
+    background-color: rgb(155, 155, 155);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1{
+    text-align: center;
+    color: rgb(255, 0, 0);
+}
+
+div{
+    text-align: center;
+    overflow-x: scroll;
+    scrollbar-color: transparent transparent;
+}
+
+
+td,th,tr{
+    border: 1px solid black;
+}
+
+th{
+    height: 50px;
+}
+
+td{
+    cursor: pointer;
+}
+
+thead{
+    background-color: rgb(248, 94, 94);
+    color: white;
+}
+
+tbody tr:nth-child(even){
+    background-color: rgba(255, 255, 255);
+}
+tbody tr:nth-child(odd){
+    background-color: rgb(185, 255, 219);
+}
+
+table{
+    margin: auto;
+    width: 100%;
+    font-size: 20px;
+    border-collapse: collapse;
+}
+
+tbody tr:hover{
+    background-color: rgb(255, 255, 0);
+}
