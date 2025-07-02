@@ -179,11 +179,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Event Listeners ---
     cartContainer.addEventListener('click', function(e) {
+        console.log('click event fired', e.target);
         const target = e.target;
         const itemElement = target.closest('.cart-item');
-        if (!itemElement) return;
+        if (!itemElement) {
+        console.log('Không tìm thấy .cart-item');
+        return;
+    }
+
 
         const productId = itemElement.dataset.productId;
+        if (!productId) {
+        console.log('Không tìm thấy productId');
+        return;
+    }
         const quantityInput = itemElement.querySelector('.quantity-input');
         let quantity = parseInt(quantityInput.value);
 
@@ -201,15 +210,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (target.matches('.remove-item')) {
-            showConfirmDialog(
-                'Xác nhận xóa',
-                'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
-                function() {
-                    handleRemoveItem(productId);
-                }
-            );
+        if (target.closest('.remove-item')) {
+    showConfirmDialog(
+        'Xác nhận xóa',
+        'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
+        function() {
+            handleRemoveItem(productId);
         }
+    );
+}
     });
 
     cartContainer.addEventListener('change', function(e) {
