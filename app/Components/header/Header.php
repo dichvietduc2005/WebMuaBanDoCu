@@ -144,9 +144,13 @@ function renderHeader($pdo,$categories = [], $cart_count = 0, $unread_notificati
                     </ul>
                 </div>
                 <!-- Post Ad Button -->
-                <a href="/WebMuaBanDoCu/app/View/product/sell.php" class="btn btn-warning fw-bold px-4 py-2">
-                    <i class="fas fa-plus me-2"></i>ĐĂNG TIN
-                </a>
+    <a href="/WebMuaBanDoCu/app/View/product/sell.php"
+   class="btn btn-warning d-flex align-items-center fw-bold"
+   title="Đăng tin bán hàng"
+   style="height: 42px; min-width: 136px; padding: 0 16px; font-size: 16px; line-height: 1; gap: 6px;">
+    <i class="fas fa-plus" style="font-size: 16px;"></i>
+    <span style="line-height: 1;">Đăng Tin</span>
+</a>
                 <?php else: ?>
                 <!-- Guest user buttons --> 
                 <a href="user/login.php" class="btn btn-outline-primary">
