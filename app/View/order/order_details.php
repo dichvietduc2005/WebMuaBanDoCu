@@ -1,10 +1,13 @@
 <?php
-// Config already starts session, so we don't need to start it again
-require_once '../../../config/config.php';
-require_once('../../Controllers/auth_helper.php'); // For Auth functions
+// Sử dụng đường dẫn tuyệt đối thay vì đường dẫn tương đối
+$root_path = $_SERVER['DOCUMENT_ROOT'] . '/WebMuaBanDoCu';
+require_once $root_path . '/config/config.php';
+require_once $root_path . '/app/Controllers/auth_helper.php'; // For Auth functions
+// Thêm include OrderController để sử dụng hàm getOrderDetails()
+require_once $root_path . '/app/Controllers/order/OrderController.php';
 // Autoloader sẽ tự động load OrderController và CartController
-require_once __DIR__ . '/../../Components/header/Header.php';
-require_once __DIR__ . '/../../Components/footer/Footer.php';
+require_once $root_path . '/app/Components/header/Header.php';
+require_once $root_path . '/app/Components/footer/Footer.php';
 
 // Kiểm tra đăng nhập bằng Auth helper
 $user = requireLogin();
@@ -365,7 +368,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     <div class="container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
-            <a href="../../../public/TrangChu.php">Trang chủ</a> / 
+            <a href="<?php echo $root_path; ?>/public/TrangChu.php">Trang chủ</a> / 
             <a href="order_history.php">Lịch sử đơn hàng</a> / 
             Chi tiết đơn hàng
         </nav>
@@ -429,7 +432,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                         <td>
                             <div class="product-info">
                                 <?php if (!empty($item['product_image'])): ?>
-                                    <img src="../../<?php echo htmlspecialchars($item['product_image']); ?>" 
+                                    <img src="<?php echo $root_path . '/' . htmlspecialchars($item['product_image']); ?>" 
                                          alt="<?php echo htmlspecialchars($item['product_title']); ?>" 
                                          class="product-image">
                                 <?php else: ?>
