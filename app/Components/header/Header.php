@@ -146,12 +146,12 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 <!-- Guest user buttons -->
 <div class="d-flex flex-column flex-lg-row gap-2 w-100">
     <a href="user/login.php"
-       class="btn btn-light border d-flex align-items-center fw-bold"
+       class="btn btn-primary border d-flex align-items-center fw-bold"
        style="height: 42px; min-width: 120px; padding: 0 16px; font-size: 16px; line-height: 1; border-radius: 8px;">
         <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
     </a>
     <a href="user/register.php"
-       class="btn btn-primary border d-flex align-items-center fw-bold"
+       class="btn btn-success border d-flex align-items-center fw-bold"
        style="height: 42px; min-width: 120px; padding: 0 16px; font-size: 16px; line-height: 1; border-radius: 8px;">
         <i class="fas fa-user-plus me-2"></i>Đăng ký
     </a>
