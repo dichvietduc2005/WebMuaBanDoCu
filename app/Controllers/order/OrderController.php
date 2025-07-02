@@ -371,39 +371,7 @@ function formatPaymentMethod($payment_method) {
     return $methods[$payment_method] ?? 'Không xác định';
 }
 
-/**
- * Cập nhật trạng thái đơn hàng và thanh toán
- *
- * @param PDO $pdo
- * @param string $order_number Mã đơn hàng
- * @param string $order_status 'success' hoặc 'failed'
- * @param string $payment_status 'paid', 'failed', 'pending'
- * @param string|null $vnpay_transaction_id ID giao dịch VNPay
- * @return bool True nếu cập nhật thành công
- */
-function updateOrderStatusByNumber(PDO $pdo, $order_number, $order_status, $payment_status, $vnpay_transaction_id = null) {
-    try {
-        $stmt = $pdo->prepare("
-            UPDATE orders 
-            SET status = ?, 
-                payment_status = ?, 
-                vnpay_transaction_id = ?,
-                updated_at = NOW()
-            WHERE order_number = ?
-        ");
-        
-        return $stmt->execute([
-            $order_status, 
-            $payment_status, 
-            $vnpay_transaction_id,
-            $order_number
-        ]);
-        
-    } catch (Exception $e) {
-        error_log("Lỗi cập nhật trạng thái đơn hàng: " . $e->getMessage());
-        return false;
-    }
-}
+
 
 /**
  * Lấy CSS class cho trạng thái đơn hàng

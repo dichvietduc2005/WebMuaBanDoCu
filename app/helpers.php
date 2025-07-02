@@ -1,6 +1,6 @@
 <?php
 /**
- * Helper Functions for the Application
+ * Helper functions - Các hàm tiện ích dùng chung
  */
 
 // Include other helper files
@@ -18,70 +18,64 @@ if (!function_exists('get_current_user_id')) {
     }
 }
 
-/**
- * Format price with VND currency
- */
 if (!function_exists('formatPrice')) {
+    /**
+     * Định dạng giá tiền
+     */
     function formatPrice($price) {
         return number_format($price, 0, ',', '.') . ' VNĐ';
     }
 }
 
-/**
- * Get condition text
- */
 if (!function_exists('getConditionText')) {
+    /**
+     * Chuyển mã trạng thái sản phẩm thành text
+     */
     function getConditionText($condition) {
-        switch ($condition) {
-            case 'new':
-                return 'Mới';
-            case 'like_new':
-                return 'Như mới';
-            case 'good':
-                return 'Tốt';
-            case 'fair':
-                return 'Khá';
-            case 'poor':
-                return 'Cũ';
-            default:
-                return 'Không xác định';
-        }
+        $conditions = [
+            'new' => 'Mới',
+            'like_new' => 'Như mới',
+            'good' => 'Tốt',
+            'fair' => 'Khá',
+            'poor' => 'Cũ'
+        ];
+        return $conditions[$condition] ?? 'Không xác định';
     }
 }
 
-/**
- * Get status text
- */
 if (!function_exists('getStatusText')) {
+    /**
+     * Chuyển mã trạng thái đơn hàng thành text
+     */
     function getStatusText($status) {
-        switch ($status) {
-            case 'active':
-                return 'Đang bán';
-            case 'sold':
-                return 'Đã bán';
-            case 'inactive':
-                return 'Tạm ngưng';
-            default:
-                return 'Không xác định';
-        }
+        $statuses = [
+            'pending' => 'Chờ xử lý',
+            'confirmed' => 'Đã xác nhận',
+            'shipping' => 'Đang giao hàng',
+            'delivered' => 'Đã giao hàng',
+            'cancelled' => 'Đã hủy',
+            'success' => 'Thành công'
+        ];
+        return $statuses[$status] ?? 'Không xác định';
     }
 }
 
-/**
- * Get status badge class
- */
 if (!function_exists('getStatusBadge')) {
+    /**
+     * Chuyển mã trạng thái đơn hàng thành class CSS của badge
+     */
     function getStatusBadge($status) {
-        switch ($status) {
-            case 'active':
-                return 'badge-success';
-            case 'sold':
-                return 'badge-secondary';
-            case 'inactive':
-                return 'badge-warning';
-            default:
-                return 'badge-light';
-        }
+        $badges = [
+            'pending' => 'badge-warning',
+            'confirmed' => 'badge-info',
+            'shipping' => 'badge-primary',
+            'delivered' => 'badge-success',
+            'cancelled' => 'badge-danger',
+            'success' => 'badge-success',
+            'paid' => 'badge-success',
+            'failed' => 'badge-danger'
+        ];
+        return $badges[$status] ?? 'badge-secondary';
     }
 }
 

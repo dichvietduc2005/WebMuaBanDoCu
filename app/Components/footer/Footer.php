@@ -18,8 +18,10 @@ function footer() {
                 <div class="footer-column">
                     <h3>Liên kết nhanh</h3>
                     <ul class="footer-links">
-                        <li><a href="TrangChu.php"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>                        <li><a href="#"><i class="fas fa-chevron-right"></i> Giới thiệu</a></li>                        <li><a href="product/products.php"><i class="fas fa-chevron-right"></i> Sản phẩm</a></li>
-                        <li><a href="product/sell.php"><i class="fas fa-chevron-right"></i> Đăng bán</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Giới thiệu</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>app/View/product/products.php"><i class="fas fa-chevron-right"></i> Sản phẩm</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>app/View/product/sell.php"><i class="fas fa-chevron-right"></i> Đăng bán</a></li>
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Liên hệ</a></li>
                     </ul>
                 </div>
@@ -40,7 +42,7 @@ function footer() {
                     <div class="contact-info">
                         <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>Phường 12, Hồ Chí Minh</span>
+                            <span>Phường 12, Hồ Chí Minh</span>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-phone"></i>
@@ -63,4 +65,10 @@ function footer() {
             </div>
         </div>    </footer>
     <?php
+}
+
+// Thêm hàm renderFooter để tương thích với Home.php
+function renderFooter() {
+    // Gọi hàm footer gốc
+    footer();
 }

@@ -1,52 +1,33 @@
 <?php
-require_once '../../../config/config.php';
-include_once __DIR__ . '/../../Components/header/Header.php';
-include_once __DIR__ . '/../../Components/footer/Footer.php';
+// Sử dụng bootstrap để tăng hiệu suất tải trang
+require_once '../../../config/bootstrap.php';
+
+// Include required components
+require_once __DIR__ . '/../../Components/header/Header.php';
+require_once __DIR__ . '/../../Components/footer/Footer.php';
+
 // Lấy ID sản phẩm từ URL
 $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if (!$product_id) {
-    header('Location: ../../../public/TrangChu.php');
+    header('Location: ' . BASE_URL);
     exit;
 }
 
-// Lấy thông tin chi tiết sản phẩm
-$stmt = $pdo->prepare("
-    SELECT p.*, c.name as category_name, c.slug as category_slug,
-           u.username as seller_name, u.email as seller_email
-    FROM products p 
-    LEFT JOIN categories c ON p.category_id = c.id
-    LEFT JOIN users u ON p.user_id = u.id
-    WHERE p.id = ? AND p.status = 'active'
-");
-$stmt->execute([$product_id]);
-$product = $stmt->fetch(PDO::FETCH_ASSOC);
+// Sử dụng ProductModel để lấy dữ liệu (với cache)
+$productModel = new ProductModel();
+$product = $productModel->getProductById($product_id);
 
 if (!$product) {
-    header('Location: ../../../public/TrangChu.php');
+    header('Location: ' . BASE_URL);
     exit;
 }
 
-// Lấy tất cả hình ảnh của sản phẩm
-$images_stmt = $pdo->prepare("
-    SELECT * FROM product_images 
-    WHERE product_id = ? 
-    ORDER BY is_primary DESC, id ASC
-");
-$images_stmt->execute([$product_id]);
-$product_images = $images_stmt->fetchAll(PDO::FETCH_ASSOC);
+// Lấy hình ảnh sản phẩm
+$product_images = $productModel->getProductImages($product_id);
 
 // Lấy sản phẩm liên quan (cùng danh mục)
-$related_stmt = $pdo->prepare("
-    SELECT p.*, pi.image_path 
-    FROM products p 
-    LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-    WHERE p.category_id = ? AND p.id != ? AND p.status = 'active' AND p.stock_quantity > 0
-    ORDER BY p.created_at DESC 
-    LIMIT 4
-");
-$related_stmt->execute([$product['category_id'], $product_id]);
-$related_products = $related_stmt->fetchAll(PDO::FETCH_ASSOC);
+$related_products = $productModel->getRelatedProducts($product['category_id'], $product_id);
 
 // Đếm số sản phẩm trong giỏ hàng
 $cart_count = 0;
@@ -62,24 +43,7 @@ if (isset($_SESSION['user_id'])) {
     $cart_count = $result['total_quantity'] ?? 0;
 }
 
-if (!function_exists('formatPrice')) {
-    function formatPrice($price) {
-        return number_format($price, 0, ',', '.') . ' ₫';
-    }
-}
-
-if (!function_exists('getConditionText')) {
-    function getConditionText($condition) {
-        $conditions = [
-            'new' => 'Mới',
-            'like_new' => 'Như mới', 
-            'good' => 'Tốt',
-            'fair' => 'Khá tốt',
-            'poor' => 'Cần sửa chữa'
-        ];
-        return $conditions[$condition] ?? $condition;
-    }
-}
+// Các helper functions đã được đưa vào app/helpers.php
 ?>
 <!DOCTYPE html>
 <html lang="vi">
