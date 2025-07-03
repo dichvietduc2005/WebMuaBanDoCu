@@ -111,7 +111,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
                 <!-- Search Form - Takes available space on desktop, full width on mobile -->
                 <form id="search-form2" class="w-100 mb-2 mb-lg-0 me-lg-4" method="GET" 
-                    action="/WebMuaBanDoCu/app/View/extra/search.php">
+                    action="/WebMuaBanDoCu/app/View/extra/search_advanced.php">
                     <div class="input-group" style="height: 42px;">
                         <input type="text" class="form-control" id="search-input" name="q"
                             placeholder="Tìm kiếm sản phẩm" style="font-size: min(16px, 4vw); border-radius: 8px 0 0 8px;"
@@ -218,6 +218,9 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
 <!-- Notifications Popup JS -->
 <script src="/WebMuaBanDoCu/public/assets/js/notifications.js"></script>
+
+<!-- Search Autocomplete JS -->
+<script src="/WebMuaBanDoCu/public/assets/js/search-autocomplete.js"></script>
 
 <style>
 /* Enhanced Mobile Responsive Styles */

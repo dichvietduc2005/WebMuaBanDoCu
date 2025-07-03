@@ -49,6 +49,9 @@ class NotificationAPI
                 case 'mark_read':
                     $this->markAsRead();
                     break;
+                case 'search_suggestions':
+                    $this->getSearchSuggestions();
+                    break;
                 default:
                     $this->sendError('Invalid action', 400);
             }
@@ -211,6 +214,58 @@ class NotificationAPI
         }
     }
 
+    public function getSearchSuggestions()
+    {
+        try {
+            $keyword = $_GET['keyword'] ?? '';
+            
+            if (strlen($keyword) < 2) {
+                $this->successResponse([
+                    'suggestions' => []
+                ]);
+                return;
+            }
+
+            // Lấy gợi ý từ tên sản phẩm
+            $stmt = $this->db->prepare("
+                SELECT DISTINCT p.title
+                FROM products p
+                WHERE p.status = 'active' 
+                AND p.stock_quantity > 0 
+                AND p.title LIKE ?
+                ORDER BY p.title ASC
+                LIMIT 8
+            ");
+            $stmt->execute(['%' . $keyword . '%']);
+            $productSuggestions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            // Lấy gợi ý từ tên danh mục
+            $stmt = $this->db->prepare("
+                SELECT DISTINCT c.name
+                FROM categories c
+                WHERE c.status = 'active'
+                AND c.name LIKE ?
+                ORDER BY c.name ASC
+                LIMIT 4
+            ");
+            $stmt->execute(['%' . $keyword . '%']);
+            $categorySuggestions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            // Kết hợp và giới hạn số lượng
+            $allSuggestions = array_merge($productSuggestions, $categorySuggestions);
+            $allSuggestions = array_unique($allSuggestions);
+            $allSuggestions = array_slice($allSuggestions, 0, 10);
+
+            $this->successResponse([
+                'suggestions' => array_values($allSuggestions)
+            ]);
+
+        } catch (Exception $e) {
+            error_log("Search suggestions error: " . $e->getMessage());
+            $this->errorResponse('Server error: ' . $e->getMessage(), 500);
+        }
+    }
+
     public function successResponse($data)
     {
         // Xóa bất kỳ output nào trước đó
@@ -268,4 +323,4 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
         ]);
     }
 }
-?> 
+?>
