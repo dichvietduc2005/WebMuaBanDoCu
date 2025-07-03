@@ -1,9 +1,27 @@
 <?php
 /**
- * File index.php chính của website
+ * File index.php chính của website - Router
  */
 
 // Chuyển hướng đến trang chủ
 require_once __DIR__ . '/../config/bootstrap.php';
-require_once __DIR__ . '/../app/View/Home.php';
+
+// Lấy tham số page từ URL
+$page = $_GET['page'] ?? 'home';
+
+// Router - xử lý các trang khác nhau
+switch ($page) {
+    case 'notification_api':
+        // Xử lý API thông báo
+        require_once __DIR__ . '/../app/Controllers/extra/NotificationAPI.php';
+        $api = new NotificationAPI();
+        $api->handleRequest();
+        break;
+        
+    case 'home':
+    default:
+        // Trang chủ mặc định
+        require_once __DIR__ . '/../app/View/Home.php';
+        break;
+}
 ?>
