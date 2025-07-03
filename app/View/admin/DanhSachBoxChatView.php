@@ -1,5 +1,11 @@
 <?php
 require_once('../../../config/config.php');
+
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+  header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+  exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -8,7 +14,7 @@ require_once('../../../config/config.php');
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.1">
-  <title>Document</title>
+  <title>Tin nhắn từ người dùng</title>
   <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/admin_box_chat.css?v=1">
   <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/quan_ly_box_chat_admin.css">
 
@@ -75,7 +81,6 @@ require_once('../../../config/config.php');
       </tbody>
     </table>
   </div>
-
 
 </body>
 

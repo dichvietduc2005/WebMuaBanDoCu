@@ -94,7 +94,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         <div class="collapse navbar-collapse mt-2 mt-lg-0" id="navbarMain">
             <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100 gap-2">
                 <!-- Categories Dropdown -->
-                <div class="dropdown me-lg-3 mb-2 mb-lg-0 w-100 w-lg-auto">
+                <div class="dropdown me-lg-3 mb-2 mb-lg-0 w-lg-auto">
                     <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center w-100 w-lg-auto" type="button"
                         data-bs-toggle="dropdown" aria-expanded="false" style="font-size: min(16px, 4vw); height: 42px;">
                         <i class="fas fa-bars me-2" style="font-size: min(16px, 4vw);"></i>
@@ -123,10 +123,10 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 </form>
 
                 <!-- Right side actions - Stack vertically on mobile -->
-                <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2 ms-lg-auto w-100 w-lg-auto">
+                <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-4 ms-lg-auto w-100 w-lg-auto">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <!-- Desktop Icons - hidden on mobile -->
-                        <div class="d-none d-lg-flex align-items-center gap-2">
+                        <div class="d-none d-lg-flex align-items-center gap-4">
                             <!-- Notifications -->
                             <a href="/WebMuaBanDoCu/app/View/extra/notifications.php" class="btn btn-link text-dark p-1 position-relative notifications-bell"
                                 title="Thông báo">
