@@ -107,6 +107,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/index.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+
 </head>
 
 <body>
@@ -234,7 +235,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
 
                         <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
                             alt="<?php echo htmlspecialchars($product['title']); ?>"
-                            style="width: 100%; height: 220px; object-fit: cover;">
+                            >
                         <?php else: ?>
                         <div
                             style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
@@ -378,8 +379,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
-    <script>userId = <?php echo $_SESSION['user_id'] ?></script>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
     <script>
     // Mã JavaScript xử lý thêm vào giỏ hàng
     function addToCart(event, productId) {

@@ -6,12 +6,12 @@ function footer() {
             <div class="footer-grid">
                 <div class="footer-column">
                     <h3>Về chúng tôi</h3>
-                    <p>MuaBán Đồ Cũ là nền tảng kết nối người mua và người bán đồ đã qua sử dụng uy tín, chất lượng hàng đầu Việt Nam.</p>
+                    <p>Mua Bán Đồ Cũ là nền tảng kết nối người mua và người bán đồ đã qua sử dụng uy tín, chất lượng hàng đầu Việt Nam.</p>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/Duckerrrrrrr" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://github.com/dichvietduc2005/WebMuaBanDoCu" class="fab fa-github" aria-label="Github"></a>
+                        <a href="#" class="social-link" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 
@@ -46,11 +46,11 @@ function footer() {
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-phone"></i>
-                            <span>0945554902</span>
+                            <span><a href="tel:0945554902" class="text-decoration-none" style="color: inherit;">0945554902</a></span>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
-                            <span>nguyenthinhk52005@gmail.com</span>
+                            <span><a href="mailto:nguyenthinhk52005@gmail.com" class="text-decoration-none" style="color: inherit;">nguyenthinhk52005@gmail.com</a></span>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-clock"></i>
@@ -62,8 +62,17 @@ function footer() {
             
             <div class="copyright">
                 &copy; 2025 Mua Bán Đồ Cũ. Tất cả quyền được bảo lưu.
+                <div class="mt-2 d-sm-none">
+                    <div class="social-links justify-content-center">
+                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
             </div>
-        </div>    </footer>
+        </div>
+    </footer>
     <?php
 }
 

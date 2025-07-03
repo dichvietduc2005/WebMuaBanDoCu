@@ -1,0 +1,65 @@
+body {
+    /* background: #f5f7fb; */
+}
+
+.sell-card {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(58, 134, 255, 0.10);
+    padding: 36px 32px 28px 32px;
+}
+
+.sell-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+.sell-title i {
+    font-size: 2.2rem;
+    color: #3a86ff;
+}
+
+.sell-desc {
+    text-align: center;
+    color: #666;
+    margin-bottom: 32px;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.form-control,
+select {
+    border-radius: 10px;
+    font-size: 1.1rem;
+    padding: 12px;
+    /* margin-bottom: 18px; */
+}
+
+.btn-sell {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #3a86ff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
