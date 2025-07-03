@@ -206,3 +206,10 @@
 =======
 2025-07-02 18:00:03 - CartController initialized for logged-in users
 >>>>>>> 20b80d6be7b0e1f1a8d419bfc148ba17e30aee13
+2025-07-02 22:03:40 - CartController initialized for logged-in users
+2025-07-02 22:03:40 - addToCart - Start - Data: {"product_id":3,"quantity":1,"user_id":8}
+2025-07-02 22:03:42 - CartController initialized for logged-in users
+2025-07-02 22:03:45 - CartController initialized for logged-in users
+2025-07-02 22:03:56 - CartController initialized for logged-in users
+2025-07-03 11:34:07 - CartController initialized for logged-in users
+2025-07-03 11:35:01 - CartController initialized for logged-in users
