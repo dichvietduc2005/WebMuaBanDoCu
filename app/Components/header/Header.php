@@ -72,7 +72,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                         <?php if ($unread_notifications > 0): ?>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                 style="font-size: clamp(10px, 2.5vw, 12px); padding: 0.25em 0.5em; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
-                                <?php echo min($unread_notifications, 99); ?>            <?php echo $unread_notifications > 99 ? '+' : ''; ?>
+                                <?php echo min($unread_notifications, 99); ?>             <?php echo $unread_notifications > 99 ? '+' : ''; ?>
                             </span>
                         <?php endif; ?>
                     </a>
@@ -85,77 +85,108 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                         <?php if ($cart_count > 0): ?>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
                                 style="font-size: clamp(10px, 2.5vw, 12px); padding: 0.25em 0.5em; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
-                                <?php echo min($cart_count, 99); ?>            <?php echo $cart_count > 99 ? '+' : ''; ?>
+                                <?php echo min($cart_count, 99); ?>             <?php echo $cart_count > 99 ? '+' : ''; ?>
                             </span>
                         <?php endif; ?>
                     </a>
                 <?php endif; ?>
             </div>
 
-        <!-- Main Content -->
-        <div class="collapse navbar-collapse mt-2 mt-lg-0" id="navbarMain">
-            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100 gap-2">
-                <!-- Categories Dropdown -->
-                <div class="dropdown me-lg-3 mb-2 mb-lg-0 w-100 w-lg-auto">
-                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center w-100 w-lg-auto" type="button"
-                        data-bs-toggle="dropdown" aria-expanded="false" style="font-size: min(16px, 4vw); height: 42px;">
-                        <i class="fas fa-bars me-2" style="font-size: min(16px, 4vw);"></i>
-                        <span>Danh mục</span>
-                    </button>
-                    <ul class="dropdown-menu" style="max-height: 50vh; overflow-y: auto;">
-                        <?php foreach ($categories as $category): ?>
-                        <li><a class="dropdown-item" style="font-size: min(16px, 4vw);"
-                                href="../product/category.php?slug=<?php echo $category['slug']; ?>"><?php echo htmlspecialchars($category['name']); ?></a>
-                        </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
+            <!-- Main Content -->
+            <div class="collapse navbar-collapse mt-2 mt-lg-0" id="navbarMain">
+                <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100 gap-2">
+                    <!-- Categories Dropdown -->
+                    <div class="dropdown me-lg-3 mb-2 mb-lg-0 w-100 w-lg-auto">
+                        <button class="btn btn-light dropdown-toggle d-flex align-items-center w-100 w-lg-auto"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="height: 44px; font-size: 15px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; transition: all 0.2s ease;">
+                            <i class="fas fa-bars me-2" style="font-size: 15px;"></i>
+                            <span>Danh mục</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-lg-start"
+                            style="max-height: 60vh; overflow-y: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                            <?php foreach ($categories as $category): ?>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center"
+                                        style="font-size: 14px; padding: 10px 16px; transition: all 0.2s ease;"
+                                        href="../product/category.php?slug=<?php echo $category['slug']; ?>">
+                                        <i class="fas fa-folder-open me-2" style="color: #6b7280; width: 20px;"></i>
+                                        <span><?php echo htmlspecialchars($category['name']); ?></span>
+                                        <span
+                                            class="ms-auto badge bg-light text-dark"><?php echo $category['product_count'] ?? ''; ?></span>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
 
                     <!-- Search Form - Takes available space on desktop, full width on mobile -->
-                    <form id="search-form2" class="w-100 mb-2 mb-lg-0 me-lg-4" method="GET"
+                    <form id="search-form2" class="w-100 mb-2 mb-lg-0 me-lg-3 position-relative" method="GET"
                         action="/WebMuaBanDoCu/app/View/extra/search_advanced.php">
-                        <div class="input-group" style="height: 42px;">
-                            <input type="text" class="form-control" id="search-input" name="q"
-                                placeholder="Tìm kiếm sản phẩm"
-                                style="font-size: min(16px, 4vw); border-radius: 8px 0 0 8px;"
-                                value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-                            <button class="btn btn-primary" type="submit" style="border-radius: 0 8px 8px 0;">
-                                <i class="fas fa-search" style="font-size: min(16px, 4vw);"></i>
+                        <div class="input-group search-modern"
+                            style="height: 44px; position: relative; min-height: 44px; max-height: 44px;">
+                            <input type="text" class="form-control search-input-modern" id="search-input" name="q"
+                                placeholder="Tìm sản phẩm..."
+                                style="height: 44px; min-height: 44px; max-height: 44px; font-size: 15px; border-radius: 22px 0 0 22px; border: 1px solid #e5e7eb; border-right: none; padding-left: 18px; padding-right: 40px;"
+                                value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
+                                autocomplete="off">
+
+                            <!-- Nút xóa -->
+                            <button type="button" class="btn btn-clear-search position-absolute"
+                                style="right: 60px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9ca3af; display: none; height: 32px; width: 32px;"
+                                onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').focus();">
+                                <i class="fas fa-times"></i>
                             </button>
+
+                            <button class="btn btn-primary search-btn-modern" type="submit"
+                                style="height: 44px; min-height: 44px; max-height: 44px; width: 56px; min-width: 56px; border-radius: 0 22px 22px 0; border: none; padding: 0 18px; background: linear-gradient(135deg, #4f46e5, #7c3aed); text-decoration: none;">
+                                <i class="fas fa-search" style="font-size: 15px;"></i>
+                            </button>
+                        </div>
+
+                        <!-- Gợi ý tìm kiếm -->
+                        <div class="search-suggestions position-absolute bg-white rounded shadow-lg mt-1 w-100"
+                            style="z-index: 1000; display: none; max-height: 300px; overflow-y: auto; border-radius: 12px; border: 1px solid #e5e7eb;">
+                            <div class="list-group">
+                                <!-- Các gợi ý sẽ được thêm bằng JavaScript -->
+                            </div>
                         </div>
                     </form>
 
-                <!-- Right side actions - Stack vertically on mobile -->
-                <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2 ms-lg-auto w-100 w-lg-auto">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <!-- Desktop Icons - hidden on mobile -->
-                        <div class="d-none d-lg-flex align-items-center gap-2">
-                            <!-- Notifications -->
-                            <a href="/WebMuaBanDoCu/app/View/extra/notifications.php" class="btn btn-link text-dark p-1 position-relative notifications-bell"
-                                title="Thông báo">
-                                <i class="fas fa-bell" style="font-size: 20px;"></i>
-                                <?php if ($unread_notifications > 0): ?>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 12px; padding: 0.2em 0.4em;">
-                                    <?php echo min($unread_notifications, 99); ?><?php echo $unread_notifications > 99 ? '+' : ''; ?>
-                                </span>
-                                <?php endif; ?>
-                            </a>
+                    <!-- Right side actions - Stack vertically on mobile -->
+                    <div
+                        class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2 ms-lg-auto w-100 w-lg-auto">
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <!-- Desktop Icons - hidden on mobile -->
+                            <div class="d-none d-lg-flex align-items-center gap-2">
+                                <!-- Notifications -->
+                                <a href="/WebMuaBanDoCu/app/View/extra/notifications.php"
+                                    class="btn btn-link text-dark p-1 position-relative notifications-bell header-icon-btn" title="Thông báo">
+                                    <i class="fas fa-bell" style="font-size: 20px;"></i>
+                                    <?php if ($unread_notifications > 0): ?>
+                                        <span
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                            style="font-size: 12px; padding: 0.2em 0.4em;">
+                                            <?php echo min($unread_notifications, 99); ?>            <?php echo $unread_notifications > 99 ? '+' : ''; ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </a>
 
                                 <!-- Messages -->
-                                <button class="btn btn-link text-dark p-1" title="Tin nhắn" id="button-chat"
+                                <button class="btn btn-link text-dark p-1 header-icon-btn" title="Tin nhắn" id="button-chat"
                                     onclick="toggleChat()">
                                     <i class="fas fa-comment" style="font-size: 20px;"></i>
                                 </button>
 
                                 <!-- Cart -->
                                 <a href="/WebMuaBanDoCu/app/View/cart/index.php"
-                                    class="btn btn-link text-dark p-1 position-relative" title="Giỏ hàng">
+                                    class="btn btn-link text-dark p-1 position-relative header-icon-btn" title="Giỏ hàng">
                                     <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
                                     <?php if ($cart_count > 0): ?>
                                         <span
                                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count"
                                             style="font-size: 12px; padding: 0.2em 0.4em;">
-                                            <?php echo min($cart_count, 9); ?>            <?php echo $cart_count > 9 ? '+' : ''; ?>
+                                            <?php echo min($cart_count, 9); ?>             <?php echo $cart_count > 9 ? '+' : ''; ?>
                                         </span>
                                     <?php endif; ?>
                                 </a>
@@ -178,7 +209,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                 <button
                                     class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center justify-content-center w-100"
                                     type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                    style="height: 42px; font-size: min(16px, 4vw); border-radius: 8px;">
+                                    style="height: 42px; font-size: min(16px, 4vw); border-radius: 8px; border: none;">
                                     <i class="fas fa-user-circle me-2" style="font-size: min(18px, 4.5vw);"></i>
                                     <span>Tài khoản</span>
                                 </button>
@@ -186,7 +217,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                     <li>
                                         <h6 class="dropdown-header">Xin
                                             chào<?php echo $_SESSION['user_role'] == 'admin' ? ' admin' : '' ?>,
-                                            <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></h6>
+                                            <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>
+                                        </h6>
                                     </li>
                                     <?php
                                     if ($_SESSION['user_role'] == 'admin') {
@@ -245,6 +277,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/footer.css">
 
 
+
     <!-- Notifications Popup JS -->
     <script src="/WebMuaBanDoCu/public/assets/js/notifications.js"></script>
     <script src="/WebMuaBanDoCu/public/assets/js/search-autocomplete.js"></script>
@@ -299,8 +332,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
             /* Mobile button improvements */
             .btn:hover {
-                transform: translateY(-1px);
-                box-shadow: var(--shadow-medium);
+                transform: translateY(-1px) !important;
+                box-shadow: var(--shadow-medium) !important;
             }
 
             /* Touch target improvements */
@@ -315,6 +348,76 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 font-size: clamp(16px, 4vw, 18px);
                 padding: 12px 16px;
                 font-weight: 500;
+            }
+        }
+
+        /* CSS cho thanh tìm kiếm hiện đại */
+        .search-modern {
+            border-radius: 22px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            height: 44px !important;
+            min-height: 44px !important;
+            max-height: 44px !important;
+        }
+
+        .search-modern:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .search-input-modern {
+            height: 44px !important;
+            min-height: 44px !important;
+            max-height: 44px !important;
+            outline: none;
+            box-shadow: none !important;
+        }
+
+        .search-input-modern:focus {
+            outline: none;
+            box-shadow: none;
+            border-color: #a5b4fc !important;
+        }
+
+        .search-btn-modern {
+            height: 44px !important;
+            min-height: 44px !important;
+            max-height: 44px !important;
+            width: 56px !important;
+            min-width: 56px !important;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn-modern:hover {
+            background: linear-gradient(135deg, #4338ca, #6d28d9) !important;
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+
+        @media (max-width: 768px) {
+            .search-modern {
+                height: 40px !important;
+                min-height: 40px !important;
+                max-height: 40px !important;
+            }
+
+            .search-input-modern {
+                height: 40px !important;
+                min-height: 40px !important;
+                max-height: 40px !important;
+                font-size: 14px !important;
+                padding-left: 15px !important;
+            }
+
+            .search-btn-modern {
+                height: 40px !important;
+                min-height: 40px !important;
+                max-height: 40px !important;
+            }
+
+            .search-btn-modern i {
+                font-size: 14px !important;
             }
         }
 
@@ -386,12 +489,72 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             }
         }
 
+        /* Hiệu ứng cho gợi ý tìm kiếm */
+        .search-suggestions .list-group-item {
+            border: none;
+            border-radius: 0;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .search-suggestions .list-group-item:hover {
+            background-color: #f3f4f6;
+            border-left-color: #4f46e5;
+        }
+
+        .search-suggestions .list-group-item:not(:last-child) {
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Hiệu ứng cho dropdown danh mục */
+        .dropdown-toggle:hover {
+            background-color: #e9ecef !important;
+            color: #000;
+        }
+
+        .dropdown-toggle:focus {
+            box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.1) !important;
+        }
+
+        .dropdown-item {
+            border-radius: 6px;
+            margin: 2px 8px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6 !important;
+            transform: translateX(3px);
+            color: #4f46e5 !important;
+        }
+
+        .dropdown-item:hover i {
+            color: #4f46e5 !important;
+        }
+
+        .header-icon-btn {
+            transition: all 0.2s ease;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-icon-btn:hover {
+            background-color: #f3f4f6;
+            color: var(--primary-blue) !important;
+        }
+
         /* Accessibility improvements */
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
                 animation: none !important;
             }
+
+
         }
     </style>
     <?php

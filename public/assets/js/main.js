@@ -46,6 +46,53 @@ function addToCart(event, productId) {
     });
 }
 
+// Buy now function - Mua ngay và chuyển đến trang checkout
+function buyNow(event, productId) {
+    event.preventDefault();
+    const form = event.target.closest('form');
+    const quantityInput = form.querySelector('.quantity-input');
+    const quantity = quantityInput ? quantityInput.value : 1; // Default to 1 if not found
+    const button = event.currentTarget;
+    
+    // Hiển thị trạng thái loading
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+
+    // Thêm sản phẩm vào giỏ hàng và chuyển đến trang checkout ngay lập tức
+    fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `action=add&product_id=${productId}&quantity=${quantity}&checkout=1`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Chuyển hướng đến trang checkout
+            window.location.href = '/WebMuaBanDoCu/app/View/checkout/index.php';
+        } else {
+            // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
+            if (data.message && data.message.includes("Bạn cần đăng nhập")) {
+                showLoginPromptToast();
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+            } else {
+                showToast('error', 'Lỗi!', data.message || 'Không thể mua sản phẩm.');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi xử lý.');
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+    });
+}
+
 /**
  * Cập nhật số lượng trên icon giỏ hàng
  * @param {number} cart_count 

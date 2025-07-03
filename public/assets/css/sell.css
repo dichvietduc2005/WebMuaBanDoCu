@@ -43,23 +43,8 @@ select {
     font-size: 1.1rem;
     padding: 12px;
     /* margin-bottom: 18px; */
+    height: auto;
+    min-height: 48px;
 }
 
-.btn-sell {
-    width: 100%;
-    padding: 14px 0;
-    font-size: 1.1rem;
-    border-radius: 10px;
-    font-weight: 600;
-}
 
-.back-link {
-    display: inline-block;
-    margin-bottom: 18px;
-    color: #3a86ff;
-    text-decoration: none;
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}

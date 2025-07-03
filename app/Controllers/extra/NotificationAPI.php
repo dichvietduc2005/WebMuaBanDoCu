@@ -218,9 +218,11 @@ class NotificationAPI
     {
         try {
             $keyword = $_GET['keyword'] ?? '';
+            $limit = (int)($_GET['limit'] ?? 8);
             
             if (strlen($keyword) < 2) {
                 $this->successResponse([
+                    'success' => true,
                     'suggestions' => []
                 ]);
                 return;
@@ -233,10 +235,16 @@ class NotificationAPI
                 WHERE p.status = 'active' 
                 AND p.stock_quantity > 0 
                 AND p.title LIKE ?
-                ORDER BY p.title ASC
-                LIMIT 8
+                ORDER BY 
+                    CASE 
+                        WHEN p.title LIKE ? THEN 0
+                        ELSE 1
+                    END,
+                    p.view_count DESC,
+                    p.title ASC
+                LIMIT ?
             ");
-            $stmt->execute(['%' . $keyword . '%']);
+            $stmt->execute(['%' . $keyword . '%', $keyword . '%', $limit]);
             $productSuggestions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
             // Lấy gợi ý từ tên danh mục
@@ -245,10 +253,15 @@ class NotificationAPI
                 FROM categories c
                 WHERE c.status = 'active'
                 AND c.name LIKE ?
-                ORDER BY c.name ASC
+                ORDER BY 
+                    CASE 
+                        WHEN c.name LIKE ? THEN 0
+                        ELSE 1
+                    END,
+                    c.name ASC
                 LIMIT 4
             ");
-            $stmt->execute(['%' . $keyword . '%']);
+            $stmt->execute(['%' . $keyword . '%', $keyword . '%']);
             $categorySuggestions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
             // Kết hợp và giới hạn số lượng
@@ -257,6 +270,7 @@ class NotificationAPI
             $allSuggestions = array_slice($allSuggestions, 0, 10);
 
             $this->successResponse([
+                'success' => true,
                 'suggestions' => array_values($allSuggestions)
             ]);
 

@@ -80,7 +80,7 @@ class SearchAutocomplete {
         this.showLoadingState();
 
         try {
-            const response = await fetch(`/WebMuaBanDoCu/app/Controllers/extra/NotificationAPI.php?action=search_suggestions&keyword=${encodeURIComponent(keyword)}`);
+            const response = await fetch(`/WebMuaBanDoCu/app/Controllers/extra/api.php?action=search_suggestions&keyword=${encodeURIComponent(keyword)}`);
             const data = await response.json();
 
             if (data.success && data.suggestions) {

@@ -140,10 +140,13 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
                 $quantity = (int)($_POST['quantity'] ?? 1);
                 if ($product_id > 0 && $quantity > 0) {
                     $cartController->addToCart($product_id, $quantity);
+                    $checkout = isset($_POST['checkout']) && $_POST['checkout'] == '1';
+                    
                     $response = [
                         'success' => true,
                         'message' => 'Sản phẩm đã được thêm vào giỏ hàng.',
-                        'cart_count' => $cartController->getCartItemCount()
+                        'cart_count' => $cartController->getCartItemCount(),
+                        'checkout' => $checkout
                     ];
                 } else {
                     throw new \Exception('Thông tin sản phẩm không hợp lệ.');

@@ -10,44 +10,33 @@ if (!isset($pdo)) {
 try {
     // Lấy sản phẩm nổi bật từ database
     $stmt = $pdo->prepare("
-        SELECT p.*, pi.image_path, c.name as category_name 
-        FROM products p 
-        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.status = 'active' AND p.featured = 1 AND p.stock_quantity > 0
-        ORDER BY p.created_at DESC 
-        LIMIT 8
-    ");
+    SELECT p.*, pi.image_path, c.name as category_name 
+    FROM products p 
+    LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+    LEFT JOIN categories c ON p.category_id = c.id
+    WHERE p.status = 'active' AND p.featured = 1 AND p.stock_quantity > 0
+    ORDER BY p.created_at DESC 
+    LIMIT 12
+");
     $stmt->execute();
     $featured_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Debug: In ra số lượng sản phẩm
-    error_log("Featured products count: " . count($featured_products));
-
+    // Lấy 16 sản phẩm thường thay vì 12
+    $stmt = $pdo->prepare("
+    SELECT p.*, pi.image_path, c.name as category_name 
+    FROM products p 
+    LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+    LEFT JOIN categories c ON p.category_id = c.id
+    WHERE p.status = 'active' AND p.featured = 0 AND p.stock_quantity > 0
+    ORDER BY p.created_at DESC 
+    LIMIT 16
+");
+    $stmt->execute();
+    $regular_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // Lấy danh mục
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE status = 'active' ORDER BY name");
     $stmt->execute();
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Debug: In ra số lượng danh mục
-    error_log("Categories count: " . count($categories));
-
-    // Lấy sản phẩm thường (không nổi bật)
-    $stmt = $pdo->prepare("
-        SELECT p.*, pi.image_path, c.name as category_name 
-        FROM products p 
-        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.status = 'active' AND p.featured = 0 AND p.stock_quantity > 0
-        ORDER BY p.created_at DESC 
-        LIMIT 12
-    ");
-    $stmt->execute();
-    $regular_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Debug: In ra số lượng sản phẩm thường
-    error_log("Regular products count: " . count($regular_products));
-
 } catch (PDOException $e) {
     error_log("Database error in Home.php: " . $e->getMessage());
     $featured_products = [];
@@ -154,7 +143,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                         <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
                         <h3>Chưa có sản phẩm nổi bật</h3>
                         <p>Hãy quay lại sau để xem các sản phẩm mới nhất!</p>
-                    </div> <?php else: ?>     <?php foreach ($featured_products as $product): ?>
+                    </div> <?php else: ?> <?php foreach ($featured_products as $product): ?>
                         <div class="product-card" style="cursor: pointer;"
                             onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $product['id']; ?>'">
                             <div class="product-image" style="position: relative;">
@@ -174,6 +163,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             </div>
                             <div class="product-content">
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                                <p class="product-description"><?php echo htmlspecialchars(substr($product['description'], 0, 100)); ?>...</p>
                                 <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
                                 <div class="product-meta">
                                     <div class="product-condition">
@@ -192,15 +182,17 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                            <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1"
-                                                class="quantity-input" name="quantity">
+                                            <button type="button" class="btn-checkout-now" onclick="buyNow(event, <?php echo $product['id']; ?>)">
+                                                <i class="fas fa-bolt"></i> Mua ngay
+                                            </button>
                                             <button type="submit" class="btn-add-to-cart">
                                                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ
                                             </button>
                                         </form>
                                     <?php else: ?>
-                                        <button type="button" class="btn-add-to-cart btn-disabled" disabled>
-                                            <i class="fas fa-ban"></i> Hết hàng
+                                        <!-- Nút ở trạng thái loading -->
+                                        <button class="btn-add-to-cart" disabled>
+                                            <i class="fas fa-spinner fa-spin"></i> Đang cập nhật
                                         </button>
                                     <?php endif; ?>
                                 </div>
@@ -243,6 +235,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             </div>
                             <div class="product-content">
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                                <p class="product-description"><?php echo htmlspecialchars(substr($product['description'], 0, 100)); ?>...</p>
                                 <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
                                 <div class="product-meta">
                                     <div class="product-condition">
@@ -261,8 +254,9 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                            <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1"
-                                                class="quantity-input" name="quantity">
+                                        <button type="submit" class="btn-checkout-now">
+                                                <i class="fas fa-cart-plus"></i> Mua ngay
+                                            </button>
                                             <button type="submit" class="btn-add-to-cart">
                                                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ
                                             </button>
@@ -302,7 +296,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
 
                 foreach ($categories as $category):
                     $icon = $category_icons[$category['slug']] ?? 'fas fa-cube';
-                    ?>
+                ?>
                     <div class="category-card"
                         onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo $category['slug']; ?>'">
                         <i class="<?php echo $icon; ?> category-icon"></i>
