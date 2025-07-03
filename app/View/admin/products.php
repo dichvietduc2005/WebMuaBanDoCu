@@ -29,6 +29,7 @@ $pending_products = getPendingProducts($pdo);
 
 <body>
     <?php renderHeader($pdo); ?>
+     <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090"></div>
     <div class="container1">
 
         <h2>Sản phẩm chờ duyệt</h2>
@@ -41,6 +42,8 @@ $pending_products = getPendingProducts($pdo);
                 <th>Tiêu đề</th>
                 <th>Người đăng</th>
                 <th>Giá</th>
+                <th>Tình trạng</th>
+                <th>Mô Tả</th>
                 <th>Ngày đăng</th>
                 <th>Hành động</th>
             </tr>
@@ -60,13 +63,25 @@ $pending_products = getPendingProducts($pdo);
                 <td><?= htmlspecialchars($product['title']) ?></td>
                 <td><?= htmlspecialchars($product['username']) ?></td>
                 <td><?= number_format($product['price']) ?> VNĐ</td>
+                <td><?= htmlspecialchars($product['condition_status']) ?></td>
+                <td><?= htmlspecialchars($product['description']) ?></td>
                 <td><?= htmlspecialchars($product['created_at']) ?></td>
                 <td class="actions">
-                    <a href="../../Models/admin/AdminModel.php?action=approve&id=<?= $product['id'] ?>">Duyệt</a>
-                    <a href="../../Models/admin/AdminModel.php?action=reject&id=<?= $product['id'] ?>">Từ chối</a>
-                    <a href="../../Models/admin/AdminModel.php?action=delete&id=<?= $product['id'] ?>" class="delete"
-                        onclick="return confirm('Bạn chắc chắn muốn xóa?');">Xóa</a>
-                </td>
+    <a href="../../Models/admin/AdminModel.php?action=approve&id=<?= $product['id'] ?>" 
+       class="btn btn-success action-btn">
+       <i class="fas fa-check"></i> Duyệt
+    </a>
+       
+    <a href="../../Models/admin/AdminModel.php?action=reject&id=<?= $product['id'] ?>" 
+       class="btn btn-warning action-btn">
+       <i class="fas fa-times"></i> Từ chối
+    </a>
+       
+    <a href="../../Models/admin/AdminModel.php?action=delete&id=<?= $product['id'] ?>" 
+       class="btn btn-danger action-btn delete">
+       <i class="fas fa-trash"></i> Xóa
+    </a>
+</td>
             </tr>
             <?php endforeach; ?>
         </table>
@@ -78,8 +93,10 @@ $pending_products = getPendingProducts($pdo);
     <script>userId = <?php echo $_SESSION['user_id'] ?> </script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js?v=3"> </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script> 
+<script src="<?php echo BASE_URL; ?>public/assets/js/admin_Product.js"></script>
+    
 </body>
+
 
 </html>

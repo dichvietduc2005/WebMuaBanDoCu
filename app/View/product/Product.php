@@ -26,11 +26,13 @@ $products = getUserProducts($pdo, $user_id);
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
     <style>
-        #products-table th, #products-table td {
-            text-align: center;
-            vertical-align: middle;
-        }
+    #products-table th,
+    #products-table td {
+        text-align: center;
+        vertical-align: middle;
+    }
     </style>
+
 <body>
     <?php renderHeader($pdo); ?>
     <div class="container"
@@ -63,7 +65,9 @@ $products = getUserProducts($pdo, $user_id);
                         data-description="<?= htmlspecialchars($product['description']) ?>">
                         <td>
                             <?php if (!empty($product['image_path'])): ?>
-                            <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>" alt="Ảnh sản phẩm" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">                              
+                            <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                                alt="Ảnh sản phẩm"
+                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
                             <?php else: ?>
                             <div
                                 style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;">
@@ -75,12 +79,26 @@ $products = getUserProducts($pdo, $user_id);
                         <td><?= number_format($product['price'], 0, ',', '.') ?> VNĐ</td>
                         <td><?= htmlspecialchars($product['condition_status']) ?></td>
                         <td><?= htmlspecialchars($product['location']) ?></td>
-                        <td >
+                        <td>
                             <?= htmlspecialchars($product['description']) ?>
                         </td>
                         <td>
-                            <span
-                                class="badge bg-<?php echo ($product['status'] == 'active') ? 'success' : 'secondary'; ?>">
+                            <span class="badge 
+                            <?php 
+                            switch($product['status']) {
+                                case 'active':
+                                    echo 'bg-success';
+                                    break;
+                                case 'pending':
+                                    echo 'bg-warning text-dark';
+                                    break;
+                                case 'reject':
+                                    echo 'bg-danger';
+                                    break;
+                                default:
+                                    echo 'bg-info';
+                            }
+                            ?>">
                                 <?= htmlspecialchars($product['status']) ?>
                             </span>
                         </td>
@@ -142,7 +160,9 @@ $products = getUserProducts($pdo, $user_id);
     <script src="../../../public/assets/js/my_products.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php footer(); ?>
-    <script>userId = <?php echo $_SESSION['user_id'] ?></script>
+    <script>
+    userId = <?php echo $_SESSION['user_id'] ?>
+    </script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
 </body>
 

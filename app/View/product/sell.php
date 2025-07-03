@@ -98,6 +98,8 @@ if (!isset($_SESSION['user_id'])) {
         </form>
     </div>
     <script>userId = <?php echo $_SESSION['user_id'] ?></script>
+        <script src="/WebMuaBanDoCu/public/assets/js/main.js"> </script>
+
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
     <script src="/WebMuaBanDoCu/public/assets/js/sell.js"> </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

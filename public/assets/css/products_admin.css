@@ -1,75 +1,162 @@
-/* Định dạng container */
-.container1 {
-    max-width: 1000px;
-    margin: 40px auto 0 auto;
-    background: #fff;
-    padding: 32px 24px;
-    border-radius: 12px;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-}
+    /* Định dạng container */
+    .container1 {
+        max-width: 1200px;
+        margin: 40px auto 0 auto;
+        background: #fff;
+        padding: 32px 24px;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
 
-/* Tiêu đề */
-h2 {
-    margin-bottom: 24px;
-    font-weight: 600;
-    color: #1a237e;
-}
+    /* Tiêu đề */
+    h2 {
+        margin-bottom: 24px;
+        font-weight: 600;
+        color: #1a237e;
+    }
 
-/* Bảng sản phẩm */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 24px;
-    background: #fafbfc;
-}
+    /* Bảng sản phẩm */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 24px;
+        background: #fafbfc;
+    }
 
-th, td {
-    padding: 12px 10px;
-    text-align: left;
-}
+    th, td {
+        padding: 12px 10px;
+        text-align: center;
+        vertical-align: middle; /* Căn giữa theo chiều dọc */
+        min-width: 100px;
+    }
 
-th {
-    background: #e3eafc;
-    color: #1a237e;
-    font-weight: 600;
-    border-bottom: 2px solid #b6c6e6;
-}
+   
+    th {
+        background: #e3eafc;
+        color: #1a237e;
+        font-weight: 600;
+        border-bottom: 2px solid #b6c6e6;
+        text-align: center;
+        background: #e3eafc;
+        color: #1a237e;
+        font-weight: 600;
+        border-bottom: 2px solid #b6c6e6;
+        font-size: 15px;
+    }
 
-tr:nth-child(even) {
-    background: #f5f7fa;
-}
+    tr:nth-child(even) {
+        background: #f5f7fa;
+    }
 
-tr:hover {
-    background: #e3eafc;
-}
+    tr:hover {
+        background: #e3eafc;
+    }
 
-.actions a {
-    margin-right: 10px;
-    text-decoration: none;
-    color: #1976d2;
-    font-weight: 500;
-    transition: color 0.2s;
-}
 
-.actions a.delete {
-    color: #d32f2f;
-}
 
-.actions a:hover {
-    text-decoration: underline;
-    color: #0d47a1;
-}
+    .actions a {
+        margin-right: 10px;
+        text-decoration: none;
+        color: #1976d2;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
 
-.back-link {
-    display: inline-block;
-    margin-bottom: 18px;
-    color: #1976d2;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-}
+    .actions a.delete {
+        color: #d32f2f;
+    }
 
-.back-link:hover {
-    color: #0d47a1;
-    text-decoration: underline;
-}   
+    .actions a:hover {
+        text-decoration: underline;
+        color: #0d47a1;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 18px;
+        color: #1976d2;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: #0d47a1;
+        text-decoration: underline;
+    }   
+
+    /* Hiệu ứng loading */
+    .disabled {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    /* Hiệu ứng khi xóa */
+    tr {
+        transition: opacity 0.5s ease;
+    }
+
+    /* Trạng thái sản phẩm */
+    .status-cell {
+        font-weight: bold;
+    }
+    .text-success {
+        color: #28a745;
+    }
+    .text-warning {
+        color: #ffc107;
+    }
+
+    /* Responsive table */
+    @media (max-width: 768px) {
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .actions .btn {
+            width: 100%;
+        }
+    }
+
+    /* CSS cho các nút hành động */
+    .actions a {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 0 3px;
+        border-radius: 4px;
+        color: white !important;
+        text-decoration: none !important;
+        font-size: 14px;
+        min-width: 70px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    /* Màu sắc cụ thể cho từng nút */
+    .actions .btn-success {
+        background-color: #28a745;
+        border: 1px solid #218838;
+    }
+
+    .actions .btn-warning {
+        background-color: #ffc107;
+        border: 1px solid #e0a800;
+        color: #212529 !important;
+    }
+
+    .actions .btn-danger {
+        background-color: #dc3545;
+        border: 1px solid #c82333;
+    }
+
+    /* Hiệu ứng hover */
+    .actions a:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    /* Đảm bảo nút luôn hiển thị rõ */
+    .actions {
+        white-space: nowrap;
+    }
