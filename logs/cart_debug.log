@@ -207,3 +207,35 @@
 2025-07-02 18:00:03 - CartController initialized for logged-in users
 >>>>>>> 20b80d6be7b0e1f1a8d419bfc148ba17e30aee13
 2025-07-02 19:10:29 - CartController initialized for logged-in users
+2025-07-03 14:43:47 - CartController initialized for logged-in users
+2025-07-03 14:56:52 - CartController initialized for logged-in users
+2025-07-03 14:56:56 - CartController initialized for logged-in users
+2025-07-03 14:56:56 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-03 14:57:01 - CartController initialized for logged-in users
+2025-07-03 14:57:08 - CartController initialized for logged-in users
+2025-07-03 14:57:13 - CartController initialized for logged-in users
+2025-07-03 14:57:13 - addToCart - Start - Data: {"product_id":2,"quantity":1,"user_id":7}
+2025-07-03 15:02:10 - CartController initialized for logged-in users
+2025-07-03 15:02:10 - addToCart - Start - Data: {"product_id":35,"quantity":1,"user_id":7}
+2025-07-03 15:02:53 - CartController initialized for logged-in users
+2025-07-03 15:02:54 - CartController initialized for logged-in users
+2025-07-03 15:03:11 - CartController initialized for logged-in users
+2025-07-03 15:03:18 - CartController initialized for logged-in users
+2025-07-03 15:06:16 - CartController initialized for logged-in users
+2025-07-03 15:08:24 - CartController initialized for logged-in users
+2025-07-03 15:08:24 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-03 15:08:27 - CartController initialized for logged-in users
+2025-07-03 15:08:31 - CartController initialized for logged-in users
+2025-07-03 15:08:38 - CartController initialized for logged-in users
+2025-07-03 15:08:38 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-03 15:13:01 - CartController initialized for logged-in users
+2025-07-03 15:13:01 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-03 15:13:05 - CartController initialized for logged-in users
+2025-07-03 15:13:08 - CartController initialized for logged-in users
+2025-07-03 15:13:14 - CartController initialized for logged-in users
+2025-07-03 15:13:14 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-03 15:14:39 - CartController initialized for logged-in users
+2025-07-03 15:14:39 - addToCart - Start - Data: {"product_id":1,"quantity":1,"user_id":7}
+2025-07-03 15:27:59 - CartController initialized for logged-in users
+2025-07-03 15:28:52 - CartController initialized for logged-in users
+2025-07-03 15:28:57 - CartController initialized for logged-in users

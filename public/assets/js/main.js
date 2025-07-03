@@ -104,30 +104,38 @@ function showLoginPromptToast() {
     });
 }
 
-// Show toast notification using Bootstrap 5
+/**
+ * Hiển thị toast notification góc phải trên
+ */
 function showToast(type, title, message) {
     const toastContainer = document.getElementById('toast-container') || createToastContainer();
     const toastEl = document.createElement('div');
-    toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`; // text-white is on the parent
+    toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
     toastEl.setAttribute('role', 'alert');
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
-
+    toastEl.style.minWidth = '320px';
     toastEl.innerHTML = `
         <div class="d-flex">
-            <div class="toast-body text-white"> <!-- Added text-white here for better contrast -->
+            <div class="toast-body text-white">
                 <strong>${title}</strong> ${message}
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     `;
     toastContainer.appendChild(toastEl);
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
-    toast.show();
-    toastEl.addEventListener('hidden.bs.toast', function () {
-        toastEl.remove();
-    });
+    // Sử dụng Bootstrap 5 Toast
+    if (window.bootstrap && window.bootstrap.Toast) {
+        const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
+        toast.show();
+        toastEl.addEventListener('hidden.bs.toast', function() {
+            toastEl.remove();
+        });
+    } else {
+        // Fallback: tự ẩn sau 3.5s nếu không có Bootstrap JS
+        toastEl.style.display = 'block';
+        setTimeout(() => toastEl.remove(), 3500);
+    }
 }
 
 function createToastContainer() {
@@ -135,10 +143,8 @@ function createToastContainer() {
     if (!container) {
         container = document.createElement('div');
         container.id = 'toast-container';
-        container.style.position = 'fixed';
-        container.style.top = '20px';
-        container.style.right = '20px';
-        container.style.zIndex = '1090'; // Ensure it's above other elements like navbar
+        container.className = 'toast-container position-fixed top-0 end-0 p-3';
+        container.style.zIndex = 10800;
         document.body.appendChild(container);
     }
     return container;
