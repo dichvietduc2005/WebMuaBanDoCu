@@ -22,6 +22,7 @@ if (!isset($_SESSION['user_id'])) {
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/index.css">
 
     <style>
     body {
@@ -68,7 +69,7 @@ if (!isset($_SESSION['user_id'])) {
         border-radius: 10px;
         font-size: 1.1rem;
         padding: 12px;
-        margin-bottom: 18px;
+        /* margin-bottom: 18px; */
     }
 
     .btn-sell {

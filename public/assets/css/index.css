@@ -102,16 +102,20 @@ body {
   box-shadow: 0 0 0 0.25rem rgba(58, 134, 255, 0.25);
 }
 
-.input-group .btn-outline-secondary {
-  border-color: #ced4da;
-  color: var(--gray);
+/* Đảm bảo nút tìm kiếm trong input-group luôn đồng bộ chiều cao với input */
+.input-group .btn {
+    height: 52px !important;
+    min-width: 42px;
+    padding: 0 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.input-group .btn i {
+    font-size: 18px;
 }
 
-.input-group .btn-outline-secondary:hover {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: white;
-}
 
 /* Cart badge enhancement */
 .badge {
@@ -151,7 +155,43 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(58, 134, 255, 0.3);
 }
+/* Responsive search bar in header */
+#search-form2 {
+  max-width: 420px;
+  width: 100%;
+}
 
+@media (max-width: 1200px) {
+  #search-form2 {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 992px) {
+  #search-form2 {
+    max-width: 100%;
+    margin-right: 0 !important;
+    margin-bottom: 10px;
+  }
+  .navbar .d-flex.flex-lg-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  #search-form2 {
+    max-width: 100%;
+    margin-right: 0 !important;
+    margin-bottom: 10px;
+  }
+  .navbar .d-flex.flex-lg-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+}
 /* Mobile responsiveness enhancements */
 @media (max-width: 991.98px) {
   .navbar .d-flex.align-items-center.w-100 {
@@ -386,14 +426,19 @@ body {
 .product-image {
   height: 220px;
   width: 100%;
-  object-fit: cover;
+  object-fit: contain;
   background: var(--light-gray);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--gray);
 }
-
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
 .product-badge {
   position: absolute;
   top: 15px;
@@ -633,8 +678,9 @@ footer {
 }
 
 .footer-grid {
+
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, minmax(250px, 1fr));
   gap: 40px;
   margin-bottom: 40px;
 }
