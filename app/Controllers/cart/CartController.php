@@ -13,13 +13,11 @@ class CartController
 {
     private $pdo;
     private $cartModel;
-    private $log_file = __DIR__ . '/../../../logs/cart_debug.log';
 
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
         $this->cartModel = new CartModel($pdo);
-        $this->debug_log("CartController initialized for logged-in users");
     }
 
     /**
@@ -38,14 +36,7 @@ class CartController
         return $user_id;
     }
 
-    public function debug_log($message, $data = [])
-    {
-        $log_message = date('Y-m-d H:i:s') . " - " . $message;
-        if (!empty($data)) {
-            $log_message .= " - Data: " . json_encode($data, JSON_UNESCAPED_UNICODE);
-        }
-        file_put_contents($this->log_file, $log_message . PHP_EOL, FILE_APPEND);
-    }
+
 
     public function getCurrentUserId(): ?int
     {
@@ -58,8 +49,6 @@ class CartController
     public function addToCart($product_id, $quantity = 1)
     {
         $user_id = $this->ensureUserIsLoggedIn();
-        $this->debug_log("addToCart - Start", ['product_id' => $product_id, 'quantity' => $quantity, 'user_id' => $user_id]);
-
         try {
             $product = $this->cartModel->findProductById($product_id);
             if (!$product) throw new \Exception("Sản phẩm không tồn tại.");
@@ -80,7 +69,6 @@ class CartController
                 return $this->cartModel->addNewCartItem($cart_id, $product_id, $quantity, $product['price'], $product['condition_status']);
             }
         } catch (\Exception $e) {
-            $this->debug_log("addToCart - Exception", ['error' => $e->getMessage()]);
             throw $e;
         }
     }

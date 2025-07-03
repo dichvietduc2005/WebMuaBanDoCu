@@ -239,3 +239,12 @@
 2025-07-03 15:27:59 - CartController initialized for logged-in users
 2025-07-03 15:28:52 - CartController initialized for logged-in users
 2025-07-03 15:28:57 - CartController initialized for logged-in users
+2025-07-03 15:29:41 - CartController initialized for logged-in users
+2025-07-03 15:29:45 - CartController initialized for logged-in users
+2025-07-03 15:29:45 - addToCart - Start - Data: {"product_id":8,"quantity":1,"user_id":8}
+2025-07-03 15:29:48 - CartController initialized for logged-in users
+2025-07-03 15:29:48 - addToCart - Start - Data: {"product_id":8,"quantity":1,"user_id":8}
+2025-07-03 15:29:48 - addToCart - Exception - Data: {"error":"Số lượng trong giỏ vượt quá số lượng tồn kho."}
+2025-07-03 15:29:56 - CartController initialized for logged-in users
+2025-07-03 15:29:56 - addToCart - Start - Data: {"product_id":8,"quantity":1,"user_id":8}
+2025-07-03 15:29:56 - addToCart - Exception - Data: {"error":"Số lượng trong giỏ vượt quá số lượng tồn kho."}
