@@ -25,6 +25,7 @@ $pending_products = getPendingProducts($pdo);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="../../../public/assets/css/index.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../public/assets/css/products_admin.css">
+    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
 </head>
 
 <body>
@@ -73,6 +74,11 @@ $pending_products = getPendingProducts($pdo);
         <?php endif; ?>
     </div>
     <?php footer(); ?>
+    <script>userId = <?php echo $_SESSION['user_id'] ?> </script>
+    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js?v=3"> </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
 </body>
 
 </html>
