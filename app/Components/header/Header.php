@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../config/config.php';
 
+
 function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notifications = 0)
 {
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE status = 'active' ORDER BY name");
