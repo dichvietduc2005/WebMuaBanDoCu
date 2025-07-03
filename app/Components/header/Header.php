@@ -190,12 +190,12 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                         <!-- Guest user buttons -->
                         <div class="d-flex flex-column flex-lg-row gap-2 w-100">
                             <a href="/WebMuaBanDoCu/app/View/user/login.php"
-                               class="btn btn-light border d-flex align-items-center justify-content-center fw-bold w-100"
+                               class="btn btn-primary border d-flex align-items-center justify-content-center fw-bold w-100"
                                style="height: 42px; padding: 0 16px; font-size: 16px; line-height: 1; border-radius: 8px;">
                                 <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
                             </a>
                             <a href="/WebMuaBanDoCu/app/View/user/register.php"
-                               class="btn btn-primary border d-flex align-items-center justify-content-center fw-bold w-100"
+                               class="btn btn-success border d-flex align-items-center justify-content-center fw-bold w-100"
                                style="height: 42px; padding: 0 16px; font-size: 16px; line-height: 1; border-radius: 8px;">
                                 <i class="fas fa-user-plus me-2"></i>Đăng ký
                             </a>
