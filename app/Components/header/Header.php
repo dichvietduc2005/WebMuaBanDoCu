@@ -126,7 +126,13 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                 <span class="d-none d-lg-inline">Tài khoản</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><h6 class="dropdown-header">Xin chào, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></h6></li>
+                                <li><h6 class="dropdown-header">Xin chào<?php echo $_SESSION['user_role'] == 'admin' ? ' admin' : ''?>, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></h6></li>
+                                <?php
+                                if($_SESSION['user_role'] == 'admin'){
+                                    echo '<li><a class="dropdown-item" target="_blank" href='. '"/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"' . '><i class="fas fa-solid fa-medal me-2"></i>' . 'Quản lý tài khoản' . '</a></li>';
+                                    echo '<li><a class="dropdown-item" target="_blank" href='. '"/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"' . '><i class="fas fa-solid fa-envelope me-2"></i>' . 'Xem tin nhắn từ người dùng' . '</a></li>';
+                                }
+                                ?>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/order/order_history.php"><i class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/ProfileUserView.php"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>

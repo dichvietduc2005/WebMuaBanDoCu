@@ -65,7 +65,7 @@ class Auth {
     public function login($email, $password, $remember_me = false) {
         try {
             $stmt = $this->pdo->prepare("
-                SELECT id, email, password, full_name, username, status, last_login 
+                SELECT *
                 FROM users WHERE email = ?
             ");
             $stmt->execute([$email]);
@@ -379,6 +379,8 @@ class Auth {
         $_SESSION['user_name'] = $user['full_name'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['user_role'] = $user['role'];
+        $_SESSION['user_phone'] = $user['phone'];
+        $_SESSION['user_address'] = $user['address'];
         $_SESSION['login_time'] = time();
     }
     
