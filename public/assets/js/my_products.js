@@ -1,90 +1,106 @@
-// Hiện toast
-function showToast(msg, success = true) {
-    var toast = document.getElementById('toast');
-    toast.innerText = msg;
-    toast.style.background = success ? '#3a86ff' : '#e63946';
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2000);
+// Toast helper giống sell.js
+function showToast(type, title, message) {
+    const toastContainer = document.getElementById('toast-container') || createToastContainer();
+    const toastEl = document.createElement('div');
+    toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    toastEl.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body text-white">
+                <strong>${title}</strong> ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    toastContainer.appendChild(toastEl);
+    const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
+    toast.show();
+    toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.remove();
+    });
 }
 
-// Hiện modal sửa
-document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.onclick = function (e) {
-        e.preventDefault();
-        let row = document.getElementById('row-' + btn.dataset.id);
-        document.getElementById('edit_id').value = btn.dataset.id;
-        document.getElementById('edit_title').value = row.querySelector('.title').innerText;
-        document.getElementById('edit_price').value = row.querySelector('.price').innerText.replace(/\D/g, '');
-        document.getElementById('edit_category_id').value = row.dataset.category_id || 1;
-        document.getElementById('edit_condition_status').value = row.dataset.condition_status || 'new';
-        document.getElementById('edit_location').value = row.dataset.location || '';
-        document.getElementById('edit_description').value = row.dataset.description || '';
-        document.getElementById('editModal').style.display = 'block';
+function createToastContainer() {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.style.position = 'fixed';
+        container.style.top = '20px';
+        container.style.right = '20px';
+        container.style.zIndex = '1090';
+        document.body.appendChild(container);
     }
-});
-document.getElementById('closeModal').onclick = function () {
-    document.getElementById('editModal').style.display = 'none';
-}
-window.onclick = function (event) {
-    if (event.target == document.getElementById('editModal')) {
-        document.getElementById('editModal').style.display = 'none';
-    }
+    return container;
 }
 
-// Gửi AJAX cập nhật sản phẩm
-document.getElementById('editForm').onsubmit = function (e) {
-    e.preventDefault();
-    var formData = new FormData(this);
-    fetch('../../Models/product/ProductUserModel.php?action=edit_ajax', {
-        method: 'POST',
-        body: formData
-    })
-        .then(res => res.text())
-        .then(text => {
-            try {
-                var data = JSON.parse(text);
-                if (data.success) {
-                    let row = document.getElementById('row-' + formData.get('id'));
-                    row.querySelector('.title').innerText = formData.get('title');
-                    row.querySelector('.price').innerText = Number(formData.get('price')).toLocaleString() + ' VNĐ';
-                    row.querySelector('.category').innerText = formData.get('category_id');
-                    row.querySelector('.condition').innerText = formData.get('condition_status');
-                    row.querySelector('.location').innerText = formData.get('location');
-                    row.querySelector('.description').innerText = formData.get('description');
-                    row.querySelector('.status').innerText = data.status;
-                    // Cập nhật lại data-*
-                    row.dataset.category_id = formData.get('category_id');
-                    row.dataset.condition_status = formData.get('condition_status');
-                    row.dataset.location = formData.get('location');
-                    row.dataset.description = formData.get('description');
-                    showToast('Cập nhật thành công!');
-                    document.getElementById('editModal').style.display = 'none';
-                } else {
-                    showToast(data.message || 'Có lỗi xảy ra!', false);
-                }
-            } catch (e) {
-                // Nếu không phải JSON, báo lỗi hệ thống
-                showToast('Lỗi hệ thống hoặc phiên đăng nhập đã hết hạn!', false);
-                // Có thể log text ra console để debug
-                console.error('Server response:', text);
-            }
-        });
-};
+// Hiển thị dialog xác nhận (kiểu hỏi lại)
+function showConfirmDialog(title, message, onConfirm, onCancel) {
+    // Nếu đã có modal thì xóa trước
+    let oldModal = document.getElementById('custom-confirm-modal');
+    if (oldModal) oldModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'custom-confirm-modal';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.background = 'rgba(0,0,0,0.3)';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.zIndex = '2000';
+
+    modal.innerHTML = `
+        <div style="background: #fff; border-radius: 10px; max-width: 350px; width: 100%; box-shadow: 0 2px 16px rgba(0,0,0,0.15); padding: 24px 20px; text-align: center;">
+            <h5 style="margin-bottom: 12px;">${title}</h5>
+            <div style="margin-bottom: 18px;">${message}</div>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="confirm-yes" class="btn btn-danger">Đồng ý</button>
+                <button id="confirm-no" class="btn btn-secondary">Hủy</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('confirm-yes').onclick = function() {
+        modal.remove();
+        if (typeof onConfirm === 'function') onConfirm();
+    };
+    document.getElementById('confirm-no').onclick = function() {
+        modal.remove();
+        if (typeof onCancel === 'function') onCancel();
+    };
+}
+
+
 
 // Xóa sản phẩm bằng AJAX
 document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.onclick = function (e) {
         e.preventDefault();
-        if (!confirm('Bạn chắc chắn muốn xóa?')) return;
-        fetch('../../Models/product/ProductUserModel.php?action=delete_ajax&id=' + btn.dataset.id)
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('row-' + btn.dataset.id).remove();
-                    showToast('Đã xóa sản phẩm!');
-                } else {
-                    showToast(data.message || 'Xóa thất bại!', false);
-                }
-            });
+        showConfirmDialog(
+            'Xác nhận xóa',
+            'Bạn chắc chắn muốn xóa?',
+            function onConfirm() {
+                fetch('../../Models/product/ProductUserModel.php?action=delete_ajax&id=' + btn.dataset.id)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('row-' + btn.dataset.id).remove();
+                            showToast('success', 'Thành công!', 'Đã xóa sản phẩm!');
+                        } else {
+                            showToast('danger', 'Lỗi!', data.message || 'Xóa thất bại!');
+                        }
+                    });
+            },
+            function onCancel() {
+                // Không làm gì khi hủy
+            }
+        );
     }
 });

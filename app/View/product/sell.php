@@ -30,7 +30,6 @@ if (!isset($_SESSION['user_id'])) {
 <body>
     <?php renderHeader($pdo); ?>
     <div class="sell-card">
-        <a href="../../../public/TrangChu.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
         <div class="sell-title">
             <i class="fas fa-store"></i> Đăng bán sản phẩm
         </div>
