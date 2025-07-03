@@ -173,7 +173,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                 <i class="fas fa-user-circle me-2" style="font-size: min(18px, 4.5vw);"></i>
                                 <span>Tài khoản</span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end" style="font-size: min(16px, 4vw); max-height: 50vh; overflow-y: auto;">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <li><h6 class="dropdown-header">Xin chào, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></h6></li>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
                                 <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/order/order_history.php"><i class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>

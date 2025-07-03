@@ -90,6 +90,4 @@ function load_messages() {
         });
 }
 
-window.onload = function () {
-    add_scroll_event_to_container();
-};
+add_scroll_event_to_container();

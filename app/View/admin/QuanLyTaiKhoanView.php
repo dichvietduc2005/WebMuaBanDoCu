@@ -1,7 +1,7 @@
 <?php 
 require_once('../../../config/config.php'); 
 
-if ($_SESSION['role'] != 'admin') {
+if ($_SESSION['user_role'] != 'admin') {
     header("Location: /WebMuaBanDoCu/app/View/Home.php");
     exit;
 }
@@ -53,9 +53,9 @@ if ($_SESSION['role'] != 'admin') {
                     echo "<tr class='user-row' data-user-id='{$row['id']}' data-username='" . htmlspecialchars($row['username'], ENT_QUOTES) . "'>";
                     echo "<td>" . htmlspecialchars($row['username']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['email']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['phone']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['address']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['full_name'] ?? '') . "</td>";
+                    echo "<td>" . htmlspecialchars($row['phone'] ?? '') . "</td>";
+                    echo "<td>" . htmlspecialchars($row['address'] ?? '') . "</td>";
                     echo "<td>" . htmlspecialchars($row['status']) . "</td>";
                     echo "</tr>";
                 }

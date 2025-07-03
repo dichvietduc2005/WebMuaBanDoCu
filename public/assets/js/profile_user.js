@@ -29,7 +29,7 @@ function add_event_btn_save() {
             data[input.id] = input.value;
             input.disabled = true;
         });
-        data['user_id'] = USER_ID;
+        data['user_id'] = userId;
 
         this.style.display = 'none';
         document.getElementById('#btn-edit').style.display = 'inline-block';
@@ -54,8 +54,6 @@ function add_event_btn_save() {
     });
 }
 
-window.onload = function () {
-    document.getElementById('#btn-save').style.display = 'none';
-    add_event_btn_edit();
-    add_event_btn_save();
-};
+document.getElementById('#btn-save').style.display = 'none';
+add_event_btn_edit();
+add_event_btn_save();
