@@ -57,6 +57,7 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/toast.css">
     <style>
     body {
         font-family: 'Inter', sans-serif;
@@ -550,116 +551,15 @@ if (isset($_SESSION['user_id'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    function changeMainImage(imagePath, thumbnail) {
-    document.getElementById('mainImage').src = '/WebMuaBanDoCu/public/' + imagePath;
-
-    // Update active thumbnail
-    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-    thumbnail.classList.add('active');
-}
-
-    function changeQuantity(delta) {
-        const qtyInput = document.getElementById('quantity');
-        const currentQty = parseInt(qtyInput.value);
-        const newQty = currentQty + delta;
-        const maxQty = parseInt(qtyInput.max);
-
-        if (newQty >= 1 && newQty <= maxQty) {
-            qtyInput.value = newQty;
-        }
-    }
-
-    function addToCart(productId) {
-        const quantity = document.getElementById('quantity').value;
-
-        <?php if (!isset($_SESSION['user_id'])): ?>
-        alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-        window.location.href = '/WebMuaBanDoCu/app/View/user/login.php';
-        return;
-        <?php endif; ?>
-
-        // AJAX call to add to cart
-        $.ajax({
-            url: '../../../app/Controllers/cart/CartController.php',
-            method: 'POST',
-            data: {
-                action: 'add',
-                product_id: productId,
-                quantity: quantity
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    alert('Đã thêm sản phẩm vào giỏ hàng!');
-                    // Update cart count if needed
-                    updateCartCount();
-                } else {
-                    alert('Có lỗi xảy ra: ' + response.message);
-                }
-            },
-            error: function() {
-                alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
-            }
-        });
-    }
-
-    function buyNow(productId) {
-        const quantity = document.getElementById('quantity').value;
-
-        <?php if (!isset($_SESSION['user_id'])): ?>
-        alert('Vui lòng đăng nhập để mua hàng');
-        window.location.href = '/WebMuaBanDoCu/app/View/user/login.php';
-        return;
-        <?php endif; ?>
-
-        // Add to cart first, then redirect to checkout
-        $.ajax({
-            url: '../../../app/Controllers/cart/CartController.php',
-            method: 'POST',
-            data: {
-                action: 'add',
-                product_id: productId,
-                quantity: quantity
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    // Redirect to checkout
-                    window.location.href = '../checkout/index.php';
-                } else {
-                    alert('Có lỗi xảy ra: ' + response.message);
-                }
-            },
-            error: function() {
-                alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
-            }
-        });
-    }
-
-    function updateCartCount() {
-        // Update cart count in header if present
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            $.ajax({
-                url: '../../../app/Controllers/cart/CartController.php?action=count',
-                method: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    if (data.success) {
-                        cartCountElement.textContent = data.count;
-                    }
-                }
-            });
-        }
-    }
-
-    function showAllReviews() {
-        // Placeholder function for future implementation
-        alert('Tính năng xem tất cả đánh giá sẽ được triển khai sau');
-        console.log('Show all reviews functionality to be implemented');
-    }
+        // Pass PHP data to JavaScript
+        const productDetail = {
+            id: <?php echo json_encode($product_id); ?>,
+            stock: <?php echo json_encode((int)$product['quantity']); ?>,
+            isUserLoggedIn: <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>
+        };
     </script>
-    <script>userId = <?php echo $_SESSION['user_id'] ?></script>
+    <script src="/WebMuaBanDoCu/public/assets/js/product_details.js"></script>
+    <script>userId = <?php echo isset($_SESSION['user_id']) ? json_encode($_SESSION['user_id']) : 'null'; ?></script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
 </body>
 
