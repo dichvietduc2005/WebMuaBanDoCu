@@ -194,13 +194,15 @@ class NotificationsPopup {
     renderNotifications() {
         this.renderActivityNotifications();
         this.renderNewsNotifications();
+        this.updateFooterVisibility();
     }
 
     renderActivityNotifications() {
         const activityList = document.getElementById('activity-list');
         const activities = this.notifications.activities || [];
+        const isLoggedIn = this.notifications.isLoggedIn !== false;
 
-        if (activities.length === 0) {
+        if (!isLoggedIn) {
             activityList.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-bell-slash"></i>
@@ -208,6 +210,16 @@ class NotificationsPopup {
                     <button class="btn-login" onclick="window.location.href='/WebMuaBanDoCu/app/View/user/login.php'">
                         Đăng ký / Đăng nhập
                     </button>
+                </div>
+            `;
+            return;
+        }
+
+        if (activities.length === 0) {
+            activityList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>Chưa có thông báo hoạt động nào</p>
                 </div>
             `;
             return;
@@ -252,6 +264,21 @@ class NotificationsPopup {
         newsList.innerHTML = newsHTML;
     }
 
+    updateFooterVisibility() {
+        const footer = document.querySelector('.notifications-footer');
+        const isLoggedIn = this.notifications.isLoggedIn !== false;
+        const hasUnread = this.notifications.unreadCount > 0;
+        const hasActivities = this.notifications.activities && this.notifications.activities.length > 0;
+        
+        if (footer) {
+            if (isLoggedIn && (hasUnread || hasActivities)) {
+                footer.style.display = 'block';
+            } else {
+                footer.style.display = 'none';
+            }
+        }
+    }
+
     updateBadges() {
         const badge = document.getElementById('activity-badge');
         const headerBadge = document.querySelector('.navbar .badge');
@@ -267,6 +294,11 @@ class NotificationsPopup {
     }
 
     async markAllAsRead() {
+        if (!this.notifications.isLoggedIn) {
+            this.showError('Vui lòng đăng nhập để sử dụng tính năng này');
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append('action', 'mark_read');
@@ -279,9 +311,14 @@ class NotificationsPopup {
             const data = await response.json();
             if (data.success) {
                 this.loadNotifications();
+                // Hiển thị thông báo thành công (tùy chọn)
+                console.log('Đã đánh dấu tất cả thông báo là đã đọc');
+            } else {
+                this.showError('Không thể đánh dấu thông báo đã đọc');
             }
         } catch (error) {
             console.error('Error marking notifications as read:', error);
+            this.showError('Lỗi kết nối. Vui lòng thử lại');
         }
     }
 
@@ -326,4 +363,4 @@ setInterval(() => {
     if (window.notificationsPopup && !window.notificationsPopup.isOpen) {
         window.notificationsPopup.loadNotifications();
     }
-}, 5 * 60 * 1000); 
+}, 5 * 60 * 1000);
