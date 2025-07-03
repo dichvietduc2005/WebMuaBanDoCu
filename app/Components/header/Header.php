@@ -92,25 +92,24 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 <?php endif; ?>
             </div>
 
-            <!-- Main Content -->
-            <div class="collapse navbar-collapse mt-2 mt-lg-0" id="navbarMain">
-                <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100 gap-2">
-                    <!-- Categories Dropdown -->
-                    <div class="dropdown me-lg-3 mb-2 mb-lg-0 w-100 w-lg-auto">
-                        <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center w-100 w-lg-auto"
-                            type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="font-size: min(16px, 4vw); height: 42px;">
-                            <i class="fas fa-bars me-2" style="font-size: min(16px, 4vw);"></i>
-                            <span>Danh mục</span>
-                        </button>
-                        <ul class="dropdown-menu" style="max-height: 50vh; overflow-y: auto;">
-                            <?php foreach ($categories as $category): ?>
-                                <li><a class="dropdown-item" style="font-size: min(16px, 4vw);"
-                                        href="../product/category.php?slug=<?php echo $category['slug']; ?>"><?php echo htmlspecialchars($category['name']); ?></a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
+        <!-- Main Content -->
+        <div class="collapse navbar-collapse mt-2 mt-lg-0" id="navbarMain">
+            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100 gap-2">
+                <!-- Categories Dropdown -->
+                <div class="dropdown me-lg-3 mb-2 mb-lg-0 w-100 w-lg-auto">
+                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center w-100 w-lg-auto" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="font-size: min(16px, 4vw); height: 42px;">
+                        <i class="fas fa-bars me-2" style="font-size: min(16px, 4vw);"></i>
+                        <span>Danh mục</span>
+                    </button>
+                    <ul class="dropdown-menu" style="max-height: 50vh; overflow-y: auto;">
+                        <?php foreach ($categories as $category): ?>
+                        <li><a class="dropdown-item" style="font-size: min(16px, 4vw);"
+                                href="../product/category.php?slug=<?php echo $category['slug']; ?>"><?php echo htmlspecialchars($category['name']); ?></a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
 
                     <!-- Search Form - Takes available space on desktop, full width on mobile -->
                     <form id="search-form2" class="w-100 mb-2 mb-lg-0 me-lg-4" method="GET"
@@ -126,24 +125,21 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                         </div>
                     </form>
 
-                    <!-- Right side actions - Stack vertically on mobile -->
-                    <div
-                        class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2 ms-lg-auto w-100 w-lg-auto">
-                        <?php if (isset($_SESSION['user_id'])): ?>
-                            <!-- Desktop Icons - hidden on mobile -->
-                            <div class="d-none d-lg-flex align-items-center gap-2">
-                                <!-- Notifications -->
-                                <a href="/WebMuaBanDoCu/app/View/extra/notifications.php"
-                                    class="btn btn-link text-dark p-1 position-relative notifications-bell" title="Thông báo">
-                                    <i class="fas fa-bell" style="font-size: 20px;"></i>
-                                    <?php if ($unread_notifications > 0): ?>
-                                        <span
-                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                            style="font-size: 12px; padding: 0.2em 0.4em;">
-                                            <?php echo min($unread_notifications, 99); ?>            <?php echo $unread_notifications > 99 ? '+' : ''; ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </a>
+                <!-- Right side actions - Stack vertically on mobile -->
+                <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2 ms-lg-auto w-100 w-lg-auto">
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <!-- Desktop Icons - hidden on mobile -->
+                        <div class="d-none d-lg-flex align-items-center gap-2">
+                            <!-- Notifications -->
+                            <a href="/WebMuaBanDoCu/app/View/extra/notifications.php" class="btn btn-link text-dark p-1 position-relative notifications-bell"
+                                title="Thông báo">
+                                <i class="fas fa-bell" style="font-size: 20px;"></i>
+                                <?php if ($unread_notifications > 0): ?>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 12px; padding: 0.2em 0.4em;">
+                                    <?php echo min($unread_notifications, 99); ?><?php echo $unread_notifications > 99 ? '+' : ''; ?>
+                                </span>
+                                <?php endif; ?>
+                            </a>
 
                                 <!-- Messages -->
                                 <button class="btn btn-link text-dark p-1" title="Tin nhắn" id="button-chat"

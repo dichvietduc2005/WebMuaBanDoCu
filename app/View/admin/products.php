@@ -5,8 +5,7 @@ require_once '../../Controllers/admin/AdminController.php';
 include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
-$_SESSION['role'] = 'admin';
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
     header('Location: /WebMuaBanDoCu/app/View/user/login.php');
     exit;
 }
