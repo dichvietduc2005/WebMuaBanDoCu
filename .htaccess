@@ -2,6 +2,15 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /WebMuaBanDoCu/
+    
+    # Redirect to public folder if not already there
+    RewriteCond %{THE_REQUEST} \s/+WebMuaBanDoCu/(?!public/)[^\s]* [NC]
+    RewriteRule ^(.*)$ public/$1 [R=301,L]
+    
+    # Handle requests to public folder
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
 # Ngăn chặn duyệt thư mục
