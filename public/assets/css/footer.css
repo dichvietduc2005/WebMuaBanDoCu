@@ -16,6 +16,86 @@
     padding-left: 0;
   }
 }
+@media (max-width: 991.98px) {
+  .navbar .d-flex.align-items-center.w-100 {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .navbar form.flex-grow-1 {
+    order: 4;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar .dropdown, 
+  .navbar .btn-link {
+    display: none;
+  }
+  
+  .navbar .dropdown:nth-child(1),
+  .navbar .dropdown:nth-child(2) {
+    display: block;
+  }
+  
+  .dropdown-menu {
+    width: 100%;
+    left: 0;
+    right: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (max-width: 992px) {
+  .hero {
+    padding: 60px 40px;
+  }
+
+  .hero h2 {
+    font-size: 36px;
+  }
+  
+  .navbar-brand h1 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar .container-fluid {
+    padding: 0 16px;
+  }
+
+  .navbar-brand h1 {
+    font-size: 18px;
+  }
+  
+  .navbar .d-flex.align-items-center.gap-3 {
+    margin-left: auto;
+  }
+  
+  .navbar .dropdown .btn,
+  .navbar .btn-warning {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar .btn-warning {
+    padding: 6px 10px;
+  }
+  
+  .navbar .dropdown .btn span,
+  .navbar .btn-warning span {
+    display: none;
+  }
+  
+  .navbar .dropdown .btn i,
+  .navbar .btn-warning i {
+    margin-right: 0;
+  }
+}
 
 /* Footer */
 footer {
@@ -27,7 +107,7 @@ footer {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, minmax(250px, 1fr));
   gap: 40px;
   margin-bottom: 40px;
 }
@@ -136,7 +216,8 @@ footer {
   }
   
   .footer-grid {
-    gap: 30px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
 }
 
@@ -170,14 +251,11 @@ footer {
   
   .footer-grid {
     grid-template-columns: 1fr;
-    gap: 25px;
-  }
-  
-  .social-links {
-    justify-content: center;
+    gap: 16px;
   }
   
   .footer-column {
+    margin-bottom: 18px;
     text-align: center;
   }
   
@@ -194,8 +272,24 @@ footer {
     justify-content: center;
   }
   
+  .social-links {
+    justify-content: center;
+  }
+  
   .copyright {
     font-size: 12px;
   }
 }
 
+footer {
+  width: 100vw;
+  min-width: 100vw;
+  left: 0;
+  position: relative;
+  background: var(--dark) !important;
+  color: white !important;
+  margin-left: calc(-50vw + 50%);
+  right: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}

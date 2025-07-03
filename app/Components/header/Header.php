@@ -3,6 +3,9 @@ require_once __DIR__ . '/../../../config/config.php';
 
 function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notifications = 0)
 {
+    $stmt = $pdo->prepare("SELECT * FROM categories WHERE status = 'active' ORDER BY name");
+    $stmt->execute();
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // Đếm số sản phẩm trong giỏ hàng
     $cart_count = 0;
     if (isset($_SESSION['user_id'])) {

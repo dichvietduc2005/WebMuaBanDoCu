@@ -2,7 +2,7 @@
 function footer() {
     ?>
     <footer class="footer">
-        <div class="container">
+        <div class="footer-inner">
             <div class="footer-grid">
                 <div class="footer-column">
                     <h3>Về chúng tôi</h3>
