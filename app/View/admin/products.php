@@ -73,6 +73,8 @@ $pending_products = getPendingProducts($pdo);
         </table>
         <?php endif; ?>
     </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <?php footer(); ?>
     <script>userId = <?php echo $_SESSION['user_id'] ?> </script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js?v=3"> </script>
