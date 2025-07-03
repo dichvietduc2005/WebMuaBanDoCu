@@ -50,7 +50,7 @@ function requireLogin($redirect_url = null) {
             $_SESSION['login_redirect_url'] = $_SERVER['REQUEST_URI'];
         }
         
-        header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+        header('Location: /WebMuaBanDoCu/public/index.php?page=login');
         exit();
     }
     

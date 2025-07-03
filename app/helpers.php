@@ -80,22 +80,6 @@ if (!function_exists('getStatusBadge')) {
 }
 
 /**
- * Cart helper functions
- * Sử dụng lại các hàm từ CartController để tránh trùng lặp mã
- */
-// if (!function_exists('calculateCartTotal')) {
-//     function calculateCartTotal($cartItems) {
-//         $total = 0;
-//         foreach ($cartItems as $item) {
-//             // Use added_price (price when added to cart) for calculation
-//             $price = isset($item['added_price']) ? $item['added_price'] : $item['current_price'];
-//             $total += $price * $item['quantity'];
-//         }
-//         return $total;
-//     }
-// }
-
-/**
  * VNPAY helper functions
  */
 if (!function_exists('log_vnpay_debug_data')) {

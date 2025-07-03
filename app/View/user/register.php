@@ -1,10 +1,12 @@
 <?php
-require_once '../../../config/config.php';
+// Sử dụng đường dẫn tuyệt đối thay vì tương đối để tránh lỗi khi được gọi từ router
+$config_path = __DIR__ . '/../../../config/config.php';
+require_once($config_path);
 // Autoloader sẽ tự động load Auth class
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {
-    header('Location: ../../../public/TrangChu.php');
+    header('Location: /WebMuaBanDoCu/public/index.php');
     exit();
 }
 
@@ -44,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký - Web Mua Bán Đồ Cũ</title>
-    <link href="../../../public/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .register-container {
             max-width: 500px;
@@ -85,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php if ($success_message): ?>
                 <div class="success-message">
                     <?php echo htmlspecialchars($success_message); ?>
-                    <br><a href="login.php">Đăng nhập ngay</a>
+                    <br><a href="/WebMuaBanDoCu/public/index.php?page=login">Đăng nhập ngay</a>
                 </div>
             <?php endif; ?>
               <form method="POST">
@@ -150,8 +152,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
             </form>
               <div class="text-center mt-3">
-                <p>Đã có tài khoản? <a href="login.php">Đăng nhập</a></p>
-                <p><a href="../../../public/TrangChu.php">Về trang chủ</a></p>
+                <p>Đã có tài khoản? <a href="/WebMuaBanDoCu/public/index.php?page=login">Đăng nhập</a></p>
+                <p><a href="/WebMuaBanDoCu/public/index.php">Về trang chủ</a></p>
             </div>
         </div>
     </div>

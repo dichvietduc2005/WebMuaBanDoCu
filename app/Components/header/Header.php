@@ -221,12 +221,12 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                         <?php else: ?>
                             <!-- Guest user buttons -->
                             <div class="d-flex flex-column flex-lg-row gap-3 w-100">
-                                <a href="/WebMuaBanDoCu/app/View/user/login.php"
+                                <a href="/WebMuaBanDoCu/public/index.php?page=login"
                                     class="btn btn-primary border-0 d-flex align-items-center justify-content-center fw-semibold w-100 shadow-sm"
                                     style="height: 48px; padding: 0 20px; font-size: clamp(14px, 3.5vw, 16px); line-height: 1; border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #2563eb); transition: all 0.3s ease;">
                                     <i class="fas fa-sign-in-alt me-2" style="font-size: clamp(16px, 4vw, 18px);"></i>Đăng nhập
                                 </a>
-                                <a href="/WebMuaBanDoCu/app/View/user/register.php"
+                                <a href="/WebMuaBanDoCu/public/index.php?page=register"
                                     class="btn btn-success border-0 d-flex align-items-center justify-content-center fw-semibold w-100 shadow-sm"
                                     style="height: 48px; padding: 0 20px; font-size: clamp(14px, 3.5vw, 16px); line-height: 1; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); transition: all 0.3s ease;">
                                     <i class="fas fa-user-plus me-2" style="font-size: clamp(16px, 4vw, 18px);"></i>Đăng ký
@@ -242,6 +242,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
     <!-- Notifications Popup CSS -->
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/notifications.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/footer.css">
 
 
     <!-- Notifications Popup JS -->

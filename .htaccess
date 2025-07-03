@@ -2,15 +2,11 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /WebMuaBanDoCu/
-    
-    # Redirect to public folder if not already there
-    RewriteCond %{THE_REQUEST} \s/+WebMuaBanDoCu/(?!public/)[^\s]* [NC]
-    RewriteRule ^(.*)$ public/$1 [R=301,L]
-    
-    # Handle requests to public folder
+
+    # Chuyển hướng tất cả các yêu cầu không phải là file hoặc thư mục tồn tại đến public/index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ public/$1 [L]
+    RewriteRule ^(.*)$ public/index.php?page=$1 [L,QSA]
 </IfModule>
 
 # Ngăn chặn duyệt thư mục
@@ -79,4 +75,4 @@ Options -Indexes
     php_value session.cookie_secure 0
     php_value session.cookie_samesite "Strict"
     php_value session.gc_maxlifetime 3600
-</IfModule> 
+</IfModule>

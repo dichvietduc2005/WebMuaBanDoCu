@@ -125,8 +125,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                         <a href="<?php echo BASE_URL; ?>app/View/product/sell.php" class="hero-btn btn-transparent"><i
                                 class="fas fa-store"></i> Đăng bán đồ</a>
                     <?php else: ?>
-                        <button type="button" class="hero-btn btn-transparent" id="openClerkAuth"><i
-                                class="fas fa-sign-in-alt"></i> Đăng nhập / Đăng ký</button>
+                        <a href="<?php echo BASE_URL; ?>public/index.php?page=login" class="hero-btn btn-transparent"><i
+                                class="fas fa-sign-in-alt"></i> Đăng nhập / Đăng ký</a>
                     <?php endif; ?>
                 </div>
             </div>

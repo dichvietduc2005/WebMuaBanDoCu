@@ -1,10 +1,12 @@
 <?php
-require_once('../../../config/config.php');
+// Sử dụng đường dẫn tuyệt đối thay vì tương đối để tránh lỗi khi được gọi từ router
+$config_path = __DIR__ . '/../../../config/config.php';
+require_once($config_path);
 // Autoloader sẽ tự động load Auth class
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {
-    header('Location: ../../../public/TrangChu.php');
+    header('Location: /WebMuaBanDoCu/public/index.php');
     exit();
 }
 
@@ -33,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         if ($result['success']) {
             // Ưu tiên chuyển hướng về trang đã lưu trong session, sau đó là GET param, cuối cùng là trang chủ
-            $redirect_url = '../../../public/TrangChu.php'; // Mặc định là trang chủ
+            $redirect_url = '/WebMuaBanDoCu/public/index.php'; // Mặc định là trang chủ
             if (isset($_SESSION['login_redirect_url'])) {
                 $redirect_url = $_SESSION['login_redirect_url'];
                 unset($_SESSION['login_redirect_url']); // Xóa session sau khi sử dụng
@@ -59,7 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - Web Mua Bán Đồ Cũ</title>    <link href="../../../assets/css/bootstrap.min.css" rel="stylesheet">
+    <title>Đăng nhập - Web Mua Bán Đồ Cũ</title>    
+    <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .login-container {
             max-width: 400px;
@@ -134,8 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
             </form>
               <div class="text-center mt-3">
-                <p>Chưa có tài khoản? <a href="register.php">Đăng ký ngay</a></p>
-                <p><a href="../../../public/TrangChu.php">Về trang chủ</a></p>
+                <p>Chưa có tài khoản? <a href="/WebMuaBanDoCu/public/index.php?page=register">Đăng ký ngay</a></p>
+                <p><a href="/WebMuaBanDoCu/public/index.php">Về trang chủ</a></p>
             </div>
         </div>
     </div>

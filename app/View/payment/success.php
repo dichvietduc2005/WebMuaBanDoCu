@@ -1,6 +1,8 @@
 <?php
-require_once '../../../config/config.php';
-require_once('../../helpers.php'); // For helper functions
+// Sử dụng đường dẫn tuyệt đối thay vì tương đối để tránh lỗi khi được gọi từ router
+$config_path = __DIR__ . '/../../../config/config.php';
+require_once($config_path);
+require_once(__DIR__ . '/../../helpers.php'); // For helper functions
 
 // Debug logging
 error_log("SUCCESS.PHP: Loaded successfully");
@@ -62,8 +64,8 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_title; ?> - Cửa Hàng Đồ Cũ</title>    <link href="../../../public/assets/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../../public/assets/css/checkout.css" rel="stylesheet"> <!-- You might want a specific success page CSS -->
+    <title><?php echo $page_title; ?> - Cửa Hàng Đồ Cũ</title>    <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/WebMuaBanDoCu/public/assets/css/checkout.css" rel="stylesheet"> <!-- You might want a specific success page CSS -->
     <style>
         body { font-family: Arial, sans-serif; background-color: #f8f9fa; }
         .container { max-width: 800px; margin-top: 50px; }
@@ -134,19 +136,19 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
                 <?php endif; ?>
 
                 <div class="footer-links">
-                    <a href="../../../public/TrangChu.php">Tiếp tục mua sắm</a>
+                    <a href="/WebMuaBanDoCu/public/index.php">Tiếp tục mua sắm</a>
                     <?php if ($payment_successful && $app_order_id !== 'N/A'): ?>
                         <!-- You could link to an order details page if you have one -->
                         <!-- <a href="../order/details.php?order_id=<?php echo urlencode($app_order_id); ?>">Xem chi tiết đơn hàng</a> -->
                     <?php else: ?>
-                         <a href="../cart/index.php">Xem lại giỏ hàng</a>
+                         <a href="/WebMuaBanDoCu/app/View/cart/index.php">Xem lại giỏ hàng</a>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../../../public/assets/js/jquery-1.11.3.min.js"></script>
-    <script src="../../../public/assets/js/bootstrap.min.js"></script>
+    <script src="/WebMuaBanDoCu/public/assets/js/jquery-1.11.3.min.js"></script>
+    <script src="/WebMuaBanDoCu/public/assets/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -85,7 +85,7 @@ function showLoginPromptToast() {
     toastEl.setAttribute('aria-atomic', 'true');
 
     // Xác định đường dẫn đến trang đăng nhập một cách linh hoạt
-    const loginPath = window.location.pathname.includes('/app/View/') ? '../auth/login.php' : 'app/View/auth/login.php';
+    const loginPath = '/WebMuaBanDoCu/public/index.php?page=login';
 
     toastEl.innerHTML = `
         <div class="toast-body">

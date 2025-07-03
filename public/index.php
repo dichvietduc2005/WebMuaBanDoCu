@@ -17,6 +17,24 @@ switch ($page) {
         $api = new NotificationAPI();
         $api->handleRequest();
         break;
+    
+    case 'login':
+        require_once __DIR__ . '/../app/View/user/login.php';
+        break;
+
+    case 'register':
+        require_once __DIR__ . '/../app/View/user/register.php';
+        break;
+
+    case 'logout':
+        $userController = new UserController();
+        $result = $userController->logout();
+        if (isset($result['success']) && $result['success']) {
+            $_SESSION['logout_message'] = $result['message'];
+        }
+        header('Location: login');
+        exit();
+        break;
         
     case 'home':
     default:
