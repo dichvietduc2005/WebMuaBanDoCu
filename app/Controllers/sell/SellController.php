@@ -1,9 +1,9 @@
 <?php
 
 
-function get_current_user_id() {
-    return isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-}
+// function get_current_user_id() {
+//     return isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+// }
 
 function generateUniqueSlug($pdo, $title) {
     $baseSlug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $title));
