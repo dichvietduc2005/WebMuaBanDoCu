@@ -163,7 +163,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             </div>
                             <div class="product-content">
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
-                                <p class="product-description"><?php echo htmlspecialchars(substr($product['description'], 0, 100)); ?>...</p>
                                 <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
                                 <div class="product-meta">
                                     <div class="product-condition">
@@ -182,6 +181,9 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
+                                            <!-- <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1"
+                                                class="quantity-input" name="quantity"> -->
+                                                <input type="detail" class="product_detail" >
                                             <button type="button" class="btn-checkout-now" onclick="buyNow(event, <?php echo $product['id']; ?>)">
                                                 <i class="fas fa-bolt"></i> Mua ngay
                                             </button>
@@ -190,9 +192,12 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                             </button>
                                         </form>
                                     <?php else: ?>
-                                        <!-- Nút ở trạng thái loading -->
+                                       
+
+                                        <!-- Nút disabled -->
                                         <button class="btn-add-to-cart" disabled>
-                                            <i class="fas fa-spinner fa-spin"></i> Đang cập nhật
+                                            <i class="fas fa-ban"></i>
+                                            Hết hàng
                                         </button>
                                     <?php endif; ?>
                                 </div>
@@ -235,7 +240,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             </div>
                             <div class="product-content">
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
-                                <p class="product-description"><?php echo htmlspecialchars(substr($product['description'], 0, 100)); ?>...</p>
                                 <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
                                 <div class="product-meta">
                                     <div class="product-condition">

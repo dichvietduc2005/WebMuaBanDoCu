@@ -64,7 +64,7 @@ $(document).ready(function() {
     // Tính năng gợi ý tìm kiếm (autocomplete)
     function fetchSuggestions(keyword) {
         $.ajax({
-            url: '/WebMuaBanDoCu/app/Controllers/extra/api.php',
+            url: '/WebMuaBanDoCu/app/Controllers/extra/NotificationAPI.php',
             method: 'GET',
             data: {
                 action: 'search_suggestions',

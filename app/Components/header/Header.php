@@ -127,7 +127,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                             style="height: 44px; position: relative; min-height: 44px; max-height: 44px;">
                             <input type="text" class="form-control search-input-modern" id="search-input" name="q"
                                 placeholder="Tìm sản phẩm..."
-                                style="height: 44px; min-height: 44px; max-height: 44px; font-size: 15px; border-radius: 22px 0 0 22px; border: 1px solid #e5e7eb; border-right: none; padding-left: 18px; padding-right: 40px;"
+                                style="height: 44px; min-height: 44px; max-height: 44px; font-size: 15px; border-radius: 22px 0 0 22px; border: 1px solid #e5e7eb; padding-left: 18px; padding-right: 40px;"
                                 value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
                                 autocomplete="off">
 
@@ -139,7 +139,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                             </button>
 
                             <button class="btn btn-primary search-btn-modern" type="submit"
-                                style="height: 44px; min-height: 44px; max-height: 44px; width: 56px; min-width: 56px; border-radius: 0 22px 22px 0; border: none; padding: 0 18px; background: linear-gradient(135deg, #4f46e5, #7c3aed); text-decoration: none;">
+                                style="height: 44px; min-height: 44px; max-height: 44px; width: 56px; min-width: 56px; border-radius: 0 22px 22px 0; border: none; padding: 0 18px; background: linear-gradient(135deg, #4f46e5, #7c3aed);">
                                 <i class="fas fa-search" style="font-size: 15px;"></i>
                             </button>
                         </div>
@@ -161,7 +161,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                             <div class="d-none d-lg-flex align-items-center gap-2">
                                 <!-- Notifications -->
                                 <a href="/WebMuaBanDoCu/app/View/extra/notifications.php"
-                                    class="btn btn-link text-dark p-1 position-relative notifications-bell header-icon-btn" title="Thông báo">
+                                    class="btn btn-link text-dark p-1 position-relative notifications-bell" title="Thông báo">
                                     <i class="fas fa-bell" style="font-size: 20px;"></i>
                                     <?php if ($unread_notifications > 0): ?>
                                         <span
@@ -173,14 +173,14 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                 </a>
 
                                 <!-- Messages -->
-                                <button class="btn btn-link text-dark p-1 header-icon-btn" title="Tin nhắn" id="button-chat"
+                                <button class="btn btn-link text-dark p-1" title="Tin nhắn" id="button-chat"
                                     onclick="toggleChat()">
                                     <i class="fas fa-comment" style="font-size: 20px;"></i>
                                 </button>
 
                                 <!-- Cart -->
                                 <a href="/WebMuaBanDoCu/app/View/cart/index.php"
-                                    class="btn btn-link text-dark p-1 position-relative header-icon-btn" title="Giỏ hàng">
+                                    class="btn btn-link text-dark p-1 position-relative" title="Giỏ hàng">
                                     <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
                                     <?php if ($cart_count > 0): ?>
                                         <span
@@ -332,8 +332,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
             /* Mobile button improvements */
             .btn:hover {
-                transform: translateY(-1px) !important;
-                box-shadow: var(--shadow-medium) !important;
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-medium);
             }
 
             /* Touch target improvements */
@@ -362,7 +362,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         }
 
         .search-modern:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .search-input-modern {
@@ -510,8 +510,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         /* Hiệu ứng cho dropdown danh mục */
         .dropdown-toggle:hover {
-            background-color: #e9ecef !important;
-            color: #000;
+            background-color: #f9fafb !important;
+            border-color: #d1d5db !important;
         }
 
         .dropdown-toggle:focus {
@@ -531,20 +531,6 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         .dropdown-item:hover i {
             color: #4f46e5 !important;
-        }
-
-        .header-icon-btn {
-            transition: all 0.2s ease;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .header-icon-btn:hover {
-            background-color: #f3f4f6;
-            color: var(--primary-blue) !important;
         }
 
         /* Accessibility improvements */

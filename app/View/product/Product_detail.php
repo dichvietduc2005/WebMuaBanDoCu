@@ -57,6 +57,7 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/toast.css">
     <style>
     body {
         font-family: 'Inter', sans-serif;
@@ -415,8 +416,7 @@ if (isset($_SESSION['user_id'])) {
                             <?php foreach ($product_images as $index => $image): ?>
                             <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($image['image_path']); ?>"
                                 alt="Ảnh <?php echo $index + 1; ?>"
-                                class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>"
-                                onclick="changeMainImage('<?php echo htmlspecialchars($image['image_path']); ?>', this)">
+                                class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>">
                             <?php endforeach; ?>
                         </div>
                         <?php endif; ?>
@@ -445,6 +445,14 @@ if (isset($_SESSION['user_id'])) {
                             </div>
                         </div>
 
+                        <!-- Product Description (Moved here) -->
+                        <div class="product-description-inner mb-4">
+                            <div class="description-content">
+                                <?php echo nl2br(htmlspecialchars($product['description'])); ?>
+                            </div>
+                        </div>
+
+
                         <?php if ($product['stock_quantity'] > 0): ?>
                         <div class="quantity-selector">
                             <span>Số lượng:</span>
@@ -453,10 +461,10 @@ if (isset($_SESSION['user_id'])) {
                         </div>
 
                         <div class="action-buttons">
-                            <button class="btn btn-add-cart" onclick="addToCart(<?php echo $product['id']; ?>)">
+                            <button class="btn btn-add-cart" id="btn-add-to-cart" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
                             </button>
-                            <button class="btn btn-buy-now" onclick="buyNow(<?php echo $product['id']; ?>)">
+                            <button class="btn btn-buy-now" id="btn-buy-now" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="fas fa-shopping-bag"></i> Mua ngay
                             </button>
                         </div>
@@ -472,13 +480,8 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
 
-        <!-- Product Description -->
-        <div class="product-description">
-            <h3 class="mb-4">Mô tả sản phẩm</h3>
-            <div class="description-content">
-                <?php echo nl2br(htmlspecialchars($product['description'])); ?>
-            </div>
-        </div>
+        <!-- Product Description (Original Position Removed) -->
+        
 
         <!-- Customer Reviews -->
         <div class="customer-reviews">
@@ -510,6 +513,10 @@ if (isset($_SESSION['user_id'])) {
                         <i class="fas fa-reply"></i> Trả lời
                     </div>
                     <div class="review-action">
+                    <div class="review-action">
+                        <i class="fas fa-reply"></i> Trả lời
+                    </div>
+                    <div class="review-action">
                         <i class="fas fa-flag"></i> Báo cáo
                     </div>
                 </div>
@@ -517,7 +524,7 @@ if (isset($_SESSION['user_id'])) {
 
             <!-- More reviews... -->
 
-            <button class="see-all-reviews" onclick="showAllReviews()">Xem tất cả đánh giá</button>
+            <button class="see-all-reviews">Xem tất cả đánh giá</button>
         </div>
 
         <!-- Related Products -->
@@ -549,8 +556,18 @@ if (isset($_SESSION['user_id'])) {
     <?php footer(); ?>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    
+    <script>
+        // Pass PHP data to JavaScript
+        const productDetail = {
+            id: <?php echo json_encode($product_id); ?>,
+            isUserLoggedIn: <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>
+        };
+    </script>
+    <script src="/WebMuaBanDoCu/public/assets/js/product_details.js"></script>
+    <script>
+        var userId = <?php echo isset($_SESSION['user_id']) ? json_encode($_SESSION['user_id']) : 'null'; ?>;
+    </script>
+    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
 </body>
 
 </html>

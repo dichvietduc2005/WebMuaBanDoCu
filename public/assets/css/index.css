@@ -397,18 +397,6 @@ body {
   overflow: hidden;
 }
 
-.product-description {
-  font-size: 14px;
-  color: var(--gray);
-  margin-bottom: 12px;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 63px; /* Giữ chiều cao tối thiểu để các thẻ đều nhau */
-}
-
 .product-price {
   font-size: 20px;
   font-weight: 700;

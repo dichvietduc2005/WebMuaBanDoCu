@@ -1,159 +1,239 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const cartContainer = document.querySelector('.shopping-cart-container');
     if (!cartContainer) return;
 
-    // --- START: Confirmation Modal Logic ---
-    function createConfirmationModal() {
-        const modalOverlay = document.createElement('div');
-        modalOverlay.className = 'confirmation-modal-overlay';
-
-        modalOverlay.innerHTML = `
-            <div class="confirmation-modal">
-                <div class="confirmation-modal-header">
-                    <h5 class="modal-title">Xác nhận hành động</h5>
-                </div>
-                <div class="confirmation-modal-body">
-                    <p>Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?</p>
-                </div>
-                <div class="confirmation-modal-footer">
-                    <button class="confirmation-modal-btn btn-cancel">Hủy bỏ</button>
-                    <button class="confirmation-modal-btn btn-confirm">Xác nhận</button>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modalOverlay);
-        return modalOverlay;
-    }
-
-    function showConfirmationModal(onConfirm) {
-        let modalOverlay = document.querySelector('.confirmation-modal-overlay');
-        if (!modalOverlay) {
-            modalOverlay = createConfirmationModal();
-        }
-
-        // Show modal with transition
-        setTimeout(() => modalOverlay.classList.add('show'), 10);
-
-        const btnConfirm = modalOverlay.querySelector('.btn-confirm');
-        const btnCancel = modalOverlay.querySelector('.btn-cancel');
-        const overlay = modalOverlay; // to use in click outside
-
-        const closeModal = () => {
-            modalOverlay.classList.remove('show');
-            // Remove event listeners to prevent memory leaks
-            btnConfirm.replaceWith(btnConfirm.cloneNode(true));
-            btnCancel.replaceWith(btnCancel.cloneNode(true));
-            overlay.replaceWith(overlay.cloneNode(true));
+    // --- Debounce function to prevent rapid firing of events ---
+    function debounce(func, delay = 300) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
         };
-
-        btnConfirm.addEventListener('click', () => {
-            onConfirm();
-            closeModal();
-        }, { once: true });
-
-        btnCancel.addEventListener('click', closeModal, { once: true });
-
-        // Close when clicking outside the modal content
-        modalOverlay.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        }, { once: true });
     }
-    // --- END: Confirmation Modal Logic ---
 
-
-    cartContainer.addEventListener('click', function(e) {
-        const removeButton = e.target.closest('.remove-item');
-        if (!removeButton) return;
-
-        e.preventDefault();
-
-        const productId = removeButton.dataset.productId;
-        const cartItemElement = removeButton.closest('.cart-item');
-
-        // Use the custom confirmation modal instead of the browser's default confirm
-        showConfirmationModal(() => {
-            removeItemFromCart(productId, cartItemElement);
-        });
-    });
-
-    async function removeItemFromCart(productId, itemElement) {
-        itemElement.style.opacity = '0.5';
-
-        const formData = new FormData();
-        formData.append('action', 'remove');
-        formData.append('product_id', productId);
+    // --- API Call Functions ---
+    async function callCartApi(action, productId, quantity) {
+        const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php';
+        const body = `action=${action}&product_id=${productId}` + (quantity !== undefined ? `&quantity=${quantity}` : '');
 
         try {
-            const response = await fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+            const response = await fetch(url, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: body
             });
 
             const data = await response.json();
 
-            if (data.success) {
-                updateUICart(data, itemElement);
-            } else {
-                throw new Error(data.message || 'Lỗi không xác định');
+            if (!response.ok) {
+                throw new Error(data.message || 'Có lỗi xảy ra từ máy chủ.');
             }
+
+            return data;
         } catch (error) {
-            console.error('Lỗi khi xóa sản phẩm:', error);
-            alert('Đã xảy ra lỗi: ' + error.message);
-            itemElement.style.opacity = '1';
+            console.error('API Error:', error);
+            showToast('error', 'Lỗi!', error.message || 'Không thể kết nối đến máy chủ.');
+            return null;
         }
     }
 
-    function updateUICart(data, itemElement) {
-        // Cập nhật số lượng trên header
-        const headerCartCount = document.querySelector('.navbar .cart-count');
-        if (headerCartCount) {
-            headerCartCount.textContent = data.cartItemCount;
-            headerCartCount.style.display = data.cartItemCount > 0 ? 'inline-block' : 'none';
-        }
+    // --- DOM Update Functions ---
+    function updateCartSummary(newTotal) {
+        const subtotalElement = document.querySelector('.order-summary .summary-row:first-child span:last-child');
+        const totalElement = document.getElementById('total-amount');
+        const formattedTotal = '$' + (newTotal / 1000).toFixed(2);
         
-        // Cập nhật số lượng trên trang giỏ hàng
-        const pageCartCount = document.querySelector('.shopping-cart-container .badge');
-        if(pageCartCount) pageCartCount.textContent = data.cartItemCount;
-
-        // Xóa item khỏi DOM
-        itemElement.style.transition = 'all 0.3s ease';
-        itemElement.style.transform = 'translateX(100px)';
-        itemElement.style.opacity = '0';
-        setTimeout(() => {
-            itemElement.remove();
-            // Kiểm tra nếu giỏ hàng trống
-            const remainingItems = cartContainer.querySelectorAll('.cart-item').length;
-            if (remainingItems === 0) {
-                showEmptyCartView();
+        if (subtotalElement) subtotalElement.textContent = formattedTotal;
+        if (totalElement) totalElement.textContent = formattedTotal;
+    }
+    
+    function updateCartIconCount(newCount) {
+        const cartIconLink = document.querySelector('a[href="../cart/index.php"][title="Giỏ hàng"], a[href="cart/index.php"][title="Giỏ hàng"]');
+        if (cartIconLink) {
+            let cartCountBadge = cartIconLink.querySelector('.cart-count');
+            if (newCount > 0) {
+                 if (!cartCountBadge) {
+                    cartCountBadge = document.createElement('span');
+                    cartCountBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count';
+                    cartIconLink.appendChild(cartCountBadge);
+                    if (!cartIconLink.classList.contains('position-relative')) {
+                        cartIconLink.classList.add('position-relative');
+                    }
+                }
+                cartCountBadge.textContent = newCount;
+                cartCountBadge.style.display = '';
             } else {
-                 // Cập nhật tổng tiền
-                const totalElement = document.querySelector('.order-summary-container .text-primary');
-                const subTotalElement = document.querySelector('.order-summary-container span:not(.text-primary):not(.text-muted):not(.text-success)');
-                if(totalElement) totalElement.textContent = data.cartTotalFormatted;
-                if(subTotalElement) subTotalElement.textContent = data.cartTotalFormatted;
+                 if (cartCountBadge) {
+                    cartCountBadge.style.display = 'none';
+                }
             }
-        }, 300);
+        }
     }
 
-    function showEmptyCartView() {
-        const cartRow = document.querySelector('.shopping-cart-container .row.g-4');
-        if (cartRow) {
-            cartRow.remove();
-        }
-        const emptyCartHTML = `
-            <div class="cart-empty">
-                <i class="fas fa-shopping-cart fa-4x mb-4 text-muted"></i>
-                <h3 class="mb-3">Giỏ hàng đang trống</h3>
-                <p class="text-muted mb-4">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
-                <a href="../TrangChu.php" class="btn btn-primary px-4">
-                    <i class="fas fa-store me-2"></i>Mua sắm ngay
-                </a>
-            </div>
-        `;
-        // Chèn vào sau thẻ h1
-        cartContainer.querySelector('.d-flex.justify-content-between').insertAdjacentHTML('afterend', emptyCartHTML);
+    function updateItemTotal(itemElement, quantity) {
+        const priceElement = itemElement.querySelector('.item-price');
+        const totalElement = itemElement.querySelector('.item-total');
+        if (!priceElement || !totalElement) return;
+
+        // Extract price from '$123.45' format
+        const price = parseFloat(priceElement.textContent.replace(/[^0-9.]/g, '')) * 1000;
+        const newSubtotal = (price * quantity) / 1000;
+
+        totalElement.textContent = '$' + newSubtotal.toFixed(2);
     }
+    
+    // --- Event Handlers ---
+    async function handleUpdateQuantity(productId, newQuantity) {
+        const itemElement = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+        if (!itemElement) return;
+        
+        const input = itemElement.querySelector('.quantity-input');
+        input.disabled = true; // Disable input during API call
+
+        const response = await callCartApi('update', productId, newQuantity);
+
+        if (response && response.success) {
+            showToast('success', 'Thành công!', response.message);
+            updateItemTotal(itemElement, newQuantity);
+            updateCartSummary(response.total);
+            updateCartIconCount(response.cart_count);
+        } else {
+            // Revert quantity if update failed
+            // You might need to fetch the old quantity or reload
+            location.reload(); 
+        }
+        input.disabled = false;
+    }
+    
+    async function handleRemoveItem(productId) {
+        const itemElement = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+        if (!itemElement) return;
+
+        // Hiển thị loading state
+        itemElement.style.opacity = '0.7';
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'item-loading-overlay';
+        loadingOverlay.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        loadingOverlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); z-index: 10;';
+        itemElement.style.position = 'relative';
+        itemElement.appendChild(loadingOverlay);
+
+        const response = await callCartApi('remove', productId);
+
+        if (response && response.success) {
+            showToast('success', 'Thành công!', response.message);
+            
+            itemElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            itemElement.style.opacity = '0';
+            itemElement.style.transform = 'translateX(30px)';
+
+            setTimeout(() => {
+                // Animate height collapse
+                const height = itemElement.offsetHeight;
+                itemElement.style.height = height + 'px';
+                itemElement.style.overflow = 'hidden';
+                setTimeout(() => {
+                    itemElement.style.transition = 'height 0.3s ease';
+                    itemElement.style.height = '0';
+                    
+                    // After animation completes
+                    setTimeout(() => {
+                        itemElement.remove();
+                        updateCartSummary(response.total);
+                        updateCartIconCount(response.cart_count);
+                        
+                        // Kiểm tra nếu giỏ hàng trống và hiển thị thông báo
+                        if (document.querySelectorAll('.cart-item').length === 0) {
+                            const cartItemsContainer = document.querySelector('.cart-items-container');
+                            if (cartItemsContainer) {
+                                cartItemsContainer.innerHTML = `
+                                    <div class="empty-cart">
+                                        <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                                        <p>Giỏ hàng của bạn đang trống</p>
+                                        <a href="../product/products.php" class="btn btn-primary mt-3">
+                                            Tiếp tục mua sắm
+                                        </a>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }, 300);
+                }, 10);
+            }, 300);
+        } else {
+            // Remove loading state and restore original appearance
+            itemElement.style.opacity = '1';
+            loadingOverlay.remove();
+            showToast('error', 'Lỗi!', response ? response.message : 'Không thể xóa sản phẩm.');
+        }
+    }
+    
+    const debouncedUpdate = debounce((productId, quantity) => {
+        handleUpdateQuantity(productId, quantity);
+    }, 500);
+
+    // --- Event Listeners ---
+    cartContainer.addEventListener('click', function(e) {
+        console.log('click event fired', e.target);
+        const target = e.target;
+        const itemElement = target.closest('.cart-item');
+        if (!itemElement) {
+        console.log('Không tìm thấy .cart-item');
+        return;
+    }
+
+
+        const productId = itemElement.dataset.productId;
+        if (!productId) {
+        console.log('Không tìm thấy productId');
+        return;
+    }
+        const quantityInput = itemElement.querySelector('.quantity-input');
+        let quantity = parseInt(quantityInput.value);
+
+        if (target.matches('.quantity-increase')) {
+            quantity++;
+            quantityInput.value = quantity;
+            debouncedUpdate(productId, quantity);
+        }
+
+        if (target.matches('.quantity-decrease')) {
+            if (quantity > 1) {
+                quantity--;
+                quantityInput.value = quantity;
+                debouncedUpdate(productId, quantity);
+            }
+        }
+
+        if (target.closest('.remove-item')) {
+    showConfirmDialog(
+        'Xác nhận xóa',
+        'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
+        function() {
+            handleRemoveItem(productId);
+        }
+    );
+}
+    });
+
+    cartContainer.addEventListener('change', function(e) {
+        const target = e.target;
+        if (target.matches('.quantity-input')) {
+            const productId = target.dataset.productId;
+            const quantity = parseInt(target.value);
+            if (quantity > 0) {
+                handleUpdateQuantity(productId, quantity);
+            } else {
+                // Reset to 1 if invalid value is entered
+                target.value = 1;
+                handleUpdateQuantity(productId, 1);
+            }
+        }
+    });
 });
+  
