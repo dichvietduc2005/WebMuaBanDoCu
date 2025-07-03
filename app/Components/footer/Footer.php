@@ -2,15 +2,15 @@
 function footer() {
     ?>
     <footer class="footer">
-        <div class="footer-inner">
+        <div class="container">
             <div class="footer-grid">
                 <div class="footer-column">
                     <h3>Về chúng tôi</h3>
-                    <p>MuaBán Đồ Cũ là nền tảng kết nối người mua và người bán đồ đã qua sử dụng uy tín, chất lượng hàng đầu Việt Nam.</p>
+                    <p>Mua Bán Đồ Cũ là nền tảng kết nối người mua và người bán đồ đã qua sử dụng uy tín, chất lượng hàng đầu Việt Nam.</p>
                     <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.facebook.com/Duckerrrrrrr" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://github.com/dichvietduc2005/WebMuaBanDoCu" class="fab fa-github" aria-label="Github"></a>
                         <a href="#" class="social-link" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
