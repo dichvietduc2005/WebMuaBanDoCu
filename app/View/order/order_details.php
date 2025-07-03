@@ -375,26 +375,38 @@ $payment_method = formatPaymentMethod($order['payment_method']);
 
         <!-- Order Header -->
         <div class="order-header">
-            <h1 class="order-title">Order Details</h1>
+            <h1 class="order-title">Chi Tiết Đơn Hàng</h1>
             <div class="order-meta">
-                Order #<?php echo htmlspecialchars($order['order_number']); ?> • Placed on <?php echo date('M j, Y', strtotime($order['created_at'])); ?>
+                Đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?> • Đặt vào ngày <?php echo date('d/m/Y', strtotime($order['created_at'])); ?>
             </div>
         </div>
 
         <!-- Order Status -->
         <div class="status-section">
-            <h2 class="section-title">Order Status</h2>
+            <h2 class="section-title">Trạng Thái Đơn Hàng</h2>
             <div class="status-item">
                 <div class="status-icon <?php echo strtolower($order['status']) === 'completed' ? 'delivered' : ''; ?>">
                     <i class="fas fa-truck"></i>
                 </div>
                 <div class="status-content">
-                    <div class="status-title"><?php echo ucfirst($order['status']); ?></div>
+                    <div class="status-title">
+                        <?php 
+                        $status_vietnamese = [
+                            'pending' => 'Chờ xử lý',
+                            'confirmed' => 'Đã xác nhận',
+                            'processing' => 'Đang xử lý',
+                            'shipping' => 'Đang giao hàng',
+                            'completed' => 'Hoàn thành',
+                            'cancelled' => 'Đã hủy'
+                        ];
+                        echo $status_vietnamese[$order['status']] ?? ucfirst($order['status']); 
+                        ?>
+                    </div>
                     <div class="status-desc">
                         <?php if ($order['status'] === 'completed'): ?>
-                            Delivered on <?php echo date('M j, Y', strtotime($order['updated_at'])); ?>
+                            Đã giao vào ngày <?php echo date('d/m/Y', strtotime($order['updated_at'])); ?>
                         <?php else: ?>
-                            Updated on <?php echo date('M j, Y', strtotime($order['updated_at'])); ?>
+                            Cập nhật vào ngày <?php echo date('d/m/Y', strtotime($order['updated_at'])); ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -404,12 +416,12 @@ $payment_method = formatPaymentMethod($order['payment_method']);
         <!-- Tracking Information -->
         <?php if (!empty($order['tracking_number'])): ?>
         <div class="tracking-section">
-            <h2 class="section-title">Tracking Information</h2>
+            <h2 class="section-title">Thông Tin Vận Chuyển</h2>
             <div class="tracking-info">
                 <i class="fas fa-shipping-fast"></i>
                 <div>
-                    <strong>Shipping</strong><br>
-                    Tracking number: <?php echo htmlspecialchars($order['tracking_number']); ?>
+                    <strong>Đang giao hàng</strong><br>
+                    Mã vận đơn: <?php echo htmlspecialchars($order['tracking_number']); ?>
                 </div>
             </div>
         </div>
@@ -417,13 +429,13 @@ $payment_method = formatPaymentMethod($order['payment_method']);
 
         <!-- Items Ordered -->
         <div class="items-section">
-            <h2 class="section-title">Items Ordered</h2>
+            <h2 class="section-title">Sản Phẩm Đã Đặt</h2>
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -442,7 +454,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                                 <?php endif; ?>
                                 <div class="product-details">
                                     <div class="product-name"><?php echo htmlspecialchars($item['product_title']); ?></div>
-                                    <div class="product-sku">SKU: <?php echo htmlspecialchars($item['product_id']); ?></div>
+                                    <div class="product-sku">Mã SP: <?php echo htmlspecialchars($item['product_id']); ?></div>
                                 </div>
                             </div>
                         </td>
@@ -456,28 +468,28 @@ $payment_method = formatPaymentMethod($order['payment_method']);
 
         <!-- Order Summary -->
         <div class="summary-section">
-            <h2 class="section-title">Order Summary</h2>
+            <h2 class="section-title">Tổng Kết Đơn Hàng</h2>
             <div class="summary-row">
-                <span>Subtotal</span>
-                <span>$<?php echo number_format(($order['total_amount'] - 10000 - 20000) / 1000, 2); ?></span>
+                <span>Tạm tính</span>
+                <span><?php echo number_format(($order['total_amount'] - 10000 - 20000), 0, ',', '.'); ?> VNĐ</span>
             </div>
             <div class="summary-row">
-                <span>Shipping</span>
-                <span>$10.00</span>
+                <span>Phí vận chuyển</span>
+                <span>10.000 VNĐ</span>
             </div>
             <div class="summary-row">
-                <span>Tax</span>
-                <span>$20.00</span>
+                <span>Thuế</span>
+                <span>20.000 VNĐ</span>
             </div>
             <div class="summary-row">
-                <span>Total</span>
-                <span>$<?php echo number_format($order['total_amount'] / 1000, 2); ?></span>
+                <span>Tổng cộng</span>
+                <span><?php echo number_format($order['total_amount'], 0, ',', '.'); ?> VNĐ</span>
             </div>
         </div>
 
         <!-- Shipping & Billing Address -->
         <div class="address-section">
-            <h2 class="section-title">Shipping Address</h2>
+            <h2 class="section-title">Địa Chỉ Giao Hàng</h2>
             <div class="address-text">
                 <?php if (!empty($order['shipping_address'])): ?>
                     <?php echo nl2br(htmlspecialchars($order['shipping_address'])); ?>
@@ -488,7 +500,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                 <?php endif; ?>
             </div>
             
-            <h2 class="section-title" style="margin-top: 30px;">Billing Address</h2>
+            <h2 class="section-title" style="margin-top: 30px;">Địa Chỉ Thanh Toán</h2>
             <div class="address-text">
                 <?php if (!empty($order['billing_address'])): ?>
                     <?php echo nl2br(htmlspecialchars($order['billing_address'])); ?>
@@ -502,7 +514,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
 
         <!-- Actions -->
         <div class="actions-section">
-            <h2 class="section-title">Actions</h2>
+            <h2 class="section-title">Thao Tác</h2>
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                 <a href="order_history.php" class="btn btn-outline">
                     <i class="fas fa-arrow-left"></i> Quay lại

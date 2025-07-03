@@ -82,4 +82,5 @@ $pending_products = getPendingProducts($pdo);
     <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
 </body>
 
+
 </html>
