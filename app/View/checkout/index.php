@@ -137,5 +137,9 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="../../../public/assets/js/checkout.js"></script>
+    <script>
+        let userId = <?php echo $_SESSION['user_id'] ?>
+    </script>
+    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
 </body>
 </html>

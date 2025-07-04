@@ -16,11 +16,10 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tin nhắn từ người dùng</title>
-  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/admin_box_chat.css?v=1">
-  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/quan_ly_box_chat_admin.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/admin_box_chat.css?v=1">
+  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/quan_ly_box_chat_admin.css">
 
   <script>
     let userId = null;
@@ -75,7 +74,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
           $username_row = $stmt_user_full_name->fetch(PDO::FETCH_ASSOC);
 
           echo "<tr class='user-row' data-user-id='" . htmlspecialchars($row['user_id']) . "'>";
-          echo "<td>" . htmlspecialchars($row['username']) . "</td>";
+          echo "<td>" . htmlspecialchars($username_row['username']) . "</td>";
           echo "<td>" . htmlspecialchars($username_row['full_name']) . "</td>";
           echo "<td>" . ($row['is_read'] ? 'Yes' : 'No') . "</td>";
           echo "</tr>";
@@ -88,7 +87,10 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
   </div>
   <?php footer(); ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+  <script>
+    let userId = <?php echo $_SESSION['user_id'] ?>
+  </script>
+  <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
 </body>
 
 </html>
