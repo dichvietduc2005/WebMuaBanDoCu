@@ -17,6 +17,12 @@ function jump_to_bottom() {
     containerMessages.scrollTop = containerMessages.scrollHeight;
 }
 
+function on_key_press(event){
+    if(event.key == 'Enter'){
+        send_messages();
+    }
+}
+
 function toggleChat() {
     let load_new_messages = null
     let chatContainer = document.getElementById("chat-widget");
@@ -28,13 +34,16 @@ function toggleChat() {
             }
 
         }, 1000)
-        chatContainer.style.display = 'block';
+        
+        chatContainer.classList.remove('unactive')
+        chatContainer.classList.add('active')
         chatVisible = false;
     } else {
         jump_to_bottom();
         clearInterval(load_new_messages);
         chatVisible = true;
-        chatContainer.style.display = 'none';
+        chatContainer.classList.remove('active')
+        chatContainer.classList.add('unactive')
     }
 }
 

@@ -17,11 +17,13 @@ function add_scroll_event_to_container() {
 function open_box_chat() {
     const chatBox = document.getElementById("chatBox");
     const user_rows = document.querySelectorAll('.user-row');
+    const chatHeader = document.getElementById("chatheader")
 
     user_rows.forEach(row => {
         row.addEventListener('click', function () {
             userId = this.getAttribute('data-user-id');
             chatBox.style.display = 'flex';
+            chatHeader.innerText = '💬 Chat với ' + this.getAttribute('data-username');
             load_messages();
             setTimeout(() => {
                 jump_to_bottom();
@@ -29,6 +31,12 @@ function open_box_chat() {
         });
     });
 
+}
+
+function on_key_press(event){
+    if(event.key == 'Enter'){
+        send_messages()
+    }
 }
 
 function load_messages() {
