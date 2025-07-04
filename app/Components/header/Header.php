@@ -77,6 +77,13 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                         <?php endif; ?>
                     </a>
 
+                    <!-- Messages -->
+                    <button class="btn btn-link text-dark position-relative rounded-circle d-flex align-items-center justify-content-center"
+                        title="Tin nhắn" id="button-chat-mobile" onclick="toggleChat()"
+                        style="width: 44px; height: 44px; padding: 0;">
+                        <i class="fas fa-comment" style="font-size: clamp(18px, 4.5vw, 22px); color: #374151;"></i>
+                    </button>
+
                     <!-- Cart -->
                     <a href="/WebMuaBanDoCu/app/View/cart/index.php"
                         class="btn btn-link text-dark position-relative rounded-circle d-flex align-items-center justify-content-center"
@@ -95,63 +102,69 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             <!-- Main Content -->
             <div class="collapse navbar-collapse mt-2 mt-lg-0" id="navbarMain">
                 <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center w-100 gap-2">
-                    <!-- Categories Dropdown -->
-                    <div class="dropdown me-lg-3 mb-2 mb-lg-0 w-100 w-lg-auto">
-                        <button class="btn btn-light dropdown-toggle d-flex align-items-center w-100 w-lg-auto"
-                            type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="height: 44px; font-size: 15px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; transition: all 0.2s ease;">
-                            <i class="fas fa-bars me-2" style="font-size: 15px;"></i>
-                            <span>Danh mục</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-lg-start"
-                            style="max-height: 60vh; overflow-y: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                            <?php foreach ($categories as $category): ?>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center"
-                                        style="font-size: 14px; padding: 10px 16px; transition: all 0.2s ease;"
-                                        href="../product/category.php?slug=<?php echo $category['slug']; ?>">
-                                        <i class="fas fa-folder-open me-2" style="color: #6b7280; width: 20px;"></i>
-                                        <span><?php echo htmlspecialchars($category['name']); ?></span>
-                                        <span
-                                            class="ms-auto badge bg-light text-dark"><?php echo $category['product_count'] ?? ''; ?></span>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-
-                    <!-- Search Form - Takes available space on desktop, full width on mobile -->
-                    <form id="search-form2" class="w-100 mb-2 mb-lg-0 me-lg-3 position-relative" method="GET"
-                        action="/WebMuaBanDoCu/app/View/extra/search_advanced.php">
-                        <div class="input-group search-modern"
-                            style="height: 44px; position: relative; min-height: 44px; max-height: 44px;">
-                            <input type="text" class="form-control search-input-modern" id="search-input" name="q"
-                                placeholder="Tìm sản phẩm..."
-                                style="height: 44px; min-height: 44px; max-height: 44px; font-size: 15px; border-radius: 22px 0 0 22px; border: 1px solid #e5e7eb; padding-left: 18px; padding-right: 40px;"
-                                value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
-                                autocomplete="off">
-
-                            <!-- Nút xóa -->
-                            <button type="button" class="btn btn-clear-search position-absolute"
-                                style="right: 60px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9ca3af; display: none; height: 32px; width: 32px;"
-                                onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').focus();">
-                                <i class="fas fa-times"></i>
-                            </button>
-
-                            <button class="btn btn-primary search-btn-modern" type="submit"
-                                style="height: 44px; min-height: 44px; max-height: 44px; width: 56px; min-width: 56px; border-radius: 0 22px 22px 0; border: none; padding: 0 18px; background: linear-gradient(135deg, #4f46e5, #7c3aed);">
-                                <i class="fas fa-search" style="font-size: 15px;"></i>
-                            </button>
-                        </div>
-
-                        <!-- Gợi ý tìm kiếm -->
-                        <div class="search-suggestions position-absolute bg-white rounded shadow-lg mt-1 w-100"
-                            style="z-index: 1000; display: none; max-height: 300px; overflow-y: auto; border-radius: 12px; border: 1px solid #e5e7eb;">
-                            <div class="list-group">
-                                <!-- Các gợi ý sẽ được thêm bằng JavaScript -->
+                    
+                    <!-- Search Form with Categories Button - Full width on mobile -->
+                    <div class="w-100 mb-2 mb-lg-0 me-lg-3 position-relative">
+                        <div class="d-flex gap-2 align-items-center">
+                            <!-- Categories Button - Separate from search -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center categories-btn"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                    style="height: 50px; min-width: 56px; padding: 0 16px; border-radius: 16px; border: 2px solid #3b82f6; background: white; transition: all 0.3s ease; white-space: nowrap; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);">
+                                    <i class="fas fa-th-large" style="font-size: 18px; color: #3b82f6;"></i>
+                                    <span class="ms-2 d-none d-md-inline fw-semibold" style="color: #3b82f6; font-size: 15px;">Danh mục</span>
+                                </button>
+                                <ul class="dropdown-menu categories-dropdown-menu"
+                                    style="max-height: 70vh; overflow-y: auto; border-radius: 16px; border: none; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 12px; min-width: 280px;">
+                                    <li class="dropdown-header" style="padding: 12px 16px; font-weight: 700; color: #1f2937; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 12px; margin-bottom: 8px;">
+                                        <i class="fas fa-layer-group me-2"></i>Danh mục sản phẩm
+                                    </li>
+                                    <?php foreach ($categories as $category): ?>
+                                        <li>
+                                            <a class="dropdown-item category-item"
+                                                style="font-size: 16px; padding: 16px 20px; transition: all 0.3s ease; border-radius: 12px; margin: 4px 0; color: #374151; font-weight: 500;"
+                                                href="../product/category.php?slug=<?php echo $category['slug']; ?>">
+                                                <?php echo htmlspecialchars($category['name']); ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
                             </div>
+
+                            <!-- Search Form -->
+                            <form id="search-form2" class="flex-grow-1 position-relative" method="GET"
+                                action="/WebMuaBanDoCu/app/View/extra/search_advanced.php">
+                                <div class="input-group search-modern"
+                                    style="height: 50px; position: relative; min-height: 50px; max-height: 50px;">
+                                    <input type="text" class="form-control search-input-modern" id="search-input" name="q"
+                                        placeholder="Tìm sản phẩm..."
+                                        style="height: 50px; min-height: 50px; max-height: 50px; font-size: 16px; border-radius: 25px 0 0 25px; border: 2px solid #e5e7eb; padding-left: 20px; padding-right: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"
+                                        value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
+                                        autocomplete="off">
+
+                                    <!-- Nút xóa -->
+                                    <button type="button" class="btn btn-clear-search position-absolute"
+                                        style="right: 70px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9ca3af; display: none; height: 36px; width: 36px; border-radius: 50%; transition: all 0.3s ease;"
+                                        onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').focus();">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+
+                                    <button class="btn btn-primary search-btn-modern" type="submit"
+                                        style="height: 50px; min-height: 50px; max-height: 50px; width: 64px; min-width: 64px; border-radius: 0 25px 25px 0; border: none; padding: 0 20px; background: linear-gradient(135deg, #4f46e5, #7c3aed); box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);">
+                                        <i class="fas fa-search" style="font-size: 16px;"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Gợi ý tìm kiếm -->
+                                <div class="search-suggestions position-absolute bg-white rounded shadow-lg mt-1 w-100"
+                                    style="z-index: 1000; display: none; max-height: 300px; overflow-y: auto; border-radius: 16px; border: 1px solid #e5e7eb;">
+                                    <div class="list-group">
+                                        <!-- Các gợi ý sẽ được thêm bằng JavaScript -->
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
 
                     <!-- Right side actions - Stack vertically on mobile -->
                     <div
@@ -193,20 +206,49 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                 </a>
                             </div>
 
-                            <!-- Mobile Messages -->
+                            <!-- Mobile Account Dropdown -->
                             <div class="d-lg-none w-100">
-                                <button
-                                    class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center shadow-sm"
-                                    title="Tin nhắn" id="button-chat-mobile" onclick="toggleChat()"
-                                    style="height: 48px; font-size: clamp(14px, 3.5vw, 16px); border-radius: 12px; margin-bottom: 12px; border: 2px solid #3b82f6; transition: all 0.3s ease;">
-                                    <i class="fas fa-comment me-2" style="font-size: clamp(16px, 4vw, 18px);"></i>
-                                    <span class="fw-semibold">Tin nhắn</span>
-                                </button>
+                                <div class="dropdown mb-3">
+                                    <button
+                                        class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center justify-content-center w-100 mobile-account-btn"
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                        style="height: 52px; font-size: clamp(14px, 3.5vw, 16px); border-radius: 16px; border: 2px solid #e5e7eb; background: white; transition: all 0.3s ease; color: #374151;">
+                                        <i class="fas fa-user-circle me-2" style="font-size: clamp(16px, 4vw, 18px); color: #6b7280;"></i>
+                                        <span class="fw-semibold">Tài khoản</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end mobile-dropdown-menu">
+                                        <li>
+                                            <h6 class="dropdown-header">Xin
+                                                chào<?php echo $_SESSION['user_role'] == 'admin' ? ' admin' : '' ?>,
+                                                <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>
+                                            </h6>
+                                        </li>
+                                        <?php
+                                        if ($_SESSION['user_role'] == 'admin') {
+                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"' . '><i class="fas fa-solid fa-medal me-2"></i>' . 'Quản lý tài khoản' . '</a></li>';
+                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"' . '><i class="fas fa-solid fa-envelope me-2"></i>' . 'Xem tin nhắn từ người dùng' . '</a></li>';
+                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/products.php"' . '><i class="fas fa-solid fa-check me-2"></i>' . 'Duyệt sản phẩm' . '</a></li>';
+                                        }
+                                        ?>
+                                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i
+                                                    class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
+                                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/order/order_history.php"><i
+                                                    class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
+                                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/ProfileUserView.php"><i
+                                                    class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Cài đặt</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/logout.php"><i
+                                                    class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <?php require_once __DIR__ . '/../../View/user/ChatView.php'; ?>
 
-                            <!-- Account Dropdowns - Full width on mobile -->
-                            <div class="dropdown mb-2 mb-lg-0 w-100 w-lg-auto">
+                            <!-- Desktop Account Dropdown -->
+                            <div class="dropdown mb-2 mb-lg-0 w-100 w-lg-auto d-none d-lg-block">
                                 <button
                                     class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center justify-content-center w-100"
                                     type="button" data-bs-toggle="dropdown" aria-expanded="false"
@@ -354,16 +396,145 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         /* CSS cho thanh tìm kiếm hiện đại */
         .search-modern {
-            border-radius: 22px;
+            border-radius: 25px;
             transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            height: 44px !important;
-            min-height: 44px !important;
-            max-height: 44px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            height: 50px !important;
+            min-height: 50px !important;
+            max-height: 50px !important;
         }
 
+        /* Categories Button & Dropdown Styles */
+        .categories-btn {
+            font-weight: 600 !important;
+            letter-spacing: 0.5px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1) !important;
+        }
+
+        .categories-btn:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25) !important;
+        }
+
+        .categories-btn:hover i,
+        .categories-btn:hover span {
+            color: white !important;
+        }
+
+        .categories-dropdown-menu {
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            animation: fadeInDown 0.3s ease !important;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom Scrollbar for Categories Dropdown */
+        .categories-dropdown-menu::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .categories-dropdown-menu::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .categories-dropdown-menu::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .categories-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+        }
+
+        .category-item {
+            transition: all 0.3s ease !important;
+        }
+
+        .category-item:hover {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+            color: #1e40af !important;
+            transform: translateX(4px) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        }
+
+        .category-item:active {
+            transform: translateX(2px) !important;
+        }
+
+        /* Mobile Responsive for Categories */
+        @media (max-width: 768px) {
+            .categories-btn {
+                height: 46px !important;
+                min-width: 52px !important;
+                border-radius: 14px !important;
+                padding: 0 14px !important;
+            }
+
+            .categories-dropdown-menu {
+                min-width: 320px !important;
+                max-width: 90vw !important;
+                margin-top: 4px !important;
+                max-height: 60vh !important;
+                left: 0 !important;
+                right: auto !important;
+                transform: none !important;
+            }
+
+            .category-item {
+                font-size: 15px !important;
+                padding: 14px 18px !important;
+            }
+
+            .search-modern {
+                height: 46px !important;
+                min-height: 46px !important;
+                max-height: 46px !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .categories-btn {
+                height: 44px !important;
+                min-width: 48px !important;
+                border-radius: 12px !important;
+                padding: 0 12px !important;
+            }
+
+            .categories-dropdown-menu {
+                min-width: 280px !important;
+                max-width: 95vw !important;
+                padding: 12px !important;
+                max-height: 55vh !important;
+            }
+
+            .category-item {
+                font-size: 14px !important;
+                padding: 12px 16px !important;
+            }
+
+            .search-modern {
+                height: 44px !important;
+                min-height: 44px !important;
+                max-height: 44px !important;
+            }
+        }
         .search-modern:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
 
         .search-input-modern,
@@ -374,6 +545,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         .search-input-modern:focus {
             border-color: #a5b4fc !important;
+            box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.1) !important;
         }
 
         .search-btn-modern {
@@ -382,43 +554,58 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         .search-btn-modern:hover {
             background: linear-gradient(135deg, #4338ca, #6d28d9) !important;
-            transform: scale(1.05);
-            box-shadow: var(--shadow);
+            transform: scale(1.02);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3) !important;
         }
 
+        /* Clear Search Button */
+        .btn-clear-search:hover {
+            background: rgba(156, 163, 175, 0.1) !important;
+            color: #6b7280 !important;
+            transform: translateY(-50%) scale(1.1) !important;
+        }
 
 
         @media (max-width: 768px) {
-            .search-modern {
-                height: 40px !important;
-                min-height: 40px !important;
-                max-height: 40px !important;
-            }
-
             .search-input-modern {
-                height: 40px !important;
-                min-height: 40px !important;
-                max-height: 40px !important;
-                font-size: 14px !important;
-                padding-left: 15px !important;
+                font-size: 15px !important;
+                padding-left: 18px !important;
+                padding-right: 60px !important;
             }
 
             .search-btn-modern {
-                height: 40px !important;
-                min-height: 40px !important;
-                max-height: 40px !important;
-            }
-            .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                width: 58px !important;
+                min-width: 58px !important;
+                padding: 0 18px !important;
             }
 
-            .search-btn-modern i {
-                font-size: 14px !important;
+            .btn-clear-search {
+                right: 66px !important;
+                height: 34px !important;
+                width: 34px !important;
             }
-            
         }
 
+        @media (max-width: 576px) {
+            .search-input-modern {
+                font-size: 14px !important;
+                padding-left: 16px !important;
+                padding-right: 56px !important;
+            }
+
+            .search-btn-modern {
+                width: 54px !important;
+                min-width: 54px !important;
+                padding: 0 16px !important;
+            }
+
+            .btn-clear-search {
+                right: 62px !important;
+                height: 32px !important;
+                width: 32px !important;
+        }
+
+        /* Additional responsive adjustments */
         @media (max-width: 768px) {
             .navbar-brand {
                 margin-right: 0.75rem;
@@ -449,6 +636,10 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 padding: 8px;
             }
 
+            .search-btn-modern i {
+                font-size: 14px !important;
+            }
+        }
             .dropdown-item {
                 border-radius: 8px;
                 padding: 12px 16px;
@@ -515,7 +706,6 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             color: #374151 !important;
         }
 
-
         .dropdown-toggle:focus {
             box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.1) !important;
         }
@@ -533,6 +723,108 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         .dropdown-item:hover i {
             color: #4f46e5 !important;
+        }
+
+        /* Nút Categories mới */
+        .categories-btn {
+            transition: all 0.3s ease !important;
+        }
+
+        .categories-btn:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            border-color: #2563eb !important;
+            transform: translateY(-1px) scale(1.02) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        }
+
+        .categories-btn:hover i,
+        .categories-btn:hover span {
+            color: white !important;
+        }
+
+        /* Categories Dropdown Menu */
+        .categories-dropdown-menu {
+            animation: slideDown 0.3s ease !important;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .category-item:hover {
+            background: linear-gradient(135deg, #f0f9ff, #dbeafe) !important;
+            transform: translateX(4px) !important;
+            color: #1e40af !important;
+        }
+
+        .category-item:hover i {
+            color: #3b82f6 !important;
+            transform: scale(1.1) !important;
+        }
+
+        .category-item:hover .badge {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
+            transform: scale(1.05) !important;
+        }
+
+        /* Enhanced Categories Dropdown positioning and responsiveness */
+        .categories-dropdown-menu {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            margin-top: 8px !important;
+            z-index: 1060 !important;
+            display: none !important;
+        }
+
+        .categories-dropdown-menu.show {
+            display: block !important;
+        }
+
+        /* Ensure dropdown doesn't get covered by search box */
+        .dropdown {
+            position: relative;
+            z-index: 1020;
+        }
+
+        .search-modern {
+            position: relative;
+            z-index: 1010;
+        }
+
+        /* Mobile responsive for categories dropdown positioning */
+        @media (max-width: 768px) {
+            .categories-dropdown-menu {
+                position: fixed !important;
+                top: auto !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                margin-top: 0 !important;
+                bottom: auto !important;
+                max-height: 60vh !important;
+                overflow-y: auto !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .categories-dropdown-menu {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                max-height: 70vh !important;
+                width: 85vw !important;
+                min-width: 280px !important;
+                max-width: 320px !important;
+            }
         }
 
         /* Hiệu ứng hover cho các nút và icon - Với !important */
@@ -574,10 +866,14 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         }
         
         #button-chat-mobile:hover {
-            background-color: #3b82f6 !important;
-            color: white !important;
-            transform: translateY(-2px) scale(1.02) !important;
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3) !important;
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            transform: translateY(-2px) scale(1.05) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+        }
+        
+        #button-chat-mobile:hover i {
+            color: #10b981 !important;
+            transform: rotate(-5deg) !important;
         }
         
         /* Hiệu ứng hover cho icon giỏ hàng */
@@ -662,6 +958,152 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             color: #6b7280 !important;
         }
         
+        /* Hiệu ứng hover cho mobile account button */
+        .mobile-account-btn:hover {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            border-color: #cbd5e1 !important;
+            transform: translateY(-1px) scale(1.02) !important;
+            box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2) !important;
+        }
+        
+        .mobile-account-btn:hover i {
+            color: #4f46e5 !important;
+        }
+        
+        /* CSS responsive cho dropdown mobile - Cải thiện */
+        @media (max-width: 991px) {
+            .mobile-dropdown-menu {
+                position: fixed !important;
+                top: auto !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 92vw !important;
+                max-width: 380px !important;
+                margin-top: 0.5rem !important;
+                border-radius: 20px !important;
+                border: none !important;
+                box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2) !important;
+                background: white !important;
+                z-index: 1060 !important;
+                padding: 16px !important;
+                max-height: 80vh !important;
+                overflow-y: auto !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-header {
+                padding: 16px 20px !important;
+                font-size: 16px !important;
+                font-weight: 700 !important;
+                color: #1f2937 !important;
+                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+                border-radius: 16px !important;
+                margin-bottom: 12px !important;
+                text-align: center !important;
+                border: 2px solid #bae6fd !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-item {
+                padding: 18px 20px !important;
+                font-size: 16px !important;
+                font-weight: 500 !important;
+                border-radius: 12px !important;
+                margin: 6px 0 !important;
+                transition: all 0.3s ease !important;
+                color: #374151 !important;
+                min-height: 56px !important;
+                display: flex !important;
+                align-items: center !important;
+                line-height: 1.4 !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-item:hover, 
+            .mobile-dropdown-menu .dropdown-item:focus {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+                color: white !important;
+                transform: translateX(8px) scale(1.02) !important;
+                box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-item:hover i, 
+            .mobile-dropdown-menu .dropdown-item:focus i {
+                color: white !important;
+                transform: scale(1.15) !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-item i {
+                width: 24px !important;
+                font-size: 18px !important;
+                transition: all 0.3s ease !important;
+                margin-right: 12px !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-divider {
+                margin: 16px 0 !important;
+                opacity: 0.2 !important;
+                border-top: 2px solid #e5e7eb !important;
+            }
+            
+            /* Scrollbar cho mobile dropdown */
+            .mobile-dropdown-menu::-webkit-scrollbar {
+                width: 6px !important;
+            }
+            
+            .mobile-dropdown-menu::-webkit-scrollbar-track {
+                background: #f1f5f9 !important;
+                border-radius: 10px !important;
+            }
+            
+            .mobile-dropdown-menu::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #cbd5e1, #94a3b8) !important;
+                border-radius: 10px !important;
+            }
+            
+            .mobile-dropdown-menu::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #94a3b8, #64748b) !important;
+            }
+        }
+        
+        /* Hiệu ứng cho mobile layout */
+        @media (max-width: 767px) {
+            .mobile-account-btn .fw-semibold {
+                font-size: 14px !important;
+            }
+            
+            .mobile-dropdown-menu {
+                width: 96vw !important;
+                max-width: 340px !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-item {
+                padding: 20px 22px !important;
+                font-size: 17px !important;
+                min-height: 60px !important;
+            }
+            
+            .mobile-dropdown-menu .dropdown-header {
+                padding: 18px 22px !important;
+                font-size: 17px !important;
+            }
+            
+            /* Categories trên mobile nhỏ */
+            .categories-btn span {
+                display: none !important;
+            }
+            
+            .categories-btn {
+                min-width: 44px !important;
+                padding: 0 8px !important;
+            }
+        }
+        
+        /* Tablet responsive */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .mobile-dropdown-menu {
+                width: 80vw !important;
+                max-width: 400px !important;
+            }
+        }
+        
         /* Hiệu ứng hover cho mobile icons */
         @media (max-width: 991px) {
             .d-lg-none .btn[title="Thông báo"] {
@@ -729,5 +1171,64 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             }
         }
     </style>
+
+    <!-- Categories Dropdown Enhancement Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Improve categories dropdown behavior
+            const categoriesBtn = document.querySelector('.categories-btn');
+            const categoriesDropdown = document.querySelector('.categories-dropdown-menu');
+            
+            if (categoriesBtn && categoriesDropdown) {
+                // Add proper positioning on mobile
+                categoriesBtn.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Toggle dropdown with animation
+                        if (categoriesDropdown.classList.contains('show')) {
+                            categoriesDropdown.classList.remove('show');
+                            categoriesDropdown.style.display = 'none';
+                        } else {
+                            categoriesDropdown.classList.add('show');
+                            categoriesDropdown.style.display = 'block';
+                            
+                            // Position dropdown in center of screen on mobile
+                            const rect = categoriesBtn.getBoundingClientRect();
+                            const dropdownHeight = categoriesDropdown.offsetHeight;
+                            const viewportHeight = window.innerHeight;
+                            
+                            if (window.innerWidth <= 576) {
+                                categoriesDropdown.style.position = 'fixed';
+                                categoriesDropdown.style.top = '50%';
+                                categoriesDropdown.style.left = '50%';
+                                categoriesDropdown.style.transform = 'translate(-50%, -50%)';
+                                categoriesDropdown.style.zIndex = '1060';
+                            }
+                        }
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!categoriesBtn.contains(e.target) && !categoriesDropdown.contains(e.target)) {
+                        categoriesDropdown.classList.remove('show');
+                        categoriesDropdown.style.display = 'none';
+                    }
+                });
+                
+                // Handle window resize
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 768) {
+                        categoriesDropdown.style.position = '';
+                        categoriesDropdown.style.top = '';
+                        categoriesDropdown.style.left = '';
+                        categoriesDropdown.style.transform = '';
+                    }
+                });
+            }
+        });
+    </script>
     <?php
 }
