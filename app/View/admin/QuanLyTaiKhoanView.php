@@ -1,5 +1,7 @@
 <?php 
 require_once('../../../config/config.php'); 
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 if ($_SESSION['user_role'] != 'admin') {
     header("Location: /WebMuaBanDoCu/app/View/Home.php");
@@ -15,20 +17,30 @@ if ($_SESSION['user_role'] != 'admin') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/danh_sach_tai_khoan_admin.css">
     <script src="/WebMuaBanDoCu/public/assets/js/admin_accounts_action.js?v=1"></script>
 </head>
 
 <body>
+<?php renderHeader($pdo); ?>
+
     <h1>Quản lý tài khoản</h1>
 
-    <div id="#board-skill" user-id=""
-        style="visibility: hidden; padding: 10px;height: 100px;background-color: burlywood;position: fixed;left: 50%;top: 50%;translate: -50%;display: flex; justify-content: center; padding-top: 20px; gap: 40px;align-items: center;">
-        <p style="position: absolute; top: 0;">~<span id="#username-display"></span>~</p>
-        <button id="block-account-button" style="flex-basis: 200px; height: 50px">Khóa</button>
-        <button id="unlock-account-button" style="flex-basis: 200px; height: 50px">Mở khóa</button>
-    </div>
+    <!-- Overlay for popup -->
+    <div id="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000;"></div>
 
+    <!-- Popup action board -->
+    <div id="board-skill" user-id=""
+        style="display:none; padding:20px 30px; background:#ffffff; position:fixed; left:50%; top:50%; transform:translate(-50%, -50%); box-shadow:0 4px 16px rgba(0,0,0,0.2); border-radius:8px; z-index:1001; text-align:center;">
+        <p id="username-display" style="font-weight:bold; margin-bottom:16px;"></p>
+        <div style="display:flex; gap:20px; justify-content:center;">
+            <button id="block-account-button" class="btn btn-danger">Khóa</button>
+            <button id="unlock-account-button" class="btn btn-success">Mở khóa</button>
+        </div>
+    </div>
 
     <div>
         <table>
@@ -64,7 +76,9 @@ if ($_SESSION['user_role'] != 'admin') {
             </tbody>
         </table>
     </div>
+    <?php footer(); ?>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

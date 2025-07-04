@@ -21,17 +21,33 @@ SET time_zone = "+00:00";
 -- Cơ sở dữ liệu: `muabandocu`
 --
 
+
+--chạy bảng xong xóa 3 dòng này tránh mất dữ liệu
+
+
+
+
+-- Xóa bảng 'messages' nếu nó tồn tại để tránh lỗi khóa ngoại
+DROP TABLE IF EXISTS messages;
+
+-- Xóa bảng 'box_chat' nếu nó tồn tại để tránh lỗi khóa ngoại
+DROP TABLE IF EXISTS box_chat;
+
+-- Xóa bảng 'review_products' nếu nó tồn tại
+DROP TABLE IF EXISTS review_products;
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `box_chat`
 --
 
-CREATE TABLE `box_chat` (
-  `user_id` int(11) NOT NULL,
-  `is_read` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+CREATE TABLE box_chat(
+    id INT NOT NULL,
+    user_id INT NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) 
+);
 --
 -- Đang đổ dữ liệu cho bảng `box_chat`
 --
@@ -134,13 +150,15 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `image`, `status`
 -- Cấu trúc bảng cho bảng `messages`
 --
 
-CREATE TABLE `messages` (
-  `box_chat_id` int(11) NOT NULL,
-  `role` varchar(10) DEFAULT NULL,
-  `content` text NOT NULL,
-  `sent_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+CREATE TABLE messages (
+    id INT NOT NULL,
+    box_chat_id INT NOT NULL, 
+    role VARCHAR(10), 
+    content TEXT NOT NULL, 
+    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (box_chat_id) REFERENCES box_chat(user_id) 
+);
 --
 -- Đang đổ dữ liệu cho bảng `messages`
 --
@@ -803,12 +821,13 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 CREATE TABLE review_products (
+    id INT NOT NULL,
     user_id INT NOT NULL,
     product_id INT NOT NULL,
     content TEXT,
     sent_at DATETIME,
     username VARCHAR(50),
-    PRIMARY KEY (user_id),
+    PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );

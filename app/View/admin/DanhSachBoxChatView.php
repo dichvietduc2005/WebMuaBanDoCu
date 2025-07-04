@@ -1,6 +1,7 @@
 <?php
 require_once('../../../config/config.php');
-
+include_once __DIR__ . '/../../Components/header/Header.php';
+include_once __DIR__ . '/../../Components/footer/Footer.php';
 if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
   header('Location: /WebMuaBanDoCu/app/View/user/login.php');
   exit;
@@ -17,6 +18,9 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
   <title>Tin nhắn từ người dùng</title>
   <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/admin_box_chat.css?v=1">
   <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/quan_ly_box_chat_admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
     let userId = null;
@@ -27,6 +31,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
 </head>
 
 <body>
+  <?php renderHeader($pdo); ?>
 
   <div class="chat-container" id="chatBox">
 
@@ -47,13 +52,13 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
 
   </div>
 
-  <div>
+  <div class="table-container">
     <table>
       <thead>
         <tr>
-          <th>User_ID</th>
-          <th>Full_Name</th>
-          <th>Is_Read</th>
+          <th>Tên Người Dùng</th>
+          <th>Họ và tên</th>
+          <th>Đã đọc</th>
         </tr>
       </thead>
       <tbody>
@@ -70,7 +75,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
           $username_row = $stmt_user_full_name->fetch(PDO::FETCH_ASSOC);
 
           echo "<tr class='user-row' data-user-id='" . htmlspecialchars($row['user_id']) . "'>";
-          echo "<td>" . htmlspecialchars($row['user_id']) . "</td>";
+          echo "<td>" . htmlspecialchars($row['username']) . "</td>";
           echo "<td>" . htmlspecialchars($username_row['full_name']) . "</td>";
           echo "<td>" . ($row['is_read'] ? 'Yes' : 'No') . "</td>";
           echo "</tr>";
@@ -81,6 +86,8 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
       </tbody>
     </table>
   </div>
+  <?php footer(); ?>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

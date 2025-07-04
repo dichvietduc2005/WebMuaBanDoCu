@@ -257,7 +257,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                     <i class="fas fa-user-circle me-2" style="font-size: min(18px, 4.5vw);"></i>
                                     <span>Tài khoản</span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
+                                <ul class="dropdown-menu dropdown-menu-end account-dropdown-menu">
                                     <li>
                                         <h6 class="dropdown-header">Xin
                                             chào<?php echo $_SESSION['user_role'] == 'admin' ? ' admin' : '' ?>,
@@ -404,6 +404,16 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             height: 50px !important;
             min-height: 50px !important;
             max-height: 50px !important;
+            display: flex !important;
+            flex-wrap: nowrap !important;
+        }
+
+        .search-input-modern {
+            flex: 1 1 auto !important;
+        }
+
+        .search-btn-modern {
+            flex: 0 0 auto !important;
         }
 
         /* Categories Button & Dropdown Styles */
@@ -651,7 +661,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
             .dropdown-item:hover {
                 background-color: rgba(59, 130, 246, 0.1);
-                transform: translateX(4px);
+                transform: translateY(4px);
             }
         }
 
@@ -719,7 +729,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         .dropdown-item:hover {
             background-color: #f3f4f6 !important;
-            transform: translateX(3px);
+            transform: translateY(3px);
             color: #4f46e5 !important;
         }
 
@@ -1021,7 +1031,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             .mobile-dropdown-menu .dropdown-item:focus {
                 background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
                 color: white !important;
-                transform: translateX(8px) scale(1.02) !important;
+                transform: translateY(8px) scale(1.02) !important;
                 box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
             }
             
@@ -1170,6 +1180,39 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 transition: none !important;
                 animation: none !important;
             }
+        }
+
+        /* Account Dropdown Styles (desktop) */
+        .account-dropdown-menu {
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            animation: fadeInDown 0.3s ease !important;
+            background: rgba(255,255,255,0.8) !important;
+            border: none !important;
+            border-radius: 16px !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
+        }
+
+        .account-dropdown-menu::-webkit-scrollbar {
+            width: 8px;
+        }
+        .account-dropdown-menu::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .account-dropdown-menu::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .account-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+        }
+
+        /* Add blur to mobile dropdown */
+        .mobile-dropdown-menu {
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
         }
     </style>
     <?php

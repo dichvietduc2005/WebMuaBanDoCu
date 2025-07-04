@@ -141,7 +141,7 @@ body {
     color: #1e293b;
     line-height: 1.4;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    /* -webkit-line-clamp: 2; */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -152,7 +152,7 @@ body {
     margin-bottom: 12px;
     line-height: 1.5;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    /* -webkit-line-clamp: 2; */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

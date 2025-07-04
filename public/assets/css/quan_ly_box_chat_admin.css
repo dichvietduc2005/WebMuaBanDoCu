@@ -10,7 +10,6 @@ h1{
 
 div{
     text-align: center;
-    overflow-x: scroll;
     scrollbar-color: transparent transparent;
 }
 
@@ -28,7 +27,7 @@ td{
 }
 
 thead{
-    background-color: rgb(248, 94, 94);
+    background-color: rgb(2, 137, 147);
     color: white;
 }
 
@@ -51,16 +50,24 @@ tbody tr:hover{
 }
 
 /* ===== Responsive Enhancements ===== */
-@media (max-width: 991.98px) {
+@media (max-width: 767.98px) {
     table {
-        display: block;
         width: 100%;
-        overflow-x: auto;
         white-space: nowrap;
     }
     th, td {
+        font-size: 16px;
+        padding: 8px 6px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    th, td {
         font-size: 18px;
         padding: 10px 8px;
+    }
+    table {
+        font-size: 18px;
     }
 }
 
@@ -79,3 +86,25 @@ tbody tr:hover{
         font-size: 24px;
     }
 }
+
+/* ===== Card style for table ===== */
+.table-container{
+    width: 1200px;
+    width: 70%;
+    height: 700px;
+    background:#ffffff;
+    border-radius:12px;
+    box-shadow:0 4px 16px rgba(0,0,0,.05);
+    overflow:hidden;
+    margin:20px auto;
+}
+
+table{
+    border-collapse:separate;
+    border-spacing:0;
+}
+
+thead th:first-child{border-top-left-radius:12px;}
+thead th:last-child{border-top-right-radius:12px;}
+tbody tr:last-child td:first-child{border-bottom-left-radius:12px;}
+tbody tr:last-child td:last-child{border-bottom-right-radius:12px;}

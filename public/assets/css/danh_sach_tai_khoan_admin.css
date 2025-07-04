@@ -1,19 +1,18 @@
 body{
-    background-color: rgb(155, 155, 155);
-    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f5f7fa;
+    font-family: "Inter", Arial, sans-serif;
 }
 
 h1{
     text-align: center;
-    color: rgb(255, 0, 0);
+    color: #1a237e;
+    margin-bottom: 24px;
 }
 
 div{
     text-align: center;
-    overflow-x: scroll;
-    scrollbar-color: transparent transparent;
+    padding: 0 8px;
 }
-
 
 td,th,tr{
     border: 1px solid black;
@@ -78,4 +77,98 @@ tbody tr:hover{
     h1 {
         font-size: 24px;
     }
+}
+
+table{
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.05);
+}
+
+thead th{
+    background: linear-gradient(135deg,#3b82f6,#2563eb);
+    color:#fff;
+    padding:14px 12px;
+    font-weight:600;
+    border:none;
+}
+
+tbody td{
+    padding:12px 10px;
+    border-top:1px solid #e5e7eb;
+}
+
+tbody tr:nth-child(even){
+    background-color:#f9fafb;
+}
+
+tbody tr:nth-child(odd){
+    background-color:#ffffff;
+}
+
+tbody tr:hover{
+    background-color:#eef4ff;
+}
+
+td.status-active{
+    color:#16a34a;
+    font-weight:600;
+}
+
+td.status-blocked{
+    color:#dc2626;
+    font-weight:600;
+}
+
+tbody tr:last-child td:first-child{
+    border-bottom-left-radius:12px;
+}
+
+tbody tr:last-child td:last-child{
+    border-bottom-right-radius:12px;
+}
+
+thead th:first-child{
+    border-top-left-radius:12px;
+}
+
+thead th:last-child{
+    border-top-right-radius:12px;
+}
+
+/* Font & size for table */
+table, th, td{
+    font-family:"Inter", Arial, sans-serif;
+    font-size:15px;
+}
+
+/* ===== Toast Notification ===== */
+.toast-notify{
+    position:fixed;
+    top:20px;
+    right:20px;
+    padding:12px 20px;
+    background:#333;
+    color:#fff;
+    border-radius:4px;
+    box-shadow:0 2px 8px rgba(0,0,0,.2);
+    z-index:2000;
+    opacity:0;
+    transform:translateY(-20px);
+    transition:opacity .3s ease, transform .3s ease;
+    font-family:"Inter", Arial, sans-serif;
+    font-size:15px;
+}
+.toast-notify.show{
+    opacity:1;
+    transform:translateY(0);
+}
+.toast-notify.success{
+    background:#16a34a;
+}
+.toast-notify.error{
+    background:#dc2626;
 }
