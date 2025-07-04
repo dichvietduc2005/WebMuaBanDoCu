@@ -382,8 +382,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/WebMuaBanDoCu/public/assets/js/main.js"></script>
-    <script src="/WebMuaBanDoCu/public/assets/js/admin_chat_system.js"></script>
-
+    <script>let userId = <?php echo $_SESSION['user_id'] ?></script>
+    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
 </body>
 
 </html>
