@@ -18,6 +18,8 @@
 .cart-item {
   display: flex;
   align-items: center;
+  gap: 10px;  
+  justify-content: space-between;
   padding: 20px 0;
   border-bottom: 1px solid #f0f0f0;
   background: white;

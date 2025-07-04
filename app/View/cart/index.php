@@ -239,14 +239,12 @@ if (!$is_guest) {
                                     <i class="fas fa-list text-primary me-2"></i>
                                     Sản phẩm trong giỏ hàng (<?= $cartItemCount ?>)
                                 </h5>
-                                <button class="btn btn-outline-danger btn-sm" id="clearCart">
-                                    <i class="fas fa-trash me-1"></i>Xóa tất cả
-                                </button>
+                            
                             </div>
                             
                             <?php foreach ($cartItems as $item): ?>
                                 <div class="cart-item p-3 mb-3 rounded-2">
-                                    <div class="row align-items-center">
+                                    <!-- <div class="row align-items-center "> -->
                                         <!-- Hình ảnh -->
                                         <div class="col-md-2 col-12 text-center text-md-start">
                                             <?php if (!empty($item['image_path'])): ?>
@@ -262,7 +260,7 @@ if (!$is_guest) {
                                         </div>
                                         
                                         <!-- Thông tin sản phẩm -->
-                                        <div class="col-md-5 col-12 text-center text-md-start">
+                                        <div class="col-md-3 col-10 text-center text-md-start">
                                             <h5 class="fw-bold mb-1"><?= htmlspecialchars($item['product_title']) ?></h5>
                                             <small class="text-muted d-block mb-2">Mã SP: <?= $item['product_id'] ?></small>
                                             <div class="product-price">
@@ -280,9 +278,8 @@ if (!$is_guest) {
                                             </div>
                                         </div>
                                         
-                                        <!-- Tổng và nút xóa -->
+                                        <!-- nút xóa -->
                                         <div class="col-md-3 col-12 text-center text-md-end">
-                                           
                                             <div class="d-flex justify-content-end">
                                                 <button class="btn btn-sm btn-link text-danger btn-remove remove-item" 
                                                         title="Xóa" 
@@ -292,7 +289,7 @@ if (!$is_guest) {
                                                 </button>
                                             </div>
                                         </div>
-                                    </div>
+                                    <!-- </div> -->
                                 </div>
                             <?php endforeach; ?>
                         </div>

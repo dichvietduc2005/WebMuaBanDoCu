@@ -151,7 +151,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <span class="product-badge">Nổi bật</span>
                                 <?php endif; ?>
                                 <?php if ($product['image_path']): ?>
-                                    <img src="<?php echo BASE_URL . htmlspecialchars($product['image_path']); ?>"
+                                    <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($product['title']); ?>"
                                         style="width: 100%; height: 220px; object-fit: cover;">
                                 <?php else: ?>
@@ -231,7 +231,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             <div class="product-image" style="position: relative;">
                                 <?php if ($product['image_path']): ?>
 
-                                    <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                                    <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($product['title']); ?>">
                                         
                                 <?php else: ?>
