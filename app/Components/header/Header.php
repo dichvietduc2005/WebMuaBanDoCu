@@ -115,9 +115,9 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                     <span class="ms-2 d-none d-md-inline fw-semibold" style="color: #3b82f6; font-size: 15px;">Danh mục</span>
                                 </button>
                                 <ul class="dropdown-menu categories-dropdown-menu"
-                                    style="max-height: 70vh; overflow-y: auto; border-radius: 16px; border: none; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 12px; min-width: 280px;">
-                                    <li class="dropdown-header" style="padding: 12px 16px; font-weight: 700; color: #1f2937; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 12px; margin-bottom: 8px;">
-                                        <i class="fas fa-layer-group me-2"></i>Danh mục sản phẩm
+                                    style="max-height: 65vh; overflow-y: auto; border-radius: 20px; border: none; box-shadow: 0 12px 40px rgba(0,0,0,0.15); padding: 16px; min-width: 300px; margin-top: 8px; z-index: 1050;">
+                                    <li class="dropdown-header" style="padding: 16px 20px; font-weight: 700; color: #1f2937; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 16px; margin-bottom: 12px; text-align: center; font-size: 16px;">
+                                        Danh mục sản phẩm
                                     </li>
                                     <?php foreach ($categories as $category): ?>
                                         <li>
@@ -1171,64 +1171,5 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             }
         }
     </style>
-
-    <!-- Categories Dropdown Enhancement Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Improve categories dropdown behavior
-            const categoriesBtn = document.querySelector('.categories-btn');
-            const categoriesDropdown = document.querySelector('.categories-dropdown-menu');
-            
-            if (categoriesBtn && categoriesDropdown) {
-                // Add proper positioning on mobile
-                categoriesBtn.addEventListener('click', function(e) {
-                    if (window.innerWidth <= 768) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        // Toggle dropdown with animation
-                        if (categoriesDropdown.classList.contains('show')) {
-                            categoriesDropdown.classList.remove('show');
-                            categoriesDropdown.style.display = 'none';
-                        } else {
-                            categoriesDropdown.classList.add('show');
-                            categoriesDropdown.style.display = 'block';
-                            
-                            // Position dropdown in center of screen on mobile
-                            const rect = categoriesBtn.getBoundingClientRect();
-                            const dropdownHeight = categoriesDropdown.offsetHeight;
-                            const viewportHeight = window.innerHeight;
-                            
-                            if (window.innerWidth <= 576) {
-                                categoriesDropdown.style.position = 'fixed';
-                                categoriesDropdown.style.top = '50%';
-                                categoriesDropdown.style.left = '50%';
-                                categoriesDropdown.style.transform = 'translate(-50%, -50%)';
-                                categoriesDropdown.style.zIndex = '1060';
-                            }
-                        }
-                    }
-                });
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!categoriesBtn.contains(e.target) && !categoriesDropdown.contains(e.target)) {
-                        categoriesDropdown.classList.remove('show');
-                        categoriesDropdown.style.display = 'none';
-                    }
-                });
-                
-                // Handle window resize
-                window.addEventListener('resize', function() {
-                    if (window.innerWidth > 768) {
-                        categoriesDropdown.style.position = '';
-                        categoriesDropdown.style.top = '';
-                        categoriesDropdown.style.left = '';
-                        categoriesDropdown.style.transform = '';
-                    }
-                });
-            }
-        });
-    </script>
     <?php
 }
