@@ -67,7 +67,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                     <!-- Notifications -->
                     <a href="/WebMuaBanDoCu/app/View/extra/notifications.php"
                         class="btn btn-link text-dark position-relative rounded-circle d-flex align-items-center justify-content-center notifications-bell"
-                        title="Thông báo" style="width: 44px; height: 44px; padding: 0;">
+                        title="Thông báo">
                         <i class="fas fa-bell" style="font-size: clamp(18px, 4.5vw, 22px); color: #374151;"></i>
                         <?php if ($unread_notifications > 0): ?>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -167,7 +167,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                         <span
                                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                             style="font-size: 12px; padding: 0.2em 0.4em;">
-                                            <?php echo min($unread_notifications, 99); ?>            <?php echo $unread_notifications > 99 ? '+' : ''; ?>
+                                            <?php echo min($unread_notifications, 99); ?>
+                                            <?php echo $unread_notifications > 99 ? '+' : ''; ?>
                                         </span>
                                     <?php endif; ?>
                                 </a>
@@ -365,26 +366,17 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .search-input-modern {
-            height: 44px !important;
-            min-height: 44px !important;
-            max-height: 44px !important;
+        .search-input-modern,
+        .search-btn-modern {
             outline: none;
             box-shadow: none !important;
         }
 
         .search-input-modern:focus {
-            outline: none;
-            box-shadow: none;
             border-color: #a5b4fc !important;
         }
 
         .search-btn-modern {
-            height: 44px !important;
-            min-height: 44px !important;
-            max-height: 44px !important;
-            width: 56px !important;
-            min-width: 56px !important;
             transition: all 0.2s ease;
         }
 
@@ -393,6 +385,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             transform: scale(1.05);
             box-shadow: var(--shadow);
         }
+
 
 
         @media (max-width: 768px) {
@@ -415,10 +408,15 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 min-height: 40px !important;
                 max-height: 40px !important;
             }
+            .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
 
             .search-btn-modern i {
                 font-size: 14px !important;
             }
+            
         }
 
         @media (max-width: 768px) {
@@ -510,9 +508,13 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         /* Hiệu ứng cho dropdown danh mục */
         .dropdown-toggle:hover {
-            background-color: #f9fafb !important;
-            border-color: #d1d5db !important;
+            background-color: #e5e7eb !important;
+            /* Màu xám nhạt, dịu mắt */
+            border-color: #cbd5e1 !important;
+            /* Màu xám viền trung tính */
+            color: #374151 !important;
         }
+
 
         .dropdown-toggle:focus {
             box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.1) !important;
@@ -533,14 +535,198 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             color: #4f46e5 !important;
         }
 
+        /* Hiệu ứng hover cho các nút và icon - Với !important */
+        
+        /* Hiệu ứng hover cho icon thông báo */
+        .notifications-bell {
+            transition: all 0.3s ease !important;
+            border-radius: 50% !important;
+            padding: 8px !important;
+        }
+        
+        .notifications-bell:hover {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            transform: translateY(-2px) scale(1.05) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        .notifications-bell:hover i {
+            color: #3b82f6 !important;
+            transform: rotate(15deg) !important;
+        }
+        
+        /* Hiệu ứng hover cho icon tin nhắn */
+        #button-chat, #button-chat-mobile {
+            transition: all 0.3s ease !important;
+            border-radius: 50% !important;
+            padding: 8px !important;
+        }
+        
+        #button-chat:hover {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            transform: translateY(-2px) scale(1.05) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+        }
+        
+        #button-chat:hover i {
+            color: #10b981 !important;
+            transform: rotate(-5deg) !important;
+        }
+        
+        #button-chat-mobile:hover {
+            background-color: #3b82f6 !important;
+            color: white !important;
+            transform: translateY(-2px) scale(1.02) !important;
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3) !important;
+        }
+        
+        /* Hiệu ứng hover cho icon giỏ hàng */
+        .btn[title="Giỏ hàng"] {
+            transition: all 0.3s ease !important;
+            border-radius: 50% !important;
+            padding: 8px !important;
+        }
+        
+        .btn[title="Giỏ hàng"]:hover {
+            background-color: rgba(245, 158, 11, 0.1) !important;
+            transform: translateY(-2px) scale(1.05) !important;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2) !important;
+        }
+        
+        .btn[title="Giỏ hàng"]:hover i {
+            color: #f59e0b !important;
+            transform: rotate(10deg) !important;
+        }
+        
+        /* Hiệu ứng hover cho badge số lượng */
+        .cart-count, .badge {
+            transition: all 0.3s ease !important;
+        }
+        
+        .btn:hover .cart-count,
+        .btn:hover .badge {
+            transform: scale(1.1) !important;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3) !important;
+        }
+        
+        /* Hiệu ứng hover cho nút đăng tin */
+        .btn-warning[title="Đăng tin bán hàng"] {
+            transition: all 0.3s ease !important;
+        }
+        
+        .btn-warning[title="Đăng tin bán hàng"]:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4) !important;
+        }
+        
+        .btn-warning[title="Đăng tin bán hàng"]:hover i {
+            transform: rotate(180deg) !important;
+        }
+        
+        /* Hiệu ứng hover cho nút đăng nhập/đăng ký */
+        .btn-primary[href*="login"] {
+            transition: all 0.3s ease !important;
+        }
+        
+        .btn-primary[href*="login"]:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            transform: translateY(-2px) scale(1.02) !important;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3) !important;
+        }
+        
+        .btn-success[href*="register"] {
+            transition: all 0.3s ease !important;
+        }
+        
+        .btn-success[href*="register"]:hover {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+            transform: translateY(-2px) scale(1.02) !important;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3) !important;
+        }
+        
+        /* Hiệu ứng hover cho dropdown tài khoản */
+        .btn-outline-secondary.dropdown-toggle {
+            transition: all 0.3s ease !important;
+        }
+        
+        .btn-outline-secondary.dropdown-toggle:hover {
+            background-color: #f3f4f6 !important;
+            border-color: #9ca3af !important;
+            color: #374151 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(156, 163, 175, 0.2) !important;
+        }
+        
+        .btn-outline-secondary.dropdown-toggle:hover i {
+            color: #6b7280 !important;
+        }
+        
+        /* Hiệu ứng hover cho mobile icons */
+        @media (max-width: 991px) {
+            .d-lg-none .btn[title="Thông báo"] {
+                transition: all 0.3s ease !important;
+            }
+            
+            .d-lg-none .btn[title="Thông báo"]:hover {
+                background-color: rgba(59, 130, 246, 0.1) !important;
+                transform: translateY(-2px) scale(1.1) !important;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+            }
+            
+            .d-lg-none .btn[title="Giỏ hàng"] {
+                transition: all 0.3s ease !important;
+            }
+            
+            .d-lg-none .btn[title="Giỏ hàng"]:hover {
+                background-color: rgba(245, 158, 11, 0.1) !important;
+                transform: translateY(-2px) scale(1.1) !important;
+                box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2) !important;
+            }
+        }
+        
+        /* Hiệu ứng hover cho navbar toggler */
+        .navbar-toggler {
+            transition: all 0.3s ease !important;
+        }
+        
+        .navbar-toggler:hover {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            transform: scale(1.05) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        /* Hiệu ứng hover cho logo */
+        .navbar-brand {
+            transition: all 0.3s ease !important;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05) !important;
+        }
+        
+        .navbar-brand:hover i {
+            color: #2563eb !important;
+            transform: rotate(15deg) !important;
+        }
+        
+        /* Hiệu ứng hover cho nút xóa tìm kiếm */
+        .btn-clear-search {
+            transition: all 0.3s ease !important;
+        }
+        
+        .btn-clear-search:hover {
+            background-color: rgba(156, 163, 175, 0.1) !important;
+            transform: scale(1.1) !important;
+            color: #ef4444 !important;
+        }
+
         /* Accessibility improvements */
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
                 animation: none !important;
             }
-
-
         }
     </style>
     <?php

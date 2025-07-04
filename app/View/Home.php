@@ -181,9 +181,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                            <!-- <input type="number" min="1" max="<?php echo $product['stock_quantity']; ?>" value="1"
-                                                class="quantity-input" name="quantity"> -->
-                                                <input type="detail" class="product_detail" >
+                                        
                                             <button type="button" class="btn-checkout-now" onclick="buyNow(event, <?php echo $product['id']; ?>)">
                                                 <i class="fas fa-bolt"></i> Mua ngay
                                             </button>
