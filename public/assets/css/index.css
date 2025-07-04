@@ -128,7 +128,7 @@ body {
 
 /* Hero Section */
 .hero {
-  background: var(--gradient-bg);
+  background: url('/WebMuaBanDoCu/public/assets/images/nen.png') no-repeat center center / cover;
   color: white;
   border-radius: var(--border-radius);
   padding: 100px 60px;
@@ -145,7 +145,7 @@ body {
   right: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(circle, rgba(46, 31, 31, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
   animation: float 6s ease-in-out infinite;
 }
 
@@ -208,7 +208,7 @@ body {
 
 .btn-transparent {
   background: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: rgb(53, 67, 196);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
