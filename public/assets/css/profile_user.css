@@ -61,7 +61,7 @@ h2 {
 }
 
 .btn-edit {
-    background-color: rgb(102, 237, 255);
+    background-image: linear-gradient(rgb(123, 218, 255),rgb(186, 186, 255));
     color: #2575fc;
     border: 2px solid #fff;
 }
