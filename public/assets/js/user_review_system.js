@@ -3,7 +3,7 @@ function create_review_form(review) {
     <div class="review-item">
         <div class="reviewer-info">
             <div class="reviewer-avatar">
-                <img src="https://via.placeholder.com/40" alt="Reviewer Avatar">
+                <i class="fa-solid fa-user"></i>
             </div>
             <div class="reviewer-details">
                 <div class="reviewer-name">${review.username}</div>
