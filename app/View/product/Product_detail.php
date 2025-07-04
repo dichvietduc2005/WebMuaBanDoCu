@@ -175,7 +175,7 @@ if (isset($_SESSION['user_id'])) {
                         $text_html = '<div class="review-item">
                         <div class="reviewer-info">
                             <div class="reviewer-avatar">
-                                <img src="https://via.placeholder.com/40" alt="Reviewer Avatar">
+                                <i class="fa-solid fa-user"></i>
                             </div>
                             <div class="reviewer-details">
                                 <div class="reviewer-name">' . htmlspecialchars($review_username) . '</div>
@@ -238,6 +238,8 @@ if (isset($_SESSION['user_id'])) {
         <?php endif; ?>
     </div>
     <?php footer(); ?>
+    <script>let product_id = <?php echo $product_id ?></script>
+    <script src="/WebMuaBanDoCu/public/assets/js/user_review_system.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

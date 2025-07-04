@@ -274,10 +274,11 @@ body {
     overflow: hidden;
 }
 
-.reviewer-avatar img {
+.reviewer-avatar i {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    text-align: center;
+    padding-top: 10px;
 }
 
 .reviewer-details {
