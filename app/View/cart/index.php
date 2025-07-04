@@ -131,6 +131,11 @@ if (!$is_guest) {
                 min-width: 50px;
             }
             
+            .quantity-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
             .btn-remove {
                 padding: 8px 16px;
                 font-size: 0.9rem;
@@ -142,6 +147,11 @@ if (!$is_guest) {
             
             .checkout-button-container .btn {
                 font-size: 1.1rem;
+            }
+            
+            /* Sidebar responsive */
+            .col-lg-4 .bg-white {
+                margin-bottom: 15px;
             }
         }
         
@@ -221,9 +231,19 @@ if (!$is_guest) {
                 </div>
             <?php else: ?>
                 <div class="row g-4">
-                    <!-- Danh sách sản phẩm -->
-                    <div class="col-12">
+                    <!-- Danh sách sản phẩm (Cột trái) -->
+                    <div class="col-lg-8 col-12">
                         <div class="bg-white rounded-3 shadow-sm p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="fas fa-list text-primary me-2"></i>
+                                    Sản phẩm trong giỏ hàng (<?= $cartItemCount ?>)
+                                </h5>
+                                <button class="btn btn-outline-danger btn-sm" id="clearCart">
+                                    <i class="fas fa-trash me-1"></i>Xóa tất cả
+                                </button>
+                            </div>
+                            
                             <?php foreach ($cartItems as $item): ?>
                                 <div class="cart-item p-3 mb-3 rounded-2">
                                     <div class="row align-items-center">
@@ -256,18 +276,21 @@ if (!$is_guest) {
                                                 <span class="quantity-display">
                                                     <?= $item['quantity'] ?>
                                                 </span>
+                                               
                                             </div>
                                         </div>
                                         
                                         <!-- Tổng và nút xóa -->
                                         <div class="col-md-3 col-12 text-center text-md-end">
-                                            
-                                            <button class="btn btn-sm btn-link text-danger btn-remove remove-item" 
-                                                    title="Xóa" 
-                                                    data-product-id="<?= $item['product_id'] ?>">
-                                                <i class="fas fa-trash-alt me-1"></i>
-                                                <span class="d-sm-none">Xóa</span>
-                                            </button>
+                                           
+                                            <div class="d-flex justify-content-end">
+                                                <button class="btn btn-sm btn-link text-danger btn-remove remove-item" 
+                                                        title="Xóa" 
+                                                        data-product-id="<?= $item['product_id'] ?>">
+                                                    <i class="fas fa-trash-alt me-1"></i>
+                                                    <span class="d-sm-none">Xóa</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -275,9 +298,10 @@ if (!$is_guest) {
                         </div>
                     </div>
                     
-                    <!-- Tổng hợp đơn hàng -->
-                    <div class="col-12">
-                        <div class="order-summary-container bg-white rounded-3 shadow-sm p-4">
+                    <!-- Sidebar bên phải -->
+                    <div class="col-lg-4 col-12">
+                        <!-- Tổng hợp đơn hàng -->
+                        <div class="order-summary-container bg-white rounded-3 shadow-sm p-4 mb-4">
                             <h4 class="h5 mb-3 fw-bold">
                                 <i class="fas fa-receipt text-primary me-2"></i>Tóm tắt đơn hàng
                             </h4>
@@ -302,13 +326,178 @@ if (!$is_guest) {
                                 <?php if ($is_guest): ?>
                                     <div class="alert alert-warning mb-0">
                                         <i class="fas fa-exclamation-circle me-2"></i>
-                                        Vui lòng <a href="../auth/login.php" class="alert-link fw-bold">đăng nhập</a> để thanh toán
+                                        Vui lòng <a href="../user/login.php" class="alert-link fw-bold">đăng nhập</a> để thanh toán
                                     </div>
                                 <?php else: ?>
                                     <a href="../checkout/index.php" class="btn btn-primary w-100 py-3 fw-bold">
                                         <i class="fas fa-credit-card me-2"></i>THANH TOÁN NGAY
                                     </a>
                                 <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Voucher/Mã giảm giá -->
+                        <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+                            <h5 class="h6 mb-3 fw-bold">
+                                <i class="fas fa-tags text-success me-2"></i>Mã giảm giá
+                            </h5>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Nhập mã giảm giá" id="couponCode">
+                                <button class="btn btn-outline-success" type="button" id="applyCoupon">
+                                    <i class="fas fa-check me-1"></i>Áp dụng
+                                </button>
+                            </div>
+                            <small class="text-muted">Nhập mã để được giảm giá đặc biệt</small>
+                        </div>
+
+                        <!-- Thông tin vận chuyển -->
+                        <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+                            <h5 class="h6 mb-3 fw-bold">
+                                <i class="fas fa-truck text-info me-2"></i>Thông tin vận chuyển
+                            </h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span class="small">Miễn phí vận chuyển toàn quốc</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-clock text-warning me-2"></i>
+                                <span class="small">Giao hàng trong 2-3 ngày</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt text-primary me-2"></i>
+                                <span class="small">Bảo hành chính hãng</span>
+                            </div>
+                        </div>
+
+                        <!-- Hỗ trợ khách hàng -->
+                        <div class="bg-white rounded-3 shadow-sm p-4">
+                            <h5 class="h6 mb-3 fw-bold">
+                                <i class="fas fa-headset text-danger me-2"></i>Hỗ trợ khách hàng
+                            </h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-phone text-success me-2"></i>
+                                <span class="small">Hotline: 1900-xxxx</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-envelope text-primary me-2"></i>
+                                <span class="small">Email: support@example.com</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-facebook-messenger text-info me-2"></i>
+                                <span class="small">Chat trực tuyến 24/7</span>
+                            </div>
+                        </div>
+
+                        <!-- Sản phẩm tương tự -->
+                        <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+                            <h5 class="h6 mb-3 fw-bold">
+                                <i class="fas fa-heart text-danger me-2"></i>Có thể bạn quan tâm
+                            </h5>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="card h-100">
+                                        <div class="card-body p-2">
+                                            <div class="bg-light rounded-2 mb-2" style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                            <h6 class="card-title small mb-1">MacBook Pro</h6>
+                                            <p class="card-text text-danger small mb-0">45.000.000₫</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card h-100">
+                                        <div class="card-body p-2">
+                                            <div class="bg-light rounded-2 mb-2" style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                            <h6 class="card-title small mb-1">iPhone 15 Pro</h6>
+                                            <p class="card-text text-danger small mb-0">30.000.000₫</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ưu đãi đặc biệt -->
+                        <div class="bg-gradient-primary rounded-3 shadow-sm p-4 mb-4 text-white">
+                            <h5 class="h6 mb-3 fw-bold">
+                                <i class="fas fa-gift me-2"></i>Ưu đãi đặc biệt
+                            </h5>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-percent me-2"></i>
+                                    <span class="small">Giảm 10% cho đơn hàng trên 5 triệu</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-shipping-fast me-2"></i>
+                                    <span class="small">Miễn phí giao hàng nhanh</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-medal me-2"></i>
+                                    <span class="small">Tích điểm thành viên VIP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chính sách bảo hành -->
+                        <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+                            <h5 class="h6 mb-3 fw-bold">
+                                <i class="fas fa-certificate text-warning me-2"></i>Chính sách bảo hành
+                            </h5>
+                            <div class="d-flex align-items-start mb-2">
+                                <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                <div>
+                                    <strong class="small d-block">Bảo hành chính hãng</strong>
+                                    <span class="small text-muted">12-24 tháng tùy sản phẩm</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-2">
+                                <i class="fas fa-sync-alt text-info me-2 mt-1"></i>
+                                <div>
+                                    <strong class="small d-block">Đổi trả miễn phí</strong>
+                                    <span class="small text-muted">Trong vòng 7 ngày</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-tools text-primary me-2 mt-1"></i>
+                                <div>
+                                    <strong class="small d-block">Sửa chữa tận nơi</strong>
+                                    <span class="small text-muted">Miễn phí trong thời gian bảo hành</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phương thức thanh toán -->
+                        <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
+                            <h5 class="h6 mb-3 fw-bold">
+                                <i class="fas fa-credit-card text-success me-2"></i>Phương thức thanh toán
+                            </h5>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="text-center p-2 border rounded-2">
+                                        <i class="fab fa-cc-visa fa-2x text-primary mb-1"></i>
+                                        <div class="small">Visa</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-2 border rounded-2">
+                                        <i class="fab fa-cc-mastercard fa-2x text-warning mb-1"></i>
+                                        <div class="small">Mastercard</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-2 border rounded-2">
+                                        <i class="fas fa-money-bill-wave fa-2x text-success mb-1"></i>
+                                        <div class="small">Tiền mặt</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-2 border rounded-2">
+                                        <i class="fas fa-university fa-2x text-info mb-1"></i>
+                                        <div class="small">Chuyển khoản</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

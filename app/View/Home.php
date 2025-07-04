@@ -163,20 +163,24 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             </div>
                             <div class="product-content">
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                                <div class="product-description" style="color: #555; font-size: 14px; margin-bottom: 8px;">
+                                    <?php
+                                    $desc = strip_tags($product['description']);
+                                    $desc = preg_replace('/\s+/', ' ', $desc); // loại bỏ khoảng trắng thừa
+                                    echo htmlspecialchars(mb_strimwidth($desc, 0, 50, '...'));
+                                    ?>
+                                </div>
                                 <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
-                                <div class="product-meta">
+                               <div class="product-meta">
+                                    <div class="product-category" style="font-size:13px; color:#888;">
+                                            <i class="fas fa-tag"></i>
+                                            <?php echo htmlspecialchars($product['category_name'] ?? ''); ?>
+                                        </div>
                                     <div class="product-condition">
                                         <i class="fas fa-star"></i>
                                         <?php echo getConditionText($product['condition_status']); ?>
                                     </div>
-                                    <div class="product-stock">
-                                        <i class="fas fa-box"></i>
-                                        <?php if ($product['stock_quantity'] > 0): ?>
-                                            Còn <?php echo $product['stock_quantity']; ?> sản phẩm
-                                        <?php else: ?>
-                                            <span class="text-danger fw-bold">Hết hàng</span>
-                                        <?php endif; ?>
-                                    </div>
+                                    
                                 </div>
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
@@ -229,6 +233,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
 
                                     <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($product['title']); ?>">
+                                        
                                 <?php else: ?>
                                     <div
                                         style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
@@ -239,19 +244,23 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             <div class="product-content">
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
                                 <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
+                                <div class="product-description" style="color: #555; font-size: 14px; margin-bottom: 8px;">
+                                    <?php
+                                    $desc = strip_tags($product['description']);
+                                    $desc = preg_replace('/\s+/', ' ', $desc); // loại bỏ khoảng trắng thừa
+                                    echo htmlspecialchars(mb_strimwidth($desc, 0, 50, '...'));
+                                    ?>
+                                </div>
                                 <div class="product-meta">
+                                    <div class="product-category" style="font-size:13px; color:#888;">
+                                            <i class="fas fa-tag"></i>
+                                            <?php echo htmlspecialchars($product['category_name'] ?? ''); ?>
+                                        </div>
                                     <div class="product-condition">
                                         <i class="fas fa-star"></i>
                                         <?php echo getConditionText($product['condition_status']); ?>
                                     </div>
-                                    <div class="product-stock">
-                                        <i class="fas fa-box"></i>
-                                        <?php if ($product['stock_quantity'] > 0): ?>
-                                            Còn <?php echo $product['stock_quantity']; ?> sản phẩm
-                                        <?php else: ?>
-                                            <span class="text-danger fw-bold">Hết hàng</span>
-                                        <?php endif; ?>
-                                    </div>
+                                    
                                 </div>
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>

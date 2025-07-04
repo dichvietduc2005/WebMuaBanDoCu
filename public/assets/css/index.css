@@ -412,7 +412,7 @@ body {
   color: var(--gray);
   margin-bottom: 16px;
 }
-
+.product-category,
 .product-condition,
 .product-stock {
   display: flex;
@@ -423,7 +423,7 @@ body {
   border-radius: 20px;
   font-weight: 500;
 }
-
+.product-category i,
 .product-condition i,
 .product-stock i {
   color: var(--primary);
