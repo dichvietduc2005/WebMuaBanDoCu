@@ -73,6 +73,123 @@ if (!$is_guest) {
             color: #dc3545;
             font-weight: 600;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .cart-empty {
+                padding: 40px 20px;
+            }
+            
+            .cart-empty .fa-4x {
+                font-size: 3rem;
+            }
+            
+            .cart-item {
+                padding: 15px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .cart-item .row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .cart-item .col-md-2 {
+                align-self: center;
+            }
+            
+            .cart-item .col-md-5 {
+                text-align: center;
+            }
+            
+            .cart-item .col-md-2:nth-child(3) {
+                align-self: center;
+            }
+            
+            .cart-item .col-md-3 {
+                text-align: center;
+            }
+            
+            .cart-item img {
+                max-width: 100px;
+                height: 100px;
+                object-fit: cover;
+            }
+            
+            .product-price {
+                font-size: 1.2rem;
+                margin: 8px 0;
+            }
+            
+            .quantity-display {
+                font-size: 1.1rem;
+                padding: 8px 12px;
+                min-width: 50px;
+            }
+            
+            .btn-remove {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .order-summary-container {
+                margin-top: 20px;
+            }
+            
+            .checkout-button-container .btn {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .d-flex.justify-content-between.align-items-center {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 15px;
+            }
+            
+            .d-flex.justify-content-between.align-items-center h1 {
+                text-align: center;
+                font-size: 1.5rem;
+            }
+            
+            .cart-empty {
+                padding: 30px 15px;
+            }
+            
+            .cart-empty h3 {
+                font-size: 1.3rem;
+            }
+            
+            .cart-item {
+                padding: 12px !important;
+            }
+            
+            .cart-item h5 {
+                font-size: 1.1rem;
+            }
+            
+            .cart-item img {
+                max-width: 80px;
+                height: 80px;
+            }
+            
+            .product-price {
+                font-size: 1.1rem;
+            }
+            
+            .order-summary-container {
+                padding: 20px !important;
+            }
+            
+            .order-summary-container h4 {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -87,7 +204,9 @@ if (!$is_guest) {
                     <span class="badge bg-primary ms-2"><?= $cartItemCount ?></span>
                 </h1>
                 <a href="../TrangChu.php" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
+                    <i class="fas fa-arrow-left me-2"></i>
+                    <span class="d-none d-sm-inline">Tiếp tục mua sắm</span>
+                    <span class="d-sm-none">Tiếp tục</span>
                 </a>
             </div>
 
@@ -103,26 +222,27 @@ if (!$is_guest) {
             <?php else: ?>
                 <div class="row g-4">
                     <!-- Danh sách sản phẩm -->
-                    <div class="col-lg-8">
+                    <div class="col-12">
                         <div class="bg-white rounded-3 shadow-sm p-3">
                             <?php foreach ($cartItems as $item): ?>
                                 <div class="cart-item p-3 mb-3 rounded-2">
                                     <div class="row align-items-center">
                                         <!-- Hình ảnh -->
-                                        <div class="col-md-2 col-3">
+                                        <div class="col-md-2 col-12 text-center text-md-start">
                                             <?php if (!empty($item['image_path'])): ?>
                                                 <img src="/WebMuaBanDoCu/public/<?= htmlspecialchars($item['image_path']) ?>" 
                                                      class="img-thumbnail rounded-2" 
-                                                     alt="<?= htmlspecialchars($item['product_title']) ?>">
+                                                     alt="<?= htmlspecialchars($item['product_title']) ?>"
+                                                     style="max-width: 100px; height: 100px; object-fit: cover;">
                                             <?php else: ?>
-                                                <div class="img-thumbnail rounded-2 d-flex align-items-center justify-content-center" style="height: 80px;">
+                                                <div class="img-thumbnail rounded-2 d-flex align-items-center justify-content-center" style="height: 100px; width: 100px; margin: 0 auto;">
                                                     <i class="fas fa-image fa-lg text-muted"></i>
                                                 </div>
                                             <?php endif; ?>
                                         </div>
                                         
                                         <!-- Thông tin sản phẩm -->
-                                        <div class="col-md-5 col-6">
+                                        <div class="col-md-5 col-12 text-center text-md-start">
                                             <h5 class="fw-bold mb-1"><?= htmlspecialchars($item['product_title']) ?></h5>
                                             <small class="text-muted d-block mb-2">Mã SP: <?= $item['product_id'] ?></small>
                                             <div class="product-price">
@@ -131,8 +251,8 @@ if (!$is_guest) {
                                         </div>
                                         
                                         <!-- Số lượng -->
-                                        <div class="col-md-2 col-4">
-                                            <div class="d-flex align-items-center">
+                                        <div class="col-md-2 col-12 text-center">
+                                            <div class="d-flex align-items-center justify-content-center">
                                                 <span class="quantity-display">
                                                     <?= $item['quantity'] ?>
                                                 </span>
@@ -140,12 +260,13 @@ if (!$is_guest) {
                                         </div>
                                         
                                         <!-- Tổng và nút xóa -->
-                                        <div class="col-md-3 col-8 text-md-end">
+                                        <div class="col-md-3 col-12 text-center text-md-end">
                                             
                                             <button class="btn btn-sm btn-link text-danger btn-remove remove-item" 
                                                     title="Xóa" 
                                                     data-product-id="<?= $item['product_id'] ?>">
                                                 <i class="fas fa-trash-alt me-1"></i>
+                                                <span class="d-sm-none">Xóa</span>
                                             </button>
                                         </div>
                                     </div>
@@ -155,7 +276,7 @@ if (!$is_guest) {
                     </div>
                     
                     <!-- Tổng hợp đơn hàng -->
-                    <div class="col-lg-4">
+                    <div class="col-12">
                         <div class="order-summary-container bg-white rounded-3 shadow-sm p-4">
                             <h4 class="h5 mb-3 fw-bold">
                                 <i class="fas fa-receipt text-primary me-2"></i>Tóm tắt đơn hàng

@@ -3,8 +3,35 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once __DIR__ . '/../../../config/config.php';
-require_once __DIR__ . '/../../Core/Database.php';
+// Bắt đầu output buffering ngay từ đầu
+ob_start();
+
+try {
+    // Kiểm tra file config tồn tại
+    $configPath = __DIR__ . '/../../../config/config.php';
+    $databasePath = __DIR__ . '/../../Core/Database.php';
+    
+    if (!file_exists($configPath)) {
+        throw new Exception("Config file not found at: " . $configPath);
+    }
+    
+    if (!file_exists($databasePath)) {
+        throw new Exception("Database file not found at: " . $databasePath);
+    }
+    
+    require_once $configPath;
+    require_once $databasePath;
+    
+} catch (Exception $e) {
+    // Clear output buffer và trả về lỗi JSON
+    ob_clean();
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error' => 'Initialization error: ' . $e->getMessage()
+    ]);
+    exit;
+}
 
 class NotificationAPI
 {
@@ -12,7 +39,32 @@ class NotificationAPI
 
     public function __construct()
     {
-        $this->db = Database::getInstance()->getConnection();
+        try {
+            // Kiểm tra class Database có tồn tại không
+            if (!class_exists('Database')) {
+                throw new Exception("Database class not found");
+            }
+            
+            $this->db = Database::getInstance()->getConnection();
+            
+            if (!$this->db) {
+                throw new Exception("Failed to get database connection");
+            }
+            
+            error_log("NotificationAPI initialized successfully");
+            
+        } catch (Exception $e) {
+            error_log("NotificationAPI constructor error: " . $e->getMessage());
+            
+            // Clear output và trả về lỗi
+            if (ob_get_level()) ob_clean();
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Database connection failed: ' . $e->getMessage()
+            ]);
+            exit;
+        }
     }
 
     public function handleRequest()
@@ -26,6 +78,9 @@ class NotificationAPI
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        
+        // Debug log
+        error_log("NotificationAPI called with action: " . ($_GET['action'] ?? 'none'));
         
         // Thiết lập CORS headers
         header('Access-Control-Allow-Origin: *');
@@ -216,67 +271,59 @@ class NotificationAPI
 
     public function getSearchSuggestions()
     {
+        error_log("getSearchSuggestions called");
+        
+        // Clear any previous output
+        if (ob_get_level()) ob_clean();
+        
         try {
             $keyword = $_GET['keyword'] ?? '';
             $limit = (int)($_GET['limit'] ?? 8);
             
+            error_log("Search suggestions called with keyword: " . $keyword);
+            
             if (strlen($keyword) < 2) {
-                $this->successResponse([
+                error_log("Keyword too short, returning empty suggestions");
+                header('Content-Type: application/json');
+                echo json_encode([
                     'success' => true,
-                    'suggestions' => []
+                    'data' => [
+                        'suggestions' => []
+                    ]
                 ]);
-                return;
+                exit;
             }
 
-            // Lấy gợi ý từ tên sản phẩm
-            $stmt = $this->db->prepare("
-                SELECT DISTINCT p.title
-                FROM products p
-                WHERE p.status = 'active' 
-                AND p.stock_quantity > 0 
-                AND p.title LIKE ?
-                ORDER BY 
-                    CASE 
-                        WHEN p.title LIKE ? THEN 0
-                        ELSE 1
-                    END,
-                    p.view_count DESC,
-                    p.title ASC
-                LIMIT ?
-            ");
-            $stmt->execute(['%' . $keyword . '%', $keyword . '%', $limit]);
-            $productSuggestions = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-            // Lấy gợi ý từ tên danh mục
-            $stmt = $this->db->prepare("
-                SELECT DISTINCT c.name
-                FROM categories c
-                WHERE c.status = 'active'
-                AND c.name LIKE ?
-                ORDER BY 
-                    CASE 
-                        WHEN c.name LIKE ? THEN 0
-                        ELSE 1
-                    END,
-                    c.name ASC
-                LIMIT 4
-            ");
-            $stmt->execute(['%' . $keyword . '%', $keyword . '%']);
-            $categorySuggestions = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-            // Kết hợp và giới hạn số lượng
-            $allSuggestions = array_merge($productSuggestions, $categorySuggestions);
-            $allSuggestions = array_unique($allSuggestions);
-            $allSuggestions = array_slice($allSuggestions, 0, 10);
-
-            $this->successResponse([
+            // Test với dữ liệu tĩnh trước
+            $testSuggestions = [
+                'Điện thoại ' . $keyword,
+                'Laptop ' . $keyword, 
+                'Máy tính ' . $keyword,
+                'Tai nghe ' . $keyword,
+                'Đồng hồ ' . $keyword
+            ];
+            
+            error_log("Returning test suggestions: " . json_encode($testSuggestions));
+            
+            header('Content-Type: application/json');
+            echo json_encode([
                 'success' => true,
-                'suggestions' => array_values($allSuggestions)
+                'data' => [
+                    'suggestions' => $testSuggestions
+                ]
             ]);
-
+            exit;
+            
         } catch (Exception $e) {
             error_log("Search suggestions error: " . $e->getMessage());
-            $this->errorResponse('Server error: ' . $e->getMessage(), 500);
+            error_log("Stack trace: " . $e->getTraceAsString());
+            
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Server error: ' . $e->getMessage()
+            ]);
+            exit;
         }
     }
 

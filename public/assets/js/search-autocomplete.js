@@ -80,12 +80,15 @@ class SearchAutocomplete {
         this.showLoadingState();
 
         try {
-            const response = await fetch(`/WebMuaBanDoCu/app/Controllers/extra/NotificationAPI.php?action=search_suggestions&keyword=${encodeURIComponent(keyword)}`);
+            const response = await fetch(`/WebMuaBanDoCu/app/Controllers/extra/api.php?action=search_suggestions&keyword=${encodeURIComponent(keyword)}`);
+            
             const data = await response.json();
+            console.log('API Response:', data);
 
             if (data.success && data.suggestions) {
                 this.displaySuggestions(data.suggestions, keyword);
             } else {
+                console.log('No suggestions found or API error');
                 this.hideSuggestions();
             }
         } catch (error) {
