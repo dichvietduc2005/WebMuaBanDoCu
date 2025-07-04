@@ -210,6 +210,65 @@ class ProductController
     }
     
     /**
+     * Toggle featured status của sản phẩm
+     */
+    public function toggleFeaturedStatus($id) 
+    {
+        // Validate input
+        if (!is_numeric($id) || $id <= 0) {
+            return [
+                'success' => false,
+                'message' => 'ID sản phẩm không hợp lệ.'
+            ];
+        }
+        
+        try {
+            $this->db->beginTransaction();
+            
+            // Kiểm tra product tồn tại
+            $checkSql = "SELECT id, featured, status FROM products WHERE id = ?";
+            $checkStmt = $this->db->query($checkSql, [$id]);
+            $product = $checkStmt->fetch();
+            
+            if (!$product) {
+                throw new Exception("Sản phẩm không tồn tại.");
+            }
+            
+            // Chỉ cho phép toggle featured với sản phẩm active
+            if ($product['status'] !== 'active') {
+                throw new Exception("Chỉ có thể đặt nổi bật cho sản phẩm đã được duyệt.");
+            }
+            
+            // Toggle featured status
+            $newFeatured = $product['featured'] ? 0 : 1;
+            $updateSql = "UPDATE products SET featured = ?, updated_at = NOW() WHERE id = ?";
+            $stmt = $this->db->query($updateSql, [$newFeatured, $id]);
+            
+            if ($stmt->rowCount() === 0) {
+                throw new Exception("Không thể cập nhật trạng thái nổi bật.");
+            }
+            
+            $this->db->commit();
+            
+            $statusText = $newFeatured ? 'đã được đặt làm sản phẩm nổi bật' : 'đã được bỏ khỏi danh sách nổi bật';
+            
+            return [
+                'success' => true,
+                'message' => "Sản phẩm $statusText thành công.",
+                'new_featured_status' => $newFeatured
+            ];
+            
+        } catch (Exception $e) {
+            $this->db->rollback();
+            error_log("Error toggling featured status: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+    
+    /**
      * Validate dữ liệu update status
      */
     private function validateStatusUpdate($id, $status) 
@@ -264,6 +323,12 @@ function updateProductStatus($pdo, $id, $status) {
 function deleteProduct($pdo, $product_id) {
     $controller = new ProductController();
     $result = $controller->deleteProduct($product_id);
+    return $result['success'];
+}
+
+function toggleFeaturedStatus($pdo, $id) {
+    $controller = new ProductController();
+    $result = $controller->toggleFeaturedStatus($id);
     return $result['success'];
 }
 ?>

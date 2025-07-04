@@ -228,6 +228,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                             echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"' . '><i class="fas fa-solid fa-medal me-2"></i>' . 'Quản lý tài khoản' . '</a></li>';
                                             echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"' . '><i class="fas fa-solid fa-envelope me-2"></i>' . 'Xem tin nhắn từ người dùng' . '</a></li>';
                                             echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/products.php"' . '><i class="fas fa-solid fa-check me-2"></i>' . 'Duyệt sản phẩm' . '</a></li>';
+                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/manage_products.php"' . '><i class="fas fa-solid fa-check me-2"></i>' . 'Quản lý sản phẩm' . '</a></li>';   
                                         }
                                         ?>
                                         <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i
@@ -268,6 +269,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                         echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"' . '><i class="fas fa-solid fa-medal me-2"></i>' . 'Quản lý tài khoản' . '</a></li>';
                                         echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"' . '><i class="fas fa-solid fa-envelope me-2"></i>' . 'Xem tin nhắn từ người dùng' . '</a></li>';
                                         echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/products.php"' . '><i class="fas fa-solid fa-check me-2"></i>' . 'Duyệt sản phẩm' . '</a></li>';
+                                        echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/manage_products.php"' . '><i class="fas fa-cogs me-2"></i>' . 'Quản lý sản phẩm' . '</a></li>';
                                     }
                                     ?>
                                     <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i

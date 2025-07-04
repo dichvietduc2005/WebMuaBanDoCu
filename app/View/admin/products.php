@@ -25,6 +25,22 @@ $pending_products = getPendingProducts($pdo);
     <link href="../../../public/assets/css/index.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../public/assets/css/products_admin.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    <style>
+        .featured-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            margin-left: 8px;
+        }
+        .featured-row {
+            background: #fffbf0 !important;
+            border-left: 4px solid #ffa500;
+        }
+    </style>
 </head>
 
 <body>
@@ -33,6 +49,11 @@ $pending_products = getPendingProducts($pdo);
     <div class="container1">
 
         <h2>Sản phẩm chờ duyệt</h2>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Hướng dẫn:</strong> Sau khi duyệt sản phẩm, bạn có thể đặt sản phẩm làm nổi bật. 
+            Sản phẩm nổi bật sẽ hiển thị trong section "Sản phẩm nổi bật" ở trang chủ.
+        </div>
         <?php if (empty($pending_products)): ?>
         <p>Không có sản phẩm nào chờ duyệt.</p>
         <?php else: ?>
@@ -48,7 +69,7 @@ $pending_products = getPendingProducts($pdo);
                 <th>Hành động</th>
             </tr>
             <?php foreach ($pending_products as $product): ?>
-            <tr>
+            <tr data-product-id="<?= $product['id'] ?>" class="<?= $product['featured'] ? 'featured-row' : '' ?>">
                 <td>
                     <?php if (!empty($product['image_path'])): ?>
                     <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
@@ -60,24 +81,41 @@ $pending_products = getPendingProducts($pdo);
                     </div>
                     <?php endif; ?>
                 </td>
-                <td><?= htmlspecialchars($product['title']) ?></td>
+                <td>
+                    <?= htmlspecialchars($product['title']) ?>
+                    <?php if ($product['featured']): ?>
+                        <span class="featured-badge"><i class="fas fa-star"></i> Nổi bật</span>
+                    <?php endif; ?>
+                </td>
                 <td><?= htmlspecialchars($product['username']) ?></td>
                 <td><?= number_format($product['price']) ?> VNĐ</td>
                 <td><?= htmlspecialchars($product['condition_status']) ?></td>
                 <td><?= htmlspecialchars($product['description']) ?></td>
                 <td><?= htmlspecialchars($product['created_at']) ?></td>
                 <td class="actions">
-    <a href="../../Models/admin/AdminModel.php?action=approve&id=<?= $product['id'] ?>" 
+    <a href="../../Models/admin/AdminModelAPI.php?action=approve&id=<?= $product['id'] ?>" 
        class="btn btn-success action-btn">
        <i class="fas fa-check"></i> Duyệt
     </a>
        
-    <a href="../../Models/admin/AdminModel.php?action=reject&id=<?= $product['id'] ?>" 
+    <a href="../../Models/admin/AdminModelAPI.php?action=reject&id=<?= $product['id'] ?>" 
        class="btn btn-warning action-btn">
        <i class="fas fa-times"></i> Từ chối
     </a>
+    
+    <?php if ($product['featured']): ?>
+        <a href="../../Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?= $product['id'] ?>" 
+           class="btn btn-warning action-btn">
+           <i class="fas fa-star-half-alt"></i> Bỏ nổi bật
+        </a>
+    <?php else: ?>
+        <a href="../../Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?= $product['id'] ?>" 
+           class="btn btn-info action-btn">
+           <i class="fas fa-star"></i> Đặt nổi bật
+        </a>
+    <?php endif; ?>
        
-    <a href="../../Models/admin/AdminModel.php?action=delete&id=<?= $product['id'] ?>" 
+    <a href="../../Models/admin/AdminModelAPI.php?action=delete&id=<?= $product['id'] ?>" 
        class="btn btn-danger action-btn delete">
        <i class="fas fa-trash"></i> Xóa
     </a>

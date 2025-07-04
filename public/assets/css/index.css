@@ -273,7 +273,7 @@ body {
 /* Optimized Products Grid - 5 per row on desktop, 2 on mobile */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   margin-bottom: 20px;
 }
