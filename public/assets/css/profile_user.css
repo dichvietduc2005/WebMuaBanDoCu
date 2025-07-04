@@ -5,17 +5,17 @@
 
 body {
     margin: 0;
-    background-color: #006177;
+    background-color: rgb(255, 255, 255);
 }
 
 .container {
     max-width: 700px;
     margin: 60px auto;
     padding: 30px;
-    background-color: transparent;
-    color: white;
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
     margin-top: 10px;
 }
 
@@ -38,7 +38,7 @@ h2 {
 .info-group input {
     width: 100%;
     padding: 12px;
-    border: none;
+    border: 2px solid rgb(0, 0, 0, 0.2);
     border-radius: 8px;
     font-size: 16px;
     background-color: white;
@@ -61,7 +61,7 @@ h2 {
 }
 
 .btn-edit {
-    background-color: #ffffff;
+    background-color: rgb(102, 237, 255);
     color: #2575fc;
     border: 2px solid #fff;
 }
