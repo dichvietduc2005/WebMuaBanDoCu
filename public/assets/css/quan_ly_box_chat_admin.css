@@ -49,3 +49,33 @@ table{
 tbody tr:hover{
     background-color: rgb(255, 255, 0);
 }
+
+/* ===== Responsive Enhancements ===== */
+@media (max-width: 991.98px) {
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    th, td {
+        font-size: 18px;
+        padding: 10px 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        background-color: #eee;
+    }
+    th, td {
+        font-size: 16px;
+        padding: 8px 6px;
+    }
+    table {
+        font-size: 16px;
+    }
+    h1 {
+        font-size: 24px;
+    }
+}

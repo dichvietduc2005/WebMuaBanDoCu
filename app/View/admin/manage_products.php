@@ -19,6 +19,8 @@ $regular_products = array_filter($all_products, function($p) { return !$p['featu
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Quản lý tất cả sản phẩm</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +28,6 @@ $regular_products = array_filter($all_products, function($p) { return !$p['featu
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="../../../public/assets/css/index.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../public/assets/css/products_admin.css">
-    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
     <style>
         .featured-badge {
             background: linear-gradient(45deg, #ff6b6b, #ffa500);

@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tin nhắn từ người dùng</title>
   <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/admin_box_chat.css?v=1">
   <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/quan_ly_box_chat_admin.css">

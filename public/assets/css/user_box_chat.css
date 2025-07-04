@@ -82,3 +82,30 @@
     color: white;
     max-width: 50%;
 }
+
+/* ===== Responsive Enhancements ===== */
+@media (max-width: 768px) {
+    .chat-container {
+        width: 85vw;
+        bottom: 100px;
+        right: 5vw;
+    }
+}
+
+@media (max-width: 576px) {
+    .chat-container {
+        width: 90vw;
+        bottom: 80px;
+        right: 4vw;
+    }
+    .chat-header {
+        padding: 12px;
+        font-size: 15px;
+    }
+    .chat-input input {
+        font-size: 14px;
+    }
+    .chat-input button {
+        padding: 4px 8px;
+    }
+}

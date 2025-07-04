@@ -82,3 +82,29 @@ body {
     word-wrap: break-word;
     max-width: 50%;
 }
+
+/* ===== Responsive Enhancements ===== */
+@media (max-width: 768px) {
+    .chat-container {
+        width: 90vw;
+        height: 65vh;
+        right: 5vw;
+        bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .chat-container {
+        width: 92vw;
+        height: 70vh;
+        right: 4vw;
+        bottom: 15px;
+    }
+    .chat-header {
+        padding: 16px;
+        font-size: 16px;
+    }
+    .chat-input button {
+        flex-basis: 40px;
+    }
+}

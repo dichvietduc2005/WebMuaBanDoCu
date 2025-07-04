@@ -236,15 +236,19 @@ const searchAutocompleteCSS = `
     cursor: pointer;
     border-bottom: 1px solid #f3f4f6;
     transition: background-color 0.2s ease;
+    border-radius: 8px;
+    border-top: 8px
 }
 
 .suggestion-item:last-child {
     border-bottom: none;
+    /* keep bottom corners rounded */
 }
 
 .suggestion-item:hover,
 .suggestion-item.focused {
     background-color: #f8fafc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .suggestion-item.loading {

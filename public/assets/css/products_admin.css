@@ -160,3 +160,64 @@
     .actions {
         white-space: nowrap;
     }
+
+    /* ===== Responsive Enhancements ===== */
+    @media (max-width: 991.98px) {
+        /* Reduce padding & shadow on container */
+        .container1 {
+            padding: 24px 16px;
+            margin: 24px auto 0 auto;
+        }
+
+        /* Make table scrollable horizontally */
+        table {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        /* Increase min-width to keep cells readable */
+        th,
+        td {
+            min-width: 120px;
+            font-size: 14px;
+            padding: 10px 8px;
+        }
+
+        h2 {
+            font-size: 22px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container1 {
+            padding: 20px 12px;
+        }
+
+        /* Further tighten table cells */
+        th,
+        td {
+            font-size: 13px;
+            padding: 8px 6px;
+            min-width: 110px;
+        }
+
+        /* Shrink action buttons */
+        .actions a {
+            padding: 4px 6px;
+            font-size: 12px;
+            min-width: 64px;
+        }
+
+        /* Allow flex column for actions on extra-small */
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+    }

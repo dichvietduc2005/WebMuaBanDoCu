@@ -115,7 +115,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                     <span class="ms-2 d-none d-md-inline fw-semibold" style="color: #3b82f6; font-size: 15px;">Danh mục</span>
                                 </button>
                                 <ul class="dropdown-menu categories-dropdown-menu"
-                                    style="max-height: 65vh; overflow-y: auto; border-radius: 20px; border: none; box-shadow: 0 12px 40px rgba(0,0,0,0.15); padding: 16px; min-width: 300px; margin-top: 8px; z-index: 1050;">
+                                    style="max-height: 65vh; overflow-y: auto; border-radius: 20px; border: none; box-shadow: 0 12px 40px rgba(0,0,0,0.15); padding: 16px; min-width: 300px; margin-top: 8px; ">
                                     <li class="dropdown-header" style="padding: 16px 20px; font-weight: 700; color: #1f2937; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 16px; margin-bottom: 12px; text-align: center; font-size: 16px;">
                                         Danh mục sản phẩm
                                     </li>
@@ -157,7 +157,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
                                 <!-- Gợi ý tìm kiếm -->
                                 <div class="search-suggestions position-absolute bg-white rounded shadow-lg mt-1 w-100"
-                                    style="z-index: 1000; display: none; max-height: 300px; overflow-y: auto; border-radius: 16px; border: 1px solid #e5e7eb;">
+                                    style="z-index: 1100; display: none; max-height: 300px; overflow-y: auto; border-radius: 16px; border: 1px solid #e5e7eb;">
                                     <div class="list-group">
                                         <!-- Các gợi ý sẽ được thêm bằng JavaScript -->
                                     </div>
@@ -492,7 +492,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 max-width: 90vw !important;
                 margin-top: 4px !important;
                 max-height: 60vh !important;
-                left: 0 !important;
+                left: 29% !important;
                 right: auto !important;
                 transform: none !important;
             }
@@ -783,7 +783,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             top: 100% !important;
             left: 0 !important;
             margin-top: 8px !important;
-            z-index: 1060 !important;
+            /* z-index: 1100 !important; */
             display: none !important;
         }
 
@@ -794,20 +794,19 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         /* Ensure dropdown doesn't get covered by search box */
         .dropdown {
             position: relative;
-            z-index: 1020;
+            /* z-index: 1020; */
         }
 
         .search-modern {
             position: relative;
-            z-index: 1010;
-        }
+/        }
 
         /* Mobile responsive for categories dropdown positioning */
         @media (max-width: 768px) {
             .categories-dropdown-menu {
                 position: fixed !important;
                 top: auto !important;
-                left: 50% !important;
+                left: 29% !important;
                 transform: translateX(-50%) !important;
                 margin-top: 0 !important;
                 bottom: auto !important;
@@ -986,7 +985,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                 border: none !important;
                 box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2) !important;
                 background: white !important;
-                z-index: 1060 !important;
+                /* z-index: 1060 !important; */
                 padding: 16px !important;
                 max-height: 80vh !important;
                 overflow-y: auto !important;
