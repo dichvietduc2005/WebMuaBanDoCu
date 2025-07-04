@@ -151,7 +151,7 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `image`, `status`
 --
 
 CREATE TABLE messages (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     box_chat_id INT NOT NULL, 
     role VARCHAR(10), 
     content TEXT NOT NULL, 
@@ -821,7 +821,7 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 CREATE TABLE review_products (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
     product_id INT NOT NULL,
     content TEXT,
@@ -832,5 +832,11 @@ CREATE TABLE review_products (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
-CREATE TABLE box_chat( user_id INT NOT NULL, is_read TINYINT(1) DEFAULT 0, FOREIGN KEY (user_id) REFERENCES users(id) );
+CREATE TABLE box_chat(
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) 
+);
 

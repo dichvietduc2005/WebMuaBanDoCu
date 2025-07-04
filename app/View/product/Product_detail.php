@@ -229,7 +229,9 @@ if (isset($_SESSION['user_id'])) {
                     <?php endif; ?>
                     <div class="related-content">
                         <h6><?php echo htmlspecialchars($related['title']); ?></h6>
+                        
                         <div class="text-danger fw-bold"><?php echo formatPrice($related['price']); ?></div>
+                        <div class="text-muted small">Tình trạng: <?php echo getConditionText($related['condition_status']); ?></div>
                     </div>
                 </div>
                 <?php endforeach; ?>

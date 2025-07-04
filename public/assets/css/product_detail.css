@@ -101,6 +101,8 @@ body {
     text-align: center;
     border: 1px solid #ddd;
     border-radius: 6px;
+    appearance: textfield;
+    -moz-appearance: textfield; /* Firefox */
 }
 
 /* Ẩn nút tăng giảm trên input type="number" cho mọi trình duyệt */
@@ -108,11 +110,6 @@ body {
 .qty-input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
-}
-
-.qty-input {
-    -moz-appearance: textfield;
-    /* Firefox */
 }
 
 .action-buttons {
@@ -156,8 +153,8 @@ body {
 
 .related-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 25px;
 }
 
 .related-item {

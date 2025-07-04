@@ -92,6 +92,9 @@
   background: white;
   font-size: 14px;
   margin: 0;
+  /* Ẩn kiểu spinner mặc định của các trình duyệt */
+  appearance: textfield;
+  -moz-appearance: textfield; /* Firefox */
 }
 
 .quantity-input:focus {
@@ -103,9 +106,6 @@
 .quantity-input::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-.quantity-input {
-  -moz-appearance: textfield; /* Firefox */
 }
 
 .item-total {

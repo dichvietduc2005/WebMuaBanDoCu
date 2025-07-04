@@ -450,6 +450,8 @@ body {
   font-weight: 500;
   transition: var(--transition);
   background: var(--white);
+  appearance: textfield;
+  -moz-appearance: textfield; /* Firefox */
 }
 
 .quantity-input:focus {
@@ -465,7 +467,8 @@ body {
 }
 
 /* Nút Checkout/Thanh toán ngay */
-.btn-checkout-now {
+.btn-checkout-now,
+.btn-add-to-cart {
   flex: 1;
   background: linear-gradient(135deg, #4f46e5, #7c3aed); /* Gradient tím đậm */
   color: white;
@@ -487,7 +490,7 @@ body {
   position: relative;
   overflow: hidden;
 }
-
+.btn-add-to-cart::before,
 .btn-checkout-now::before {
   content: '';
   position: absolute;
@@ -498,52 +501,20 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   transition: 0.5s;
 }
-
+.btn-add-to-cart:hover,
 .btn-checkout-now:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
   background: linear-gradient(135deg, #4338ca, #6d28d9);
 }
-
+.btn-add-to-cart:hover::before,
 .btn-checkout-now:hover::before {
   left: 100%;
 }
-
+.btn-add-to-cart,
 .btn-checkout-now:active {
   transform: translateY(1px);
   box-shadow: 0 3px 8px rgba(79, 70, 229, 0.3);
-}
-
-/* Nút Thêm vào giỏ */
-.btn-add-to-cart {
-  flex: 1;
-  background: linear-gradient(135deg, #3b82f6, #2563eb); /* Gradient xanh dương */
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 20px;
-  height: 44px;
-  min-width: 120px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 14px;
-  box-shadow: 0 3px 8px rgba(59, 130, 246, 0.2);
-}
-
-.btn-add-to-cart:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(59, 130, 246, 0.3);
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-}
-
-.btn-add-to-cart:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
 }
 
 /* Trạng thái disabled */

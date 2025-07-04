@@ -185,10 +185,9 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-
-                                            <button type="button" class="btn-checkout-now" onclick="buyNow(event, <?php echo $product['id']; ?>)">
+                                            <!-- <button type="button" class="btn-checkout-now" onclick="buyNow(event, <?php echo $product['id']; ?>)">
                                                 <i class="fas fa-bolt"></i> Mua ngay
-                                            </button>
+                                            </button> -->
                                             <button type="submit" class="btn-add-to-cart">
                                                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ
                                             </button>
@@ -263,9 +262,9 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                            <button type="submit" class="btn-checkout-now">
+                                            <!-- <button type="submit" class="btn-checkout-now">
                                                 <i class="fas fa-cart-plus"></i> Mua ngay
-                                            </button>
+                                            </button> -->
                                             <button type="submit" class="btn-add-to-cart">
                                                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ
                                             </button>
