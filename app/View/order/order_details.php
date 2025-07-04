@@ -542,6 +542,8 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     </div>
 
     <script src="../../../public/assets/js/order_details.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <?php footer(); ?>
 </body>
 </html>
