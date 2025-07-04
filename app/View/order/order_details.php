@@ -39,7 +39,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chi tiết đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?> - Web Mua Bán Đồ Cũ</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -59,12 +59,14 @@ $payment_method = formatPaymentMethod($order['payment_method']);
             background-color: #f8f9fa;
             color: #333;
             line-height: 1.6;
+             overflow-x: hidden;
         }
         
-        .container {
+        .container123 {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px;
+            box-sizing: border-box;
         }
         
         .order-header {
@@ -365,7 +367,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
      <?php
     renderHeader($pdo);
     ?>
-    <div class="container">
+    <div class="container123">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
             <a href="<?php echo $root_path; ?>/public/TrangChu.php">Trang chủ</a> / 
