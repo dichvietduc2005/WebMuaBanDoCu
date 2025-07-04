@@ -165,27 +165,27 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
                                 <div class="product-description" style="color: #555; font-size: 14px; margin-bottom: 8px;">
                                     <?php
-                                    $desc = strip_tags($product['description']);
-                                    $desc = preg_replace('/\s+/', ' ', $desc); // loại bỏ khoảng trắng thừa
-                                    echo htmlspecialchars(mb_strimwidth($desc, 0, 50, '...'));
+                                                $desc = strip_tags($product['description']);
+                                                $desc = preg_replace('/\s+/', ' ', $desc); // loại bỏ khoảng trắng thừa
+                                                echo htmlspecialchars(mb_strimwidth($desc, 0, 50, '...'));
                                     ?>
                                 </div>
                                 <div class="product-price"><?php echo formatPrice($product['price']); ?></div>
-                               <div class="product-meta">
+                                <div class="product-meta">
                                     <div class="product-category" style="font-size:13px; color:#888;">
-                                            <i class="fas fa-tag"></i>
-                                            <?php echo htmlspecialchars($product['category_name'] ?? ''); ?>
-                                        </div>
+                                        <i class="fas fa-tag"></i>
+                                        <?php echo htmlspecialchars($product['category_name'] ?? ''); ?>
+                                    </div>
                                     <div class="product-condition">
                                         <i class="fas fa-star"></i>
                                         <?php echo getConditionText($product['condition_status']); ?>
                                     </div>
-                                    
+
                                 </div>
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                        
+
                                             <button type="button" class="btn-checkout-now" onclick="buyNow(event, <?php echo $product['id']; ?>)">
                                                 <i class="fas fa-bolt"></i> Mua ngay
                                             </button>
@@ -194,8 +194,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                             </button>
                                         </form>
                                     <?php else: ?>
-                                       
-
                                         <!-- Nút disabled -->
                                         <button class="btn-add-to-cart" disabled>
                                             <i class="fas fa-ban"></i>
@@ -233,7 +231,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
 
                                     <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($product['title']); ?>">
-                                        
+
                                 <?php else: ?>
                                     <div
                                         style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
@@ -253,19 +251,19 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 </div>
                                 <div class="product-meta">
                                     <div class="product-category" style="font-size:13px; color:#888;">
-                                            <i class="fas fa-tag"></i>
-                                            <?php echo htmlspecialchars($product['category_name'] ?? ''); ?>
-                                        </div>
+                                        <i class="fas fa-tag"></i>
+                                        <?php echo htmlspecialchars($product['category_name'] ?? ''); ?>
+                                    </div>
                                     <div class="product-condition">
                                         <i class="fas fa-star"></i>
                                         <?php echo getConditionText($product['condition_status']); ?>
                                     </div>
-                                    
+
                                 </div>
                                 <div class="product-actions" onclick="event.stopPropagation();">
                                     <?php if ($product['stock_quantity'] > 0): ?>
                                         <form class="add-to-cart-form" onsubmit="addToCart(event, <?php echo $product['id']; ?>)">
-                                        <button type="submit" class="btn-checkout-now">
+                                            <button type="submit" class="btn-checkout-now">
                                                 <i class="fas fa-cart-plus"></i> Mua ngay
                                             </button>
                                             <button type="submit" class="btn-add-to-cart">
@@ -382,7 +380,9 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/WebMuaBanDoCu/public/assets/js/main.js"></script>
-    <script>let userId = <?php echo $_SESSION['user_id'] ?></script>
+    <script>
+        let userId = <?php echo $_SESSION['user_id'] ?>
+    </script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
 </body>
 
