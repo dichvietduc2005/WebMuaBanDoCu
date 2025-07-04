@@ -213,7 +213,27 @@
 .header .nav-pills > li > a {
   font-size: 14px;
 }
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
 
+.toast {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.toast.show {
+    display: block;
+    opacity: 1;
+}
+
+.toast-body {
+    padding: 0.75rem;
+}
 /* Toast Notification Styles */
 .toast-container {
   position: fixed;
