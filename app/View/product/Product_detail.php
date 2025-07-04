@@ -159,39 +159,56 @@ if (isset($_SESSION['user_id'])) {
             <h3 class="reviews-header">Đánh giá của khách hàng</h3>
 
             <!-- Review Item Example -->
-            <div class="review-item">
-                <div class="reviewer-info">
-                    <div class="reviewer-avatar">
-                        <img src="https://via.placeholder.com/40" alt="Reviewer Avatar">
+            <div class="reviews-container" id="reviewsContainer">
+                <?php
+                $stmt = $pdo->prepare('SELECT * FROM review_products WHERE product_id = ? ORDER BY sent_at ASC');
+                $stmt->execute([$product_id]);
+
+                $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($reviews) {
+                    foreach ($reviews as $review) {
+                        $review_username = $review['username'];
+                        $review_sent_at = $review['sent_at'];
+                        $review_content = $review['content'];
+
+                        $text_html = '<div class="review-item">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">
+                                <img src="https://via.placeholder.com/40" alt="Reviewer Avatar">
+                            </div>
+                            <div class="reviewer-details">
+                                <div class="reviewer-name">' . htmlspecialchars($review_username) . '</div>
+                                <div class="review-date">' . htmlspecialchars($review_sent_at) . '</div>
+                            </div>
+                        </div>
+                        <div class="review-text">' . htmlspecialchars($review_content) . '</div>
+                        </div>';
+
+                        echo $text_html;
+                    }
+                }
+                ?>
+
+                <!-- <div class="review-item">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Reviewer Avatar">
+                        </div>
+                        <div class="reviewer-details">
+                            <div class="reviewer-name">Nguyễn Văn A</div>
+                            <div class="review-date">12/10/2023</div>
+                        </div>
                     </div>
-                    <div class="reviewer-details">
-                        <div class="reviewer-name">Nguyễn Văn A</div>
-                        <div class="review-date">12/10/2023</div>
+                    <div class="review-text">
+                        Sản phẩm rất tốt, tôi rất hài lòng với chất lượng.
                     </div>
-                </div>
-                <div class="review-rating">
-                    <span class="star">&#9733;</span>
-                    <span class="star">&#9733;</span>
-                    <span class="star">&#9733;</span>
-                    <span class="star">&#9733;</span>
-                    <span class="star empty">&#9733;</span>
-                </div>
-                <div class="review-text">
-                    Sản phẩm rất tốt, tôi rất hài lòng với chất lượng.
-                </div>
-                <div class="review-actions">
-                    <div class="review-action">
-                        <i class="fas fa-reply"></i> Trả lời
-                    </div>
-                    <div class="review-action">
-                        <i class="fas fa-flag"></i> Báo cáo
-                    </div>
-                </div>
+                </div> -->
             </div>
-
-            <!-- More reviews... -->
-
-            <button class="see-all-reviews" onclick="showAllReviews()">Xem tất cả đánh giá</button>
+            <div class="reviews-footer">
+                <input type="text" name="" id="contentReview" placeholder="Thêm đánh giá sản phẩm">
+                <button id="sendButton">Đăng</button>
+            </div>
         </div>
 
         <!-- Related Products -->
