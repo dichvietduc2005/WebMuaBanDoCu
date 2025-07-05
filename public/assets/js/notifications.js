@@ -12,6 +12,7 @@ class NotificationsPopup {
             news: [],
             unreadCount: 0
         };
+        this.refreshInterval = null;
         this.init();
     }
 
@@ -19,6 +20,7 @@ class NotificationsPopup {
         this.createPopupHTML();
         this.bindEvents();
         this.loadNotifications();
+        this.startAutoRefresh();
     }
 
     createPopupHTML() {
@@ -96,6 +98,35 @@ class NotificationsPopup {
                 this.closePopup();
             }
         });
+
+        // Page focus/blur events để refresh notifications
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // Trang được focus lại, refresh notifications
+                this.loadNotifications();
+            }
+        });
+
+        // Window focus event
+        window.addEventListener('focus', () => {
+            this.loadNotifications();
+        });
+
+        // Storage event để sync giữa các tab
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'notifications_updated') {
+                this.loadNotifications();
+            }
+        });
+    }
+
+    startAutoRefresh() {
+        // Auto-refresh notifications every 30 seconds
+        this.refreshInterval = setInterval(() => {
+            if (!this.isOpen && !document.hidden) {
+                this.loadNotifications();
+            }
+        }, 30 * 1000);
     }
 
     togglePopup() {
@@ -281,16 +312,42 @@ class NotificationsPopup {
 
     updateBadges() {
         const badge = document.getElementById('activity-badge');
-        const headerBadge = document.querySelector('.navbar .badge');
+        // Chỉ target notification badges, không phải cart badges
+        const headerBadges = document.querySelectorAll('.notifications-bell .badge, .badge.bg-danger:not(.cart-count)');
+        
+        console.log('Updating badges with unread count:', this.notifications.unreadCount);
         
         if (this.notifications.unreadCount > 0) {
             const count = this.notifications.unreadCount > 99 ? '99+' : this.notifications.unreadCount;
-            if (badge) badge.textContent = count;
-            if (headerBadge) headerBadge.textContent = count;
+            
+            if (badge) {
+                badge.textContent = count;
+                badge.style.display = 'inline';
+            }
+            
+            // Cập nhật tất cả notification badges trong header
+            headerBadges.forEach(headerBadge => {
+                if (headerBadge && !headerBadge.classList.contains('cart-count')) {
+                    headerBadge.textContent = count;
+                    headerBadge.style.display = 'flex';
+                }
+            });
         } else {
-            if (badge) badge.textContent = '';
-            if (headerBadge) headerBadge.style.display = 'none';
+            if (badge) {
+                badge.textContent = '';
+                badge.style.display = 'none';
+            }
+            
+            // Ẩn tất cả notification badges trong header
+            headerBadges.forEach(headerBadge => {
+                if (headerBadge && !headerBadge.classList.contains('cart-count')) {
+                    headerBadge.style.display = 'none';
+                }
+            });
         }
+        
+        // Trigger storage event để sync với other tabs
+        localStorage.setItem('notifications_updated', Date.now().toString());
     }
 
     async markAllAsRead() {
@@ -351,6 +408,12 @@ class NotificationsPopup {
         document.getElementById('activity-list').innerHTML = errorHTML;
         document.getElementById('news-list').innerHTML = errorHTML;
     }
+
+    destroy() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+    }
 }
 
 // Initialize notifications popup when DOM is loaded
@@ -358,9 +421,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.notificationsPopup = new NotificationsPopup();
 });
 
-// Auto-refresh notifications every 5 minutes
-setInterval(() => {
-    if (window.notificationsPopup && !window.notificationsPopup.isOpen) {
+// Function để refresh notifications từ bên ngoài
+window.refreshNotifications = function() {
+    if (window.notificationsPopup) {
         window.notificationsPopup.loadNotifications();
     }
-}, 5 * 60 * 1000);
+};

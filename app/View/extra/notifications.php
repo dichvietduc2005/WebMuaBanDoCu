@@ -12,6 +12,7 @@ $stmt = $pdo->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY cr
 $stmt->execute([$user_id]);
 $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Đánh dấu tất cả thông báo là đã đọc
 $stmt = $pdo->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0");
 $stmt->execute([$user_id]);
 ?>
@@ -59,6 +60,40 @@ $stmt->execute([$user_id]);
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    
+    <script>
+        // Xóa badges notification ngay lập tức khi vào trang này
+        function clearNotificationBadges() {
+            const headerBadges = document.querySelectorAll('.notifications-bell .badge, .badge.bg-danger:not(.cart-count)');
+            headerBadges.forEach(badge => {
+                if (badge && !badge.classList.contains('cart-count')) {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+        
+        // Cập nhật localStorage để các tab khác biết notifications đã được đọc
+        localStorage.setItem('notifications_updated', Date.now().toString());
+        
+        // Refresh notifications khi page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xóa badge ngay lập tức
+            clearNotificationBadges();
+            
+            // Refresh notifications sau một chút
+            setTimeout(() => {
+                if (window.refreshNotifications) {
+                    window.refreshNotifications();
+                }
+            }, 500);
+        });
+        
+        // Khi user sẽ rời khỏi trang này, đảm bảo badges được cập nhật
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('notifications_updated', Date.now().toString());
+        });
+    </script>
+    
     <script>userId = <?php echo $_SESSION['user_id'] ?></script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
