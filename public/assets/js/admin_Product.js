@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('disabled');
             
             try {
-                const response = await fetch(this.href);
+                const response = await fetch(this.href, {credentials: 'same-origin'});
                 
                 // Kiểm tra response status
                 if (!response.ok) {
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Kiểm tra nếu không còn sản phẩm nào
-                if (document.querySelectorAll('tbody tr').length === 0) {
+                if (document.querySelectorAll('table tr').length === 1) { // chỉ còn hàng header
                     document.querySelector('table').insertAdjacentHTML('afterend', 
                         '<p class="mt-3">Không còn sản phẩm nào chờ duyệt</p>');
                 }
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.classList.add('disabled');
                     
                     try {
-                        const response = await fetch(this.href);
+                        const response = await fetch(this.href, {credentials: 'same-origin'});
                         
                         // Kiểm tra response status
                         if (!response.ok) {

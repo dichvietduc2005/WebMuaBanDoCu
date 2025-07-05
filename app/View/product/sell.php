@@ -1,5 +1,7 @@
 <?php
-require_once '../../../config/config.php';
+require_once __DIR__ . '/../../../config/config.php';
+require_once __DIR__ . '/../../Models/product/CategoryModel.php';
+require_once __DIR__ . '/../../Models/product/StatusModel.php';
 include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 // Kiểm tra đăng nhập
@@ -23,7 +25,6 @@ if (!isset($_SESSION['user_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/index.css">
-
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/sell.css">
 </head>
 
@@ -42,28 +43,48 @@ if (!isset($_SESSION['user_id'])) {
                 <input type="text" id="title" name="title" class="form-control" placeholder="Nhập tiêu đề sản phẩm..."
                     required>
             </div>
+
             <div class="mb-3">
                 <label for="category" class="form-label">Danh mục</label>
-                <select id="category" name="category_id" class="form-control" required>
-                    <option value="">Chọn danh mục</option>
-                    <option value="1">Điện thoại & Máy tính bảng</option>
-                    <option value="2">Laptop & Máy tính</option>
-                    <option value="3">Thời trang & Phụ kiện</option>
-                </select>
+                <div class="custom-select-wrapper">
+                    <select id="category" name="category_id" class="form-control" required>
+                        <option value="">Chọn danh mục</option>
+                        <?php
+                        // Lấy danh sách danh mục
+                        $categories = fetchAllCategories($pdo);
+                        foreach ($categories as $cat) {
+                            echo '<option value="' . (int)$cat['id'] . '">' . htmlspecialchars($cat['name']) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="price" class="form-label">Giá bán (VNĐ)</label>
                 <input type="number" id="price" name="price" class="form-control" placeholder="0" min="1000" required>
             </div>
             <div class="mb-3">
-                <label for="condition" class="form-label">Tình trạng</label>
-                <select id="condition" name="condition_status" class="form-control" required>
-                    <option value="">Chọn tình trạng</option>
-                    <option value="new">Mới</option>
-                    <option value="like_new">Như mới</option>
-                    <option value="good">Tốt</option>
-                    <option value="fair">Khá tốt</option>
-                </select>
+                <label for="category" class="form-label">Tình trạng</label>
+                <div class="custom-select-wrapper">
+                    <select id="condition" name="condition_status" class="form-select condition-select" required>
+                        <option value="">Chọn tình trạng</option>
+                        <?php
+                        $conditions = fetchConditionStatuses($pdo);
+                        foreach ($conditions as $cond) {
+                            // Hiển thị label tiếng Việt tương ứng
+                            $labelMap = [
+                                'new' => 'Mới',
+                                'like_new' => 'Như mới',
+                                'good' => 'Tốt',
+                                'fair' => 'Khá tốt',
+                                'poor' => 'Cũ'
+                            ];
+                            $label = $labelMap[$cond] ?? ucfirst($cond);
+                            echo '<option value="' . htmlspecialchars($cond) . '">' . htmlspecialchars($label) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="location" class="form-label">Địa Chỉ</label>
@@ -97,12 +118,15 @@ if (!isset($_SESSION['user_id'])) {
             </button>
         </form>
     </div>
-    <script>userId = <?php echo $_SESSION['user_id'] ?></script>
-        <script src="/WebMuaBanDoCu/public/assets/js/main.js"> </script>
+    <script>
+        userId = <?php echo $_SESSION['user_id'] ?>
+    </script>
+    <script src="/WebMuaBanDoCu/public/assets/js/main.js"> </script>
 
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
     <script src="/WebMuaBanDoCu/public/assets/js/sell.js"> </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <?php footer(); ?>
 </body>
 

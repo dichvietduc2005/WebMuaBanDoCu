@@ -22,7 +22,22 @@ INSERT INTO categories (name, slug, description) VALUES
 ('Sách & Văn phòng phẩm', 'sach-van-phong-pham', 'Sách, truyện, văn phòng phẩm, dụng cụ học tập'),
 ('Thể thao & Giải trí', 'the-thao-giai-tri', 'Dụng cụ thể thao, đồ chơi, thiết bị giải trí'),
 ('Điện máy & Công nghệ', 'dien-may-cong-nghe', 'Tivi, tủ lạnh, máy giặt, thiết bị điện tử'),
-('Mẹ và bé', 'me-va-be', 'Đồ dùng cho mẹ và bé, đồ chơi trẻ em, quần áo trẻ em');
+('Mẹ và bé', 'me-va-be', 'Đồ dùng cho mẹ và bé, đồ chơi trẻ em, quần áo trẻ em'),
+('Âm nhạc & Nhạc cụ', 'am-nhac-nhac-cu', 'Nhạc cụ, phụ kiện âm nhạc, thiết bị phòng thu'),
+('Sức khỏe & Làm đẹp', 'suc-khoe-lam-dep', 'Mỹ phẩm, thiết bị chăm sóc sức khỏe, thực phẩm chức năng'),
+('Thú cưng & Phụ kiện', 'thu-cung-phu-kien', 'Đồ dùng, thức ăn, phụ kiện cho thú cưng'),
+('Game & Console', 'game-console', 'Máy chơi game, thiết bị console, phụ kiện chơi game'),
+('Dụng cụ & Máy móc', 'dung-cu-may-moc', 'Dụng cụ cầm tay, máy móc, thiết bị công nghiệp nhỏ'),
+('Đồ cổ & Sưu tầm', 'do-co-suu-tam', 'Đồ cổ, đồ sưu tầm, tem, tiền xu'),
+('Nhà cửa & Vườn', 'nha-cua-vuon', 'Dụng cụ làm vườn, trang trí nhà cửa, thiết bị ngoài trời'),
+('Phim & Đĩa nhạc', 'phim-dia-nhac', 'DVD, Blu-ray, đĩa nhạc, băng cassette'),
+('Vé & Sự kiện', 've-su-kien', 'Vé xem ca nhạc, thể thao, hội chợ, sự kiện'),
+('Việc làm & Dịch vụ', 'viec-lam-dich-vu', 'Tin tuyển dụng, dịch vụ cá nhân, gia sư, sửa chữa'),
+('Nhạc số & Phần mềm', 'nhac-so-phan-mem', 'Mã thẻ nhạc số, key phần mềm, bản quyền game'),
+('Drone & Thiết bị bay', 'drone-thiet-bi-bay', 'Drone, flycam, phụ kiện thiết bị bay điều khiển'),
+('Thiết bị thông minh', 'thiet-bi-thong-minh', 'Smartwatch, vòng đeo sức khỏe, loa thông minh'),
+('Đồ ăn & Thực phẩm', 'do-an-thuc-pham', 'Đồ ăn vặt, thực phẩm khô, đặc sản vùng miền'),
+('Voucher & Coupon', 'voucher-coupon', 'Mã giảm giá, voucher mua sắm, phiếu quà tặng');
 
 -- Thêm dữ liệu products
 INSERT INTO products (user_id, category_id, title, slug, description, price, condition_status, status, location, views, featured, stock_quantity) VALUES

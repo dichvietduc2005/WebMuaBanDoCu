@@ -1,33 +1,13 @@
 <?php
-// Tắt tất cả output trước khi bắt đầu
+// Khởi động buffer để đảm bảo chỉ trả JSON thuần
 ob_start();
 
-// Set JSON header ngay lập tức
 header('Content-Type: application/json');
 
-// Tắt error display để tránh HTML output
-error_reporting(0);
-ini_set('display_errors', 0);
+// Load cấu hình chung (kết nối DB + session)
+require_once __DIR__ . '/../../../config/config.php';
 
-// Minimal config - chỉ load database
 try {
-    // Database connection
-    $host = 'localhost';
-    $dbname = 'muabandocu';
-    $username = 'root';
-    $password = '';
-    
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // Start session
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-    
-    // Clear any previous output
-    ob_clean();
-    
     // Check admin permission
     if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
         echo json_encode([
@@ -36,7 +16,12 @@ try {
         ]);
         exit;
     }
-    
+
+    // Đảm bảo $pdo đã tồn tại
+    if (!isset($pdo) || !$pdo instanceof PDO) {
+        throw new Exception('Không thể kết nối cơ sở dữ liệu');
+    }
+
     $id = $_GET['id'] ?? null;
     $action = $_GET['action'] ?? null;
     
@@ -101,8 +86,9 @@ try {
             break;
             
         case 'reject':
+            // Với enum hiện tại trong DB là 'reject'
             $stmt = $pdo->prepare('UPDATE products SET status = ? WHERE id = ?');
-            $result = $stmt->execute(['rejected', $id]);
+            $result = $stmt->execute(['reject', $id]);
             break;
             
         case 'delete':
@@ -164,7 +150,7 @@ try {
         }
     }
     
-    echo json_encode($response);
+    echo json_encode($response, JSON_UNESCAPED_UNICODE);
     
 } catch (Exception $e) {
     if (isset($pdo)) {
@@ -175,7 +161,11 @@ try {
         'message' => $e->getMessage()
     ]);
 } finally {
-    ob_end_flush();
+    // Xóa toàn bộ output khác, chỉ gửi JSON
+    $output = ob_get_clean();
+    if (!headers_sent()) {
+        echo $output;
+    }
 }
 
 function getActionMessage($action) {

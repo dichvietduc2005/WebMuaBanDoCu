@@ -85,3 +85,75 @@ document.getElementById('images_desc').addEventListener('change', function (e) {
     }
 });
 // ...existing code...
+document.addEventListener("DOMContentLoaded", function() {
+    // Tìm tất cả các wrapper có class 'custom-select-wrapper'
+    const wrappers = document.querySelectorAll(".custom-select-wrapper");
+
+    wrappers.forEach(wrapper => {
+        const selectEl = wrapper.querySelector("select");
+        if (!selectEl) return;
+
+        // Tạo div hiển thị mục đã chọn
+        const selectedDiv = document.createElement("DIV");
+        selectedDiv.setAttribute("class", "select-selected");
+        selectedDiv.innerHTML = selectEl.options[selectEl.selectedIndex].innerHTML;
+        wrapper.appendChild(selectedDiv);
+
+        // Tạo div chứa danh sách các mục
+        const itemsDiv = document.createElement("DIV");
+        itemsDiv.setAttribute("class", "select-items select-hide");
+
+        // Lặp qua các option của select gốc để tạo các div tương ứng
+        for (let i = 0; i < selectEl.length; i++) {
+            // Không tạo div cho option đầu tiên nếu nó là placeholder
+            if (selectEl.options[i].value === "") {
+                continue;
+            }
+            const optionDiv = document.createElement("DIV");
+            optionDiv.innerHTML = selectEl.options[i].innerHTML;
+
+            // Sự kiện click cho từng mục
+            optionDiv.addEventListener("click", function(e) {
+                // Cập nhật select gốc
+                for (let j = 0; j < selectEl.length; j++) {
+                    if (selectEl.options[j].innerHTML == this.innerHTML) {
+                        selectEl.selectedIndex = j;
+                        break;
+                    }
+                }
+                // Cập nhật div hiển thị
+                selectedDiv.innerHTML = this.innerHTML;
+                
+                // Đóng danh sách
+                selectedDiv.classList.remove("select-arrow-active");
+                itemsDiv.classList.add("select-hide");
+            });
+            itemsDiv.appendChild(optionDiv);
+        }
+        wrapper.appendChild(itemsDiv);
+
+        // Sự kiện click để đóng/mở danh sách
+        selectedDiv.addEventListener("click", function(e) {
+            e.stopPropagation();
+            closeAllSelect(this);
+            this.nextSibling.classList.toggle("select-hide");
+            this.classList.toggle("select-arrow-active");
+        });
+    });
+
+    // Hàm đóng tất cả các danh sách select khác
+    function closeAllSelect(elmnt) {
+        const items = document.querySelectorAll(".select-items");
+        const selected = document.querySelectorAll(".select-selected");
+        
+        selected.forEach((sel, i) => {
+            if (elmnt !== sel) {
+                sel.classList.remove("select-arrow-active");
+                items[i].classList.add("select-hide");
+            }
+        });
+    }
+
+    // Đóng danh sách khi click ra ngoài
+    document.addEventListener("click", closeAllSelect);
+});
