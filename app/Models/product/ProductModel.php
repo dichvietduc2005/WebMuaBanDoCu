@@ -414,7 +414,7 @@ class ProductModel
         } catch (Exception $e) {
             $this->db->rollback();
             error_log("Error hard deleting product: " . $e->getMessage());
-            throw new Exception("Không thể xóa sản phẩm: " . $e->getMessage());
+            throw new Exception("Không thể xóa sản phẩm.");
         }
     }
     

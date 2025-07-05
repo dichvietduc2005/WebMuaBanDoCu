@@ -78,8 +78,8 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                     $order_id = $current_order_data['id'];
                     
                     // ✅ TRỪNG STOCK KHI THANH TOÁN THÀNH CÔNG
-                    // Lấy danh sách sản phẩm cần trừ stock trước (chỉ lấy sản phẩm còn tồn tại)
-                    $stmt_get_items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ? AND product_id IS NOT NULL");
+                    // Lấy danh sách sản phẩm cần trừ stock trước
+                    $stmt_get_items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?");
                     $stmt_get_items->execute([$order_id]);
                     $order_items_for_stock = $stmt_get_items->fetchAll(PDO::FETCH_ASSOC);
                     
@@ -89,7 +89,7 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                         $update_stock_stmt->execute([$item['quantity'], $item['product_id'], $item['quantity']]);
                         
                         if ($update_stock_stmt->rowCount() == 0) {
-                            error_log("WARNING: Không thể trừ stock cho product_id {$item['product_id']} với quantity {$item['quantity']} - có thể stock không đủ hoặc sản phẩm đã bị xóa");
+                            error_log("WARNING: Không thể trừ stock cho product_id {$item['product_id']} với quantity {$item['quantity']} - có thể stock không đủ");
                         }
                     }
                     
@@ -98,7 +98,7 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                     $stmt_update_order->execute([$order_id]);
 
                      // Lấy danh sách sản phẩm trong đơn hàng và gửi thông báo cho từng người bán
-                    $stmt_items = $pdo->prepare("SELECT oi.product_id, oi.product_title, p.user_id as seller_id FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
+                    $stmt_items = $pdo->prepare("SELECT oi.product_id, oi.product_title, p.user_id as seller_id FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
                     $stmt_items->execute([$order_id]);
                     $order_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
@@ -106,21 +106,14 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                         $seller_id = $item['seller_id'];
                         $product_title = $item['product_title'];
                         $product_id = $item['product_id'];
+                        $message = "Sản phẩm <b>$product_title</b> của bạn đã được bán và thanh toán thành công!";
+                        $stmt_noti = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+                        $stmt_noti->execute([$seller_id, $message]);
                         
-                        // Chỉ gửi thông báo nếu sản phẩm vẫn còn tồn tại (chưa bị admin xóa)
-                        if ($seller_id && $product_id) {
-                            $message = "Sản phẩm <b>$product_title</b> của bạn đã được bán và thanh toán thành công!";
-                            $stmt_noti = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
-                            $stmt_noti->execute([$seller_id, $message]);
-                            
-                            // Cập nhật trạng thái sản phẩm thành 'sold'
-                            $stmt_update_product = $pdo->prepare("UPDATE products SET status = 'sold' WHERE id = ?");
-                            $stmt_update_product->execute([$product_id]);
-                            error_log("Updated product_id: $product_id status to 'sold'");
-                        } else {
-                            // Sản phẩm đã bị xóa bởi admin, chỉ ghi log
-                            error_log("Product '{$product_title}' (ID: {$product_id}) was deleted by admin, skipping notification");
-                        }
+                        // Cập nhật trạng thái sản phẩm thành 'sold'
+                        $stmt_update_product = $pdo->prepare("UPDATE products SET status = 'sold' WHERE id = ?");
+                        $stmt_update_product->execute([$product_id]);
+                        error_log("Updated product_id: $product_id status to 'sold'");
                     }
                     
                     // Cập nhật trạng thái giỏ hàng thành sold và ẩn đi thay vì xóa

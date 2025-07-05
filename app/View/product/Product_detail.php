@@ -311,6 +311,9 @@ if (isset($_SESSION['user_id'])) {
                         element.style.display = response.cart_count > 0 ? 'flex' : 'none';
                     });
                 }
+                
+                // Trigger cart updated event for real-time system
+                document.dispatchEvent(new CustomEvent('cartItemAdded'));
             } else {
                 showToast('error', 'Lỗi', response?.message || 'Có lỗi xảy ra');
                 // Rollback optimistic update
@@ -328,33 +331,6 @@ if (isset($_SESSION['user_id'])) {
                 const currentCount = parseInt(element.textContent) || 0;
                 element.textContent = Math.max(0, currentCount - quantity);
             });
-        }
-    });
-}
-
-    function updateCartCount() {
-    const cartCountElements = document.querySelectorAll('.cart-count');
-    if (!cartCountElements.length) return;
-
-    $.ajax({
-        url: '../../../app/Controllers/cart/CartController.php?action=count',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            if (data.success) {
-                cartCountElements.forEach(element => {
-                    element.textContent = data.count;
-                    // Ẩn badge nếu count = 0
-                    if (data.count == 0) {
-                        element.style.display = 'none';
-                    } else {
-                        element.style.display = 'flex';
-                    }
-                });
-            }
-        },
-        error: function() {
-            console.error("Failed to update cart count");
         }
     });
 }

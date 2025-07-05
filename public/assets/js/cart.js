@@ -174,50 +174,6 @@ function createToastContainer() {
         console.log('Updated cart count to:', newCount);
     }
 
-    // --- New updateCartCount function using modern fetch API ---
-    async function updateCartCount() {
-        try {
-            const response = await fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php?action=count', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                updateCartIconCount(data.count);
-            } else {
-                console.error('Failed to get cart count:', data.message);
-            }
-        } catch (error) {
-            console.error('Error updating cart count:', error);
-        }
-    }
-
-    // --- New updateCartCount function using modern fetch API ---
-    async function updateCartCount() {
-        try {
-            const response = await fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php?action=count', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                updateCartIconCount(data.count);
-            } else {
-                console.error('Failed to get cart count:', data.message);
-            }
-        } catch (error) {
-            console.error('Error updating cart count:', error);
-        }
-    }
-
     function formatPrice(price) {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -273,8 +229,8 @@ function createToastContainer() {
                         updateCartSummary(response.total || 0);
                         updateCartIconCount(response.cart_count || 0);
                         
-                        // Cập nhật thêm cart icon ở header để đảm bảo đồng bộ
-                        updateCartCount();
+                        // Trigger cart updated event for real-time system
+                        document.dispatchEvent(new CustomEvent('cartItemRemoved'));
                         
                         // Kiểm tra nếu giỏ hàng trống
                         if (document.querySelectorAll('.cart-item').length === 0) {
@@ -348,7 +304,6 @@ function createToastContainer() {
     });
 
     // --- Make functions available globally ---
-    window.updateCartCount = updateCartCount;
     window.updateCartIconCount = updateCartIconCount;
 
     console.log('Cart script loaded successfully');

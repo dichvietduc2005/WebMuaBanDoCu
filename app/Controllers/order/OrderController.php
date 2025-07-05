@@ -34,7 +34,7 @@ function getOrdersByUserId(PDO $pdo, $buyer_id, $limit = 50, $offset = 0) {
              FROM order_items oi2 
              LEFT JOIN products p ON oi2.product_id = p.id 
              LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-             WHERE oi2.order_id = o.id AND oi2.product_id IS NOT NULL
+             WHERE oi2.order_id = o.id 
              LIMIT 1) as first_product_image
         FROM orders o
         LEFT JOIN order_items oi ON o.id = oi.order_id

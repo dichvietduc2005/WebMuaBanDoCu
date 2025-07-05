@@ -6,7 +6,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE status = 'active' ORDER BY name");
     $stmt->execute();
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // Đếm số sản phẩm trong giỏ hàng (chỉ đếm sản phẩm chưa bán và chưa ẩn)
+    
+    // Initial cart count for server-side rendering (will be updated by JavaScript)
     $cart_count = 0;
     if (isset($_SESSION['user_id'])) {
         $stmt = $pdo->prepare("
@@ -1218,5 +1219,9 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             -webkit-backdrop-filter: blur(10px) !important;
         }
     </style>
+    
+    <!-- Real-time Cart Count Script -->
+    <script src="/WebMuaBanDoCu/public/assets/js/cart-count-realtime.js"></script>
+    
     <?php
 }
