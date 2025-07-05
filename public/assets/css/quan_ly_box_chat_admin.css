@@ -1,109 +1,69 @@
-body{
-    background-color: rgb(155, 155, 155);
-    font-family: Arial, Helvetica, sans-serif;
+/* ---- General Styling ---- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
 }
 
-h1{
-    text-align: center;
-    color: rgb(255, 0, 0);
+/* ---- Table Container ---- */
+.table-container {
+    max-width: 900px;
+    height: 500px;
+    margin: 30px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* Giúp bo góc hoạt động đúng */
 }
 
-div{
-    text-align: center;
-    scrollbar-color: transparent transparent;
+/* ---- Table ---- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
 }
 
-
-td,th,tr{
-    border: 1px solid black;
+/* ---- Table Header (thead) ---- */
+table thead tr {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
 }
 
-th{
-    height: 50px;
+table th {
+    padding: 15px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-td{
+/* ---- Table Body (tbody) ---- */
+table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    color: #555;
+    vertical-align: middle;
+}
+
+/* Loại bỏ border cho dòng cuối cùng */
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---- Row Styling ---- */
+.user-row {
+    transition: background-color 0.2s ease-in-out;
     cursor: pointer;
 }
 
-thead{
-    background-color: rgb(2, 137, 147);
-    color: white;
+.user-row:hover {
+    background-color: #f1f3f5;
 }
 
-tbody tr:nth-child(even){
-    background-color: rgba(255, 255, 255);
+table tbody tr:nth-child(even) {
+    background-color: #fdfdfd;
 }
-tbody tr:nth-child(odd){
-    background-color: rgb(185, 255, 219);
+table tbody tr:nth-child(even):hover {
+    background-color: #f1f3f5; 
 }
-
-table{
-    margin: auto;
-    width: 100%;
-    font-size: 20px;
-    border-collapse: collapse;
-}
-
-tbody tr:hover{
-    background-color: rgb(255, 255, 0);
-}
-
-/* ===== Responsive Enhancements ===== */
-@media (max-width: 767.98px) {
-    table {
-        width: 100%;
-        white-space: nowrap;
-    }
-    th, td {
-        font-size: 16px;
-        padding: 8px 6px;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 991.98px) {
-    th, td {
-        font-size: 18px;
-        padding: 10px 8px;
-    }
-    table {
-        font-size: 18px;
-    }
-}
-
-@media (max-width: 576px) {
-    body {
-        background-color: #eee;
-    }
-    th, td {
-        font-size: 16px;
-        padding: 8px 6px;
-    }
-    table {
-        font-size: 16px;
-    }
-    h1 {
-        font-size: 24px;
-    }
-}
-
-/* ===== Card style for table ===== */
-.table-container{
-    width: 1200px;
-    width: 70%;
-    background:#ffffff;
-    border-radius:12px;
-    box-shadow:0 4px 16px rgba(0,0,0,.05);
-    overflow:hidden;
-    margin:20px auto;
-}
-
-table{
-    border-collapse:separate;
-    border-spacing:0;
-}
-
-thead th:first-child{border-top-left-radius:12px;}
-thead th:last-child{border-top-right-radius:12px;}
-tbody tr:last-child td:first-child{border-bottom-left-radius:12px;}
-tbody tr:last-child td:last-child{border-bottom-right-radius:12px;}

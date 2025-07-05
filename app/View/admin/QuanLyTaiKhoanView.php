@@ -26,7 +26,7 @@ if ($_SESSION['user_role'] != 'admin') {
 <body>
 <?php renderHeader($pdo); ?>
 
-    <h1>Quản lý tài khoản</h1>
+    <h1 style="text-align:center; margin:30px 0; font-weight:700;">Quản lý tài khoản</h1>
 
     <!-- Overlay for popup -->
     <div id="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000;"></div>
@@ -41,7 +41,7 @@ if ($_SESSION['user_role'] != 'admin') {
         </div>
     </div>
 
-    <div>
+    <div class="table-container">
         <table>
             <thead>
                 <tr>
@@ -67,7 +67,8 @@ if ($_SESSION['user_role'] != 'admin') {
                     echo "<td>" . htmlspecialchars($row['full_name'] ?? '') . "</td>";
                     echo "<td>" . htmlspecialchars($row['phone'] ?? '') . "</td>";
                     echo "<td>" . htmlspecialchars($row['address'] ?? '') . "</td>";
-                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                    $statusClass = 'status-' . htmlspecialchars($row['status']);
+                    echo "<td><span class='status-badge {$statusClass}'>" . htmlspecialchars($row['status']) . "</span></td>";
                     echo "</tr>";
                 }
                 ?>

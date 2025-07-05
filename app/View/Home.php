@@ -290,20 +290,25 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
 
             <div class="categories-grid">
                 <?php
-                $category_icons = [
+                // Map slug -> FontAwesome icon
+                $icon_map = [
+                    'am-nhac-nhac-cu' => 'fas fa-music',
                     'dien-thoai-may-tinh-bang' => 'fas fa-mobile-alt',
                     'laptop-may-tinh' => 'fas fa-laptop',
                     'thoi-trang-phu-kien' => 'fas fa-tshirt',
                     'do-gia-dung-noi-that' => 'fas fa-home',
                     'xe-co-phuong-tien' => 'fas fa-motorcycle',
                     'sach-van-phong-pham' => 'fas fa-book',
-                    'the-thao-giai-tri' => 'fas fa-gamepad',
+                    'the-thao-giai-tri' => 'fas fa-football-ball',
                     'dien-may-cong-nghe' => 'fas fa-tv',
-                    'me-va-be' => 'fas fa-baby'
+                    'me-va-be' => 'fas fa-baby',
+                    'suc-khoe-lam-dep' => 'fas fa-heart',
+                    'thu-cung-phu-kien' => 'fas fa-paw',
+                    'am-thuc' => 'fas fa-utensils'
                 ];
 
                 foreach ($categories as $category):
-                    $icon = $category_icons[$category['slug']] ?? 'fas fa-cube';
+                    $icon = $icon_map[$category['slug']] ?? 'fas fa-cube';
                 ?>
                     <div class="category-card"
                         onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo $category['slug']; ?>'">

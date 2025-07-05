@@ -8,46 +8,68 @@ h1{
     color: #1a237e;
     margin-bottom: 24px;
 }
-
-div{
-    text-align: center;
-    padding: 0 8px;
+.table-container{
+    width: 90%;
+    max-width: 1200px;
+    margin:40px auto;
+    background:#ffffff;
+    border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+    overflow:auto; /* Scroll nếu bảng rộng */
 }
 
-td,th,tr{
-    border: 1px solid black;
+.table-container table{
+    width:100%;
+    min-width:1000px; /* tránh bóp cột quá nhỏ */
+    border-collapse:collapse;
 }
 
-th{
-    height: 50px;
+.table-container thead th{
+    background:#1f2937;
+    color:#ffffff;
+    padding:16px 20px;
+    text-align:left;
+    font-weight:600;
+    white-space:nowrap;
+    position:sticky;
+    top:0;
+    z-index:2;
 }
 
-td{
-    cursor: pointer;
+.table-container tbody td{
+    padding:16px 20px;
+    border-top:1px solid #e5e7eb;
+    white-space:nowrap;
 }
 
-thead{
-    background-color: rgb(248, 94, 94);
-    color: white;
+.table-container tbody tr:hover td{
+    background:#f1f5f9;
 }
 
-tbody tr:nth-child(even){
-    background-color: rgba(255, 255, 255);
+/* Status badge */
+.status-badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    text-transform:capitalize;
 }
-tbody tr:nth-child(odd){
-    background-color: rgb(185, 255, 219);
+.status-active{background:rgba(16,185,129,.15); color:#0f766e;}
+.status-inactive{background:rgba(107,114,128,.15); color:#374151;}
+.status-banned,.status-blocked{background:rgba(239,68,68,.15); color:#b91c1c;}
+
+@media (max-width:768px){
+    .table-container thead th,.table-container tbody td{padding:12px 14px; font-size:14px;}
 }
 
-table{
-    margin: auto;
-    width: 100%;
-    font-size: 20px;
-    border-collapse: collapse;
-}
+/* ----- Clean legacy overrides (removed bold borders & bright colors) ----- */
+td,th,tr{border:none;}
+table{margin:auto;width:100%;font-size:15px;border-collapse:collapse;}
 
-tbody tr:hover{
-    background-color: rgb(255, 255, 0);
-}
+tbody tr:nth-child(even){background-color:#fdfdfd;}
+tbody tr:nth-child(odd){background-color:#ffffff;}
+tbody tr:hover{background-color:#f1f3f5;}
 
 /* ===== Responsive Enhancements ===== */
 @media (max-width: 991.98px) {
@@ -87,14 +109,18 @@ table{
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0,0,0,.05);
 }
-
-thead th{
-    background: linear-gradient(135deg,#3b82f6,#2563eb);
-    color:#fff;
-    padding:14px 12px;
-    font-weight:600;
-    border:none;
+thead th {
+    background-color: #1e293b;
+    color: #f1f5f9;
+    padding: 14px 12px;
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    text-align: left;
+    border-bottom: 1px solid #334155; 
+    font-size: 14px;
+    letter-spacing: 0.3px;
 }
+
 
 tbody td{
     padding:12px 10px;

@@ -53,20 +53,28 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
       <tbody>
 
         <?php
-        $sql = "SELECT * FROM box_chat WHERE is_read = 0";
+        $sql = "
+        SELECT 
+            u.username, 
+            u.full_name,
+            b.user_id,
+            b.is_read
+        FROM 
+            box_chat AS b
+        JOIN 
+            users AS u ON b.user_id = u.id
+        WHERE 
+            b.is_read = 0
+    ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $chat_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($result as $row) {
-          $stmt_user_full_name = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-          $stmt_user_full_name->execute([$row['user_id']]);
-          $username_row = $stmt_user_full_name->fetch(PDO::FETCH_ASSOC);
-
-          echo "<tr class='user-row' data-username='" . htmlspecialchars($username_row['username']) . "' data-user-id='" . htmlspecialchars($row['user_id']) . "'>";
-          echo "<td>" . htmlspecialchars($username_row['username']) . "</td>";
-          echo "<td>" . htmlspecialchars($username_row['full_name']) . "</td>";
-          echo "<td>" . ($row['is_read'] ? 'Yes' : 'No') . "</td>";
+        foreach ($chat_list as $chat_item) {
+          echo "<tr class='user-row' data-username='" . htmlspecialchars($chat_item['username']) . "' data-user-id='" . htmlspecialchars($chat_item['user_id']) . "'>";
+          echo "<td>" . htmlspecialchars($chat_item['username']) . "</td>";
+          echo "<td>" . htmlspecialchars($chat_item['full_name']) . "</td>";
+          echo "<td>No</td>";
           echo "</tr>";
         }
 

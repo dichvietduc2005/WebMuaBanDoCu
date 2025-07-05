@@ -111,7 +111,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                             <div class="dropdown">
                                 <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center categories-btn"
                                     type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                    style="height: 50px; min-width: 56px; padding: 0 16px; border-radius: 16px; border: 2px solid #3b82f6; background: white; transition: all 0.3s ease; white-space: nowrap; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);">
+                                    style="height: 50px; min-width: 56px; padding: 0 16px; border-radius: 16px; border: 0; background: white; transition: all 0.3s ease; white-space: nowrap; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);">
                                     <i class="fas fa-th-large" style="font-size: 18px; color: #3b82f6;"></i>
                                     <span class="ms-2 d-none d-md-inline fw-semibold" style="color: #3b82f6; font-size: 15px;">Danh mục</span>
                                 </button>
@@ -124,7 +124,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                         <li>
                                             <a class="dropdown-item category-item"
                                                 style="font-size: 16px; padding: 16px 20px; transition: all 0.3s ease; border-radius: 12px; margin: 4px 0; color: #374151; font-weight: 500;"
-                                                href="../product/category.php?slug=<?php echo $category['slug']; ?>">
+                                                href="<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo $category['slug']; ?>">
                                                 <?php echo htmlspecialchars($category['name']); ?>
                                             </a>
                                         </li>
@@ -226,10 +226,10 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                         </li>
                                         <?php
                                         if ($_SESSION['user_role'] == 'admin') {
-                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"' . '><i class="fas fa-solid fa-medal me-2"></i>' . 'Quản lý tài khoản' . '</a></li>';
-                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"' . '><i class="fas fa-solid fa-envelope me-2"></i>' . 'Xem tin nhắn từ người dùng' . '</a></li>';
-                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/products.php"' . '><i class="fas fa-solid fa-check me-2"></i>' . 'Duyệt sản phẩm' . '</a></li>';
-                                            echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/manage_products.php"' . '><i class="fas fa-solid fa-check me-2"></i>' . 'Quản lý sản phẩm' . '</a></li>';   
+                                            echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"><i class="fas fa-solid fa-medal me-2"></i>Quản lý tài khoản</a></li>';
+                                            echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"><i class="fas fa-solid fa-envelope me-2"></i>Xem tin nhắn từ người dùng</a></li>';
+                                            echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/products.php"><i class="fas fa-solid fa-check me-2"></i>Duyệt sản phẩm</a></li>';
+                                            echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/manage_products.php"><i class="fas fa-cogs me-2"></i>Quản lý sản phẩm</a></li>';   
                                         }
                                         ?>
                                         <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i
@@ -266,10 +266,10 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                     </li>
                                     <?php
                                     if ($_SESSION['user_role'] == 'admin') {
-                                        echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"' . '><i class="fas fa-solid fa-medal me-2"></i>' . 'Quản lý tài khoản' . '</a></li>';
-                                        echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"' . '><i class="fas fa-solid fa-envelope me-2"></i>' . 'Xem tin nhắn từ người dùng' . '</a></li>';
-                                        echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/products.php"' . '><i class="fas fa-solid fa-check me-2"></i>' . 'Duyệt sản phẩm' . '</a></li>';
-                                        echo '<li><a class="dropdown-item" target="_blank" href=' . '"/WebMuaBanDoCu/app/View/admin/manage_products.php"' . '><i class="fas fa-cogs me-2"></i>' . 'Quản lý sản phẩm' . '</a></li>';
+                                        echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/QuanLyTaiKhoanView.php"><i class="fas fa-solid fa-medal me-2"></i>Quản lý tài khoản</a></li>';
+                                        echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/DanhSachBoxChatView.php"><i class="fas fa-solid fa-envelope me-2"></i>Xem tin nhắn từ người dùng</a></li>';
+                                        echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/products.php"><i class="fas fa-solid fa-check me-2"></i>Duyệt sản phẩm</a></li>';
+                                        echo '<li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/admin/manage_products.php"><i class="fas fa-cogs me-2"></i>Quản lý sản phẩm</a></li>';
                                     }
                                     ?>
                                     <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/product/Product.php"><i
