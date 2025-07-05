@@ -32,7 +32,27 @@ function getProductById($pdo, $user_id, $product_id) {
 // }
 
 function deleteUserProduct($pdo, $user_id, $product_id) {
-    $stmt = $pdo->prepare("DELETE FROM products WHERE id = ? AND user_id = ?");
-    return $stmt->execute([$product_id, $user_id]);
+    try {
+        $pdo->beginTransaction();
+        
+        // User không có quyền xóa sản phẩm đã bán - chỉ admin mới có quyền
+        $checkStmt = $pdo->prepare('SELECT COUNT(*) FROM order_items WHERE product_id = ?');
+        $checkStmt->execute([$product_id]);
+        $orderCount = (int) $checkStmt->fetchColumn();
+        
+        if ($orderCount > 0) {
+            throw new Exception('Không thể xóa sản phẩm này vì đã có đơn hàng liên quan. Liên hệ admin nếu cần thiết.');
+        }
+        
+        $stmt = $pdo->prepare("DELETE FROM products WHERE id = ? AND user_id = ?");
+        $result = $stmt->execute([$product_id, $user_id]);
+        
+        $pdo->commit();
+        return $result;
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
 }
 ?>

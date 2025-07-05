@@ -165,14 +165,14 @@ CREATE TABLE orders (
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
-    product_id INT NOT NULL,
+    product_id INT,
     product_title VARCHAR(255) NOT NULL,
     product_price DECIMAL(15,0) NOT NULL,
     quantity INT NOT NULL,
     subtotal DECIMAL(15,0) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id)
+    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
@@ -343,6 +343,23 @@ CREATE INDEX idx_cart_items_status_hidden ON cart_items(status, is_hidden);
 
 -- Optional: Add comment to document the purpose
 ALTER TABLE cart_items COMMENT 'Cart items with status tracking - active/sold and visibility control';
+
+-- Step 1: Drop the existing foreign key constraint
+ALTER TABLE order_items DROP FOREIGN KEY fk_order_items_product;
+
+-- Step 2: Modify product_id to allow NULL values
+ALTER TABLE order_items MODIFY COLUMN product_id INT NULL;
+
+-- Step 3: Add new foreign key constraint with ON DELETE SET NULL
+ALTER TABLE order_items 
+ADD CONSTRAINT fk_order_items_product 
+FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL;
+
+-- Step 4: Add index for better performance on product_id lookups
+CREATE INDEX idx_order_items_product_id ON order_items(product_id);
+
+-- Step 5: Add comment to document the change
+ALTER TABLE order_items COMMENT 'Order items with product reference that can be NULL if product is deleted by admin';
 
 COMMIT;
 
