@@ -1,8 +1,4 @@
-body {
-    font-family: Arial, sans-serif;
-}
-
-.chat-container {
+.chat-container-admin {
     width: 400px;
     height: 450px;
     border: 1px solid #ccc;
@@ -11,28 +7,32 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: rgb(255, 255, 255);
-    border: 3px solid blue;
+    backdrop-filter: blur(10px);
+    filter: saturate(200%);
+    border: 3px solid rgba(0, 0, 255, 0.596);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
+    z-index: 999;
 }
 
-.chat-header {
-    background-color: #007bff;
+.chat-header-admin {
+    background-color: rgba(0, 255, 255, 0.5);
     color: white;
     padding: 30px;
     font-weight: bold;
     overflow-y: hidden;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
 }
 
-.container-messages {
+.container-messages-admin {
     overflow-y: auto;
     height: 100%;
-    background-color: #007bff;
+    background-color: transparent;
     scrollbar-width: none;
 }
 
-.chat-messages {
+.chat-messages-admin {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -41,21 +41,24 @@ body {
     padding: 10px;
 }
 
-.chat-input {
+.chat-input-admin {
     display: flex;
-    height: 20%;
-    padding: 5px;
+    gap: 10px;
+    height: 12%;
+    padding: 7px;
+    background-color: rgba(0, 255, 255, 0.5);
+    border-radius: 10px;
 }
 
-.chat-input input {
+.chat-input-admin input {
     flex: 1;
     border: none;
     outline: none;
-
+    border-radius: 10px;
 }
 
-.chat-input button {
-    background-color: #28a745;
+.chat-input-admin button {
+    background-color: #a8ffbc;
     border: none;
     color: white;
     cursor: pointer;
@@ -64,7 +67,7 @@ body {
 }
 
 .admin {
-    padding: 10px 10px 0px 10px;
+    padding: 0px 10px;
     align-self: flex-end;
     background-color: rgb(255, 203, 203);
     border-radius: 30px;
@@ -75,7 +78,7 @@ body {
 
 .user {
     text-align: left;
-    padding: 10px 10px 0px 10px;
+    padding: 0px 10px;
     background-color: rgb(255, 252, 203);
     align-self: flex-start;
     border-radius: 30px;
@@ -85,7 +88,7 @@ body {
 
 /* ===== Responsive Enhancements ===== */
 @media (max-width: 768px) {
-    .chat-container {
+    .chat-container-admin {
         width: 90vw;
         height: 65vh;
         right: 5vw;
@@ -94,17 +97,17 @@ body {
 }
 
 @media (max-width: 576px) {
-    .chat-container {
+    .chat-container-admin {
         width: 92vw;
         height: 70vh;
         right: 4vw;
         bottom: 15px;
     }
-    .chat-header {
+    .chat-header-admin {
         padding: 16px;
         font-size: 16px;
     }
-    .chat-input button {
+    .chat-input-admin button {
         flex-basis: 40px;
     }
 }

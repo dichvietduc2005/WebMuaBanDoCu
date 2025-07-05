@@ -9,8 +9,8 @@
             </div>
         </div>
         <div class="chat-input">
-            <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." style="width: 80%;" />
-            <button id="button-send-message" onclick="send_messages()">Gửi</button>
+            <input type="text" id="chat-input" onkeydown="on_key_press(event)" placeholder="Nhập tin nhắn..." style="width: 80%;" />
+            <button id="button-send-message" onclick="send_messages()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 </div>

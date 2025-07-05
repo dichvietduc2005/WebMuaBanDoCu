@@ -93,6 +93,7 @@ function show_behavior(userid, username) {
 
     board.setAttribute("user-id", userid);
     board.style.display = "flex";
+    board.style.flexDirection = "column"
     overlay.style.display = "block";
 }
 

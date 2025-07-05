@@ -44,6 +44,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         unset($_SESSION['error_message']);
     }
     ?>
+    <?php require_once __DIR__ . '/../../View/user/ChatView.php'; ?>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container-fluid px-2 px-sm-3 px-lg-4">
             <!-- Mobile Toggler -->
@@ -246,7 +247,6 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                     </ul>
                                 </div>
                             </div>
-                            <?php require_once __DIR__ . '/../../View/user/ChatView.php'; ?>
 
                             <!-- Desktop Account Dropdown -->
                             <div class="dropdown mb-2 mb-lg-0 w-100 w-lg-auto d-none d-lg-block">

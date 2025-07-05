@@ -16,40 +16,29 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tin nhắn từ người dùng</title>
-  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/admin_box_chat.css?v=1">
-  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/quan_ly_box_chat_admin.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <script>
-    let userId = null;
-    let can_jump_bottom = true;
-  </script>
-  <script src="/WebMuaBanDoCu/public/assets/js/admin_chat_system.js?v=1"></script>
+  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/quan_ly_box_chat_admin.css">
+  <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/admin_box_chat.css?v=1">
 
 </head>
 
 <body>
   <?php renderHeader($pdo); ?>
 
-  <div class="chat-container" id="chatBox">
-
-    <div class="chat-header" id="chatheader">💬 Chat với người dùng</div>
-
-    <div class="container-messages" id="containerMessages">
-      <div class="chat-messages" id="messagesBox">
+  <div class="chat-container-admin" id="chatBox">
+    <div class="chat-header-admin" id="chatheader">💬 Chat với người dùng</div>
+    <div class="container-messages-admin" id="containerMessages">
+      <div class="chat-messages-admin" id="messagesBox">
         <!-- Tin nhắn sẽ được thêm ở đây -->
 
       </div>
     </div>
 
-    <div class="chat-input">
-      <input type="text" id="messageInput" placeholder="Nhập tin nhắn...">
-      <button onclick="send_messages()">Gửi</button>
+    <div class="chat-input-admin">
+      <input type="text" onkeydown="on_key_press(event)" id="messageInput" placeholder="Nhập tin nhắn...">
+      <button onclick="send_messages()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
-
-
   </div>
 
   <div class="table-container">
@@ -74,8 +63,8 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
           $stmt_user_full_name->execute([$row['user_id']]);
           $username_row = $stmt_user_full_name->fetch(PDO::FETCH_ASSOC);
 
-          echo "<tr class='user-row' data-user-id='" . htmlspecialchars($row['user_id']) . "'>";
-          echo "<td>" . htmlspecialchars($row['username']) . "</td>";
+          echo "<tr class='user-row' data-username='" . htmlspecialchars($username_row['username']) . "' data-user-id='" . htmlspecialchars($row['user_id']) . "'>";
+          echo "<td>" . htmlspecialchars($username_row['username']) . "</td>";
           echo "<td>" . htmlspecialchars($username_row['full_name']) . "</td>";
           echo "<td>" . ($row['is_read'] ? 'Yes' : 'No') . "</td>";
           echo "</tr>";
@@ -88,7 +77,11 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
   </div>
   <?php footer(); ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+  <script>
+    let userId = null;
+    let can_jump_bottom = true;
+  </script>
+  <script src="/WebMuaBanDoCu/public/assets/js/admin_chat_system.js?v=1"></script>
 </body>
 
 </html>
