@@ -279,25 +279,28 @@ class Auth {
             $reset_token = bin2hex(random_bytes(32));
             $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
             
+            // Xóa token cũ của email này (nếu có)
+            $stmt = $this->pdo->prepare("DELETE FROM password_resets WHERE email = ?");
+            $stmt->execute([$email]);
+            
+            // Tạo token mới
             $stmt = $this->pdo->prepare("
-                INSERT INTO password_resets (user_id, token, expires_at, created_at) 
+                INSERT INTO password_resets (email, token, expires_at, created_at) 
                 VALUES (?, ?, ?, NOW())
-                ON DUPLICATE KEY UPDATE 
-                token = VALUES(token), 
-                expires_at = VALUES(expires_at),
-                created_at = NOW()
             ");
-            $stmt->execute([$user['id'], $reset_token, $expires_at]);
+            $stmt->execute([$email, $reset_token, $expires_at]);
             
             $this->logActivity($user['id'], 'password_reset_request', 'Password reset requested');
             
-            // TODO: Gửi email reset password
-            // $this->sendPasswordResetEmail($email, $reset_token, $user['full_name']);
+            // Gửi email reset password
+            $email_sent = $this->sendPasswordResetEmail($email, $reset_token, $user['full_name']);
             
             return [
                 'success' => true, 
-                'message' => 'Đã gửi email hướng dẫn reset mật khẩu.',
-                'token' => $reset_token // Chỉ để test, production không trả về token
+                'message' => 'Đã gửi email hướng dẫn reset mật khẩu. Vui lòng kiểm tra email của bạn.',
+                'token' => $reset_token, // Chỉ để test, production sẽ gửi qua email
+                'user_name' => $user['full_name'],
+                'email_sent' => $email_sent
             ];
             
         } catch (PDOException $e) {
@@ -307,21 +310,45 @@ class Auth {
     }
     
     /**
+     * Kiểm tra token reset password có hợp lệ không
+     */
+    public function validateResetToken($token) {
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT pr.email, u.id, u.full_name 
+                FROM password_resets pr 
+                JOIN users u ON pr.email = u.email 
+                WHERE pr.token = ? AND pr.expires_at > NOW() AND u.status = 'active'
+            ");
+            $stmt->execute([$token]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result) {
+                return [
+                    'success' => true,
+                    'email' => $result['email'],
+                    'user_id' => $result['id'],
+                    'user_name' => $result['full_name']
+                ];
+            }
+            
+            return ['success' => false, 'message' => 'Token không hợp lệ hoặc đã hết hạn.'];
+            
+        } catch (PDOException $e) {
+            error_log("Validate reset token error: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Có lỗi hệ thống. Vui lòng thử lại sau.'];
+        }
+    }
+    
+    /**
      * Reset mật khẩu với token
      */
     public function resetPassword($token, $new_password) {
         try {
-            $stmt = $this->pdo->prepare("
-                SELECT pr.user_id, u.email 
-                FROM password_resets pr 
-                JOIN users u ON pr.user_id = u.id 
-                WHERE pr.token = ? AND pr.expires_at > NOW() AND pr.used = 0
-            ");
-            $stmt->execute([$token]);
-            $reset_request = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$reset_request) {
-                return ['success' => false, 'message' => 'Token không hợp lệ hoặc đã hết hạn.'];
+            // Kiểm tra token
+            $validation = $this->validateResetToken($token);
+            if (!$validation['success']) {
+                return $validation;
             }
             
             // Validate mật khẩu mới
@@ -331,20 +358,41 @@ class Auth {
             
             // Cập nhật mật khẩu
             $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-            $stmt = $this->pdo->prepare("UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?");
-            $stmt->execute([$hashed_password, $reset_request['user_id']]);
+            $stmt = $this->pdo->prepare("UPDATE users SET password = ?, updated_at = NOW() WHERE email = ?");
+            $stmt->execute([$hashed_password, $validation['email']]);
             
-            // Đánh dấu token đã được sử dụng
-            $stmt = $this->pdo->prepare("UPDATE password_resets SET used = 1 WHERE token = ?");
+            // Xóa token đã sử dụng
+            $stmt = $this->pdo->prepare("DELETE FROM password_resets WHERE token = ?");
             $stmt->execute([$token]);
             
-            $this->logActivity($reset_request['user_id'], 'password_reset', 'Password reset successfully');
+            // Xóa tất cả remember tokens của user này để bắt buộc đăng nhập lại
+            $stmt = $this->pdo->prepare("DELETE FROM remember_tokens WHERE user_id = ?");
+            $stmt->execute([$validation['user_id']]);
             
-            return ['success' => true, 'message' => 'Reset mật khẩu thành công!'];
+            $this->logActivity($validation['user_id'], 'password_reset', 'Password reset successfully');
+            
+            return ['success' => true, 'message' => 'Đặt lại mật khẩu thành công! Vui lòng đăng nhập với mật khẩu mới.'];
             
         } catch (PDOException $e) {
             error_log("Password reset error: " . $e->getMessage());
             return ['success' => false, 'message' => 'Có lỗi hệ thống. Vui lòng thử lại sau.'];
+        }
+    }
+    
+    /**
+     * Gửi email reset password
+     */
+    private function sendPasswordResetEmail($email, $token, $user_name) {
+        try {
+            require_once(__DIR__ . '/../EmailService.php');
+            $emailService = new EmailService();
+            return $emailService->sendPasswordResetEmail($email, $user_name, $token);
+        } catch (Exception $e) {
+            error_log("Send password reset email error: " . $e->getMessage());
+            // Fallback: log link để test
+            $reset_link = BASE_URL . "app/View/user/reset_password.php?token=" . $token;
+            error_log("Password reset link for $email: $reset_link");
+            return true;
         }
     }
     

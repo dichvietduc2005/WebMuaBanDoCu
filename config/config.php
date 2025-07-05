@@ -5,8 +5,35 @@
 
 // Đặt timezone và khởi tạo session
 date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+// Cấu hình session để tăng tính ổn định
 if (session_status() == PHP_SESSION_NONE) {
+    // Cấu hình session trước khi khởi tạo
+    ini_set('session.cookie_lifetime', 86400); // 24 giờ
+    ini_set('session.gc_maxlifetime', 86400); // 24 giờ
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.use_strict_mode', 1);
+    
+    // Thiết lập cookie parameters
+    session_set_cookie_params([
+        'lifetime' => 86400, // 24 giờ
+        'path' => '/',
+        'domain' => '',
+        'secure' => false, // Đặt true nếu dùng HTTPS
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    
     session_start();
+    
+    // Regenerate session ID định kỳ để tăng bảo mật
+    if (!isset($_SESSION['last_regeneration'])) {
+        $_SESSION['last_regeneration'] = time();
+    } elseif (time() - $_SESSION['last_regeneration'] > 1800) { // 30 phút
+        session_regenerate_id(true);
+        $_SESSION['last_regeneration'] = time();
+    }
 }
 
 // Hằng số cho đường dẫn (nếu chưa được định nghĩa trong bootstrap.php)

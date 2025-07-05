@@ -6,14 +6,16 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE status = 'active' ORDER BY name");
     $stmt->execute();
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // Đếm số sản phẩm trong giỏ hàng
+    // Đếm số sản phẩm trong giỏ hàng (chỉ đếm sản phẩm chưa bán và chưa ẩn)
     $cart_count = 0;
     if (isset($_SESSION['user_id'])) {
         $stmt = $pdo->prepare("
             SELECT SUM(ci.quantity) as total_quantity 
             FROM carts c 
             JOIN cart_items ci ON c.id = ci.cart_id 
-            WHERE c.user_id = ?
+            WHERE c.user_id = ? 
+            AND (ci.status IS NULL OR ci.status != 'sold')
+            AND (ci.is_hidden IS NULL OR ci.is_hidden = 0)
         ");
         $stmt->execute([$_SESSION['user_id']]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -278,7 +280,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                                 class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
                                     <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/ProfileUserView.php"><i
                                                 class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Cài đặt</a></li>
+                                    
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>

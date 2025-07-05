@@ -137,6 +137,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
             </form>
               <div class="text-center mt-3">
+                <p class="mb-2">
+                    <a href="/WebMuaBanDoCu/app/View/user/forgot_password.php" class="text-decoration-none">
+                        <i class="fas fa-key me-1"></i>
+                        Quên mật khẩu?
+                    </a>
+                </p>
                 <p>Chưa có tài khoản? <a href="/WebMuaBanDoCu/public/index.php?page=register">Đăng ký ngay</a></p>
                 <p><a href="/WebMuaBanDoCu/public/index.php">Về trang chủ</a></p>
             </div>

@@ -1,7 +1,15 @@
 <?php
+// Check if session already started before starting a new one
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once(__DIR__ . '/../../../config/config.php');
-require_once(__DIR__ . '/../../helpers.php'); // For helper functions
-// Autoloader sẽ tự động load CartModel và CartController
+require_once(__DIR__ . '/../../helpers.php');
+
+// Log session for debugging
+error_log("Payment return - Session ID: " . session_id());
+error_log("Payment return - User ID in session: " . ($_SESSION['user_id'] ?? 'Not logged in'));
 
 $vnp_SecureHash_received = $_GET['vnp_SecureHash'] ?? '';
 $inputData = array();
@@ -97,23 +105,48 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                     foreach ($order_items as $item) {
                         $seller_id = $item['seller_id'];
                         $product_title = $item['product_title'];
+                        $product_id = $item['product_id'];
                         $message = "Sản phẩm <b>$product_title</b> của bạn đã được bán và thanh toán thành công!";
                         $stmt_noti = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
                         $stmt_noti->execute([$seller_id, $message]);
+                        
+                        // Cập nhật trạng thái sản phẩm thành 'sold'
+                        $stmt_update_product = $pdo->prepare("UPDATE products SET status = 'sold' WHERE id = ?");
+                        $stmt_update_product->execute([$product_id]);
+                        error_log("Updated product_id: $product_id status to 'sold'");
                     }
                     
-                    // Xóa giỏ hàng sau khi thanh toán thành công
+                    // Cập nhật trạng thái giỏ hàng thành sold và ẩn đi thay vì xóa
                     $buyer_id = $current_order_data['buyer_id'];
                     if ($buyer_id) {
                         try {
-                            // Xóa giỏ hàng trực tiếp từ database mà không cần thay đổi session
-                            $stmt_clear_cart = $pdo->prepare("DELETE ci FROM cart_items ci 
-                                                            JOIN carts c ON ci.cart_id = c.id 
-                                                            WHERE c.user_id = ?");
-                            $stmt_clear_cart->execute([$buyer_id]);
-                            error_log("Cleared cart for user_id: $buyer_id after successful payment for order: $order_id (order_number: $order_number_from_vnpay)");
+                            // Kiểm tra cấu trúc bảng cart_items
+                            $columns_check = $pdo->query("SHOW COLUMNS FROM cart_items");
+                            $columns = $columns_check->fetchAll(PDO::FETCH_COLUMN);
+                            
+                            $has_status = in_array('status', $columns);
+                            $has_hidden = in_array('is_hidden', $columns);
+                            
+                            if ($has_status && $has_hidden) {
+                                // Cập nhật trạng thái nếu cả hai column đều tồn tại
+                                $stmt_update_cart = $pdo->prepare("UPDATE cart_items ci 
+                                                                JOIN carts c ON ci.cart_id = c.id 
+                                                                SET ci.status = 'sold', ci.is_hidden = 1
+                                                                WHERE c.user_id = ?");
+                                $stmt_update_cart->execute([$buyer_id]);
+                                $affected_rows = $stmt_update_cart->rowCount();
+                                error_log("Updated $affected_rows cart items to 'sold' status for user_id: $buyer_id");
+                            } else {
+                                // Fallback: xóa nếu không có columns cần thiết
+                                $stmt_delete_cart_items = $pdo->prepare("DELETE ci FROM cart_items ci 
+                                                                        JOIN carts c ON ci.cart_id = c.id 
+                                                                        WHERE c.user_id = ?");
+                                $stmt_delete_cart_items->execute([$buyer_id]);
+                                $affected_rows = $stmt_delete_cart_items->rowCount();
+                                error_log("Deleted $affected_rows cart items for user_id: $buyer_id (fallback - missing columns)");
+                            }
                         } catch (Exception $e) {
-                            error_log("Error clearing cart for user $buyer_id: " . $e->getMessage());
+                            error_log("Error updating cart status for user $buyer_id: " . $e->getMessage());
                         }
                     }
                 }
@@ -139,16 +172,6 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
 } else {
     $payment_message = "Chữ ký không hợp lệ. Giao dịch có thể đã bị thay đổi.";
     error_log("VNPay Return: Invalid signature for order_number: " . $order_number_from_vnpay . " GET data: " . print_r($_GET, true));
-    // log_vnpay_debug_data("RETURN_URL - INVALID SIGNATURE", 
-    //     [
-    //         "order_number" => $order_number_from_vnpay, 
-    //         "message" => $payment_message,
-    //         "hash_data_calculated_from" => $hashData,
-    //         "secure_hash_calculated" => $secureHash_calculated,
-    //         "secure_hash_received_from_vnpay" => $vnp_SecureHash_received,
-    //         "full_get_params" => $_GET
-    //     ]
-    // );
 }
 
 $redirectParams = [];
@@ -170,6 +193,8 @@ $successPageUrl = '/WebMuaBanDoCu/app/View/payment/success.php';
 
 // Debug log
 error_log("VNPAY Return - Redirecting to: " . $successPageUrl . '?' . $queryString);
+error_log("VNPAY Return - Current session ID: " . session_id());
+error_log("VNPAY Return - User ID before redirect: " . ($_SESSION['user_id'] ?? 'Not set'));
 
 // Clear any output buffer before redirect
 if (ob_get_level()) {

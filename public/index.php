@@ -36,6 +36,11 @@ switch ($page) {
         exit();
         break;
         
+    case 'payment_success':
+        // Trang thanh toán thành công
+        require_once __DIR__ . '/../app/View/payment/success.php';
+        break;
+        
     case 'home':
     default:
         // Trang chủ mặc định

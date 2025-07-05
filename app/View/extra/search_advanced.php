@@ -248,7 +248,8 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
         </div>
     </div>
-    
+    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php footer(); ?>
 </body>

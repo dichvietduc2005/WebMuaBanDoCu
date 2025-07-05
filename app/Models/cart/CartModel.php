@@ -61,7 +61,9 @@ class CartModel
             JOIN carts c ON ci.cart_id = c.id
             JOIN products p ON ci.product_id = p.id
             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-            WHERE c.user_id = ?
+            WHERE c.user_id = ? 
+            AND (ci.status IS NULL OR ci.status = 'active')
+            AND (ci.is_hidden IS NULL OR ci.is_hidden = 0)
             ORDER BY ci.added_at DESC
         ";
         $stmt = $this->pdo->prepare($sql);

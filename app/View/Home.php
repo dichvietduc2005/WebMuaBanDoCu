@@ -154,7 +154,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <?php if ($product['image_path']): ?>
                                     <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($product['title']); ?>"
-                                        style="width: 100%; height: 220px; object-fit: cover;">
+                                        style="width: 100%; height: 220px; object-fit: contain;">
                                 <?php else: ?>
                                     <div
                                         style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">

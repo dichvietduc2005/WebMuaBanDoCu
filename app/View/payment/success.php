@@ -1,4 +1,9 @@
 <?php
+// Check if session already started before starting a new one
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Sử dụng đường dẫn tuyệt đối thay vì tương đối để tránh lỗi khi được gọi từ router
 $config_path = __DIR__ . '/../../../config/config.php';
 require_once($config_path);
@@ -6,7 +11,10 @@ require_once(__DIR__ . '/../../helpers.php'); // For helper functions
 require_once __DIR__ . '/../../Components/header/Header.php';
 require_once __DIR__ . '/../../Components/footer/Footer.php';
 
-
+// Log session info for debugging
+error_log("Payment success page - Session ID: " . session_id());
+error_log("Payment success page - User logged in: " . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'No'));
+error_log("Payment success page - Session data: " . print_r($_SESSION, true));
 // Retrieve VNPAY parameters from URL
 $vnp_TxnRef = htmlspecialchars($_GET['vnp_TxnRef'] ?? 'N/A');
 $vnp_Amount = htmlspecialchars($_GET['vnp_Amount'] ?? '0');

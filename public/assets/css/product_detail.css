@@ -126,7 +126,7 @@ body {
     border-radius: 8px;
     font-weight: 600;
 }
-
+/* 
 .btn-buy-now {
     background: #ee4d2d;
     color: white;
@@ -134,7 +134,7 @@ body {
     padding: 12px 24px;
     border-radius: 8px;
     font-weight: 600;
-}
+} */
 
 .product-description {
     background: white;
@@ -354,4 +354,10 @@ body {
 
 .see-all-reviews:hover {
     text-decoration: underline;
+}
+.description{
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    font-size: 14px;
 }

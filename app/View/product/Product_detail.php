@@ -81,9 +81,8 @@ if (isset($_SESSION['user_id'])) {
                 <div class="col-md-6">
                     <div class="product-images">
                         <?php if (!empty($product_images)): ?>
-                        <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product_images[0]['image_path']); ?>"
+                        <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product_images[0]['image_path']); ?>"
                             alt="<?php echo htmlspecialchars($product['title']); ?>" class="main-image" id="mainImage">
-
                         <?php if (count($product_images) > 1): ?>
                         <div class="image-thumbnails">
                             <?php foreach ($product_images as $index => $image): ?>
@@ -105,6 +104,7 @@ if (isset($_SESSION['user_id'])) {
                 <div class="col-md-6">
                     <div class="product-info">
                         <h1><?php echo htmlspecialchars($product['title']); ?></h1>
+                        <div class="description"><?php echo nl2br(htmlspecialchars($product['description'] ?? '')); ?></div>
                         <div class="price"><?php echo formatPrice($product['price']); ?></div>
 
                         <div class="product-meta">
@@ -127,12 +127,12 @@ if (isset($_SESSION['user_id'])) {
                         </div>
 
                         <div class="action-buttons">
-                            <button class="btn btn-add-cart" onclick="addToCart(<?php echo $product['id']; ?>)">
+                            <button class="btn btn-add-cart " onclick="addToCart(<?php echo $product['id']; ?>)">
                                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
                             </button>
-                            <button class="btn btn-buy-now" onclick="buyNow(<?php echo $product['id']; ?>)">
+                            <!-- <button class="btn btn-buy-now" onclick="buyNow(<?php echo $product['id']; ?>)">
                                 <i class="fas fa-shopping-bag"></i> Mua ngay
-                            </button>
+                            </button> -->
                         </div>
                         <?php else: ?>
                         <div class="action-buttons">

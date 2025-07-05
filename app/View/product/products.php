@@ -129,7 +129,7 @@ if (!function_exists('getConditionText')) {
         .product-image {
             height: 220px;
             width: 100%;
-            object-fit: cover;
+            object-fit: contain;
             background: #e9ecef;
             display: flex;
             align-items: center;
@@ -188,7 +188,6 @@ if (!function_exists('getConditionText')) {
 <body>    
     <?php renderHeader($pdo); ?>
 <div class="container">
-        <a href="../../../public/TrangChu.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
         
         <div class="header">
             <h1>Danh sách sản phẩm</h1>
@@ -209,13 +208,16 @@ if (!function_exists('getConditionText')) {
                 <?php foreach ($products as $product): ?>
                 <div class="product-card">
                     <div class="product-image">
-                        <?php if ($product['image_path']): ?>
-                            <img src="../<?php echo htmlspecialchars($product['image_path']); ?>" 
-                                 alt="<?php echo htmlspecialchars($product['title']); ?>"
-                                 style="width: 100%; height: 220px; object-fit: cover;">
-                        <?php else: ?>
-                            <i class="fas fa-image" style="font-size: 48px;"></i>
-                        <?php endif; ?>
+                    <?php if ($product['image_path']): ?>
+                                    <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
+                                        alt="<?php echo htmlspecialchars($product['title']); ?>"
+                                        style="width: 100%; height: 220px; object-fit: contain;">
+                                <?php else: ?>
+                                    <div
+                                        style="width: 100%; height: 220px; background: #e9ecef; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                                        <i class="fas fa-image" style="font-size: 48px;"></i>
+                                    </div>
+                                <?php endif; ?>
                     </div>
                     <div class="product-content">
                         <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
