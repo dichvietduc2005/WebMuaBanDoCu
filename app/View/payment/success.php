@@ -3,10 +3,9 @@
 $config_path = __DIR__ . '/../../../config/config.php';
 require_once($config_path);
 require_once(__DIR__ . '/../../helpers.php'); // For helper functions
+require_once __DIR__ . '/../../Components/header/Header.php';
+require_once __DIR__ . '/../../Components/footer/Footer.php';
 
-// Debug logging
-error_log("SUCCESS.PHP: Loaded successfully");
-error_log("SUCCESS.PHP: GET parameters: " . print_r($_GET, true));
 
 // Retrieve VNPAY parameters from URL
 $vnp_TxnRef = htmlspecialchars($_GET['vnp_TxnRef'] ?? 'N/A');
@@ -22,10 +21,7 @@ $payment_status_message = htmlspecialchars($_GET['payment_status_message'] ?? 'K
 $payment_successful = isset($_GET['payment_successful']) && $_GET['payment_successful'] === '1';
 $app_order_id = htmlspecialchars($_GET['app_order_id'] ?? $vnp_TxnRef); // Use app_order_id if available
 
-// Trạng thái đơn hàng đã được cập nhật trong return.php
-// Chỉ hiển thị thông tin từ URL parameters
 
-// Format amount (VNPAY amount is x100)
 $display_amount = number_format((int)$vnp_Amount / 100, 0, ',', '.') . ' VNĐ';
 
 // Format PayDate (YYYYMMDDHHMMSS to d/m/Y H:i:s)
@@ -41,19 +37,8 @@ if (strlen($vnp_PayDate) == 14) {
     }
 }
 
-// Clear session-based cart if payment was successful and you use a session cart for display
-// The database cart is cleared by ipn.php
 if ($payment_successful && isset($_SESSION['cart'])) {
-    // If you want to be absolutely sure the cart displayed to the user is empty NOW,
-    // you can clear the session cart.
-    // However, if your cart display always fetches from DB (via getCartContents),
-    // this might not be strictly necessary as the DB cart (cart_items) should be empty.
-    // unset($_SESSION['cart']); // Example: if your cart is stored directly in $_SESSION['cart']
-    
-    // If get_or_create_cart_id relies on $_SESSION['user_id'] or session_id()
-    // and clearCart() uses that, you could call clearCart here for the current user's session cart.
-    // This depends on how your cart functions are tied to the session.
-    // For now, we assume ipn.php has handled the persistent cart data.
+    unset($_SESSION['cart']);
 }
 
 $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán thất bại";
@@ -66,6 +51,9 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?> - Cửa Hàng Đồ Cũ</title>    <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/WebMuaBanDoCu/public/assets/css/checkout.css" rel="stylesheet"> <!-- You might want a specific success page CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; background-color: #f8f9fa; }
         .container { max-width: 800px; margin-top: 50px; }
@@ -84,7 +72,7 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
     </style>
 </head>
 <body>
-
+<?php renderHeader($pdo); ?>
     <div class="container">
         <div class="card">
             <div class="card-header">
@@ -136,10 +124,9 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
                 <?php endif; ?>
 
                 <div class="footer-links">
-                    <a href="/WebMuaBanDoCu/public/index.php">Tiếp tục mua sắm</a>
+                    <a href="/WebMuaBanDoCu/app/View/Home.php">Tiếp tục mua sắm</a>
                     <?php if ($payment_successful && $app_order_id !== 'N/A'): ?>
-                        <!-- You could link to an order details page if you have one -->
-                        <!-- <a href="../order/details.php?order_id=<?php echo urlencode($app_order_id); ?>">Xem chi tiết đơn hàng</a> -->
+                        <a href="/WebMuaBanDoCu/app/View/order/order_history.php">Xem lịch sử đơn hàng</a>
                     <?php else: ?>
                          <a href="/WebMuaBanDoCu/app/View/cart/index.php">Xem lại giỏ hàng</a>
                     <?php endif; ?>
@@ -147,8 +134,9 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
             </div>
         </div>
     </div>
-
+    <?php footer(); ?>
     <script src="/WebMuaBanDoCu/public/assets/js/jquery-1.11.3.min.js"></script>
     <script src="/WebMuaBanDoCu/public/assets/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

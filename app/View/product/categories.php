@@ -1,6 +1,7 @@
 <?php
 require_once '../../../config/config.php';
-
+require_once __DIR__ . '/../../Components/header/Header.php';
+require_once __DIR__ . '/../../Components/footer/Footer.php';
 // Lấy danh sách danh mục với số lượng sản phẩm
 $stmt = $pdo->prepare("
     SELECT c.*, COUNT(p.id) as product_count 
@@ -35,7 +36,9 @@ $category_icons = [
     <link rel="stylesheet" href="../../../public/assets/css/index.css">
     <link rel="stylesheet" href="../../../public/assets/css/Categories.css">
    </head>
-<body>    <div class="container">
+<body>  
+    <?php renderHeader($pdo); ?>
+<div class="container">
         <a href="../TrangChu.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
         
         <div class="header">
@@ -57,5 +60,7 @@ $category_icons = [
             <?php endforeach; ?>
         </div>
     </div>
+    <?php footer(); ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

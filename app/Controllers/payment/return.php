@@ -13,6 +13,10 @@ foreach ($_GET as $key => $value) {
 
 $order_number_from_vnpay = $_GET['vnp_TxnRef'] ?? null;
 
+// Debug session information - temporary
+// error_log("RETURN.PHP: Session ID: " . session_id());
+// error_log("RETURN.PHP: Session data: " . print_r($_SESSION, true));
+
 // LOGGING POINT 1: Received data from VNPAY
 // log_vnpay_debug_data("RETURN_URL - RECEIVED DATA", 
 //     [
@@ -102,10 +106,11 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                     $buyer_id = $current_order_data['buyer_id'];
                     if ($buyer_id) {
                         try {
-                            // Set session user_id để CartController có thể clear đúng cart
-                            $_SESSION['user_id'] = $buyer_id;
-                            $cartController = new CartController($pdo);
-                            $cartController->clearCart();
+                            // Xóa giỏ hàng trực tiếp từ database mà không cần thay đổi session
+                            $stmt_clear_cart = $pdo->prepare("DELETE ci FROM cart_items ci 
+                                                            JOIN carts c ON ci.cart_id = c.id 
+                                                            WHERE c.user_id = ?");
+                            $stmt_clear_cart->execute([$buyer_id]);
                             error_log("Cleared cart for user_id: $buyer_id after successful payment for order: $order_id (order_number: $order_number_from_vnpay)");
                         } catch (Exception $e) {
                             error_log("Error clearing cart for user $buyer_id: " . $e->getMessage());

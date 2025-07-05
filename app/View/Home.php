@@ -1,4 +1,5 @@
 <?php
+
 // Sử dụng bootstrap để tăng hiệu suất tải trang
 require_once __DIR__ . '/../../config/bootstrap.php';
 

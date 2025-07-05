@@ -320,6 +320,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/notifications.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/footer.css">
+    
 
 
 
