@@ -274,32 +274,32 @@ CREATE TABLE system_notifications (
 
 -- ------------------------------------------------------------
 
-INSERT INTO `notifications` (`id`, `user_id`, `message`, `is_read`, `created_at`) VALUES
-(1, 1, 'Sản phẩm <b>IPhone 11</b> của bạn đã được bán và thanh toán thành công!', 1, '2025-06-19 18:39:39'),
-(2, 1, 'Sản phẩm <b>iPad Pro 11 inch 2021</b> của bạn đã được bán và thanh toán thành công!', 0, '2025-06-19 18:45:09'),
-(3, 1, 'Sản phẩm <b>123</b> của bạn đã được bán và thanh toán thành công!', 1, '2025-06-19 18:46:33'),
-(4, 1, 'Sản phẩm <b>IPhone 11</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-20 22:07:19'),
-(5, 1, 'Sản phẩm <b>Iphone 123</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-20 22:15:56'),
-(6, 1, 'Sản phẩm <b>Iphone 123</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-20 22:15:56'),
-(7, 1, 'Sản phẩm <b>12312</b> của bạn đã bị admin xóa khỏi hệ thống.', 1, '2025-06-26 16:51:31'),
-(8, 1, 'Sản phẩm <b>12312</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-26 16:51:51'),
-(9, 1, 'Sản phẩm <b>12312</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-26 16:51:51'),
-(10, 1, 'Sản phẩm <b>1232</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-30 22:57:05'),
-(11, 1, 'Sản phẩm <b>IPhone 13</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-01 14:38:56'),
-(12, 1, 'Sản phẩm <b>Áo Khoác Da Cá Sấu</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-01 15:42:48'),
-(13, 1, 'Sản phẩm <b>Xe đạp thể thao</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-01 22:51:29'),
-(14, 1, 'Sản phẩm <b>1212</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-02 11:24:21'),
-(15, 1, 'Sản phẩm <b>IP10</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-03 14:58:18'),
-(16, 1, 'Sản phẩm <b>hsahd</b> của bạn đã được duyệt', 1, '2025-07-03 23:35:17'),
-(17, 1, 'Sản phẩm <b>hsahd</b> của bạn đã bị từ chối', 1, '2025-07-03 23:35:21'),
-(18, 1, 'Sản phẩm <b>hsahd</b> của bạn đã bị xóa', 1, '2025-07-03 23:35:24'),
-(19, 1, 'Sản phẩm <b>123</b> của bạn đã được duyệt', 1, '2025-07-03 23:40:04'),
-(20, 1, 'Sản phẩm <b>34324</b> của bạn đã bị từ chối', 1, '2025-07-03 23:41:46'),
-(21, 1, 'Sản phẩm <b>seqads</b> của bạn đã bị xóa', 1, '2025-07-03 23:41:51'),
-(22, 1, 'Sản phẩm <b>DICH </b> của bạn đã được duyệt', 1, '2025-07-04 00:10:56'),
-(23, 1, 'Sản phẩm <b>iisaidi</b> của bạn đã được duyệt', 0, '2025-07-04 14:25:51'),
-(24, 1, 'Sản phẩm <b>ádas</b> của bạn đã được duyệt', 0, '2025-07-04 17:15:58'),
-(25, 1, 'Sản phẩm <b>123123</b> của bạn đã bị từ chối', 0, '2025-07-04 17:16:00');
+-- INSERT INTO `notifications` (`id`, `user_id`, `message`, `is_read`, `created_at`) VALUES
+-- (1, 1, 'Sản phẩm <b>IPhone 11</b> của bạn đã được bán và thanh toán thành công!', 1, '2025-06-19 18:39:39'),
+-- (2, 1, 'Sản phẩm <b>iPad Pro 11 inch 2021</b> của bạn đã được bán và thanh toán thành công!', 0, '2025-06-19 18:45:09'),
+-- (3, 1, 'Sản phẩm <b>123</b> của bạn đã được bán và thanh toán thành công!', 1, '2025-06-19 18:46:33'),
+-- (4, 1, 'Sản phẩm <b>IPhone 11</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-20 22:07:19'),
+-- (5, 1, 'Sản phẩm <b>Iphone 123</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-20 22:15:56'),
+-- (6, 1, 'Sản phẩm <b>Iphone 123</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-20 22:15:56'),
+-- (7, 1, 'Sản phẩm <b>12312</b> của bạn đã bị admin xóa khỏi hệ thống.', 1, '2025-06-26 16:51:31'),
+-- (8, 1, 'Sản phẩm <b>12312</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-26 16:51:51'),
+-- (9, 1, 'Sản phẩm <b>12312</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-26 16:51:51'),
+-- (10, 1, 'Sản phẩm <b>1232</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-06-30 22:57:05'),
+-- (11, 1, 'Sản phẩm <b>IPhone 13</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-01 14:38:56'),
+-- (12, 1, 'Sản phẩm <b>Áo Khoác Da Cá Sấu</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-01 15:42:48'),
+-- (13, 1, 'Sản phẩm <b>Xe đạp thể thao</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-01 22:51:29'),
+-- (14, 1, 'Sản phẩm <b>1212</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-02 11:24:21'),
+-- (15, 1, 'Sản phẩm <b>IP10</b> của bạn đã được admin duyệt và đăng bán.', 1, '2025-07-03 14:58:18'),
+-- (16, 1, 'Sản phẩm <b>hsahd</b> của bạn đã được duyệt', 1, '2025-07-03 23:35:17'),
+-- (17, 1, 'Sản phẩm <b>hsahd</b> của bạn đã bị từ chối', 1, '2025-07-03 23:35:21'),
+-- (18, 1, 'Sản phẩm <b>hsahd</b> của bạn đã bị xóa', 1, '2025-07-03 23:35:24'),
+-- (19, 1, 'Sản phẩm <b>123</b> của bạn đã được duyệt', 1, '2025-07-03 23:40:04'),
+-- (20, 1, 'Sản phẩm <b>34324</b> của bạn đã bị từ chối', 1, '2025-07-03 23:41:46'),
+-- (21, 1, 'Sản phẩm <b>seqads</b> của bạn đã bị xóa', 1, '2025-07-03 23:41:51'),
+-- (22, 1, 'Sản phẩm <b>DICH </b> của bạn đã được duyệt', 1, '2025-07-04 00:10:56'),
+-- (23, 1, 'Sản phẩm <b>iisaidi</b> của bạn đã được duyệt', 0, '2025-07-04 14:25:51'),
+-- (24, 1, 'Sản phẩm <b>ádas</b> của bạn đã được duyệt', 0, '2025-07-04 17:15:58'),
+-- (25, 1, 'Sản phẩm <b>123123</b> của bạn đã bị từ chối', 0, '2025-07-04 17:16:00');
 
 -- Thêm dữ liệu categories
 INSERT INTO categories (name, slug, description) VALUES

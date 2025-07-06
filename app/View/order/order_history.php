@@ -42,7 +42,7 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    <!-- User chat styles are now included in Header.php -->
     <style>
         * {
             margin: 0;
@@ -297,6 +297,15 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
             border: 1px solid #e9ecef;
         }
         
+        .order-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        
         .stats-section {
             background: white;
             border-radius: 12px;
@@ -397,55 +406,7 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
             color: #999;
             margin: 0 8px;
         }
-          .order-placeholder {
-            width: 70px;
-            height: 70px;
-            background: #f0f0f0;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 14px;
-            text-align: center;
-            border: 1px solid #e9ecef;
-        }
-        
-        .stats-section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            border: 1px solid #f0f0f0;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .stat-number {
-            font-size: 24px;
-            font-weight: 600;
-            color: #007bff;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 13px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+
         
         @media (max-width: 768px) {
             .modern-container {
@@ -541,10 +502,14 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
                 <div class="order-item">
                     <div class="order-header">
                         <div class="order-main-info">
-                            <?php if (!empty($order['first_product_image']) && file_exists("../../" . $order['first_product_image'])): ?>
-                                <img src="../../<?php echo htmlspecialchars($order['first_product_image']); ?>" 
+                            <?php if (!empty($order['first_product_image'])): ?>
+                                <img src="../../../public/<?php echo htmlspecialchars($order['first_product_image']); ?>" 
                                      alt="Order Product" 
-                                     class="order-image">
+                                     class="order-image"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="order-placeholder" style="display: none;">
+                                    <i class="fas fa-box"></i>
+                                </div>
                             <?php else: ?>
                                 <div class="order-placeholder">
                                     <i class="fas fa-box"></i>

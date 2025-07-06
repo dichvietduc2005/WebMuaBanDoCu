@@ -384,10 +384,6 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                 Đơn hàng #<?php echo htmlspecialchars($order['order_number']); ?> • Đặt vào ngày
                 <?php echo date('d/m/Y', strtotime($order['created_at'])); ?>
             </div>
-        </div>
-
-        <!-- Order Status -->
-        <div class="status-section">
             <h2 class="section-title">Trạng Thái Đơn Hàng</h2>
             <div class="status-item">
                 <div class="status-icon <?php echo strtolower($order['status']) === 'completed' ? 'delivered' : ''; ?>">
@@ -449,8 +445,14 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                             <td>
                                 <div class="product-info">
                                     <?php if (!empty($item['product_image'])): ?>
-                                        <img src="<?php echo $root_path . '/' . htmlspecialchars($item['product_image']); ?>"
-                                            alt="<?php echo htmlspecialchars($item['product_title']); ?>" class="product-image">
+                                        <img src="../../../public/<?php echo htmlspecialchars($item['product_image']); ?>"
+                                            alt="<?php echo htmlspecialchars($item['product_title']); ?>" 
+                                            class="product-image"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="product-image"
+                                            style="display: none; align-items: center; justify-content: center; background: #f0f0f0;">
+                                            <i class="fas fa-image" style="color: #999;"></i>
+                                        </div>
                                     <?php else: ?>
                                         <div class="product-image"
                                             style="display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
@@ -494,7 +496,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
             </div>
         </div>
 
-        <!-- Shipping & Billing Address -->
+        <!-- Shipping & Billing Address
         <div class="address-section">
             <h2 class="section-title">Địa Chỉ Giao Hàng</h2>
             <div class="address-text">
@@ -517,7 +519,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                     Việt Nam
                 <?php endif; ?>
             </div>
-        </div>
+        </div> -->
 
         <!-- Actions -->
         <div class="actions-section">

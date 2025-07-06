@@ -47,7 +47,9 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         unset($_SESSION['error_message']);
     }
     ?>
+    
     <?php require_once __DIR__ . '/../../View/user/ChatView.php'; ?>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container-fluid px-2 px-sm-3 px-lg-4">
             <!-- Mobile Toggler -->
@@ -322,6 +324,158 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
     <!-- Notifications Popup CSS -->
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/notifications.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    
+    <!-- Inline User Chat CSS để tránh lỗi loading trên hosting -->
+    <style>
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: rgba(80, 58, 135, 0.5);
+            backdrop-filter: blur(10px);
+            filter: saturate(200%);
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            font-family: sans-serif;
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 999;
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .chat-container.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+            transition: transform 0.4s ease-out, opacity 0.3s ease;
+        }
+
+        .chat-container.unactive {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.4s ease-out, opacity 0.3s ease;
+        }
+
+        .chat-header {
+            background-image: linear-gradient(rgb(187, 187, 255), rgb(174, 116, 255));
+            color: #fff;
+            padding: 10px;
+        }
+
+        .chat-body {
+            display: flex;
+            flex-direction: column;
+            height: 300px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background-color: rgb(255, 255, 255, 0);
+        }
+
+        .chat-messages-container {
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            background-color: transparent;
+        }
+
+        .chat-input {
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            display: flex;
+            gap: 15px;
+        }
+
+        .chat-input input {
+            border-radius: 10px;
+            padding: 5px;
+            border: none;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(204, 0, 255, 0.504);
+        }
+
+        .chat-input button {
+            background-color: #554567a4;
+            color: white;
+            border: none;
+            padding: 0px 10px 0px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            filter: saturate(200%);
+            transition: all 0.1s;
+        }
+
+        .chat-input button:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-input button:active {
+            transform: scale(1);
+        }
+
+        .user-message {
+            align-self: flex-end;
+            word-wrap: break-word;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: rgb(156, 0, 148);
+            color: white;
+            max-width: 50%;
+        }
+
+        .admin-message {
+            align-self: flex-start;
+            word-wrap: break-word;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: rgb(73, 73, 73);
+            color: white;
+            max-width: 50%;
+        }
+
+        /* Responsive Enhancements */
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 85vw;
+                bottom: 100px;
+                right: 5vw;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .chat-container {
+                width: 90vw;
+                bottom: 80px;
+                right: 4vw;
+            }
+
+            .chat-header {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .chat-input input {
+                font-size: 14px;
+            }
+
+            .chat-input button {
+                padding: 4px 8px;
+            }
+        }
+    </style>
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/footer.css">
     
 
@@ -1222,6 +1376,136 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
     
     <!-- Real-time Cart Count Script -->
     <script src="/WebMuaBanDoCu/public/assets/js/cart-count-realtime.js"></script>
+    <!-- Global toggleChat function để tránh lỗi ReferenceError -->
+    <script>
+    let userId = <?php echo $_SESSION['user_id'] ?>;
+    let chatVisible = true;
+let can_jump_bottom = true;
+
+function add_scroll_event_to_container() {
+    let containerMessages = document.getElementById("ChatMessagesContainer");
+    containerMessages.addEventListener('scroll', function () {
+        if (Math.ceil(containerMessages.scrollTop) + containerMessages.clientHeight >= containerMessages.scrollHeight) {
+            can_jump_bottom = true;
+        } else {
+            can_jump_bottom = false
+        }
+    })
+}
+
+function jump_to_bottom() {
+    let containerMessages = document.getElementById("ChatMessagesContainer");
+    containerMessages.scrollTop = containerMessages.scrollHeight;
+}
+
+function on_key_press(event){
+    if(event.key == 'Enter'){
+        send_messages();
+    }
+}
+
+function toggleChat() {
+    let load_new_messages = null
+    let chatContainer = document.getElementById("chat-widget");
+    if (chatVisible) {
+        load_new_messages = setInterval(() => {
+            load_messages();
+            if (can_jump_bottom) {
+                jump_to_bottom();
+            }
+
+        }, 1000)
+        
+        chatContainer.classList.remove('unactive')
+        chatContainer.classList.add('active')
+        chatVisible = false;
+    } else {
+        jump_to_bottom();
+        clearInterval(load_new_messages);
+        chatVisible = true;
+        chatContainer.classList.remove('active')
+        chatContainer.classList.add('unactive')
+    }
+}
+
+function send_messages() {
+    const input = document.getElementById("chat-input");
+
+    if (input.value.length < 1) return;
+
+    const content = input.value;
+    input.value = "";
+    fetch("/WebMuaBanDoCu/app/Controllers/message/SendMessageController.php", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: "content=" + content + "&role=user"
+    }).then(res => res.text())
+        .then(data => {
+            if (data === 'success') {
+                load_messages(); // Refresh messages after sending
+                setTimeout(() => {
+                    jump_to_bottom();
+                }, 100); // Delay to ensure messages are loaded before scrolling
+            } else {
+                alert("Error sending message: " + data);
+            }
+        }).catch(err => {
+            alert("Error: " + err);
+        });
+}
+
+function load_messages() {
+    fetch("/WebMuaBanDoCu/app/Controllers/message/GetMessagesController.php", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: "user_id=" + userId + "&role=user"
+    })
+        .then(response => response.json())
+        .then(data => {
+            const messagesBox = document.getElementById("messages");
+            messagesBox.innerHTML = ''; // Clear previous messages
+            data.forEach(message => {
+                const messageElement = document.createElement("div");
+                if (message.role === 'user') {
+                    messageElement.className = 'user-message';
+                } else if (message.role === 'admin') {
+                    messageElement.className = 'admin-message';
+                }
+                messageElement.textContent = `${message.content}`;
+                messagesBox.appendChild(messageElement);
+            });
+
+        });
+}
+
+add_scroll_event_to_container();
+        // // Hệ thống quản lý toggleChat function
+        // window.ChatSystem = window.ChatSystem || {};
+        
+        // // Định nghĩa default toggleChat function
+        // window.ChatSystem.defaultToggleChat = function() {
+        //     const chatWidget = document.getElementById('chat-widget');
+        //     if (chatWidget) {
+        //         const isVisible = chatWidget.classList.contains('active');
+        //         if (isVisible) {
+        //             chatWidget.classList.remove('active');
+        //             chatWidget.classList.add('unactive');
+        //         } else {
+        //             chatWidget.classList.remove('unactive');
+        //             chatWidget.classList.add('active');
+        //         }
+        //     } else {
+        //         console.log('toggleChat called - no chat widget found');
+        //     }
+        // };
+        
+        // // Khởi tạo toggleChat function
+        // if (typeof window.toggleChat === 'undefined') {
+        //     window.toggleChat = window.ChatSystem.defaultToggleChat;
+        // }
+    </script>
     
     <?php
 }
