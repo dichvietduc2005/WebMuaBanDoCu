@@ -196,6 +196,19 @@ body {
     color: #721c24;
 }
 
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #3a86ff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #2d6bb8;
+    text-decoration: underline;
+}
+
 .breadcrumb-custom {
     background: white;
     padding: 15px 30px;

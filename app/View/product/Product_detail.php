@@ -64,10 +64,14 @@ if (isset($_SESSION['user_id'])) {
 <body>
     <?php renderHeader($pdo); ?>
     <div class="product-detail-container">
+        <a href="../TrangChu.php" class="back-link">
+            <i class="fas fa-arrow-left"></i> Về trang chủ
+        </a>
         <!-- Breadcrumb -->
         <nav class="breadcrumb-custom">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="TrangChu.php">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="../TrangChu.php">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="categories.php">Danh mục</a></li>
                 <li class="breadcrumb-item"><a
                         href="products.php?category=<?php echo $product['category_id']; ?>"><?php echo htmlspecialchars($product['category_name']); ?></a>
                 </li>

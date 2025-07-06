@@ -94,103 +94,37 @@ if (!function_exists('getConditionText')) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            background-color: #f5f7fb;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        .product-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        .product-image {
-            height: 220px;
-            width: 100%;
-            object-fit: contain;
-            background: #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6c757d;
-        }
-        .product-content {
-            padding: 20px;
-        }
-        .product-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        .product-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: #3a86ff;
-            margin-bottom: 15px;
-        }
-        .product-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #6c757d;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 30px;
-        }
-        .pagination a, .pagination .current {
-            padding: 10px 15px;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #333;
-        }
-        .pagination .current {
-            background: #3a86ff;
-            color: white;
-        }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #3a86ff;
-            text-decoration: none;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="../../../public/assets/css/products.css">
 </head>
 <body>    
     <?php renderHeader($pdo); ?>
 <div class="container">
+        <a href="../TrangChu.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
+        
+        <?php if ($category): ?>
+        <?php
+        // Lấy tên danh mục
+        $stmt = $pdo->prepare("SELECT name FROM categories WHERE id = ?");
+        $stmt->execute([$category]);
+        $category_name = $stmt->fetchColumn();
+        ?>
+        <nav aria-label="breadcrumb" style="margin-bottom: 20px;">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../TrangChu.php">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="categories.php">Danh mục</a></li>
+                <li class="breadcrumb-item active"><?php echo htmlspecialchars($category_name); ?></li>
+            </ol>
+        </nav>
+        <?php endif; ?>
         
         <div class="header">
-            <h1>Danh sách sản phẩm</h1>
+            <h1>
+                <?php if ($category): ?>
+                    <?php echo htmlspecialchars($category_name); ?>
+                <?php else: ?>
+                    Danh sách sản phẩm
+                <?php endif; ?>
+            </h1>
             <?php if ($search): ?>
                 <p>Kết quả tìm kiếm cho: "<strong><?php echo htmlspecialchars($search); ?></strong>"</p>
             <?php endif; ?>
@@ -206,7 +140,7 @@ if (!function_exists('getConditionText')) {
                 </div>
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
-                <div class="product-card">
+                <div class="product-card" onclick="window.location.href='Product_detail.php?id=<?php echo $product['id']; ?>'" style="cursor: pointer;">
                     <div class="product-image">
                     <?php if ($product['image_path']): ?>
                                     <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
@@ -230,6 +164,14 @@ if (!function_exists('getConditionText')) {
                                 <i class="fas fa-box"></i> Còn <?php echo $product['stock_quantity']; ?>
                             </div>
                         </div>
+                        <?php if ($product['stock_quantity'] > 0): ?>
+                        <div class="product-actions">
+                            <button class="btn btn-primary btn-sm add-to-cart-btn" 
+                                    onclick="event.stopPropagation(); addToCartFromList(<?php echo $product['id']; ?>)">
+                                <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -264,5 +206,90 @@ if (!function_exists('getConditionText')) {
     </div>
     <?php footer(); ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toast notification function
+        function showToast(type, title, message) {
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '9999';
+                document.body.appendChild(toastContainer);
+            }
+
+            const toastEl = document.createElement('div');
+            toastEl.className = `toast show align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+            toastEl.setAttribute('aria-atomic', 'true');
+            toastEl.style.minWidth = '300px';
+            
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>${title}</strong> ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toastEl);
+
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+                setTimeout(() => toastEl.remove(), 300);
+            }, 3000);
+        }
+
+        // Add to cart function
+        async function addToCartFromList(productId) {
+            const button = event.target.closest('.add-to-cart-btn');
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: `action=add&product_id=${productId}&quantity=1`
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('success', 'Thành công!', 'Đã thêm sản phẩm vào giỏ hàng');
+                    
+                    // Update cart count in header
+                    const cartCountElements = document.querySelectorAll('.cart-count');
+                    cartCountElements.forEach(element => {
+                        const currentCount = parseInt(element.textContent) || 0;
+                        const newCount = currentCount + 1;
+                        if (newCount <= 9) {
+                            element.textContent = newCount;
+                        } else {
+                            element.textContent = '9+';
+                        }
+                        element.style.display = 'flex';
+                    });
+                } else {
+                    showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('error', 'Lỗi!', 'Không thể kết nối đến máy chủ');
+            } finally {
+                // Restore button state
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
