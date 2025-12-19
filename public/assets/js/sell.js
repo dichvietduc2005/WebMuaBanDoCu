@@ -1,4 +1,3 @@
-
 // Toast helper
 function showToast(type, title, message) {
     const toastContainer = document.getElementById('toast-container') || createToastContainer();
@@ -36,6 +35,81 @@ function createToastContainer() {
     return container;
 }
 
+// Quản lý file ảnh mô tả
+let selectedDescFiles = [];
+
+const imagesDescInput = document.getElementById('images_desc');
+const imagesDescPreview = document.getElementById('images_desc_preview');
+const imagesDescError = document.getElementById('images_desc_error');
+
+if (imagesDescInput) {
+    imagesDescInput.addEventListener('change', function (e) {
+        const files = Array.from(e.target.files);
+        // Cộng dồn file, loại trùng theo tên + size
+        files.forEach(file => {
+            if (
+                selectedDescFiles.length < 3 &&
+                !selectedDescFiles.some(f => f.name === file.name && f.size === file.size)
+            ) {
+                selectedDescFiles.push(file);
+            }
+        });
+        if (selectedDescFiles.length > 3) {
+            imagesDescError.textContent = 'Bạn chỉ được chọn tối đa 3 ảnh mô tả!';
+            selectedDescFiles = selectedDescFiles.slice(0, 3);
+        } else {
+            imagesDescError.textContent = '';
+        }
+        renderImagesDescPreview();
+        // Reset input để lần sau chọn lại file cũ vẫn nhận được
+        e.target.value = '';
+    });
+}
+
+function renderImagesDescPreview() {
+    if (!imagesDescPreview) return;
+    imagesDescPreview.innerHTML = '';
+    selectedDescFiles.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const wrap = document.createElement('div');
+            wrap.style.position = 'relative';
+            wrap.style.display = 'inline-block';
+            wrap.style.marginRight = '10px';
+            wrap.style.marginBottom = '10px';
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '70px';
+            img.style.height = '70px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px';
+            img.style.border = '1px solid #ddd';
+            // Nút xóa
+            const del = document.createElement('button');
+            del.innerHTML = '&times;';
+            del.type = 'button';
+            del.style.position = 'absolute';
+            del.style.top = '0';
+            del.style.right = '0';
+            del.style.background = 'rgba(0,0,0,0.6)';
+            del.style.color = '#fff';
+            del.style.border = 'none';
+            del.style.borderRadius = '50%';
+            del.style.width = '22px';
+            del.style.height = '22px';
+            del.style.cursor = 'pointer';
+            del.onclick = function() {
+                selectedDescFiles.splice(idx, 1);
+                renderImagesDescPreview();
+            };
+            wrap.appendChild(img);
+            wrap.appendChild(del);
+            imagesDescPreview.appendChild(wrap);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.querySelector('.sell-card form');
     if (!form) return;
@@ -56,6 +130,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('description').value = fullDesc;
 
         var formData = new FormData(form);
+        // Xóa các file ảnh mô tả cũ (nếu có)
+        formData.delete('images[]');
+        // Thêm lại đúng các file đã chọn
+        selectedDescFiles.forEach(file => {
+            formData.append('images[]', file);
+        });
 
         fetch('../../Models/sell/SellModel.php', {
             method: 'POST',
@@ -75,16 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 });
-document.getElementById('images_desc').addEventListener('change', function (e) {
-    const errorDiv = document.getElementById('images_desc_error');
-    if (this.files.length > 3) {
-        errorDiv.textContent = 'Bạn chỉ được chọn tối đa 3 ảnh mô tả!';
-        this.value = '';
-    } else {
-        errorDiv.textContent = '';
-    }
-});
-// ...existing code...
+
 document.addEventListener("DOMContentLoaded", function() {
     // Tìm tất cả các wrapper có class 'custom-select-wrapper'
     const wrappers = document.querySelectorAll(".custom-select-wrapper");

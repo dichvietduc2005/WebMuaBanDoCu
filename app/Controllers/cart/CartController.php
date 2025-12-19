@@ -59,15 +59,32 @@ class CartController
 
             $existing_item = $this->cartModel->findCartItem($cart_id, $product_id);
 
+            $result = null;
             if ($existing_item) {
                 $new_quantity = $existing_item['quantity'] + $quantity;
                 if ($product['stock_quantity'] < $new_quantity) {
                     throw new \Exception("Số lượng trong giỏ vượt quá số lượng tồn kho.");
                 }
-                return $this->cartModel->updateExistingCartItemQuantity($existing_item['id'], $new_quantity);
+                $result = $this->cartModel->updateExistingCartItemQuantity($existing_item['id'], $new_quantity);
             } else {
-                return $this->cartModel->addNewCartItem($cart_id, $product_id, $quantity, $product['price'], $product['condition_status']);
+                $result = $this->cartModel->addNewCartItem($cart_id, $product_id, $quantity, $product['price'], $product['condition_status']);
             }
+
+            // Log user action after successful add
+            if (function_exists('log_user_action') && $result) {
+                try {
+                    log_user_action($this->pdo, $user_id, 'add_to_cart', "Thêm sản phẩm vào giỏ hàng: " . ($product['title'] ?? 'ID ' . $product_id), [
+                        'product_id' => $product_id,
+                        'quantity' => $quantity,
+                        'product_title' => $product['title'] ?? null,
+                        'price' => $product['price'] ?? null
+                    ]);
+                } catch (Exception $e) {
+                    error_log('Log add_to_cart error: ' . $e->getMessage());
+                }
+            }
+
+            return $result;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -110,6 +127,20 @@ class CartController
     public function removeCartItem($product_id)
     {
         $user_id = $this->ensureUserIsLoggedIn();
+        
+        // Log before removing
+        if (function_exists('log_user_action')) {
+            try {
+                $product = $this->cartModel->findProductById($product_id);
+                log_user_action($this->pdo, $user_id, 'remove_from_cart', "Xóa sản phẩm khỏi giỏ hàng: " . ($product['title'] ?? 'ID ' . $product_id), [
+                    'product_id' => $product_id,
+                    'product_title' => $product['title'] ?? null
+                ]);
+            } catch (Exception $e) {
+                error_log('Log remove_from_cart error: ' . $e->getMessage());
+            }
+        }
+        
         return $this->cartModel->removeItem($user_id, $product_id);
     }
 
@@ -142,6 +173,7 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
                     $cartController->addToCart($product_id, $quantity);
                     $checkout = isset($_POST['checkout']) && $_POST['checkout'] == '1';
                     
+                    // Logging đã được xử lý trong method addToCart()
                     $response = [
                         'success' => true,
                         'message' => 'Sản phẩm đã được thêm vào giỏ hàng.',
@@ -172,6 +204,7 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
             case 'remove':
                 $product_id = (int)($_POST['product_id'] ?? 0);
                 if ($product_id > 0) {
+                    // Logging đã được xử lý trong method removeCartItem()
                     $cartController->removeCartItem($product_id);
                     $response = [
                         'success' => true,

@@ -39,7 +39,6 @@ $category_icons = [
 <body>  
     <?php renderHeader($pdo); ?>
 <div class="container">
-        <a href="../TrangChu.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
         
         <div class="header">
             <h1>Danh mục sản phẩm</h1>

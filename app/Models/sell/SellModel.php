@@ -67,6 +67,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("INSERT INTO product_images (product_id, image_path, is_primary, created_at) VALUES (?, ?, 0, NOW())");
             $stmt->execute([$product_id, $path]);
         }
+        
+        // Log user action
+        if (function_exists('log_user_action')) {
+            log_user_action($pdo, $user_id, 'create_product', "Đăng sản phẩm: {$data['title']}", [
+                'product_id' => $product_id,
+                'product_title' => $data['title'],
+                'price' => $data['price'],
+                'category_id' => $data['category_id']
+            ]);
+        }
+        
         echo json_encode(['success' => true, 'message' => 'Đăng bán thành công, chờ admin duyệt!']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Có lỗi xảy ra, vui lòng thử lại!']);

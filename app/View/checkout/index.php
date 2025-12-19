@@ -46,6 +46,18 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     <?php renderHeader($pdo); ?>
 
     <div class="container mt-5">
+        <div class="alert alert-info" style="margin-bottom: 24px;">
+            <strong>Hướng dẫn sử dụng thẻ test để thanh toán thử nghiệm:</strong><br>
+            <ul style="margin-bottom: 0;">
+                <li><b>Số thẻ:</b> <code>9704 1985 2619 1432 198</code></li>
+                <li><b>Tên chủ thẻ:</b> <code>NGUYEN VAN A</code></li>
+                <li><b>Ngày phát hành (Expiry):</b> <code>07/15</code></li>
+            </ul>
+            <div style="margin-top: 8px;">
+                <b>Lưu ý:</b> Đây là thẻ test, chỉ dùng để kiểm thử, không có giá trị giao dịch thực tế.<br>
+                Khi hệ thống yêu cầu mã OTP, bạn có thể nhập bất kỳ dãy số nào (ví dụ: <code>123456</code>).
+            </div>
+        </div>
         <form action="../../Controllers/payment/create_payment.php" method="POST" id="checkout-form">
             <input type="hidden" name="redirect" value="true">
             <input type="hidden" name="order_id" value="<?php echo 'ORD-' . date('Ymd') . '-' . strtoupper(uniqid()); ?>">
