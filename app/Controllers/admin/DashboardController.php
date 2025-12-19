@@ -251,18 +251,17 @@ function getTopProducts($pdo, $startDate, $endDate, $limit = 10) {
     $stmt = $pdo->prepare("
         SELECT 
             p.id,
-            p.name,
-            p.image,
+            p.title as name,
+            pi.image_path as image,
             p.price,
             p.stock_quantity,
             COALESCE(SUM(oi.quantity), 0) as total_sold,
-            COALESCE(SUM(oi.quantity * oi.price), 0) as total_revenue
+            COALESCE(SUM(oi.quantity * oi.product_price), 0) as total_revenue
         FROM products p
+        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
         LEFT JOIN order_items oi ON p.id = oi.product_id
-        LEFT JOIN orders o ON oi.order_id = o.id
-        WHERE o.created_at BETWEEN ? AND ?
-        AND o.payment_status = 'paid'
-        GROUP BY p.id
+        LEFT JOIN orders o ON oi.order_id = o.id AND o.created_at BETWEEN ? AND ? AND o.payment_status = 'paid'
+        GROUP BY p.id, p.title, pi.image_path, p.price, p.stock_quantity
         ORDER BY total_sold DESC
         LIMIT ?
     ");

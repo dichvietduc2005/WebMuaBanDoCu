@@ -37,7 +37,7 @@ $currentAdminPage = $currentAdminPage ?? 'dashboard';
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- TailAdmin CSS: dùng bản đã build (webpack + tailwind) -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>admin-web/build/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-style.css">
     
     <!-- Tailwind CSS CDN để đảm bảo các class mới hoạt động -->
     <script src="https://cdn.tailwindcss.com"></script>
