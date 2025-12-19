@@ -39,10 +39,25 @@ body {
 }
 
 .container {
-  max-width: 1400px;
-  width: 90%;
+  max-width: 1920px;
+  width: 95%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
+}
+
+/* Tối ưu container trên màn hình lớn để hiển thị nhiều sản phẩm hơn */
+@media (min-width: 1600px) {
+  .container {
+    width: 98%;
+    padding: 0 32px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    width: 100%;
+    padding: 0 40px;
+  }
 }
 
 /* Header Styles */
@@ -271,38 +286,81 @@ body {
   color: var(--primary-dark);
 }
 
-/* Optimized Products Grid - 5 per row on desktop, 2 on mobile */
+/* Optimized Products Grid - Card cố định kích thước, tự động thêm cột khi màn hình rộng */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  /* Sử dụng auto-fill với minmax để tự động thêm cột khi màn hình rộng */
+  /* minmax(240px, 240px) = mỗi card cố định 240px, tự động thêm cột khi đủ chỗ */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
+  gap: 16px;
   margin-bottom: 20px;
+  width: 100%;
+  justify-content: center; /* Căn giữa grid */
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Responsive grid adjustments */
-@media (max-width: 1400px) {
+/* Responsive grid adjustments - Giữ kích thước card cố định */
+/* Màn hình rất lớn (>1920px) - tự động thêm cột */
+@media (min-width: 1921px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
+    gap: 18px;
   }
 }
 
+/* Màn hình lớn (1600px - 1920px) */
+@media (max-width: 1920px) and (min-width: 1600px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
+    gap: 16px;
+  }
+}
+
+/* Màn hình vừa lớn (1400px - 1600px) */
+@media (max-width: 1600px) and (min-width: 1400px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
+    gap: 16px;
+  }
+}
+
+/* Màn hình desktop (1200px - 1400px) */
+@media (max-width: 1400px) and (min-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
+    gap: 14px;
+  }
+}
+
+/* Tablet lớn (992px - 1200px) */
 @media (max-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
+    gap: 14px;
   }
 }
 
+/* Tablet (768px - 992px) */
+@media (max-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
+    gap: 12px;
+  }
+}
+
+/* Mobile (480px - 768px) */
 @media (max-width: 768px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 160px));
+    gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .products-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
 }
 
@@ -318,6 +376,8 @@ body {
   height: 100%;
   border: 1px solid rgba(0, 0, 0, 0.05);
   position: relative;
+  min-width: 0; /* Cho phép card shrink trong grid */
+  max-width: 100%; /* Không vượt quá container */
 }
 
 .product-card:hover {
@@ -343,7 +403,7 @@ body {
 }
 
 .product-image {
-  height: 200px;
+  height: 140px;
   width: 100%;
   background: var(--light);
   display: flex;
@@ -352,6 +412,19 @@ body {
   color: var(--gray);
   position: relative;
   overflow: hidden;
+}
+
+/* Tối ưu kích thước image trên màn hình lớn để hiển thị nhiều sản phẩm hơn */
+@media (min-width: 1400px) {
+  .product-image {
+    height: 130px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .product-image {
+    height: 120px;
+  }
 }
 
 .product-image img {
@@ -380,50 +453,93 @@ body {
 }
 
 .product-content {
-  
-  padding: 20px;
+  padding: 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
+/* Tối ưu padding trên màn hình lớn */
+@media (min-width: 1400px) {
+  .product-content {
+    padding: 10px;
+  }
+}
+
 .product-title {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   color: var(--dark);
-  line-height: 1.4;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
+/* Tối ưu font size trên màn hình lớn */
+@media (min-width: 1400px) {
+  .product-title {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+}
+
 .product-price {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+/* Tối ưu font size giá trên màn hình lớn */
+@media (min-width: 1400px) {
+  .product-price {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
 }
 
 .product-meta {
   display: flex;
   justify-content: space-between;
   margin-top: auto;
-  font-size: 12px;
+  font-size: 10px;
   color: var(--gray);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+/* Tối ưu meta trên màn hình lớn */
+@media (min-width: 1400px) {
+  .product-meta {
+    font-size: 9px;
+    margin-bottom: 8px;
+  }
 }
 .product-category,
 .product-condition,
 .product-stock {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: var(--light);
-  padding: 6px 10px;
-  border-radius: 20px;
+  padding: 4px 6px;
+  border-radius: 12px;
   font-weight: 500;
 }
+
+/* Tối ưu badge trên màn hình lớn */
+@media (min-width: 1400px) {
+  .product-category,
+  .product-condition,
+  .product-stock {
+    padding: 3px 5px;
+    font-size: 9px;
+    gap: 3px;
+  }
+}
+
 .product-category i,
 .product-condition i,
 .product-stock i {
@@ -472,22 +588,34 @@ body {
   background: linear-gradient(135deg, #4f46e5, #7c3aed); /* Gradient tím đậm */
   color: white;
   border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
-  height: 48px;
-  min-width: 120px;
+  border-radius: 6px;
+  padding: 8px 12px;
+  height: 36px;
+  min-width: 90px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: 15px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-  letter-spacing: 0.3px;
+  gap: 5px;
+  font-size: 12px;
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.25);
+  letter-spacing: 0.2px;
   position: relative;
   overflow: hidden;
+}
+
+/* Tối ưu button trên màn hình lớn */
+@media (min-width: 1400px) {
+  .btn-checkout-now,
+  .btn-add-to-cart {
+    padding: 7px 10px;
+    height: 34px;
+    font-size: 11px;
+    gap: 4px;
+    min-width: 85px;
+  }
 }
 .btn-add-to-cart::before,
 .btn-checkout-now::before {

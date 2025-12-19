@@ -112,6 +112,7 @@ if (!isset($_SESSION['user_id'])) {
                 <label for="images_desc" class="form-label">Thêm ảnh mô tả (tối đa 3 ảnh)</label>
                 <input type="file" id="images_desc" name="images[]" class="form-control" accept="image/*" multiple>
                 <div id="images_desc_error" class="text-danger mt-1" style="font-size: 14px;"></div>
+                <div id="images_desc_preview" class="d-flex flex-wrap mt-2"></div>
             </div>
             <button type="submit" class="btn btn-primary btn-sell">
                 <i class="fas fa-upload"></i> Đăng bán sản phẩm

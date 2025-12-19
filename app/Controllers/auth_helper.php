@@ -134,6 +134,119 @@ function safeRedirect($url, $allowed_domains = []) {
 }
 
 /**
+ * Ghi log thao tác admin vào bảng admin_action_logs
+ */
+if (!function_exists('log_admin_action')) {
+    function log_admin_action(PDO $pdo, int $adminId, string $action, ?int $productId = null, array $details = []): void
+    {
+        if ($adminId <= 0 || $action === '') {
+            return;
+        }
+
+        try {
+            // Đảm bảo bảng tồn tại (chỉ kiểm tra một lần trong vòng đời request)
+            static $checked = false;
+            if (!$checked) {
+                $checked = true;
+                $sql = "
+                    CREATE TABLE IF NOT EXISTS admin_action_logs (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        admin_id INT NOT NULL,
+                        action VARCHAR(100) NOT NULL,
+                        product_id INT NULL,
+                        details TEXT NULL,
+                        ip_address VARCHAR(45) NULL,
+                        user_agent VARCHAR(255) NULL,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        INDEX idx_admin (admin_id),
+                        INDEX idx_product (product_id),
+                        INDEX idx_action_created (action, created_at)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+                ";
+                $pdo->exec($sql);
+            }
+
+            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+            $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
+            $detailsJson = !empty($details) ? json_encode($details, JSON_UNESCAPED_UNICODE) : null;
+
+            $stmt = $pdo->prepare("
+                INSERT INTO admin_action_logs (admin_id, action, product_id, details, ip_address, user_agent)
+                VALUES (:admin_id, :action, :product_id, :details, :ip_address, :user_agent)
+            ");
+            $stmt->execute([
+                ':admin_id' => $adminId,
+                ':action' => $action,
+                ':product_id' => $productId,
+                ':details' => $detailsJson,
+                ':ip_address' => $ip,
+                ':user_agent' => $ua,
+            ]);
+        } catch (Throwable $e) {
+            // Không làm hỏng flow chính, chỉ log lỗi ra error_log
+            error_log('log_admin_action error: ' . $e->getMessage());
+        }
+    }
+}
+
+/**
+ * Ghi log hành vi người dùng vào bảng user_logs
+ */
+if (!function_exists('log_user_action')) {
+    function log_user_action(PDO $pdo, ?int $userId, string $action, string $description = '', array $details = []): void
+    {
+        if ($action === '') {
+            return;
+        }
+
+        try {
+            // Đảm bảo bảng tồn tại
+            static $checked = false;
+            if (!$checked) {
+                $checked = true;
+                $sql = "
+                    CREATE TABLE IF NOT EXISTS user_logs (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        user_id INT NULL,
+                        action VARCHAR(50) NOT NULL,
+                        description TEXT NULL,
+                        details TEXT NULL,
+                        ip_address VARCHAR(45) NULL,
+                        user_agent TEXT NULL,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        INDEX idx_user_id (user_id),
+                        INDEX idx_action (action),
+                        INDEX idx_created_at (created_at),
+                        CONSTRAINT fk_user_logs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+                ";
+                $pdo->exec($sql);
+            }
+
+            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+            $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
+            $detailsJson = !empty($details) ? json_encode($details, JSON_UNESCAPED_UNICODE) : null;
+
+            $stmt = $pdo->prepare("
+                INSERT INTO user_logs (user_id, action, description, details, ip_address, user_agent)
+                VALUES (:user_id, :action, :description, :details, :ip_address, :user_agent)
+            ");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':action' => $action,
+                ':description' => $description,
+                ':details' => $detailsJson,
+                ':ip_address' => $ip,
+                ':user_agent' => $ua,
+            ]);
+        } catch (Throwable $e) {
+            // Không làm hỏng flow chính, chỉ log lỗi ra error_log
+            error_log('log_user_action error: ' . $e->getMessage());
+        }
+    }
+}
+
+/**
  * Tạo flash message
  */
 function setFlashMessage($type, $message) {

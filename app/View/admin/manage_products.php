@@ -1,185 +1,703 @@
 <?php
-require_once '../../../config/config.php';
-
-require_once '../../Controllers/admin/AdminController.php';
-include_once __DIR__ . '/../../Components/header/Header.php';
-include_once __DIR__ . '/../../Components/footer/Footer.php';
+require_once __DIR__ . '/../../../config/config.php';
+require_once __DIR__ . '/../../Controllers/admin/AdminController.php';
 
 if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+    header('Location: ' . BASE_URL . 'app/View/user/login.php');
     exit;
 }
 
-$all_products = getAllProducts($pdo);
+$currentAdminPage = 'products';
+$pageTitle = 'Quản lý tất cả sản phẩm';
+
+$statusFilter = $_GET['status'] ?? '';
+$conditionFilter = $_GET['condition'] ?? '';
+$keyword = trim($_GET['keyword'] ?? '');
+
+$filters = [
+    'status' => $statusFilter,
+    'condition' => $conditionFilter,
+    'keyword' => $keyword,
+];
+
+$all_products = getAllProducts($pdo, $filters);
 $featured_products = array_filter($all_products, function($p) { return $p['featured']; });
 $regular_products = array_filter($all_products, function($p) { return !$p['featured']; });
+
+function renderStatusBadge(?string $status): string {
+    $status = strtolower((string)$status);
+    $map = [
+        'pending' => ['Chờ duyệt', 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'],
+        'active' => ['Đang bán', 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'],
+        'reject' => ['Đã từ chối', 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'],
+        'inactive' => ['Ẩn', 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'],
+        'hidden' => ['Ẩn', 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'],
+    ];
+
+    [$label, $classes] = $map[$status] ?? ['Không rõ', 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'];
+
+    return '<span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full ' . $classes . '">' .
+        htmlspecialchars($label, ENT_QUOTES, 'UTF-8') .
+        '</span>';
+}
+
+function renderConditionBadge(?string $condition): string {
+    $condition = trim((string)$condition);
+    $normalized = mb_strtolower($condition, 'UTF-8');
+
+    $map = [
+        'mới' => ['Mới', 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300'],
+        'da qua su dung' => ['Đã qua sử dụng', 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'],
+        'đã qua sử dụng' => ['Đã qua sử dụng', 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'],
+        'kém' => ['Kém', 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'],
+    ];
+
+    [$label, $classes] = $map[$normalized] ?? [$condition ?: 'Không rõ', 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'];
+
+    return '<span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full ' . $classes . '">' .
+        htmlspecialchars($label, ENT_QUOTES, 'UTF-8') .
+        '</span>';
+}
+
+include APP_PATH . '/View/admin/layouts/AdminHeader.php';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <div class="space-y-4">
+    <div id="toast-container" class="fixed z-50 p-3 space-y-2 top-4 right-4"></div>
 
-    <title>Quản lý tất cả sản phẩm</title>
+    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+            Quản lý tất cả sản phẩm
+          </h2>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Quản lý trạng thái nổi bật, tình trạng và trạng thái hiển thị của sản phẩm.
+          </p>
+        </div>
+        <form method="get" action="<?php echo BASE_URL; ?>public/admin/index.php" class="flex flex-wrap items-center gap-2 text-xs md:justify-end">
+          <input type="hidden" name="page" value="products">
+          <input
+            type="text"
+            name="keyword"
+            value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>"
+            placeholder="Tìm theo tiêu đề / người đăng..."
+            class="px-2 py-1 text-xs border rounded-lg border-gray-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+          >
+          <select
+            name="status"
+            class="px-2 py-1 text-xs border rounded-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+          >
+            <option value="">Tất cả trạng thái</option>
+            <option value="active" <?php echo $statusFilter === 'active' ? 'selected' : ''; ?>>Đang bán</option>
+            <option value="pending" <?php echo $statusFilter === 'pending' ? 'selected' : ''; ?>>Chờ duyệt</option>
+            <option value="reject" <?php echo $statusFilter === 'reject' ? 'selected' : ''; ?>>Đã từ chối</option>
+            <option value="inactive" <?php echo $statusFilter === 'inactive' ? 'selected' : ''; ?>>Ẩn</option>
+          </select>
+          <select
+            name="condition"
+            class="px-2 py-1 text-xs border rounded-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+          >
+            <option value="">Tất cả tình trạng</option>
+            <option value="Mới" <?php echo $conditionFilter === 'Mới' ? 'selected' : ''; ?>>Mới</option>
+            <option value="Đã qua sử dụng" <?php echo $conditionFilter === 'Đã qua sử dụng' ? 'selected' : ''; ?>>Đã qua sử dụng</option>
+            <option value="Kém" <?php echo $conditionFilter === 'Kém' ? 'selected' : ''; ?>>Kém</option>
+          </select>
+          <button
+            type="submit"
+            class="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+          >
+            <i class="mr-1 fas fa-filter"></i> Lọc
+          </button>
+        </form>
+      </div>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="../../../public/assets/css/index.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../../public/assets/css/products_admin.css">
-    <style>
-        .featured-badge {
-            background: linear-gradient(45deg, #ff6b6b, #ffa500);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        .featured-row {
-            background: #fffbf0 !important;
-            border-left: 4px solid #ffa500;
-        }
-    </style>
-</head>
-
-<body>
-    <?php renderHeader($pdo); ?>
-    <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090"></div>
-    <div class="container1">
-
-        <h2><i class="fas fa-cogs"></i> Quản lý tất cả sản phẩm</h2>
-        <p class="text-muted mb-4">Quản lý trạng thái nổi bật và các thuộc tính khác của sản phẩm</p>
-
-        <?php if (empty($all_products)): ?>
-            <p>Không có sản phẩm nào.</p>
-        <?php else: ?>
-
-        <!-- BẢNG SẢN PHẨM NỔI BẬT -->
-        <h4 class="mt-4"><i class="fas fa-star"></i> Sản phẩm nổi bật</h4>
-        <table id="featured-table">
-            <thead>
-                <tr>
-                    <th>Hình ảnh</th>
-                    <th>Tiêu đề</th>
-                    <th>Người đăng</th>
-                    <th>Giá</th>
-                    <th>Tình trạng</th>
-                    <th>Trạng thái</th>
-                    <th>Ngày đăng</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($featured_products as $product): ?>
-                <tr data-product-id="<?= $product['id'] ?>" class="featured-row">
-                    <td>
-                        <?php if (!empty($product['image_path'])): ?>
-                        <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
-                            alt="Ảnh sản phẩm" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                        <?php else: ?>
-                        <div
-                            style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;">
-                            <i class="fas fa-image text-muted"></i>
-                        </div>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?= htmlspecialchars($product['title']) ?>
-                        <br><span class="featured-badge"><i class="fas fa-star"></i> Nổi bật</span>
-                    </td>
-                    <td><?= htmlspecialchars($product['username']) ?></td>
-                    <td><?= number_format($product['price']) ?> VNĐ</td>
-                    <td><?= htmlspecialchars($product['condition_status']) ?></td>
-                    <td>
-                        <span class="badge bg-success">
-                            <?= htmlspecialchars($product['status']) ?>
-                        </span>
-                    </td>
-                    <td><?= htmlspecialchars($product['created_at']) ?></td>
-                    <td class="actions">
-                        <a href="../../Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?= $product['id'] ?>" 
-                           class="btn btn-warning action-btn">
-                           <i class="fas fa-star-half-alt"></i> Bỏ nổi bật
-                        </a>
-                        <a href="../../Models/admin/AdminModelAPI.php?action=delete&id=<?= $product['id'] ?>" 
-                           class="btn btn-danger action-btn delete">
-                           <i class="fas fa-trash"></i> Xóa
-                        </a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <!-- BẢNG SẢN PHẨM THƯỜNG -->
-        <h4 class="mt-5"><i class="fas fa-list"></i> Sản phẩm khác</h4>
-        <table id="regular-table">
-            <thead>
-                <tr>
-                    <th>Hình ảnh</th>
-                    <th>Tiêu đề</th>
-                    <th>Người đăng</th>
-                    <th>Giá</th>
-                    <th>Tình trạng</th>
-                    <th>Trạng thái</th>
-                    <th>Ngày đăng</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($regular_products as $product): ?>
-                <tr data-product-id="<?= $product['id'] ?>">
-                    <td>
-                        <?php if (!empty($product['image_path'])): ?>
-                        <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
-                            alt="Ảnh sản phẩm" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                        <?php else: ?>
-                        <div
-                            style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;">
-                            <i class="fas fa-image text-muted"></i>
-                        </div>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?= htmlspecialchars($product['title']) ?>
-                    </td>
-                    <td><?= htmlspecialchars($product['username']) ?></td>
-                    <td><?= number_format($product['price']) ?> VNĐ</td>
-                    <td><?= htmlspecialchars($product['condition_status']) ?></td>
-                    <td>
-                        <span class="badge bg-success">
-                            <?= htmlspecialchars($product['status']) ?>
-                        </span>
-                    </td>
-                    <td><?= htmlspecialchars($product['created_at']) ?></td>
-                    <td class="actions">
-                        <a href="../../Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?= $product['id'] ?>" 
-                           class="btn btn-info action-btn">
-                           <i class="fas fa-star"></i> Đặt nổi bật
-                        </a>
-                        <a href="../../Models/admin/AdminModelAPI.php?action=delete&id=<?= $product['id'] ?>" 
-                           class="btn btn-danger action-btn delete">
-                           <i class="fas fa-trash"></i> Xóa
-                        </a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-        <?php endif; ?>
+      <div class="flex flex-wrap items-center gap-2 mt-4 text-xs">
+        <span class="text-gray-500 dark:text-gray-400">Hành động hàng loạt cho sản phẩm đã chọn:</span>
+        <button
+          type="button"
+          data-bulk-action="hide"
+          class="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 bulk-action-btn"
+          disabled
+        >
+          <i class="mr-1 fas fa-eye-slash"></i> Ẩn
+        </button>
+        <button
+          type="button"
+          data-bulk-action="delete"
+          class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 disabled:opacity-40 bulk-action-btn"
+          disabled
+        >
+          <i class="mr-1 fas fa-trash"></i> Xóa
+        </button>
+        <button
+          type="button"
+          data-bulk-action="feature"
+          class="inline-flex items-center px-2 py-1 text-xs font-medium text-amber-700 bg-amber-50 rounded-lg hover:bg-amber-100 disabled:opacity-40 bulk-action-btn"
+          disabled
+        >
+          <i class="mr-1 fas fa-star"></i> Gắn nổi bật
+        </button>
+        <button
+          type="button"
+          data-bulk-action="unfeature"
+          class="inline-flex items-center px-2 py-1 text-xs font-medium text-sky-700 bg-sky-50 rounded-lg hover:bg-sky-100 disabled:opacity-40 bulk-action-btn"
+          disabled
+        >
+          <i class="mr-1 fas fa-star-half-alt"></i> Bỏ nổi bật
+        </button>
+      </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <?php footer(); ?>
-    <script>userId = <?php echo $_SESSION['user_id'] ?> </script>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js?v=3"> </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script> 
-    <script src="<?php echo BASE_URL; ?>public/assets/js/admin_Product.js"></script>
-    
-</body>
 
-</html>
+    <?php if (empty($all_products)): ?>
+      <div class="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-center text-gray-500 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
+        Không có sản phẩm nào.
+      </div>
+    <?php else: ?>
+
+      <!-- Tab Navigation -->
+      <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="flex items-center gap-4 border-b border-gray-200 dark:border-gray-700">
+          <button
+            type="button"
+            data-tab="featured"
+            class="product-tab px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          >
+            <i class="mr-1.5 text-amber-500 fas fa-star"></i>
+            Sản phẩm nổi bật
+            <span class="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-white bg-amber-500 rounded-full">
+              <?php echo count($featured_products); ?>
+            </span>
+          </button>
+          <button
+            type="button"
+            data-tab="regular"
+            class="product-tab px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          >
+            <i class="mr-1.5 text-gray-400 fas fa-list"></i>
+            Sản phẩm khác
+            <span class="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-white bg-gray-500 rounded-full">
+              <?php echo count($regular_products); ?>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sản phẩm nổi bật -->
+      <div class="product-tab-content rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]" data-tab-content="featured">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">
+            <i class="mr-1 text-amber-500 fas fa-star"></i> Sản phẩm nổi bật
+          </h3>
+          <div class="flex items-center gap-2 text-xs">
+            <label class="inline-flex items-center gap-1">
+              <input type="checkbox" class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" id="select-all-featured">
+              <span>Chọn tất cả</span>
+            </label>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left text-gray-700 align-middle dark:text-gray-200" id="featured-table">
+            <thead class="text-xs font-semibold tracking-wide text-gray-500 uppercase bg-gray-50 dark:bg-gray-900/60 dark:text-gray-400">
+              <tr>
+                <th class="w-10 px-4 py-3">
+                  <!-- checkbox trống, sử dụng header bên trên -->
+                </th>
+                <th class="px-4 py-3">Hình ảnh</th>
+                <th class="px-4 py-3">Tiêu đề</th>
+                <th class="px-4 py-3">Người đăng</th>
+                <th class="px-4 py-3">Giá</th>
+                <th class="px-4 py-3">Tình trạng</th>
+                <th class="px-4 py-3">Trạng thái</th>
+                <th class="px-4 py-3">Ngày đăng</th>
+                <th class="px-4 py-3">Hành động</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+              <?php foreach ($featured_products as $product): ?>
+                <tr data-product-id="<?php echo (int) $product['id']; ?>" class="bg-amber-50/60 featured-row dark:bg-amber-500/5 border-l-4 border-amber-400">
+                  <td class="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 product-checkbox"
+                      value="<?php echo (int) $product['id']; ?>"
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="relative group w-16 h-16">
+                      <?php if (!empty($product['image_path'])): 
+                        // Xử lý đường dẫn hình ảnh
+                        $imagePath = $product['image_path'];
+                        // Nếu đã có 'uploads/products' thì giữ nguyên, nếu không thì thêm
+                        if (strpos($imagePath, 'uploads/products') === false) {
+                          $imagePath = 'uploads/products/' . ltrim($imagePath, '/');
+                        }
+                        $imageUrl = BASE_URL . 'public/' . ltrim($imagePath, '/');
+                        $placeholderSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23e5e7eb' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%239ca3af' font-family='sans-serif' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E";
+                      ?>
+                        <img
+                          src="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                          alt="Ảnh sản phẩm"
+                          class="object-cover w-16 h-16 rounded-xl"
+                          onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($placeholderSvg, ENT_QUOTES, 'UTF-8'); ?>';"
+                        >
+                        <div class="absolute z-30 hidden w-40 h-40 p-1 bg-white border rounded-xl shadow-xl -right-2 top-1/2 -translate-y-1/2 group-hover:block dark:bg-gray-900 dark:border-gray-700">
+                          <img
+                            src="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                            alt="Xem nhanh sản phẩm"
+                            class="object-contain w-full h-full rounded-lg"
+                            onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($placeholderSvg, ENT_QUOTES, 'UTF-8'); ?>';"
+                          >
+                        </div>
+                      <?php else: ?>
+                        <div class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-xl dark:bg-gray-800">
+                          <i class="text-gray-400 fas fa-image"></i>
+                        </div>
+                      <?php endif; ?>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                      <?php echo htmlspecialchars($product['title'], ENT_QUOTES, 'UTF-8'); ?>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <?php echo htmlspecialchars($product['username'], ENT_QUOTES, 'UTF-8'); ?>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-right">
+                    <?php echo number_format((float)$product['price'], 0, ',', '.'); ?> đ
+                  </td>
+                  <td class="px-4 py-3">
+                    <select 
+                      class="condition-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-indigo-500 cursor-pointer bg-transparent"
+                      data-product-id="<?php echo (int) $product['id']; ?>"
+                      data-field="condition_status"
+                      data-current="<?php echo htmlspecialchars($product['condition_status'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                      style="appearance: auto; padding: 0.125rem 0.5rem;"
+                    >
+                      <option value="new" <?php echo ($product['condition_status'] ?? '') === 'new' ? 'selected' : ''; ?>>Mới</option>
+                      <option value="like_new" <?php echo ($product['condition_status'] ?? '') === 'like_new' ? 'selected' : ''; ?>>Như mới</option>
+                      <option value="good" <?php echo ($product['condition_status'] ?? '') === 'good' ? 'selected' : ''; ?>>Tốt</option>
+                      <option value="fair" <?php echo ($product['condition_status'] ?? '') === 'fair' ? 'selected' : ''; ?>>Khá tốt</option>
+                      <option value="poor" <?php echo ($product['condition_status'] ?? '') === 'poor' ? 'selected' : ''; ?>>Cũ</option>
+                    </select>
+                  </td>
+                  <td class="px-4 py-3">
+                    <select 
+                      class="status-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-indigo-500 cursor-pointer bg-transparent"
+                      data-product-id="<?php echo (int) $product['id']; ?>"
+                      data-field="status"
+                      data-current="<?php echo htmlspecialchars($product['status'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                      style="appearance: auto; padding: 0.125rem 0.5rem;"
+                    >
+                      <option value="pending" <?php echo ($product['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Chờ duyệt</option>
+                      <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Đang bán</option>
+                      <option value="reject" <?php echo ($product['status'] ?? '') === 'reject' ? 'selected' : ''; ?>>Đã từ chối</option>
+                      <option value="sold" <?php echo ($product['status'] ?? '') === 'sold' ? 'selected' : ''; ?>>Đã bán</option>
+                    </select>
+                  </td>
+                  <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap dark:text-gray-400">
+                    <?php echo htmlspecialchars($product['created_at'], ENT_QUOTES, 'UTF-8'); ?>
+                  </td>
+                  <td class="px-4 py-3 text-xs actions">
+                    <div class="flex items-center justify-end gap-2">
+                    <a
+                      href="<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo (int) $product['id']; ?>"
+                      target="_blank"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20"
+                      title="Xem chi tiết sản phẩm"
+                    >
+                      <i class="fas fa-eye"></i>
+                      <span>Xem chi tiết</span>
+                    </a>
+                    <a
+                      href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?php echo (int) $product['id']; ?>"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-amber-700 bg-amber-50 rounded-full hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20 action-btn"
+                      title="Bỏ nổi bật"
+                    >
+                      <i class="fas fa-star-half-alt"></i>
+                      <span>Bỏ nổi bật</span>
+                    </a>
+                    <a
+                      href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=delete&id=<?php echo (int) $product['id']; ?>"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-red-600 bg-red-50 rounded-full hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 delete action-btn"
+                      title="Xóa sản phẩm"
+                    >
+                      <i class="fas fa-trash"></i>
+                      <span>Xóa</span>
+                    </a>
+                    </div>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sản phẩm khác -->
+      <div class="product-tab-content rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] hidden" data-tab-content="regular">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">
+            <i class="mr-1 text-gray-400 fas fa-list"></i> Sản phẩm khác
+          </h3>
+          <div class="flex items-center gap-2 text-xs">
+            <label class="inline-flex items-center gap-1">
+              <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" id="select-all-regular">
+              <span>Chọn tất cả</span>
+            </label>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left text-gray-700 align-middle dark:text-gray-200" id="regular-table">
+            <thead class="text-xs font-semibold tracking-wide text-gray-500 uppercase bg-gray-50 dark:bg-gray-900/60 dark:text-gray-400">
+              <tr>
+                <th class="w-10 px-4 py-3"></th>
+                <th class="px-4 py-3">Hình ảnh</th>
+                <th class="px-4 py-3">Tiêu đề</th>
+                <th class="px-4 py-3">Người đăng</th>
+                <th class="px-4 py-3">Giá</th>
+                <th class="px-4 py-3">Tình trạng</th>
+                <th class="px-4 py-3">Trạng thái</th>
+                <th class="px-4 py-3">Ngày đăng</th>
+                <th class="px-4 py-3">Hành động</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+              <?php foreach ($regular_products as $product): ?>
+                <tr data-product-id="<?php echo (int) $product['id']; ?>" class="hover:bg-gray-50 dark:hover:bg-gray-900/40">
+                  <td class="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 product-checkbox"
+                      value="<?php echo (int) $product['id']; ?>"
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="relative group w-16 h-16">
+                      <?php if (!empty($product['image_path'])): 
+                        // Xử lý đường dẫn hình ảnh
+                        $imagePath = $product['image_path'];
+                        // Nếu đã có 'uploads/products' thì giữ nguyên, nếu không thì thêm
+                        if (strpos($imagePath, 'uploads/products') === false) {
+                          $imagePath = 'uploads/products/' . ltrim($imagePath, '/');
+                        }
+                        $imageUrl = BASE_URL . 'public/' . ltrim($imagePath, '/');
+                        $placeholderSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23e5e7eb' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%239ca3af' font-family='sans-serif' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E";
+                      ?>
+                        <img
+                          src="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                          alt="Ảnh sản phẩm"
+                          class="object-cover w-16 h-16 rounded-xl"
+                          onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($placeholderSvg, ENT_QUOTES, 'UTF-8'); ?>';"
+                        >
+                        <div class="absolute z-30 hidden w-40 h-40 p-1 bg-white border rounded-xl shadow-xl -right-2 top-1/2 -translate-y-1/2 group-hover:block dark:bg-gray-900 dark:border-gray-700">
+                          <img
+                            src="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                            alt="Xem nhanh sản phẩm"
+                            class="object-contain w-full h-full rounded-lg"
+                            onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($placeholderSvg, ENT_QUOTES, 'UTF-8'); ?>';"
+                          >
+                        </div>
+                      <?php else: ?>
+                        <div class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-xl dark:bg-gray-800">
+                          <i class="text-gray-400 fas fa-image"></i>
+                        </div>
+                      <?php endif; ?>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                      <?php echo htmlspecialchars($product['title'], ENT_QUOTES, 'UTF-8'); ?>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <?php echo htmlspecialchars($product['username'], ENT_QUOTES, 'UTF-8'); ?>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-right">
+                    <?php echo number_format((float)$product['price'], 0, ',', '.'); ?> đ
+                  </td>
+                  <td class="px-4 py-3">
+                    <select 
+                      class="condition-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-indigo-500 cursor-pointer bg-transparent"
+                      data-product-id="<?php echo (int) $product['id']; ?>"
+                      data-field="condition_status"
+                      data-current="<?php echo htmlspecialchars($product['condition_status'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                      style="appearance: auto; padding: 0.125rem 0.5rem;"
+                    >
+                      <option value="new" <?php echo ($product['condition_status'] ?? '') === 'new' ? 'selected' : ''; ?>>Mới</option>
+                      <option value="like_new" <?php echo ($product['condition_status'] ?? '') === 'like_new' ? 'selected' : ''; ?>>Như mới</option>
+                      <option value="good" <?php echo ($product['condition_status'] ?? '') === 'good' ? 'selected' : ''; ?>>Tốt</option>
+                      <option value="fair" <?php echo ($product['condition_status'] ?? '') === 'fair' ? 'selected' : ''; ?>>Khá tốt</option>
+                      <option value="poor" <?php echo ($product['condition_status'] ?? '') === 'poor' ? 'selected' : ''; ?>>Cũ</option>
+                    </select>
+                  </td>
+                  <td class="px-4 py-3">
+                    <select 
+                      class="status-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-indigo-500 cursor-pointer bg-transparent"
+                      data-product-id="<?php echo (int) $product['id']; ?>"
+                      data-field="status"
+                      data-current="<?php echo htmlspecialchars($product['status'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                      style="appearance: auto; padding: 0.125rem 0.5rem;"
+                    >
+                      <option value="pending" <?php echo ($product['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Chờ duyệt</option>
+                      <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Đang bán</option>
+                      <option value="reject" <?php echo ($product['status'] ?? '') === 'reject' ? 'selected' : ''; ?>>Đã từ chối</option>
+                      <option value="sold" <?php echo ($product['status'] ?? '') === 'sold' ? 'selected' : ''; ?>>Đã bán</option>
+                    </select>
+                  </td>
+                  <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap dark:text-gray-400">
+                    <?php echo htmlspecialchars($product['created_at'], ENT_QUOTES, 'UTF-8'); ?>
+                  </td>
+                  <td class="px-4 py-3 text-xs actions">
+                    <div class="flex items-center justify-end gap-2">
+                    <a
+                      href="<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo (int) $product['id']; ?>"
+                      target="_blank"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20"
+                      title="Xem chi tiết sản phẩm"
+                    >
+                      <i class="fas fa-eye"></i>
+                      <span>Xem chi tiết</span>
+                    </a>
+                    <a
+                      href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?php echo (int) $product['id']; ?>"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-sky-700 bg-sky-50 rounded-full hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20 action-btn"
+                      title="Đặt nổi bật"
+                    >
+                      <i class="fas fa-star"></i>
+                      <span>Đặt nổi bật</span>
+                    </a>
+                    <a
+                      href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=delete&id=<?php echo (int) $product['id']; ?>"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-red-600 bg-red-50 rounded-full hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 delete action-btn"
+                      title="Xóa sản phẩm"
+                    >
+                      <i class="fas fa-trash"></i>
+                      <span>Xóa</span>
+                    </a>
+                    </div>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    <?php endif; ?>
+  </div>
+
+  <style>
+    /* Style cho dropdown status và condition */
+    .status-select, .condition-select {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 0.125rem 0.5rem;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 9999px;
+      transition: all 0.2s;
+    }
+    
+    .status-select:hover, .condition-select:hover {
+      opacity: 0.8;
+    }
+    
+    .status-select:focus, .condition-select:focus {
+      outline: 2px solid #4f46e5;
+      outline-offset: 2px;
+    }
+    
+    .status-select option, .condition-select option {
+      padding: 0.5rem;
+      background-color: white;
+      color: #111827;
+    }
+    
+    /* Style động cho status */
+    .status-select[data-current="pending"] {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    .status-select[data-current="active"] {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .status-select[data-current="reject"] {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    .status-select[data-current="sold"] {
+      background-color: #e0e7ff;
+      color: #3730a3;
+    }
+    
+    /* Style động cho condition */
+    .condition-select[data-current="new"] {
+      background-color: #e0f2fe;
+      color: #0c4a6e;
+    }
+    .condition-select[data-current="like_new"] {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    .condition-select[data-current="good"] {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .condition-select[data-current="fair"] {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    .condition-select[data-current="poor"] {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    
+    /* Dark mode */
+    .dark .status-select[data-current="pending"],
+    .dark .condition-select[data-current="new"] {
+      background-color: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+    }
+    .dark .status-select[data-current="active"],
+    .dark .condition-select[data-current="good"] {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+    .dark .status-select[data-current="reject"],
+    .dark .condition-select[data-current="poor"] {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
+  <script src="<?php echo BASE_URL; ?>public/assets/js/admin_Product.js"></script>
+  <script src="<?php echo BASE_URL; ?>public/assets/js/admin_products_manage.js"></script>
+  <script>
+    // Tab navigation cho sản phẩm
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.product-tab');
+      const tabContents = document.querySelectorAll('.product-tab-content');
+      
+      function switchTab(targetTab) {
+        // Remove active class from all tabs
+        tabs.forEach(t => {
+          t.classList.remove('active', 'border-indigo-600', 'text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+          t.classList.add('text-gray-600', 'dark:text-gray-400', 'font-medium');
+        });
+        
+        // Add active class to target tab
+        const activeTab = document.querySelector(`[data-tab="${targetTab}"]`);
+        if (activeTab) {
+          activeTab.classList.add('active', 'border-indigo-600', 'text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+          activeTab.classList.remove('text-gray-600', 'dark:text-gray-400', 'font-medium');
+        }
+        
+        // Hide all tab contents
+        tabContents.forEach(content => {
+          content.classList.add('hidden');
+        });
+        
+        // Show target tab content
+        const targetContent = document.querySelector(`[data-tab-content="${targetTab}"]`);
+        if (targetContent) {
+          targetContent.classList.remove('hidden');
+        }
+      }
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const targetTab = this.getAttribute('data-tab');
+          switchTab(targetTab);
+        });
+      });
+      
+      // Set initial active tab (featured)
+      switchTab('featured');
+
+      // Xử lý cập nhật status và condition_status qua dropdown
+      document.querySelectorAll('.status-select, .condition-select').forEach(select => {
+        select.addEventListener('change', async function() {
+          const productId = this.getAttribute('data-product-id');
+          const field = this.getAttribute('data-field');
+          const oldValue = this.getAttribute('data-current');
+          const newValue = this.value;
+
+          // Nếu giá trị không thay đổi, không làm gì
+          if (oldValue === newValue) {
+            return;
+          }
+
+          // Disable select trong lúc đang xử lý
+          this.disabled = true;
+          const originalValue = this.value;
+
+          try {
+            const formData = new URLSearchParams();
+            formData.append('action', 'update_field');
+            formData.append('id', productId);
+            formData.append('field', field);
+            formData.append('value', newValue);
+
+            const response = await fetch('<?php echo htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8'); ?>app/Models/admin/AdminModelAPI.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+              },
+              body: formData.toString(),
+              credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const text = await response.text();
+            let data;
+            try {
+              data = JSON.parse(text);
+            } catch (e) {
+              console.error('Response text:', text);
+              throw new Error('Server trả về dữ liệu không hợp lệ');
+            }
+
+            if (!data.success) {
+              // Revert về giá trị cũ
+              this.value = oldValue;
+              showToast('error', 'Lỗi', data.message || 'Không thể cập nhật');
+              return;
+            }
+
+            // Cập nhật data-current attribute để CSS tự động cập nhật màu
+            this.setAttribute('data-current', newValue);
+            
+            // Trigger change event để cập nhật style nếu cần
+            this.dispatchEvent(new Event('change'));
+
+            // Hiển thị toast thành công
+            const fieldLabel = field === 'status' ? 'trạng thái' : 'tình trạng';
+            showToast('success', 'Thành công', `Đã cập nhật ${fieldLabel} thành công`);
+
+            // Logging đã được xử lý ở phía server trong AdminModelAPI.php
+
+          } catch (error) {
+            console.error('Update error:', error);
+            // Revert về giá trị cũ
+            this.value = oldValue;
+            showToast('error', 'Lỗi', error.message || 'Đã xảy ra lỗi khi cập nhật');
+          } finally {
+            this.disabled = false;
+          }
+        });
+      });
+    });
+  </script>
+
+<?php include APP_PATH . '/View/admin/layouts/AdminFooter.php'; ?>

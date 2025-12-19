@@ -9,7 +9,7 @@ if (!isset($pdo)) {
 }
 
 try {
-    // Lấy sản phẩm nổi bật từ database
+    // Lấy sản phẩm nổi bật từ database - Tăng số lượng để hiển thị nhiều hơn
     $stmt = $pdo->prepare("
     SELECT p.*, pi.image_path, c.name as category_name 
     FROM products p 
@@ -17,12 +17,12 @@ try {
     LEFT JOIN categories c ON p.category_id = c.id
     WHERE p.status = 'active' AND p.featured = 1 AND p.stock_quantity > 0
     ORDER BY p.created_at DESC 
-    LIMIT 12
+    LIMIT 18
 ");
     $stmt->execute();
     $featured_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Lấy 16 sản phẩm thường thay vì 12
+    // Lấy 24 sản phẩm thường để hiển thị nhiều hơn trên màn hình lớn
     $stmt = $pdo->prepare("
     SELECT p.*, pi.image_path, c.name as category_name 
     FROM products p 
@@ -30,7 +30,7 @@ try {
     LEFT JOIN categories c ON p.category_id = c.id
     WHERE p.status = 'active' AND p.featured = 0 AND p.stock_quantity > 0
     ORDER BY p.created_at DESC 
-    LIMIT 16
+    LIMIT 24
 ");
     $stmt->execute();
     $regular_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -367,10 +367,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <button onclick="cancelOrder(<?php echo $order['id']; ?>)" class="btn btn-outline btn-sm">
                                         <i class="fas fa-times"></i> Hủy đơn
                                     </button>
-                                <?php elseif ($order['status'] == 'success'): ?>
-                                    <button onclick="reorder(<?php echo $order['id']; ?>)" class="btn btn-outline btn-sm">
-                                        <i class="fas fa-redo"></i> Mua lại
-                                    </button>
+                                
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -386,7 +383,7 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/WebMuaBanDoCu/public/assets/js/main.js"></script>
     <script>
-        let userId = <?php echo $_SESSION['user_id'] ?>
+        userId = <?php echo $_SESSION['user_id'] ?>;
     </script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
 </body>

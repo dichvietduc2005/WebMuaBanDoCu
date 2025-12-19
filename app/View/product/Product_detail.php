@@ -29,6 +29,18 @@ $product_images = $productModel->getProductImages($product_id);
 // Lấy sản phẩm liên quan (cùng danh mục)
 $related_products = $productModel->getRelatedProducts($product['category_id'], $product_id);
 
+// Log user action: view product
+if (function_exists('log_user_action')) {
+    $userId = $_SESSION['user_id'] ?? null;
+    log_user_action($pdo, $userId, 'view_product', "Xem chi tiết sản phẩm: " . htmlspecialchars($product['title']), [
+        'product_id' => $product_id,
+        'product_title' => $product['title'],
+        'category_id' => $product['category_id'],
+        'price' => $product['price'],
+        'seller_id' => $product['user_id'] ?? null
+    ]);
+}
+
 // Đếm số sản phẩm trong giỏ hàng
 $cart_count = 0;
 if (isset($_SESSION['user_id'])) {
@@ -52,6 +64,11 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($product['title']); ?> - Web Mua Bán Đồ Cũ</title>
+    
+    <!-- Meta tags để tránh adblock -->
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
      <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -59,14 +76,47 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/product_detail.css">
     
+    <!-- Thêm style inline để đảm bảo review system hiển thị -->
+    <style>
+        /* Đảm bảo review system không bị adblock chặn */
+        .customer-reviews {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+        }
+        
+        .review-form {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .reviews-container {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .toast-container {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        
+        /* Fallback cho trường hợp CSS bị chặn */
+        .adblock-fallback {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
 </head>
 
 <body>
     <?php renderHeader($pdo); ?>
     <div class="product-detail-container">
-        <a href="../TrangChu.php" class="back-link">
-            <i class="fas fa-arrow-left"></i> Về trang chủ
-        </a>
         <!-- Breadcrumb -->
         <nav class="breadcrumb-custom">
             <ol class="breadcrumb mb-0">
@@ -150,22 +200,15 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
 
-        <!-- Product Description -->
-        <div class="product-description">
-            <h3 class="mb-4">Mô tả sản phẩm</h3>
-            <div class="description-content">
-                <?php echo nl2br(htmlspecialchars($product['description'])); ?>
-            </div>
-        </div>
-
+    
         <!-- Customer Reviews -->
         <div class="customer-reviews">
             <h3 class="reviews-header">Đánh giá của khách hàng</h3>
 
-            <!-- Review Item Example -->
+            <!-- Reviews Container -->
             <div class="reviews-container" id="reviewsContainer">
                 <?php
-                $stmt = $pdo->prepare('SELECT * FROM review_products WHERE product_id = ? ORDER BY sent_at ASC');
+                $stmt = $pdo->prepare('SELECT * FROM review_products WHERE product_id = ? ORDER BY sent_at DESC');
                 $stmt->execute([$product_id]);
 
                 $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -176,43 +219,61 @@ if (isset($_SESSION['user_id'])) {
                         $review_sent_at = $review['sent_at'];
                         $review_content = $review['content'];
 
-                        $text_html = '<div class="review-item">
-                        <div class="reviewer-info">
-                            <div class="reviewer-avatar">
-                                <i class="fa-solid fa-user"></i>
+                        echo '<div class="review-item">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                                <div class="reviewer-details">
+                                    <div class="reviewer-name">' . htmlspecialchars($review_username) . '</div>
+                                    <div class="review-date">' . htmlspecialchars($review_sent_at) . '</div>
+                                </div>
                             </div>
-                            <div class="reviewer-details">
-                                <div class="reviewer-name">' . htmlspecialchars($review_username) . '</div>
-                                <div class="review-date">' . htmlspecialchars($review_sent_at) . '</div>
-                            </div>
-                        </div>
-                        <div class="review-text">' . htmlspecialchars($review_content) . '</div>
+                            <div class="review-text">' . htmlspecialchars($review_content) . '</div>
                         </div>';
-
-                        echo $text_html;
                     }
+                } else {
+                    echo '<div class="no-reviews">
+                        <i class="fas fa-comment-slash"></i>
+                        <p>Chưa có đánh giá nào cho shop này</p>
+                        <small>Hãy là người đầu tiên đánh giá shop này!</small>
+                    </div>';
                 }
                 ?>
-
-                <!-- <div class="review-item">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar">
-                            <img src="https://via.placeholder.com/40" alt="Reviewer Avatar">
-                        </div>
-                        <div class="reviewer-details">
-                            <div class="reviewer-name">Nguyễn Văn A</div>
-                            <div class="review-date">12/10/2023</div>
-                        </div>
-                    </div>
-                    <div class="review-text">
-                        Sản phẩm rất tốt, tôi rất hài lòng với chất lượng.
-                    </div>
-                </div> -->
             </div>
+            
+            <!-- Review Form -->
+            <?php if (isset($_SESSION['user_id'])): 
+                // Kiểm tra xem người dùng đã đánh giá sản phẩm này chưa
+                $checkUserReview = $pdo->prepare('SELECT COUNT(*) FROM review_products WHERE user_id = ? AND product_id = ?');
+                $checkUserReview->execute([$_SESSION['user_id'], $product_id]);
+                $hasUserReviewed = $checkUserReview->fetchColumn() > 0;
+            ?>
+                <?php if (!$hasUserReviewed): ?>
+                <div class="reviews-footer">
+                    <div class="review-form">
+                        <textarea id="contentReview" placeholder="Viết đánh giá của bạn về sản phẩm này..." rows="3"></textarea>
+                        <button id="sendButton" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Đăng đánh giá
+                        </button>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div class="reviews-footer">
+                    <div class="already-reviewed">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <p>Bạn đã đánh giá sản phẩm này rồi</p>
+                        <small>Cảm ơn bạn đã chia sẻ ý kiến!</small>
+                    </div>
+                </div>
+                <?php endif; ?>
+            <?php else: ?>
             <div class="reviews-footer">
-                <input type="text" name="" id="contentReview" placeholder="Thêm đánh giá sản phẩm">
-                <button id="sendButton">Đăng</button>
+                <div class="login-to-review">
+                    <p>Bạn cần <a href="/WebMuaBanDoCu/app/View/user/login.php">đăng nhập</a> để đánh giá sản phẩm</p>
+                </div>
             </div>
+            <?php endif; ?>
         </div>
 
         <!-- Related Products -->
@@ -222,7 +283,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="related-grid">
                 <?php foreach ($related_products as $related): ?>
                 <div class="related-item"
-                    onclick="window.location.href='product_detail.php?id=<?php echo $related['id']; ?>'">
+                    onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $related['id']; ?>'">
                     <?php if ($related['image_path']): ?>
                     <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($related['image_path']); ?>"
                         alt="<?php echo htmlspecialchars($related['title']); ?>" class="related-image">

@@ -3,6 +3,11 @@
     RewriteEngine On
     RewriteBase /WebMuaBanDoCu/
 
+    # Cho phép truy cập trực tiếp vào file trong public/uploads
+    RewriteCond %{REQUEST_URI} ^/WebMuaBanDoCu/public/uploads/ [OR]
+    RewriteCond %{REQUEST_URI} ^/WebMuaBanDoCu/public/assets/
+    RewriteRule ^ - [L]
+
     # Chuyển hướng tất cả các yêu cầu không phải là file hoặc thư mục tồn tại đến public/index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d

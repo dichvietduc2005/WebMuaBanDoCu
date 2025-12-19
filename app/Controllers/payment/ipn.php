@@ -99,6 +99,17 @@ try {
                             }
                         }
                         
+                        // Log user action - thanh toán thành công
+                        if (function_exists('log_user_action') && !empty($order['buyer_id'])) {
+                            log_user_action($pdo, $order['buyer_id'], 'payment_success', "Thanh toán thành công đơn hàng: $order_number", [
+                                'order_id' => $order['id'],
+                                'order_number' => $order_number,
+                                'amount' => $order_total_amount_db,
+                                'transaction_id' => $vnpTranId,
+                                'bank_code' => $vnp_BankCode
+                            ]);
+                        }
+                        
                         $stmt_update = $pdo->prepare("UPDATE orders SET status = 'success', payment_status = 'paid', vnpay_transaction_id = ?, updated_at = NOW() WHERE id = ?");
                         $stmt_update->execute([$vnpTranId, $order['id']]);
                         log_vnpay_debug_data("IPN_URL - DB UPDATED TO SUCCESS/PAID", ["order_number" => $order_number, "order_id" => $order['id']]);

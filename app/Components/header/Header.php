@@ -47,6 +47,184 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         unset($_SESSION['error_message']);
     }
     ?>
+    
+    <!-- Critical CSS for Chat - Load First -->
+    <style>
+        /* Chat Container - Critical Styles - Optimized for Fast Loading */
+        #chat-widget {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            width: 300px !important;
+            background-color: rgba(80, 58, 135, 0.5) !important;
+            backdrop-filter: blur(10px) !important;
+            filter: saturate(200%) !important;
+            border: 1px solid #ccc !important;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2) !important;
+            font-family: sans-serif !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            z-index: 999 !important;
+            transform: translateY(100%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: transform 0.4s ease-out, opacity 0.3s ease !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        .chat-container {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            width: 300px !important;
+            background-color: rgba(80, 58, 135, 0.5) !important;
+            backdrop-filter: blur(10px) !important;
+            filter: saturate(200%) !important;
+            border: 1px solid #ccc !important;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2) !important;
+            font-family: sans-serif !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            z-index: 999 !important;
+            transform: translateY(100%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: transform 0.4s ease-out, opacity 0.3s ease !important;
+        }
+
+        #chat-widget.active,
+        .chat-container.active {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        #chat-widget.unactive,
+        .chat-container.unactive {
+            transform: translateY(100%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .chat-header {
+            background-image: linear-gradient(rgb(187, 187, 255), rgb(174, 116, 255)) !important;
+            color: #fff !important;
+            padding: 10px !important;
+        }
+
+        .chat-body {
+            display: flex !important;
+            flex-direction: column !important;
+            height: 300px !important;
+        }
+
+        .chat-messages {
+            flex: 1 !important;
+            padding: 10px !important;
+            font-size: 14px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            background-color: transparent !important;
+        }
+
+        .chat-messages-container {
+            height: 100% !important;
+            overflow-y: auto !important;
+            scrollbar-width: none !important;
+            background-color: transparent !important;
+        }
+
+        .chat-input {
+            padding: 10px !important;
+            border-top: 1px solid #ccc !important;
+            display: flex !important;
+            gap: 15px !important;
+        }
+
+        .chat-input input {
+            border-radius: 10px !important;
+            padding: 5px !important;
+            border: none !important;
+        }
+
+        .chat-input input:focus {
+            outline: none !important;
+            box-shadow: 0 0 5px rgba(204, 0, 255, 0.504) !important;
+        }
+
+        .chat-input button {
+            background-color: #554567a4 !important;
+            color: white !important;
+            border: none !important;
+            padding: 0px 10px !important;
+            border-radius: 10px !important;
+            cursor: pointer !important;
+            filter: saturate(200%) !important;
+            transition: all 0.1s !important;
+        }
+
+        .chat-input button:hover {
+            transform: scale(1.05) !important;
+        }
+
+        .chat-input button:active {
+            transform: scale(1) !important;
+        }
+
+        .user-message {
+            align-self: flex-end !important;
+            word-wrap: break-word !important;
+            border-radius: 20px !important;
+            padding: 10px !important;
+            background-color: rgb(156, 0, 148) !important;
+            color: white !important;
+            max-width: 50% !important;
+        }
+
+        .admin-message {
+            align-self: flex-start !important;
+            word-wrap: break-word !important;
+            border-radius: 20px !important;
+            padding: 10px !important;
+            background-color: rgb(73, 73, 73) !important;
+            color: white !important;
+            max-width: 50% !important;
+        }
+
+        /* Responsive Enhancements */
+        @media (max-width: 768px) {
+            #chat-widget,
+            .chat-container {
+                width: 85vw !important;
+                bottom: 100px !important;
+                right: 5vw !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #chat-widget,
+            .chat-container {
+                width: 90vw !important;
+                bottom: 80px !important;
+                right: 4vw !important;
+            }
+
+            .chat-header {
+                padding: 12px !important;
+                font-size: 15px !important;
+            }
+
+            .chat-input input {
+                font-size: 14px !important;
+            }
+
+            .chat-input button {
+                padding: 4px 8px !important;
+            }
+        }
+    </style>
 
     <?php require_once __DIR__ . '/../../View/user/ChatView.php'; ?>
 
@@ -582,6 +760,12 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             }
         }
     </style>
+    <!-- Preload Critical CSS -->
+    <link rel="preload" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.3" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.3"></noscript>
+    
+    <!-- Other CSS - Load After -->
+    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/notifications.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/footer.css">
 
 
@@ -1492,7 +1676,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
     <!-- Real-time Cart Count Script -->
     <script src="/WebMuaBanDoCu/public/assets/js/cart-count-realtime.js"></script>
-    <!-- Global toggleChat function để tránh lỗi ReferenceError -->
+    <!-- Global userId variable for chat system -->
     <script>
         let userId = <?php echo $_SESSION['user_id'] ?>;
         let chatVisible = true;
@@ -1638,6 +1822,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         // if (typeof window.toggleChat === 'undefined') {
         // window.toggleChat = window.ChatSystem.defaultToggleChat;
         // }
+    // Only declare userId here, chat functions are in user_chat_system.js
+    window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;
     </script>
 
     <?php

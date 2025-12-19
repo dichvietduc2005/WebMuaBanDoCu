@@ -227,6 +227,17 @@ try {    // $user_id đã được lấy ở trên và chắc chắn có giá tr
     // Nếu mọi thứ thành công, commit transaction
     $pdo->commit();
     
+    // Log user action
+    if (function_exists('log_user_action')) {
+        log_user_action($pdo, $user_id, 'create_order', "Tạo đơn hàng: $order_number", [
+            'order_id' => $order_id,
+            'order_number' => $order_number,
+            'total_amount' => $cartTotal,
+            'payment_method' => 'vnpay',
+            'items_count' => count($cartItems)
+        ]);
+    }
+    
     $order_created_successfully = true;
     error_log("Đã tạo đơn hàng (chưa xóa giỏ hàng): Order ID = $order_id, Order Number = $order_number cho user_id = $user_id.");
 
