@@ -1,1 +1,32 @@
+# Dependencies
 /vendor/
+
+# Environment files (KHÔNG ignore env.example - file này cần commit)
+.env
+.env.local
+.env.*.local
+
+# Logs
+/logs/*.log
+*.log
+
+# Cache & temporary files
+/cache/
+/tmp/
+*.cache
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Upload files (nếu có)
+/public/uploads/*
+!/public/uploads/.gitkeep
