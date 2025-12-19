@@ -32,6 +32,7 @@ if ($was_logged_in) {
     session_start();
     if ($result['success']) {
         $_SESSION['logout_message'] = $result['message'];
+        $_SESSION['logout_toast'] = "Bạn đã đăng xuất thành công. Hẹn gặp lại!";
     }
 }
 
