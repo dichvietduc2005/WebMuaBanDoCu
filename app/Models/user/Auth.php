@@ -250,7 +250,11 @@ class Auth {
             if ($result) {
                 // Cập nhật session
                 $_SESSION['user_name'] = $full_name;
-                $this->logActivity($user_id, 'update_profile', 'Profile updated successfully');
+                $this->logActivity($user_id, 'update_profile', 'Cập nhật thông tin cá nhân', [
+                    'full_name' => $full_name,
+                    'phone' => $phone ? 'updated' : null,
+                    'address' => $address ? 'updated' : null
+                ]);
                 return ['success' => true, 'message' => 'Cập nhật thông tin thành công!'];
             } else {
                 return ['success' => false, 'message' => 'Có lỗi xảy ra khi cập nhật thông tin.'];
@@ -535,21 +539,29 @@ class Auth {
         }
     }
     
-    private function logActivity($user_id, $action, $description = '') {
-        try {
-            $stmt = $this->pdo->prepare("
-                INSERT INTO user_activities (user_id, action, description, ip_address, user_agent, created_at) 
-                VALUES (?, ?, ?, ?, ?, NOW())
-            ");
-            $stmt->execute([
-                $user_id,
-                $action,
-                $description,
-                $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-                $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
-            ]);
-        } catch (PDOException $e) {
-            error_log("Log activity error: " . $e->getMessage());
+    private function logActivity($user_id, $action, $description = '', array $details = []) {
+        // Sử dụng hàm log_user_action từ auth_helper.php
+        if (function_exists('log_user_action')) {
+            log_user_action($this->pdo, $user_id, $action, $description, $details);
+        } else {
+            // Fallback nếu hàm chưa được load
+            try {
+                $stmt = $this->pdo->prepare("
+                    INSERT INTO user_logs (user_id, action, description, details, ip_address, user_agent) 
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ");
+                $detailsJson = !empty($details) ? json_encode($details, JSON_UNESCAPED_UNICODE) : null;
+                $stmt->execute([
+                    $user_id,
+                    $action,
+                    $description,
+                    $detailsJson,
+                    $_SERVER['REMOTE_ADDR'] ?? null,
+                    $_SERVER['HTTP_USER_AGENT'] ?? null
+                ]);
+            } catch (PDOException $e) {
+                error_log("Log activity error: " . $e->getMessage());
+            }
         }
     }
 }

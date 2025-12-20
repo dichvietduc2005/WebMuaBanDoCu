@@ -153,7 +153,7 @@ body {
 
 .related-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 25px;
 }
 
@@ -226,11 +226,20 @@ body {
     padding: 30px;
     margin-bottom: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Đảm bảo không bị ẩn bởi adblock */
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
 }
 
 .reviews-container {
     max-height: 400px;
-    overflow: auto
+    overflow: auto;
+    /* Đảm bảo container đánh giá không bị ẩn */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .reviews-header {
@@ -243,21 +252,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.reviews-footer input {
-    border: none;
-    border-bottom: 1px solid rgb(0, 0, 0, 0.2);
-    width: 100%;
-}
-
-.reviews-footer button {
-    width: 7%;
-    border-radius: 10px;
-    border: none;
-    background-color: rgba(152, 152, 152, 0.5);
-    padding: 5px;
-    align-self: self-end;
+    margin-top: 20px;
 }
 
 .review-item {
@@ -329,6 +324,214 @@ body {
     line-height: 1.5;
     margin-bottom: 12px;
     font-size: 14px;
+}
+
+/* No Reviews State */
+.no-reviews {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    /* Đảm bảo thông báo không có đánh giá hiển thị */
+    display: block !important;
+    visibility: visible !important;
+}
+
+.no-reviews i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.no-reviews p {
+    font-size: 18px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.no-reviews small {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Review Form */
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    /* Đảm bảo form đánh giá hiển thị */
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.review-form textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.3s ease;
+    /* Đảm bảo textarea hiển thị */
+    display: block !important;
+    visibility: visible !important;
+}
+
+.review-form textarea:focus {
+    outline: none;
+    border-color: #3a86ff;
+    box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+}
+
+.review-form button {
+    align-self: flex-end;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3a86ff, #2563eb);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* Đảm bảo button hiển thị */
+    display: inline-block !important;
+    visibility: visible !important;
+}
+
+.review-form button:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(58, 134, 255, 0.3);
+}
+
+.review-form button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Login to Review */
+.login-to-review {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.login-to-review p {
+    margin: 0;
+    color: #6c757d;
+}
+
+.login-to-review a {
+    color: #3a86ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-to-review a:hover {
+    text-decoration: underline;
+}
+
+/* Already Reviewed */
+.already-reviewed {
+    text-align: center;
+    padding: 20px;
+    background: #d4edda;
+    border-radius: 12px;
+    margin-top: 20px;
+    border: 1px solid #c3e6cb;
+}
+
+.already-reviewed i {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #28a745;
+}
+
+.already-reviewed p {
+    margin: 0 0 5px 0;
+    color: #155724;
+    font-weight: 500;
+}
+
+.already-reviewed small {
+    color: #155724;
+    opacity: 0.8;
+}
+
+/* Toast Container */
+.toast-container {
+    z-index: 9999;
+    /* Thêm các thuộc tính để tránh bị adblock chặn */
+    pointer-events: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+
+.toast {
+    min-width: 300px;
+    /* Đảm bảo toast hiển thị đúng */
+    position: relative !important;
+    transform: none !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Toast warning style */
+.toast.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.toast.bg-warning .btn-close {
+    filter: invert(1);
+}
+
+/* Responsive improvements for reviews */
+@media (max-width: 768px) {
+    .customer-reviews {
+        padding: 20px;
+        /* Đảm bảo responsive không bị ảnh hưởng */
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .review-form textarea {
+        min-height: 60px;
+        padding: 12px;
+        /* Đảm bảo textarea hiển thị */
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    .review-form button {
+        padding: 10px 20px;
+        font-size: 14px;
+        /* Đảm bảo button hiển thị */
+        display: inline-block !important;
+        visibility: visible !important;
+    }
+    
+    .no-reviews {
+        padding: 30px 15px;
+        /* Đảm bảo thông báo không có đánh giá hiển thị */
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    .no-reviews i {
+        font-size: 36px;
+    }
+    
+    .no-reviews p {
+        font-size: 16px;
+    }
 }
 
 .review-actions {

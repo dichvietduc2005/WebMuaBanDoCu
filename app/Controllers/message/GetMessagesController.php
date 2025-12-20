@@ -15,7 +15,7 @@ if (!$userId) {
 
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM messages WHERE box_chat_id = ? ORDER BY sent_at ASC");
+    $stmt = $pdo->prepare("SELECT id, box_chat_id, role, content, sent_at FROM messages WHERE box_chat_id = ? ORDER BY sent_at ASC");
     $stmt->execute([$userId]);
     $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     

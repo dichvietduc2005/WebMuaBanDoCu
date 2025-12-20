@@ -24,6 +24,19 @@ $sort_by = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
 $in_stock = isset($_GET['in_stock']) ? (bool)$_GET['in_stock'] : true;
 
 if ($keyword || $category || $condition || $min_price || $max_price) {
+    // Log search action
+    if (function_exists('log_user_action')) {
+        $userId = $_SESSION['user_id'] ?? null;
+        log_user_action($pdo, $userId, 'search', "Tìm kiếm sản phẩm: " . ($keyword ?: 'Lọc theo danh mục/category'), [
+            'keyword' => $keyword,
+            'category_id' => $category,
+            'condition' => $condition,
+            'min_price' => $min_price,
+            'max_price' => $max_price,
+            'sort_by' => $sort_by
+        ]);
+    }
+    
     // Sử dụng SearchModel::searchProducts thay vì hàm searchProducts
     $products = SearchModel::searchProducts($pdo, $keyword, $category, $condition, $min_price, $max_price, $sort_by, $in_stock, $per_page, $offset);
     
@@ -31,6 +44,14 @@ if ($keyword || $category || $condition || $min_price || $max_price) {
     $total_products = SearchModel::countSearchResults($pdo, $keyword, $category, $condition, $min_price, $max_price, $in_stock);
     $total_pages = ceil($total_products / $per_page);
 } else {
+    // Log view products list
+    if (function_exists('log_user_action')) {
+        $userId = $_SESSION['user_id'] ?? null;
+        log_user_action($pdo, $userId, 'view_products', "Xem danh sách sản phẩm", [
+            'category_id' => $category,
+            'page' => $page
+        ]);
+    }
     $where_conditions = ["p.status = 'active'"];
     $params = [];
 
@@ -99,7 +120,6 @@ if (!function_exists('getConditionText')) {
 <body>    
     <?php renderHeader($pdo); ?>
 <div class="container">
-        <a href="../TrangChu.php" class="back-link"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
         
         <?php if ($category): ?>
         <?php

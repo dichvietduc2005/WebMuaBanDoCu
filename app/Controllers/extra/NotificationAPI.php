@@ -104,9 +104,6 @@ class NotificationAPI
                 case 'mark_read':
                     $this->markAsRead();
                     break;
-                case 'search_suggestions':
-                    $this->getSearchSuggestions();
-                    break;
                 default:
                     $this->sendError('Invalid action', 400);
             }
@@ -172,15 +169,18 @@ class NotificationAPI
             error_log("User logged in with ID: " . $user_id);
             
             // Lấy thông báo hoạt động (notifications)
+            // Bao gồm: thông báo gửi cho user cụ thể HOẶC gửi tất cả (user_id IS NULL)
             $stmt = $this->db->prepare("
                 SELECT 
                     id,
+                    title,
                     message,
                     created_at,
                     is_read,
-                    'activity' as type
+                    type,
+                    'activity' as display_type
                 FROM notifications 
-                WHERE user_id = ? 
+                WHERE (user_id = ? OR user_id IS NULL)
                 ORDER BY created_at DESC 
                 LIMIT 20
             ");
@@ -213,8 +213,8 @@ class NotificationAPI
                 ]
             ];
 
-            // Đếm thông báo chưa đọc
-            $stmt = $this->db->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+            // Đếm thông báo chưa đọc (bao gồm cả gửi tất cả)
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM notifications WHERE (user_id = ? OR user_id IS NULL) AND is_read = 0");
             $stmt->execute([$user_id]);
             $unreadCount = (int) $stmt->fetchColumn();
             error_log("Unread count: " . $unreadCount);
@@ -266,64 +266,6 @@ class NotificationAPI
 
         } catch (Exception $e) {
             $this->errorResponse('Server error: ' . $e->getMessage(), 500);
-        }
-    }
-
-    public function getSearchSuggestions()
-    {
-        error_log("getSearchSuggestions called");
-        
-        // Clear any previous output
-        if (ob_get_level()) ob_clean();
-        
-        try {
-            $keyword = $_GET['keyword'] ?? '';
-            $limit = (int)($_GET['limit'] ?? 8);
-            
-            error_log("Search suggestions called with keyword: " . $keyword);
-            
-            if (strlen($keyword) < 2) {
-                error_log("Keyword too short, returning empty suggestions");
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => true,
-                    'data' => [
-                        'suggestions' => []
-                    ]
-                ]);
-                exit;
-            }
-
-            // Test với dữ liệu tĩnh trước
-            $testSuggestions = [
-                'Điện thoại ' . $keyword,
-                'Laptop ' . $keyword, 
-                'Máy tính ' . $keyword,
-                'Tai nghe ' . $keyword,
-                'Đồng hồ ' . $keyword
-            ];
-            
-            error_log("Returning test suggestions: " . json_encode($testSuggestions));
-            
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'data' => [
-                    'suggestions' => $testSuggestions
-                ]
-            ]);
-            exit;
-            
-        } catch (Exception $e) {
-            error_log("Search suggestions error: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
-            
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => false,
-                'error' => 'Server error: ' . $e->getMessage()
-            ]);
-            exit;
         }
     }
 

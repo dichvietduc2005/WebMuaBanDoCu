@@ -1,3 +1,7 @@
+// Use global userId if available, otherwise declare locally
+if (typeof window.userId === 'undefined') {
+    window.userId = null;
+}
 let chatVisible = true;
 let can_jump_bottom = true;
 
