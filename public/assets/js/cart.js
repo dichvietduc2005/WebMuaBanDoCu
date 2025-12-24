@@ -1,8 +1,53 @@
 document.addEventListener('DOMContentLoaded', function () {
     const cartContainer = document.querySelector('.shopping-cart-container');
-    if (!cartContainer) return;
+    
+    // Nếu không tìm thấy class trong HTML, log lỗi để biết
+    if (!cartContainer) {
+        console.error("Lỗi: Không tìm thấy class .shopping-cart-container trong HTML");
+        return; 
+    }
 
-    // --- Debounce function to prevent rapid firing of events ---
+    // --- 1. CẤU HÌNH MODAL XÓA (PHẦN MỚI SỬA) ---
+    let pendingDeleteCallback = null;
+    let deleteModalInstance = null;
+    
+    // Tìm Modal theo ID (ID này nằm trong file Component PHP bạn đã include)
+    const modalElement = document.getElementById('deleteConfirmModal');
+    
+    if (modalElement) {
+        // Khởi tạo Bootstrap Modal
+        deleteModalInstance = new bootstrap.Modal(modalElement);
+        
+        // Bắt sự kiện click nút "Xác nhận xóa" màu đỏ trong Modal
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function() {
+                if (pendingDeleteCallback) {
+                    pendingDeleteCallback(); // Thực hiện hành động xóa
+                }
+                deleteModalInstance.hide(); // Đóng modal sau khi xóa
+            });
+        }
+    } else {
+        console.warn("Cảnh báo: Không tìm thấy ID 'deleteConfirmModal'. Kiểm tra lại file include.");
+    }
+
+    // --- Helper: Show Confirm Dialog (Đã sửa để dùng Modal) ---
+    function showConfirmDialog(title, message, callback) {
+        pendingDeleteCallback = callback;
+        
+        if (deleteModalInstance) {
+            // Nếu tìm thấy Modal đẹp -> Hiện Modal đẹp
+            deleteModalInstance.show();
+        } else {
+            // Fallback: Nếu lỗi không thấy Modal -> Dùng tạm popup trình duyệt
+            if (window.confirm(message)) {
+                callback();
+            }
+        }
+    }
+
+    // --- Debounce function ---
     function debounce(func, delay = 300) {
         let timeout;
         return (...args) => {
@@ -15,59 +60,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Toast notification function ---
     function showToast(type, title, message) {
-    // Tạo container nếu chưa có
-    let toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toast-container';
-        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-        toastContainer.style.zIndex = '9999';
-        document.body.appendChild(toastContainer);
-    }
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '9999';
+            document.body.appendChild(toastContainer);
+        }
 
-    // Tạo toast element
-    const toastEl = document.createElement('div');
-    toastEl.className = `toast show align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
-    toastEl.setAttribute('role', 'alert');
-    toastEl.setAttribute('aria-live', 'assertive');
-    toastEl.setAttribute('aria-atomic', 'true');
-    toastEl.style.minWidth = '300px';
-    
-    toastEl.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">
-                <strong>${title}</strong> ${message}
+        const toastEl = document.createElement('div');
+        toastEl.className = `toast show align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body"><strong>${title}</strong> ${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    `;
-    
-    toastContainer.appendChild(toastEl);
-
-    // Tự động ẩn sau 3 giây
-    setTimeout(() => {
-        toastEl.classList.remove('show');
-        setTimeout(() => toastEl.remove(), 300);
-    }, 3000);
-}
-
-function createToastContainer() {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'toast-container position-fixed top-0 end-0 p-3';
-        container.style.zIndex = 10800;
-        document.body.appendChild(container);
+        `;
+        toastContainer.appendChild(toastEl);
+        setTimeout(() => {
+            toastEl.classList.remove('show');
+            setTimeout(() => toastEl.remove(), 300);
+        }, 3000);
     }
-    return container;
-}
-    
-
 
     // --- API Call Functions ---
     async function callCartApi(action, productId, quantity) {
-        const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php';
+        const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php'; 
         const body = `action=${action}&product_id=${productId}` + (quantity !== undefined ? `&quantity=${quantity}` : '');
 
         try {
@@ -80,98 +100,40 @@ function createToastContainer() {
                 body: body
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Có lỗi xảy ra từ máy chủ.');
+            const text = await response.text();
+            try {
+                const data = JSON.parse(text);
+                if (!response.ok) throw new Error(data.message || 'Lỗi server.');
+                return data;
+            } catch (e) {
+                console.error("Server trả về dữ liệu không phải JSON:", text);
+                throw new Error("Lỗi phản hồi từ máy chủ (không phải JSON).");
             }
-
-            return data;
         } catch (error) {
             console.error('API Error:', error);
-            showToast('error', 'Lỗi!', error.message || 'Không thể kết nối đến máy chủ.');
+            showToast('error', 'Lỗi!', error.message);
             return null;
         }
     }
 
     // --- DOM Update Functions ---
     function updateCartSummary(newTotal) {
-        // Update tạm tính
-        const subtotalElements = document.querySelectorAll('.order-summary-container .d-flex span:last-child');
-        if (subtotalElements.length > 0) {
-            subtotalElements[0].textContent = formatPrice(newTotal);
-        }
-        
-        // Update tổng cộng
-        const totalElements = document.querySelectorAll('.order-summary-container .fw-bold.fs-5 span:last-child');
-        if (totalElements.length > 0) {
-            totalElements[0].textContent = formatPrice(newTotal);
-        }
+        const totalElements = document.querySelectorAll('.order-summary-container .fw-bold.text-danger');
+        totalElements.forEach(el => {
+            el.textContent = formatPrice(newTotal);
+        });
     }
     
     function updateCartIconCount(newCount) {
-        // Update badge trong title của trang cart
-        const cartBadge = document.querySelector('h1 .badge.bg-primary');
-        if (cartBadge) {
-            cartBadge.textContent = newCount;
-        }
-        
-        // Update tất cả các cart icon count trong header/navigation
         const cartCountElements = document.querySelectorAll('.cart-count');
         cartCountElements.forEach(element => {
             if (newCount > 0) {
-                // Cập nhật số lượng (hiển thị tối đa 9+)
-                if (newCount <= 9) {
-                    element.textContent = newCount;
-                } else {
-                    element.textContent = '9+';
-                }
-                element.style.display = 'flex';
+                element.textContent = newCount > 9 ? '9+' : newCount;
+                element.style.display = 'inline-block';
             } else {
-                // Ẩn badge nếu giỏ hàng trống
                 element.style.display = 'none';
             }
         });
-        
-        // Update cart icon count trong header - tìm kiếm theo nhiều cách
-        const cartIconSelectors = [
-            'a[href*="cart/index.php"][title="Giỏ hàng"]',
-            'a[href*="cart"]',
-            '.cart-icon'
-        ];
-        
-        for (const selector of cartIconSelectors) {
-            const cartIconLink = document.querySelector(selector);
-            if (cartIconLink) {
-                let cartCountBadge = cartIconLink.querySelector('.cart-count');
-                
-                if (newCount > 0) {
-                    if (!cartCountBadge) {
-                        // Tạo badge mới nếu chưa có
-                        cartCountBadge = document.createElement('span');
-                        cartCountBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count';
-                        cartCountBadge.style.cssText = 'font-size: 12px; padding: 0.2em 0.4em;';
-                        cartIconLink.appendChild(cartCountBadge);
-                    }
-                    
-                    // Cập nhật số lượng (hiển thị tối đa 9+)
-                    if (newCount <= 9) {
-                        cartCountBadge.textContent = newCount;
-                    } else {
-                        cartCountBadge.textContent = '9+';
-                    }
-                    cartCountBadge.style.display = '';
-                } else {
-                    // Ẩn badge nếu giỏ hàng trống
-                    if (cartCountBadge) {
-                        cartCountBadge.style.display = 'none';
-                    }
-                }
-                break; // Tìm thấy thì dừng
-            }
-        }
-        
-        console.log('Updated cart count to:', newCount);
     }
 
     function formatPrice(price) {
@@ -181,130 +143,89 @@ function createToastContainer() {
         }).format(price);
     }
 
-    // --- Event Handlers ---
+    // --- Event Handlers: REMOVE ---
     async function handleRemoveItem(productId) {
-        // Tìm cart-item chứa button remove có data-product-id này
         const removeButton = document.querySelector(`.remove-item[data-product-id="${productId}"]`);
         const itemElement = removeButton ? removeButton.closest('.cart-item') : null;
         
-        if (!itemElement) {
-            console.log('Không tìm thấy item element với productId:', productId);
-            return;
-        }
+        if (!itemElement) return;
 
-        console.log('Đang xóa item với productId:', productId);
-
-        // Hiển thị loading state
-        itemElement.style.opacity = '0.7';
-        const loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'item-loading-overlay';
-        loadingOverlay.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        loadingOverlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); z-index: 10;';
-        itemElement.style.position = 'relative';
-        itemElement.appendChild(loadingOverlay);
-
+        // UI Loading
+        itemElement.style.opacity = '0.5';
+        
         const response = await callCartApi('remove', productId);
-        console.log('API Response:', response);
 
         if (response && response.success) {
-            showToast('success', 'Thành công!', response.message);
-            console.log('New cart count:', response.cart_count);
-            console.log('New total:', response.total);
+            showToast('success', 'Đã xóa!', response.message);
             
-            // Animate removal
-            itemElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            itemElement.style.opacity = '0';
-            itemElement.style.transform = 'translateX(30px)';
-
+            // UI Remove Animation
+            itemElement.style.transition = 'all 0.3s ease';
+            itemElement.style.transform = 'translateX(100%)';
             setTimeout(() => {
-                const height = itemElement.offsetHeight;
-                itemElement.style.height = height + 'px';
-                itemElement.style.overflow = 'hidden';
-                setTimeout(() => {
-                    itemElement.style.transition = 'height 0.3s ease';
-                    itemElement.style.height = '0';
-                    
-                    setTimeout(() => {
-                        itemElement.remove();
-                        updateCartSummary(response.total || 0);
-                        updateCartIconCount(response.cart_count || 0);
-                        
-                        // Trigger cart updated event for real-time system
-                        document.dispatchEvent(new CustomEvent('cartItemRemoved'));
-                        
-                        // Kiểm tra nếu giỏ hàng trống
-                        if (document.querySelectorAll('.cart-item').length === 0) {
-                            location.reload(); // Reload để hiển thị trang giỏ hàng trống
-                        }
-                    }, 300);
-                }, 10);
+                itemElement.remove();
+                updateCartSummary(response.total || 0);
+                updateCartIconCount(response.cart_count || 0);
+                
+                // Nếu hết sản phẩm thì reload để hiện trang trống
+                if (document.querySelectorAll('.cart-item').length === 0) {
+                    location.reload();
+                }
             }, 300);
         } else {
-            // Remove loading state and restore original appearance
-            itemElement.style.opacity = '1';
-            loadingOverlay.remove();
-            showToast('error', 'Lỗi!', response ? response.message : 'Không thể xóa sản phẩm.');
+            itemElement.style.opacity = '1'; // Revert loading
         }
     }
 
-    // --- Event Listeners ---
+    // --- Main Event Listener (Delegation) ---
     cartContainer.addEventListener('click', function(e) {
-        console.log('Click event fired on:', e.target);
-        
-        // Tìm button remove được click
-        const removeButton = e.target.closest('.remove-item');
+        const target = e.target;
+
+        // 1. Xử lý nút XÓA
+        const removeButton = target.closest('.remove-item');
         if (removeButton) {
-            console.log('Remove button clicked');
             e.preventDefault();
-            e.stopPropagation();
-            
             const productId = removeButton.getAttribute('data-product-id');
-            console.log('Product ID from button:', productId);
-            
             if (productId) {
-                showConfirmDialog(
-                    'Xác nhận xóa',
-                    'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
-                    function() {
-                        handleRemoveItem(productId);
-                    }
-                );
-            } else {
-                console.error('Không tìm thấy product ID');
+                // GỌI HÀM SHOW DIALOG MỚI
+                showConfirmDialog('Xóa sản phẩm', 'Bạn chắc chắn muốn xóa?', () => {
+                    handleRemoveItem(productId);
+                });
             }
             return;
         }
 
-        // Xử lý các sự kiện khác nếu cần
-        const target = e.target;
+        // 2. Xử lý nút TĂNG/GIẢM số lượng
         const itemElement = target.closest('.cart-item');
         if (!itemElement) return;
-
+        
         const productId = itemElement.dataset.productId;
-        if (!productId) return;
-
         const quantityInput = itemElement.querySelector('.quantity-input');
-        if (!quantityInput) return;
-
-        let quantity = parseInt(quantityInput.value);
-
-        if (target.matches('.quantity-increase')) {
-            quantity++;
-            quantityInput.value = quantity;
-            // debouncedUpdate(productId, quantity);
+        
+        if (target.matches('.quantity-increase') || target.closest('.quantity-increase')) {
+            let qty = parseInt(quantityInput.value) || 0;
+            qty++;
+            quantityInput.value = qty;
+            debouncedUpdate(productId, qty);
         }
 
-        if (target.matches('.quantity-decrease')) {
-            if (quantity > 1) {
-                quantity--;
-                quantityInput.value = quantity;
-                // debouncedUpdate(productId, quantity);
+        if (target.matches('.quantity-decrease') || target.closest('.quantity-decrease')) {
+            let qty = parseInt(quantityInput.value) || 0;
+            if (qty > 1) {
+                qty--;
+                quantityInput.value = qty;
+                debouncedUpdate(productId, qty);
             }
         }
     });
-
-    // --- Make functions available globally ---
-    window.updateCartIconCount = updateCartIconCount;
+    
+    // Hàm update số lượng (debounce)
+    const debouncedUpdate = debounce(async (productId, quantity) => {
+        console.log(`Updating product ${productId} to ${quantity}`);
+        const response = await callCartApi('update', productId, quantity);
+        if (response && response.success) {
+            updateCartSummary(response.total);
+        }
+    }, 500);
 
     console.log('Cart script loaded successfully');
 });
