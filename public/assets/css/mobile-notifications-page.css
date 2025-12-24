@@ -1,0 +1,367 @@
+/* ============================================================
+   MOBILE RESPONSIVE - NOTIFICATIONS PAGE
+   Covers: notifications.php
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Container mobile */
+  .container {
+    padding: 12px !important;
+    max-width: 100% !important;
+  }
+
+  /* Page header mobile */
+  .mb-8 {
+    margin-bottom: 20px !important;
+  }
+
+  .text-3xl {
+    font-size: 20px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .text-3xl i {
+    font-size: 20px !important;
+    margin-right: 8px !important;
+  }
+
+  .text-gray-600 {
+    font-size: 13px !important;
+  }
+
+  /* Stats card mobile */
+  .bg-white.rounded-xl {
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .flex.flex-wrap {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .flex.items-center.gap-6 {
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    width: 100% !important;
+    padding-bottom: 16px !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+
+  .text-2xl {
+    font-size: 20px !important;
+  }
+
+  .text-sm {
+    font-size: 11px !important;
+  }
+
+  .h-12.w-px {
+    display: none !important;
+  }
+
+  /* Action buttons mobile */
+  .flex.gap-3 {
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  button.px-4.py-2 {
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+
+  /* Tabs mobile */
+  .flex.gap-2 {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .tab-active,
+  .tab-inactive {
+    flex: 1 !important;
+    min-width: calc(50% - 4px) !important;
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Notification cards mobile */
+  .notification-card {
+    padding: 16px !important;
+    margin-bottom: 12px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .notification-unread {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
+    border-left: 4px solid #3B82F6 !important;
+  }
+
+  .notification-read {
+    background: white !important;
+    border-left: 4px solid #E5E7EB !important;
+  }
+
+  /* Notification header mobile */
+  .flex.items-start.justify-between {
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .flex.items-center.gap-3 {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  /* Notification icon mobile */
+  .w-12.h-12 {
+    width: 40px !important;
+    height: 40px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Notification content mobile */
+  .flex-1 {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .font-semibold {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .text-gray-600 {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Notification time mobile */
+  .text-xs {
+    font-size: 10px !important;
+    color: #9ca3af !important;
+  }
+
+  /* Dropdown menu mobile */
+  .relative {
+    position: relative !important;
+  }
+
+  .dropdown-toggle {
+    min-height: 36px !important;
+    min-width: 36px !important;
+    padding: 8px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .dropdown-menu {
+    position: fixed !important;
+    right: 12px !important;
+    left: 12px !important;
+    top: auto !important;
+    bottom: 80px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+    z-index: 1000 !important;
+  }
+
+  .dropdown-menu.show {
+    display: block !important;
+  }
+
+  .dropdown-item {
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* Empty state mobile */
+  .text-center {
+    padding: 40px 20px !important;
+  }
+
+  .text-center i {
+    font-size: 48px !important;
+    color: #cbd5e1 !important;
+    margin-bottom: 16px !important;
+  }
+
+  .text-center h3 {
+    font-size: 18px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .text-center p {
+    font-size: 13px !important;
+    color: #6b7280 !important;
+  }
+
+  /* Notification actions mobile */
+  .notification-actions {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+  }
+
+  .btn-mark-read,
+  .btn-delete {
+    flex: 1 !important;
+    min-height: 36px !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+  }
+
+  /* Pagination mobile */
+  .pagination {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    margin-top: 20px !important;
+  }
+
+  .pagination a,
+  .pagination span {
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* Tablet - Notifications */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .container {
+    padding: 16px !important;
+    max-width: 800px !important;
+  }
+
+  .flex.flex-wrap {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+  }
+
+  .flex.gap-3 {
+    flex-direction: row !important;
+  }
+
+  button.px-4.py-2 {
+    width: auto !important;
+    flex: 1 !important;
+  }
+
+  .notification-card {
+    padding: 20px !important;
+  }
+}
+
+/* ============================================================
+   COMMON NOTIFICATIONS PAGE ELEMENTS
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Buttons - touch friendly */
+  button,
+  .btn {
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  /* Cards */
+  .card,
+  .bg-white {
+    border-radius: 12px !important;
+  }
+
+  /* Headings */
+  h1 {
+    font-size: 20px !important;
+  }
+
+  h2 {
+    font-size: 18px !important;
+  }
+
+  h3 {
+    font-size: 16px !important;
+  }
+
+  /* Text */
+  p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+}
+
+/* ============================================================
+   LANDSCAPE MODE
+   ============================================================ */
+
+@media (max-width: 767px) and (orientation: landscape) {
+  .notification-card {
+    padding: 12px !important;
+  }
+
+  .flex.items-center.gap-6 {
+    padding-bottom: 12px !important;
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+/* Touch feedback */
+@media (hover: none) {
+  .notification-card:active,
+  button:active,
+  .btn:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

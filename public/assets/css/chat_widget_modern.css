@@ -1,0 +1,206 @@
+/* Modern Fashion Chat Widget CSS - v2 (Clean & Minimalist) */
+/* Temporarily commented to test if this causes late override */
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'); */
+
+/* Force reset for widget subtree */
+#chat-widget * {
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- Trigger Button (Floating Action Button) --- */
+.chat-trigger-btn {
+    position: fixed !important; /* Force position */
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #000000 !important; /* Deep Black */
+    border-radius: 50% !important;
+    border: none !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25) !important;
+    color: white !important;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 2147483647; /* Max z-index */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.chat-trigger-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+.chat-trigger-btn.hidden {
+    transform: scale(0) rotate(90deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- Main Container --- */
+.chat-container {
+    position: fixed !important;
+    bottom: 100px !important;
+    right: 30px !important;
+    width: 380px !important;
+    height: 550px !important;
+    max-height: 80vh;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important; /* Remove old blur */
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+    z-index: 2147483647 !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* Animation States */
+    transform-origin: bottom right;
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.chat-container.active {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.chat-container.unactive {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- Header --- */
+.chat-header {
+    background: #ffffff !important;
+    background-image: none !important; /* Overlay old gradient */
+    color: #111111 !important;
+    padding: 20px 24px !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f3f4f6 !important;
+}
+
+.chat-title {
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.03em;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #10b981;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.close-btn {
+    background: transparent !important;
+    border: none !important;
+    color: #9ca3af !important;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.close-btn:hover {
+    background-color: #f3f4f6 !important;
+    color: #111111 !important;
+}
+
+/* --- Body & Messages --- */
+.chat-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff !important;
+}
+
+.chat-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 20px !important;
+    background-color: #ffffff !important; /* Force White */
+}
+
+/* --- Bubbles --- */
+.user-message {
+    align-self: flex-end;
+    background: #111111 !important; /* Black */
+    color: white !important;
+    padding: 14px 20px !important;
+    border-radius: 20px 20px 4px 20px !important;
+    font-weight: 500;
+    max-width: 85%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.admin-message {
+    align-self: flex-start;
+    background: #f3f4f6 !important; /* Gray */
+    color: #1f2937 !important;
+    padding: 14px 20px !important;
+    border-radius: 20px 20px 20px 4px !important;
+    font-weight: 500;
+    max-width: 85%;
+}
+
+/* --- Input --- */
+.chat-input-area {
+    padding: 16px 24px 24px 24px !important;
+    background-color: #ffffff !important;
+    border-top: 1px solid #f3f4f6 !important;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 50px !important;
+    padding: 8px 8px 8px 24px !important;
+    transition: all 0.2s;
+}
+
+.input-wrapper:focus-within {
+    border-color: #111111 !important;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+}
+
+.input-wrapper input {
+    font-size: 15px !important;
+    color: #111111 !important;
+}
+
+.input-wrapper button {
+    background: #111111 !important;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    margin-left: 12px;
+}

@@ -24,7 +24,6 @@ $products = getUserProducts($pdo, $user_id);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
-    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
     <style>
     #products-table th,
     #products-table td {
@@ -126,9 +125,16 @@ $products = getUserProducts($pdo, $user_id);
                 <div class="form-group">
                     <label>Danh mục</label>
                     <select name="category_id" id="edit_category_id" required>
-                        <option value="1">Điện thoại & Máy tính bảng</option>
-                        <option value="2">Laptop & Máy tính</option>
-                        <option value="3">Thời trang & Phụ kiện</option>
+                        <?php
+                        // Fetch categories if not already fetched
+                        if (!function_exists('fetchAllCategories')) {
+                            require_once __DIR__ . '/../../Models/product/CategoryModel.php';
+                        }
+                        $categories = fetchAllCategories($pdo);
+                        foreach ($categories as $cat) {
+                            echo '<option value="' . (int)$cat['id'] . '">' . htmlspecialchars($cat['name']) . '</option>';
+                        }
+                        ?>
                     </select>
                 </div>
                 <div class="form-group">

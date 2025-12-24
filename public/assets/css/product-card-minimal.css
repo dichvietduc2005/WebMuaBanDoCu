@@ -1,0 +1,338 @@
+/* ============================================================
+   PRODUCT CARD MINIMAL VERSION
+   Ultra-compact card design - removes descriptions completely
+   ============================================================ */
+
+/* MINIMAL COMPACT STYLE */
+/* Uncomment below to use this style - override product-card-compact.css */
+
+#featured-products .product-card,
+#regular-products .product-card {
+  transition: all 0.25s ease-out;
+}
+
+/* Super compact image */
+#featured-products .product-image,
+#regular-products .product-image {
+  height: 140px !important;
+}
+
+#featured-products .product-image img,
+#regular-products .product-image img {
+  height: 140px !important;
+}
+
+/* Minimal padding */
+#featured-products .product-content,
+#regular-products .product-content {
+  padding: 8px !important;
+  gap: 4px;
+}
+
+/* One-line title only */
+#featured-products .product-title,
+#regular-products .product-title {
+  font-size: 12px !important;
+  font-weight: 600;
+  -webkit-line-clamp: 1 !important;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  overflow: hidden;
+  margin-bottom: 3px !important;
+  height: 1.2em;
+}
+
+/* Hide description completely */
+#featured-products .product-description,
+#regular-products .product-description {
+  display: none !important;
+}
+
+/* Price prominent but compact */
+#featured-products .product-price,
+#regular-products .product-price {
+  font-size: 14px !important;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px !important;
+}
+
+/* Compact meta info */
+#featured-products .product-meta,
+#regular-products .product-meta {
+  font-size: 9px !important;
+  margin-bottom: 4px !important;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+#featured-products .product-category,
+#regular-products .product-category {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+#featured-products .product-condition,
+#regular-products .product-condition {
+  white-space: nowrap;
+}
+
+/* Compact button */
+#featured-products .product-actions,
+#regular-products .product-actions {
+  margin-top: 4px !important;
+  width: 100%;
+}
+
+#featured-products .btn-add-to-cart,
+#regular-products .btn-add-to-cart {
+  width: 100% !important;
+  padding: 6px 10px !important;
+  font-size: 11px !important;
+  min-height: 32px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 4px !important;
+  border-radius: 6px;
+}
+
+#featured-products .btn-add-to-cart i,
+#regular-products .btn-add-to-cart i {
+  font-size: 12px !important;
+}
+
+#featured-products .btn-add-to-cart:disabled,
+#regular-products .btn-add-to-cart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Compact badge */
+#featured-products .product-badge,
+#regular-products .product-badge {
+  padding: 3px 6px !important;
+  font-size: 9px !important;
+  top: 6px !important;
+  left: 6px !important;
+  border-radius: 12px;
+}
+
+/* Hover effect - subtle */
+#featured-products .product-card:hover,
+#regular-products .product-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+#featured-products .product-card:hover .product-image img,
+#regular-products .product-card:hover .product-image img {
+  transform: scale(1.02) !important;
+}
+
+/* ============================================================
+   TABLET - Slightly Larger
+   ============================================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  #featured-products .product-image,
+  #regular-products .product-image {
+    height: 150px !important;
+  }
+
+  #featured-products .product-image img,
+  #regular-products .product-image img {
+    height: 150px !important;
+  }
+
+  #featured-products .product-title,
+  #regular-products .product-title {
+    font-size: 12px !important;
+  }
+
+  #featured-products .product-price,
+  #regular-products .product-price {
+    font-size: 13px !important;
+  }
+
+  #featured-products .product-meta,
+  #regular-products .product-meta {
+    font-size: 9px !important;
+  }
+}
+
+/* ============================================================
+   MOBILE - Super Compact
+   ============================================================ */
+@media (max-width: 767px) {
+  #featured-products .product-image,
+  #regular-products .product-image {
+    height: 130px !important;
+  }
+
+  #featured-products .product-image img,
+  #regular-products .product-image img {
+    height: 130px !important;
+  }
+
+  #featured-products .product-content,
+  #regular-products .product-content {
+    padding: 6px !important;
+  }
+
+  #featured-products .product-title,
+  #regular-products .product-title {
+    font-size: 11px !important;
+    margin-bottom: 2px !important;
+  }
+
+  #featured-products .product-price,
+  #regular-products .product-price {
+    font-size: 12px !important;
+    margin-bottom: 2px !important;
+  }
+
+  #featured-products .product-meta,
+  #regular-products .product-meta {
+    font-size: 8px !important;
+    margin-bottom: 2px !important;
+  }
+
+  #featured-products .btn-add-to-cart,
+  #regular-products .btn-add-to-cart {
+    padding: 5px 8px !important;
+    font-size: 10px !important;
+    min-height: 28px !important;
+  }
+
+  #featured-products .product-badge,
+  #regular-products .product-badge {
+    padding: 2px 4px !important;
+    font-size: 8px !important;
+  }
+}
+
+/* ============================================================
+   LARGE SCREEN - Even More Compact
+   ============================================================ */
+@media (min-width: 1600px) {
+  #featured-products .product-image,
+  #regular-products .product-image {
+    height: 120px !important;
+  }
+
+  #featured-products .product-image img,
+  #regular-products .product-image img {
+    height: 120px !important;
+  }
+
+  #featured-products .product-content,
+  #regular-products .product-content {
+    padding: 6px !important;
+  }
+
+  #featured-products .product-title,
+  #regular-products .product-title {
+    font-size: 10px !important;
+  }
+
+  #featured-products .product-price,
+  #regular-products .product-price {
+    font-size: 12px !important;
+  }
+
+  #featured-products .product-meta,
+  #regular-products .product-meta {
+    font-size: 8px !important;
+  }
+
+  #featured-products .btn-add-to-cart,
+  #regular-products .btn-add-to-cart {
+    padding: 5px 8px !important;
+    font-size: 9px !important;
+    min-height: 28px !important;
+  }
+}
+
+/* ============================================================
+   ALTERNATIVE OPTIONS - Uncomment to use
+   ============================================================ */
+
+/* OPTION 1: Hide Product Category */
+/*
+#featured-products .product-category,
+#regular-products .product-category {
+  display: none !important;
+}
+*/
+
+/* OPTION 2: Hide Product Condition */
+/*
+#featured-products .product-condition,
+#regular-products .product-condition {
+  display: none !important;
+}
+*/
+
+/* OPTION 3: Hide Product Meta (Category + Condition) */
+/*
+#featured-products .product-meta,
+#regular-products .product-meta {
+  display: none !important;
+}
+*/
+
+/* OPTION 4: Make Grid 5 columns instead of 4 */
+/*
+@media (min-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1600px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+  }
+}
+*/
+
+/* ============================================================
+   COMPARISON VIEW - Grid vs List for future use
+   ============================================================ */
+
+/* Show more products at once - reduce card size further */
+.show-more-cards #featured-products .product-card,
+.show-more-cards #regular-products .product-card {
+  max-width: 180px;
+}
+
+.show-more-cards #featured-products .product-image,
+.show-more-cards #regular-products .product-image {
+  height: 120px !important;
+}
+
+.show-more-cards #featured-products .product-image img,
+.show-more-cards #regular-products .product-image img {
+  height: 120px !important;
+}
+
+.show-more-cards #featured-products .product-title,
+.show-more-cards #regular-products .product-title {
+  font-size: 11px !important;
+}
+
+.show-more-cards #featured-products .product-price,
+.show-more-cards #regular-products .product-price {
+  font-size: 12px !important;
+}
+

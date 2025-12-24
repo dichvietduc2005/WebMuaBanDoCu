@@ -1,6 +1,7 @@
 <?php
 require_once('../../../config/config.php');
 require_once('../../Models/extra/Search.php');
+require_once(__DIR__ . '/../../helpers.php');
 include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
@@ -58,10 +59,15 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tìm kiếm<?= !empty($query) ? ' - ' . htmlspecialchars($query) : '' ?> - HIHand Shop</title>
-    <link rel="stylesheet" href="../../../public/assets/css/search.css">
-    <link rel="stylesheet" href="../../../public/assets/css/footer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Unified Product Card Styles for Search -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/unified-product-cards.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/search.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/footer.css">
+    <!-- Mobile Responsive CSS for Search Pages -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-search-pages.css">
 </head>
 <body>
     <?php renderHeader($pdo); ?>
@@ -150,12 +156,20 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             <?php if (!empty($query)): ?>
                 <?php if (count($results) > 0): ?>
-                    <div class="search-results">
+                    <div class="products-grid">
                         <?php foreach ($results as $product): ?>
-                            <div class="product-item" onclick="window.location.href='../product/Product_detail.php?id=<?= $product['id'] ?>'">
+                            <div class="product-card"
+                                onclick="window.location.href='../product/Product_detail.php?id=<?= $product['id'] ?>'">
                                 <div class="product-image">
+                                    <!-- Cart icon on right -->
+                                    <?php if ($product['stock_quantity'] > 0): ?>
+                                    <button type="button" class="cart-icon-btn" onclick="event.stopPropagation(); addToCart(event, <?= $product['id'] ?>)" title="Thêm vào giỏ">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                    <?php endif; ?>
+                                    
                                     <?php if (!empty($product['image_path'])): ?>
-                                        <img src="/WebMuaBanDoCu/public/<?= htmlspecialchars($product['image_path']) ?>" 
+                                        <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>" 
                                              alt="<?= htmlspecialchars($product['title']) ?>">
                                     <?php else: ?>
                                         <div class="no-image">
@@ -164,25 +178,48 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <?php endif; ?>
                                 </div>
                                 <div class="product-content">
-                                    <h3 class="product-title"><?= htmlspecialchars($product['title']) ?></h3>
-                                    <p class="product-description"><?= htmlspecialchars(substr($product['description'], 0, 100)) ?>...</p>
-                                    <div class="product-meta">
-                                        <div class="product-price"><?= number_format($product['price']) ?> VNĐ</div>
-                                        <div class="product-condition">
+                                    <!-- Spec Tags (Category + Condition) -->
+                                    <div class="product-specs">
+                                        <?php if (!empty($product['category_name'])): ?>
+                                            <span class="spec-tag"><?php echo htmlspecialchars($product['category_name']); ?></span>
+                                        <?php endif; ?>
+                                        <span class="spec-tag"><?php echo getConditionText($product['condition_status']); ?></span>
+                                    </div>
+                                    
+                                    <!-- Product Title (Blue) -->
+                                    <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                                    
+                                    <!-- Price Section -->
+                                    <div class="product-price-section">
+                                        <span class="current-price"><?php echo formatPrice($product['price']); ?></span>
+                                        <?php if (isset($product['original_price']) && $product['original_price'] > $product['price']): ?>
+                                            <span class="original-price"><?php echo formatPrice($product['original_price']); ?></span>
+                                            <span class="discount-percent">-<?php echo round((1 - $product['price']/$product['original_price']) * 100); ?>%</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <!-- Rating & Sales -->
+                                    <div class="product-rating">
+                                        <span class="stars">
                                             <i class="fas fa-star"></i>
-                                            <?= htmlspecialchars($product['condition_status'] ?? 'Tốt') ?>
-                                        </div>
-                                    </div>
-                                    <div class="product-info">
-                                        <span class="category">
-                                            <i class="fas fa-tag"></i>
-                                            <?= htmlspecialchars($product['category_name'] ?? 'Khác') ?>
+                                            <?php echo isset($product['rating']) ? number_format($product['rating'], 1) : '5.0'; ?>
                                         </span>
-                                        <span class="stock">
-                                            <i class="fas fa-box"></i>
-                                            Còn <?= $product['stock_quantity'] ?? 0 ?> sản phẩm
-                                        </span>
+                                        <span class="separator">•</span>
+                                        <span class="sales">Đã bán <?php echo isset($product['sales_count']) ? number_format($product['sales_count']) : rand(10, 500); ?></span>
                                     </div>
+                                </div>
+                                
+                                <!-- Quick Add Button (appears on hover) -->
+                                <div class="product-hover-action" onclick="event.stopPropagation();">
+                                    <?php if ($product['stock_quantity'] > 0): ?>
+                                        <button type="button" class="btn-quick-add" onclick="addToCart(event, <?= $product['id'] ?>)">
+                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="btn-quick-add disabled" disabled>
+                                            <i class="fas fa-ban"></i> Hết hàng
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -227,16 +264,10 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endif; ?>
                 <?php else: ?>
                     <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h3>Không tìm thấy sản phẩm nào</h3>
-                        <p>Hãy thử:</p>
-                        <ul>
-                            <li>Kiểm tra lại chính tả</li>
-                            <li>Sử dụng từ khóa khác</li>
-                            <li>Thử tìm kiếm tổng quát hơn</li>
-                            <li>Xóa một số bộ lọc</li>
-                        </ul>
-                        <a href="../../View/Home.php" class="btn-back-home">Về trang chủ</a>
+                        <i class="fas fa-inbox"></i>
+                        <h3>Không có sản phẩm này</h3>
+                        <p>Sản phẩm bạn tìm kiếm không tồn tại hoặc đã hết hàng</p>
+                        <a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="btn-back-home">Về trang chủ</a>
                     </div>
                 <?php endif; ?>
             <?php else: ?>
@@ -248,9 +279,9 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
         </div>
     </div>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
-
+    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
     <?php footer(); ?>
 </body>
 </html>

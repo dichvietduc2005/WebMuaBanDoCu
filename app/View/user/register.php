@@ -47,6 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký - Web Mua Bán Đồ Cũ</title>
     <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Mobile Responsive CSS for Auth Pages -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-auth-pages.css">
     <style>
         .register-container {
             max-width: 500px;

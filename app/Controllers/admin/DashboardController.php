@@ -1,31 +1,50 @@
 <?php
 // app/Controllers/admin/DashboardController.php
 
+// Suppress all error output - we'll handle errors as JSON
+error_reporting(0);
+ini_set('display_errors', 0);
+
+// Start output buffering to prevent any accidental output
+ob_start();
+
 require_once __DIR__ . '/../../../config/config.php';
+
+// Clear any output that may have been generated
+while (ob_get_level() > 0) {
+    ob_end_clean();
+}
+
+// Set JSON header
+header('Content-Type: application/json; charset=utf-8');
 
 // Check admin permission
 if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-    header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
 
 $action = $_GET['action'] ?? '';
 
-header('Content-Type: application/json');
-
-if ($action === 'get_stats') {
-    $period = $_GET['period'] ?? 'month';
-    $year = $_GET['year'] ?? date('Y');
-    $orderStatus = $_GET['status'] ?? 'all';
-    
-    $data = getStatsData($pdo, $period, $year, $orderStatus);
-    echo json_encode(['success' => true, 'data' => $data]);
-    
-} elseif ($action === 'get_years') {
-    $years = getAvailableYears($pdo);
-    echo json_encode(['success' => true, 'years' => $years]);
+try {
+    if ($action === 'get_stats') {
+        $period = $_GET['period'] ?? 'month';
+        $year = $_GET['year'] ?? date('Y');
+        $orderStatus = $_GET['status'] ?? 'all';
+        
+        $data = getStatsData($pdo, $period, $year, $orderStatus);
+        echo json_encode(['success' => true, 'data' => $data], JSON_UNESCAPED_UNICODE);
+        
+    } elseif ($action === 'get_years') {
+        $years = getAvailableYears($pdo);
+        echo json_encode(['success' => true, 'years' => $years], JSON_UNESCAPED_UNICODE);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid action'], JSON_UNESCAPED_UNICODE);
+    }
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }
+exit;
 
 function getDateRange($period, $year = null) {
     $year = $year ?? date('Y');
@@ -281,7 +300,7 @@ function getTopCustomers($pdo, $startDate, $endDate, $limit = 5) {
             COALESCE(SUM(o.total_amount), 0) as total_spent,
             MAX(o.created_at) as last_order_date
         FROM users u
-        INNER JOIN orders o ON u.id = o.user_id
+        INNER JOIN orders o ON u.id = o.buyer_id
         WHERE o.created_at BETWEEN ? AND ?
         AND o.payment_status = 'paid'
         GROUP BY u.id
@@ -330,7 +349,6 @@ function getRecentOrdersDetailed($pdo, $limit = 10) {
     $stmt = $pdo->prepare("
         SELECT 
             o.id,
-            o.order_code,
             o.total_amount,
             o.payment_status,
             o.status,
@@ -340,7 +358,7 @@ function getRecentOrdersDetailed($pdo, $limit = 10) {
             u.email,
             u.avatar
         FROM orders o
-        INNER JOIN users u ON o.user_id = u.id
+        INNER JOIN users u ON o.buyer_id = u.id
         ORDER BY o.created_at DESC
         LIMIT ?
     ");

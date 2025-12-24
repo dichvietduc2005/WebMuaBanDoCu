@@ -1,0 +1,170 @@
+/* ===========================================
+   Admin Dynamic Theme Variables CSS
+   Applies theme colors from database settings
+   to admin UI components
+   =========================================== */
+
+/* ========== Sidebar ========== */
+.sidebar,
+aside[class*="sidebar"],
+[data-sidebar] {
+    background-color: var(--admin-sidebar-bg, #ffffff) !important;
+}
+
+.sidebar .sidebar-item.active,
+aside .nav-link.active {
+    background-color: var(--admin-primary, #4f46e5) !important;
+    color: white !important;
+}
+
+.sidebar .sidebar-item:hover,
+aside .nav-link:hover {
+    background-color: color-mix(in srgb, var(--admin-primary, #4f46e5) 15%, transparent) !important;
+}
+
+/* ========== Header ========== */
+header,
+.admin-header,
+nav.navbar {
+    background-color: var(--admin-header-bg, #ffffff) !important;
+}
+
+/* ========== Primary Buttons ========== */
+.btn-primary,
+button[class*="bg-indigo"],
+button[class*="bg-blue"],
+a[class*="bg-indigo"],
+a[class*="bg-blue"],
+.admin-btn-primary {
+    background-color: var(--admin-primary, #4f46e5) !important;
+    border-color: var(--admin-primary, #4f46e5) !important;
+}
+
+.btn-primary:hover,
+button[class*="bg-indigo"]:hover,
+button[class*="bg-blue"]:hover {
+    background-color: color-mix(in srgb, var(--admin-primary, #4f46e5) 85%, black) !important;
+}
+
+/* ========== Secondary Elements ========== */
+.btn-secondary,
+.admin-btn-secondary {
+    background-color: var(--admin-secondary, #7c3aed) !important;
+    border-color: var(--admin-secondary, #7c3aed) !important;
+}
+
+/* ========== Accent / Success ========== */
+.btn-success,
+.btn-accent,
+.badge-success,
+.admin-accent {
+    background-color: var(--admin-accent, #10b981) !important;
+}
+
+/* ========== Text Colors ========== */
+.admin-text-primary {
+    color: var(--admin-primary, #4f46e5) !important;
+}
+
+.admin-text-secondary {
+    color: var(--admin-secondary, #7c3aed) !important;
+}
+
+.admin-text-accent {
+    color: var(--admin-accent, #10b981) !important;
+}
+
+/* ========== Links ========== */
+a.text-indigo-600,
+a.text-blue-600,
+.admin-link {
+    color: var(--admin-primary, #4f46e5) !important;
+}
+
+a.text-indigo-600:hover,
+a.text-blue-600:hover,
+.admin-link:hover {
+    color: color-mix(in srgb, var(--admin-primary, #4f46e5) 70%, black) !important;
+}
+
+/* ========== Focus States ========== */
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--admin-primary, #4f46e5) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--admin-primary, #4f46e5) 20%, transparent) !important;
+}
+
+/* ========== Cards & Panels ========== */
+.card-primary-header,
+.panel-primary .panel-heading {
+    background-color: var(--admin-primary, #4f46e5) !important;
+    color: white !important;
+}
+
+/* ========== Toggle/Switch Active ========== */
+input[type="checkbox"]:checked + .peer,
+.toggle-active,
+.switch-on {
+    background-color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Tabs ========== */
+.tab-active,
+.nav-tabs .nav-link.active {
+    border-bottom-color: var(--admin-primary, #4f46e5) !important;
+    color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Progress Bars ========== */
+.progress-bar,
+.progress-primary {
+    background-color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Pagination ========== */
+.pagination .page-item.active .page-link {
+    background-color: var(--admin-primary, #4f46e5) !important;
+    border-color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Badges ========== */
+.badge-primary {
+    background-color: var(--admin-primary, #4f46e5) !important;
+}
+
+.badge-secondary {
+    background-color: var(--admin-secondary, #7c3aed) !important;
+}
+
+/* ========== Icons with Theme Color ========== */
+.icon-primary,
+.text-indigo-600,
+.text-blue-600 {
+    color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Borders ========== */
+.border-primary,
+.border-indigo-600 {
+    border-color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Ring/Outline ========== */
+.ring-primary,
+.ring-indigo-500 {
+    --tw-ring-color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Preset Theme Cards Highlight ========== */
+.preset-theme-card:hover,
+.preset-theme-card.active {
+    border-color: var(--admin-primary, #4f46e5) !important;
+}
+
+/* ========== Chart Colors (if using JS charts) ========== */
+:root {
+    --chart-primary: var(--admin-primary, #4f46e5);
+    --chart-secondary: var(--admin-secondary, #7c3aed);
+    --chart-accent: var(--admin-accent, #10b981);
+}

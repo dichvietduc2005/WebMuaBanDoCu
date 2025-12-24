@@ -130,6 +130,13 @@ function adminMenuItem(string $page, string $label, string $iconPath, int $badge
                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>'
           );
+
+          echo adminMenuItem('theme_customization', 'Tùy chỉnh giao diện',
+            '<svg xmlns="http://www.w3.org/2000/svg" class="%s w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="%s">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>'
+          );
           ?>
         </ul>
       </div>

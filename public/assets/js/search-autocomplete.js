@@ -85,7 +85,11 @@ class SearchAutocomplete {
             const data = await response.json();
             console.log('API Response:', data);
 
-            if (data.success && data.suggestions) {
+            // API returns: { success: true, data: { suggestions: [...] } }
+            if (data.success && data.data && data.data.suggestions) {
+                this.displaySuggestions(data.data.suggestions, keyword);
+            } else if (data.success && data.suggestions) {
+                // Fallback for old API format
                 this.displaySuggestions(data.suggestions, keyword);
             } else {
                 console.log('No suggestions found or API error');

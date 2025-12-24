@@ -41,6 +41,8 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     <link href="../../../public/assets/css/checkout.css" rel="stylesheet">
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Mobile Responsive CSS for Checkout Page -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-checkout-page.css">
 </head>
 <body>
     <?php renderHeader($pdo); ?>

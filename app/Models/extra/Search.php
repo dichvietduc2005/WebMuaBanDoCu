@@ -111,4 +111,26 @@ class SearchModel
         $stmt->execute($params);
         return $stmt->fetchColumn();
     }
+
+    /**
+     * Lấy gợi ý tìm kiếm dựa trên từ khóa
+     * @param PDO $pdo
+     * @param string $keyword
+     * @param int $limit
+     * @return array
+     */
+    public static function getSuggestions($pdo, $keyword, $limit = 8)
+    {
+        if (strlen($keyword) < 2) return [];
+
+        $sql = "SELECT DISTINCT title 
+                FROM products 
+                WHERE status = 'active' AND stock_quantity > 0 AND title LIKE ? 
+                ORDER BY title ASC 
+                LIMIT ?";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(["%$keyword%", $limit]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
 }

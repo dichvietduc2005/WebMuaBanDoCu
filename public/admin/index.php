@@ -23,6 +23,7 @@ $routes = [
     'user_behavior' => APP_PATH . '/View/admin/UserBehaviorDashboardView.php',
     'coupons' => APP_PATH . '/View/admin/coupons.php',
     'notifications' => APP_PATH . '/View/admin/notifications.php',
+    'theme_customization' => APP_PATH . '/View/admin/ThemeCustomizationView.php',
 ];
 
 // Nếu không tồn tại route, đưa về dashboard (hoặc có thể hiển thị 404 riêng)

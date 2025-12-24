@@ -25,6 +25,8 @@ $unreadCount = count(array_filter($notifications, fn($n) => !$n['is_read']));
     <link rel="stylesheet" href="../../../public/assets/css/footer.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Mobile Responsive CSS for Notifications Page -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-notifications-page.css">
     <style>
         .notification-card {
             transition: all 0.3s ease;

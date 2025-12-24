@@ -311,8 +311,9 @@ class NotificationAPI
     }
 }
 
-// Xử lý request nếu file được gọi trực tiếp
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
+// Class is now used by ApiRouter - do not execute directly
+// For backward compatibility, still allow direct access
+if (basename($_SERVER['SCRIPT_FILENAME']) === 'NotificationAPI.php') {
     try {
         $api = new NotificationAPI();
         $api->handleRequest();

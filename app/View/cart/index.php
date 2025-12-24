@@ -213,7 +213,7 @@ if (!$is_guest) {
                     Giỏ hàng của bạn
                     <span class="badge bg-primary ms-2"><?= $cartItemCount ?></span>
                 </h1>
-                <a href="../TrangChu.php" class="btn btn-outline-primary">
+                <a href="../index.php" class="btn btn-outline-primary">
                     <i class="fas fa-arrow-left me-2"></i>
                     <span class="d-none d-sm-inline">Tiếp tục mua sắm</span>
                     <span class="d-sm-none">Tiếp tục</span>
@@ -225,7 +225,7 @@ if (!$is_guest) {
                     <i class="fas fa-shopping-cart fa-4x mb-4 text-muted"></i>
                     <h3 class="mb-3">Giỏ hàng đang trống</h3>
                     <p class="text-muted mb-4">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
-                    <a href="../TrangChu.php" class="btn btn-primary px-4">
+                    <a href="../index.php" class="btn btn-primary px-4">
                         <i class="fas fa-store me-2"></i>Mua sắm ngay
                     </a>
                 </div>

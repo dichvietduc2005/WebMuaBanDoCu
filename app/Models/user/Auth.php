@@ -600,7 +600,7 @@ if (!function_exists('requireAdmin')) {
         $user = requireLogin();
         
         if (!$user || $user['role'] !== 'admin') {
-            header('Location: ' . BASE_URL . 'public/TrangChu.php');
+            header('Location: ' . BASE_URL . 'public/index.php');
             exit();
         }
         

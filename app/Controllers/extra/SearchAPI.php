@@ -64,19 +64,17 @@ class SearchAPI
                 ]);
                 exit;
             }
-            // Test với dữ liệu tĩnh trước
-            $testSuggestions = [
-                'Điện thoại ' . $keyword,
-                'Laptop ' . $keyword, 
-                'Máy tính ' . $keyword,
-                'Tai nghe ' . $keyword,
-                'Đồng hồ ' . $keyword
-            ];
+            
+            // Sử dụng SearchModel để lấy dữ liệu thật từ database
+            require_once __DIR__ . '/../../Models/extra/Search.php';
+            global $pdo;
+            $suggestions = SearchModel::getSuggestions($pdo, $keyword, $limit);
+            
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => true,
                 'data' => [
-                    'suggestions' => $testSuggestions
+                    'suggestions' => $suggestions
                 ]
             ]);
             exit;
@@ -103,7 +101,9 @@ class SearchAPI
     }
 }
 
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
+// Class is now used by ApiRouter - do not execute directly
+// For backward compatibility, still allow direct access
+if (basename($_SERVER['SCRIPT_FILENAME']) === 'SearchAPI.php') {
     $api = new SearchAPI();
     $api->handleRequest();
 } 

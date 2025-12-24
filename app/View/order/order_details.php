@@ -47,6 +47,8 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
+    <!-- Mobile Responsive CSS for Order Pages -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-order-pages.css">
 
     <style>
         * {
@@ -372,7 +374,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
     <div class="container123">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
-            <a href="<?php echo $root_path; ?>/public/TrangChu.php">Trang chủ</a> /
+            <a href="<?php echo BASE_URL; ?>public/index.php">Trang chủ</a> /
             <a href="order_history.php">Lịch sử đơn hàng</a> /
             Chi tiết đơn hàng
         </nav>

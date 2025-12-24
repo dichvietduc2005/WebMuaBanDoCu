@@ -1,5 +1,11 @@
 <?php
 function footer() {
+    // Prevent duplicate rendering
+    static $footerRendered = false;
+    if ($footerRendered) {
+        return; // Already rendered, skip
+    }
+    $footerRendered = true;
     ?>
     <footer class="footer">
         <div class="container">
@@ -61,14 +67,6 @@ function footer() {
             
             <div class="copyright">
                 &copy; 2025 Mua Bán Đồ Cũ. Tất cả quyền được bảo lưu.
-                <div class="mt-2 d-sm-none">
-                    <div class="social-links justify-content-center">
-                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
             </div>
         </div>
     </footer>

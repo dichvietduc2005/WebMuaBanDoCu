@@ -1,0 +1,389 @@
+/* ============================================================
+   HEADER MOBILE & TABLET OPTIMIZATION
+   ============================================================ */
+
+/* Sticky Header fixes for mobile */
+@media (max-width: 991px) {
+  .navbar {
+    padding: 8px 0 !important;
+    min-height: auto;
+    z-index: 1030;
+  }
+
+  .navbar.sticky-top {
+    position: sticky;
+    top: 0;
+    width: 100%;
+  }
+
+  .container-fluid {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .navbar-brand {
+    margin-right: auto !important;
+    padding: 4px 0 !important;
+  }
+
+  .navbar-brand h1 {
+    margin: 0;
+    font-size: clamp(18px, 4.5vw, 24px) !important;
+  }
+
+  .navbar-toggler {
+    padding: 6px 8px !important;
+    border: none !important;
+  }
+
+  .navbar-toggler:focus {
+    box-shadow: none !important;
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  .navbar-collapse {
+    max-height: calc(100vh - 70px) !important;
+    overflow-y: auto;
+    padding: 12px 0 !important;
+  }
+
+  /* Mobile search bar improvements */
+  .search-modern {
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    margin-bottom: 12px;
+  }
+
+  .search-input-modern {
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    font-size: 14px !important;
+    padding: 10px 14px !important;
+    border-radius: 20px 0 0 20px !important;
+  }
+
+  .search-input-modern::placeholder {
+    font-size: 13px;
+  }
+
+  .search-btn-modern {
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    padding: 0 12px !important;
+    border-radius: 0 20px 20px 0 !important;
+    font-size: 14px;
+  }
+
+  .btn-clear-search {
+    right: 64px !important;
+    top: 50% !important;
+  }
+
+  /* Categories dropdown mobile */
+  .categories-btn {
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    padding: 0 12px !important;
+    border: none !important;
+    border-radius: 20px !important;
+    white-space: nowrap;
+    font-size: 13px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  }
+
+  .categories-btn i {
+    font-size: 16px !important;
+    margin-right: 6px;
+  }
+
+  .categories-btn span {
+    display: none !important;
+  }
+
+  .categories-dropdown-menu {
+    min-width: 85vw !important;
+    max-width: 95vw !important;
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    top: auto !important;
+    bottom: auto !important;
+    max-height: 70vh !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .categories-dropdown-menu .dropdown-header {
+    font-size: 13px !important;
+    padding: 12px 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .categories-dropdown-menu .dropdown-item {
+    font-size: 14px !important;
+    padding: 12px 14px !important;
+    border-radius: 8px !important;
+    margin: 2px 0 !important;
+  }
+
+  .categories-dropdown-menu .dropdown-item:active {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #3b82f6 !important;
+  }
+}
+
+/* Tablet header - slightly larger buttons */
+@media (min-width: 768px) and (max-width: 991px) {
+  .navbar {
+    padding: 12px 0 !important;
+  }
+
+  .navbar-brand h1 {
+    font-size: clamp(22px, 5vw, 28px) !important;
+  }
+
+  .search-modern {
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+
+  .search-input-modern {
+    height: 48px !important;
+    font-size: 15px !important;
+  }
+
+  .search-btn-modern {
+    height: 48px !important;
+    width: 56px !important;
+    font-size: 15px;
+  }
+
+  .categories-btn {
+    height: 48px !important;
+    font-size: 14px;
+    padding: 0 14px !important;
+  }
+
+  .categories-btn span {
+    display: inline !important;
+    font-size: 14px;
+    margin-left: 8px;
+  }
+}
+
+/* Mobile icons improvements */
+@media (max-width: 991px) {
+  .d-lg-none.ms-auto {
+    gap: 4px !important;
+  }
+
+  .d-lg-none .btn {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    transition: background 0.2s ease;
+  }
+
+  .d-lg-none .btn:active {
+    background: rgba(59, 130, 246, 0.1) !important;
+  }
+
+  .notifications-bell i,
+  .d-lg-none .fa-shopping-cart {
+    font-size: 20px !important;
+  }
+
+  .badge {
+    min-width: 18px !important;
+    height: 18px !important;
+    padding: 2px 4px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Mobile account dropdown */
+@media (max-width: 991px) {
+  .mobile-account-btn {
+    height: 48px !important;
+    width: 100% !important;
+    padding: 0 14px !important;
+    margin-bottom: 12px !important;
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+  }
+
+  .mobile-account-btn i {
+    font-size: 18px !important;
+  }
+
+  .mobile-dropdown-menu,
+  .account-dropdown-menu {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    top: auto !important;
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .mobile-dropdown-menu .dropdown-header,
+  .account-dropdown-menu .dropdown-header {
+    font-size: 13px !important;
+    padding: 12px 16px !important;
+    font-weight: 600;
+  }
+
+  .mobile-dropdown-menu .dropdown-item,
+  .account-dropdown-menu .dropdown-item {
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+  }
+
+  .mobile-dropdown-menu .dropdown-divider,
+  .account-dropdown-menu .dropdown-divider {
+    margin: 8px 0 !important;
+  }
+}
+
+/* Đăng Tin button mobile */
+@media (max-width: 991px) {
+  .btn-warning {
+    width: 100% !important;
+    height: 48px !important;
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .btn-warning i {
+    font-size: 16px !important;
+    margin-right: 8px !important;
+  }
+
+  .btn-warning span {
+    font-weight: 600;
+  }
+}
+
+/* Login/Register buttons mobile */
+@media (max-width: 991px) {
+  .btn-primary,
+  .btn-success {
+    width: 100% !important;
+    height: 48px !important;
+    padding: 0 16px !important;
+    margin-bottom: 12px !important;
+    font-size: 14px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .btn-primary i,
+  .btn-success i {
+    font-size: 16px !important;
+    margin-right: 8px !important;
+  }
+}
+
+/* Search suggestions mobile */
+@media (max-width: 991px) {
+  .search-suggestions {
+    max-width: 95vw !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+    border-radius: 12px !important;
+    max-height: 50vh !important;
+  }
+
+  .search-suggestions .list-group-item {
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+  }
+}
+
+/* Success toast mobile */
+@media (max-width: 767px) {
+  .custom-toast {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 20px !important;
+    right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+    min-width: auto !important;
+    max-width: 100% !important;
+    z-index: 9999;
+  }
+
+  .toast-icon i {
+    font-size: 24px !important;
+    margin-right: 12px !important;
+  }
+
+  .toast-title {
+    font-size: 13px !important;
+  }
+
+  .toast-message {
+    font-size: 12px !important;
+  }
+}
+
+/* Keyboard appearance optimizations */
+@media (max-width: 767px) {
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="search"]:focus,
+  select:focus,
+  textarea:focus {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent layout shift */
+@media (max-width: 767px) {
+  .navbar-collapse {
+    scrollbar-gutter: stable;
+  }
+}
+
+/* Print styles */
+@media print {
+  .navbar,
+  .navbar-collapse {
+    display: none !important;
+  }
+}
+

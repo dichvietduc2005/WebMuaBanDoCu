@@ -125,7 +125,7 @@ function safeRedirect($url, $allowed_domains = []) {
     if (isset($parsed['host'])) {
         $current_host = $_SERVER['HTTP_HOST'];
         if ($parsed['host'] !== $current_host && !in_array($parsed['host'], $allowed_domains)) {
-            $url = '/WebMuaBanDoCu/public/TrangChu.php'; // Default fallback
+            $url = '/WebMuaBanDoCu/public/index.php'; // Default fallback
         }
     }
     

@@ -4,7 +4,10 @@
  */
 
 // Chuyển hướng đến trang chủ
+// Chuyển hướng đến trang chủ
 require_once __DIR__ . '/../config/bootstrap.php';
+
+// Lấy tham số page từ URL
 
 // Lấy tham số page từ URL
 $page = $_GET['page'] ?? 'home';
@@ -40,11 +43,25 @@ switch ($page) {
         // Trang thanh toán thành công
         require_once __DIR__ . '/../app/View/payment/success.php';
         break;
-        
+
+    case 'products':
+        require_once __DIR__ . '/../app/Controllers/product/FrontendProductController.php';
+        $controller = new FrontendProductController();
+        $controller->index();
+        break;
+
+    case 'categories':
+        require_once __DIR__ . '/../app/Controllers/product/FrontendProductController.php';
+        $controller = new FrontendProductController();
+        $controller->categories();
+        break;
+
     case 'home':
     default:
         // Trang chủ mặc định
-        require_once __DIR__ . '/../app/View/Home.php';
+        require_once __DIR__ . '/../app/Controllers/HomeController.php';
+        $controller = new HomeController();
+        $controller->index();
         break;
 }
 ?>

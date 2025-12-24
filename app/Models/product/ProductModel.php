@@ -21,6 +21,8 @@ class ProductModel
     public function getProducts($limit = 12, $offset = 0, $featured = null, $categoryId = null) 
     {
         $params = [];
+        
+        // Base query - require active status AND stock_quantity > 0 (hide out of stock items)
         $sql = "SELECT p.*, pi.image_path, c.name as category_name 
                 FROM products p 
                 LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
@@ -41,7 +43,20 @@ class ProductModel
         $params[] = $limit;
         $params[] = $offset;
         
-        return $this->db->query($sql, $params);
+        try {
+            $result = $this->db->query($sql, $params, false); // Disable cache for fresh data
+            
+            // If featured query returns empty, fallback to all products
+            if ($featured === true && empty($result)) {
+                error_log("ProductModel: No featured products, falling back to all products");
+                return $this->getProducts($limit, $offset, null, $categoryId);
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log("ProductModel::getProducts error: " . $e->getMessage());
+            return [];
+        }
     }
     
     /**
@@ -472,6 +487,34 @@ class ProductModel
         } catch (Exception $e) {
             error_log("Error counting products: " . $e->getMessage());
             return 0;
+        }
+    }
+    /**
+     * Lấy thống kê đánh giá sản phẩm
+     */
+    public function getReviewStats($productId) 
+    {
+        try {
+            $sql = "SELECT 
+                        COUNT(*) as total_reviews,
+                        AVG(rating) as average_rating,
+                        SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as star_5,
+                        SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) as star_4,
+                        SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) as star_3,
+                        SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as star_2,
+                        SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as star_1
+                    FROM review_products
+                    WHERE product_id = ?";
+                    
+            return $this->db->queryOne($sql, [$productId]);
+            
+        } catch (Exception $e) {
+            error_log("Error getting review stats: " . $e->getMessage());
+            return [
+                'total_reviews' => 0,
+                'average_rating' => 0,
+                'star_5' => 0, 'star_4' => 0, 'star_3' => 0, 'star_2' => 0, 'star_1' => 0
+            ];
         }
     }
 }

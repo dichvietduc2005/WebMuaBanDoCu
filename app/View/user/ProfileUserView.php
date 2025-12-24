@@ -14,6 +14,8 @@ require_once __DIR__ . '/../../Components/header/Header.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/profile_user.css?v=1.12">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.2">
+    <!-- Mobile Responsive CSS for Profile Page -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-profile-page.css">
 
 </head>
 

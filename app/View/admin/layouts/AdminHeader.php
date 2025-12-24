@@ -36,11 +36,61 @@ $currentAdminPage = $currentAdminPage ?? 'dashboard';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <!-- TailAdmin CSS: dùng bản đã build (webpack + tailwind) -->
+    <!-- Tailwind CDN (Load FIRST - before other styles) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            important: false,
+            corePlugins: {
+                preflight: false
+            }
+        }
+    </script>
+
+    <!-- Material Icons (Load AFTER Tailwind to override any resets) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        /* Material Icons - High specificity to prevent override */
+        .material-icons {
+            font-family: 'Material Icons' !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            font-size: 24px !important;
+            line-height: 1 !important;
+            letter-spacing: normal !important;
+            text-transform: none !important;
+            display: inline-block !important;
+            white-space: nowrap !important;
+            word-wrap: normal !important;
+            direction: ltr !important;
+            -webkit-font-feature-settings: 'liga' !important;
+            font-feature-settings: 'liga' !important;
+            -webkit-font-smoothing: antialiased !important;
+            text-rendering: optimizeLegibility !important;
+            -moz-osx-font-smoothing: grayscale !important;
+        }
+    </style>
+
+    <!-- TailAdmin CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-style.css">
     
-    <!-- Tailwind CSS CDN để đảm bảo các class mới hoạt động -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Material Design Theme Customization CSS -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-theme-customization.css">
+    
+    <!-- Dynamic Theme Variables Applied to UI (MUST be after ThemeRenderer) -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-dynamic-theme.css">
+    
+    <!-- Admin Theme Customization -->
+    <?php
+    if (!isset($themeRenderer)) {
+        require_once APP_PATH . '/Components/admin/AdminThemeRenderer.php';
+        $themeRenderer = new AdminThemeRenderer();
+    }
+    $themeRenderer->renderThemeStyles();
+    ?>
+    
+    <!-- Banner Slider CSS -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-banner.css">
     
     <!-- Custom style để đảm bảo Roboto được áp dụng -->
     <style>
@@ -146,7 +196,7 @@ $currentAdminPage = $currentAdminPage ?? 'dashboard';
                   </div>
                   <div class="py-1">
                     <a
-                      href="<?php echo BASE_URL; ?>public/TrangChu.php"
+                      href="<?php echo BASE_URL; ?>public/index.php"
                       class="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                     >
                       <span class="mr-2">
@@ -177,6 +227,15 @@ $currentAdminPage = $currentAdminPage ?? 'dashboard';
             </div>
           </div>
         </header>
+
+        <!-- Banner Slider (chỉ hiển thị trên Dashboard) -->
+        <?php 
+        // Only show banner on dashboard page
+        $currentPage = $_GET['page'] ?? 'dashboard';
+        if (isset($themeRenderer) && $currentPage === 'dashboard') {
+            echo $themeRenderer->renderBanner(); 
+        }
+        ?>
 
         <!-- Main Content Wrapper: view con sẽ render bên trong -->
         <main class="p-4 mx-auto max-w-[1536px] md:p-6">

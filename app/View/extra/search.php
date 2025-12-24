@@ -19,6 +19,8 @@ if (!empty($query)) {
     <title>Tìm kiếm - Web Mua Bán Đồ Cũ</title>
     <link rel="stylesheet" href="../../../public/assets/css/search.css">
     <link rel="stylesheet" href="../../../public/assets/css/footer.css">
+    <!-- Mobile Responsive CSS for Search Pages -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-search-pages.css">
 </head>
 <body>
     <?php renderHeader($pdo); ?>

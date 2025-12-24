@@ -107,10 +107,10 @@ class NotificationsPopup {
             }
         });
 
-        // Window focus event
-        window.addEventListener('focus', () => {
-            this.loadNotifications();
-        });
+        // Window focus event - Removed to duplicate refreshing with visibilitychange
+        // window.addEventListener('focus', () => {
+        //     this.loadNotifications();
+        // });
 
         // Storage event để sync giữa các tab
         window.addEventListener('storage', (e) => {
@@ -121,12 +121,12 @@ class NotificationsPopup {
     }
 
     startAutoRefresh() {
-        // Auto-refresh notifications every 30 seconds
+        // Auto-refresh notifications every 5 minutes (300 seconds)
         this.refreshInterval = setInterval(() => {
             if (!this.isOpen && !document.hidden) {
                 this.loadNotifications();
             }
-        }, 30 * 1000);
+        }, 300 * 1000);
     }
 
     togglePopup() {
@@ -180,11 +180,10 @@ class NotificationsPopup {
 
     async loadNotifications() {
         try {
-            console.log('Loading notifications from API...');
+            // console.log('Loading notifications from API...');
             const response = await fetch('/WebMuaBanDoCu/public/index.php?page=notification_api&action=get_notifications');
             
-            console.log('API Response status:', response.status);
-            console.log('API Response headers:', response.headers);
+            // console.log('API Response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -193,19 +192,18 @@ class NotificationsPopup {
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await response.text();
-                console.error('Invalid response content type:', contentType);
-                console.error('Response text:', text);
+                // console.error('Invalid response content type:', contentType);
                 throw new Error('Server returned invalid JSON response');
             }
             
             const data = await response.json();
-            console.log('API Response data:', data);
+            // console.log('API Response data:', data);
 
             if (data.success) {
                 this.notifications = data.data;
                 this.renderNotifications();
                 this.updateBadges();
-                console.log('Notifications loaded successfully');
+                // console.log('Notifications loaded successfully');
             } else {
                 console.error('API error:', data.error);
                 this.showError(data.error || 'Không thể tải thông báo');
@@ -315,7 +313,7 @@ class NotificationsPopup {
         // Chỉ target notification badges, không phải cart badges
         const headerBadges = document.querySelectorAll('.notifications-bell .badge, .badge.bg-danger:not(.cart-count)');
         
-        console.log('Updating badges with unread count:', this.notifications.unreadCount);
+        // console.log('Updating badges with unread count:', this.notifications.unreadCount);
         
         if (this.notifications.unreadCount > 0) {
             const count = this.notifications.unreadCount > 99 ? '99+' : this.notifications.unreadCount;
@@ -346,8 +344,8 @@ class NotificationsPopup {
             });
         }
         
-        // Trigger storage event để sync với other tabs
-        localStorage.setItem('notifications_updated', Date.now().toString());
+        // Trigger storage event để sync với other tabs - REMOVED to prevent infinite loop
+        // localStorage.setItem('notifications_updated', Date.now().toString());
     }
 
     async markAllAsRead() {

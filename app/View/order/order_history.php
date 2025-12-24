@@ -42,6 +42,8 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Mobile Responsive CSS for Order Pages -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-order-pages.css">
     <!-- User chat styles are now included in Header.php -->
     <style>
         * {
@@ -452,7 +454,7 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
     <div class="modern-container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href="../TrangChu.php">Trang chủ</a>
+            <a href="../index.php">Trang chủ</a>
             <span class="breadcrumb-separator">/</span>
             <span>Lịch sử đơn hàng</span>
         </nav>        <!-- Page Header -->
@@ -493,7 +495,7 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
                 </div>
                 <h3>Chưa có đơn hàng nào</h3>
                 <p>Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm!</p>
-                <a href="../../../public/TrangChu.php" class="btn-primary">
+                <a href="../../../public/index.php" class="btn-primary">
                     <i class="fas fa-shopping-bag"></i> Bắt đầu mua sắm
                 </a>
             </div>

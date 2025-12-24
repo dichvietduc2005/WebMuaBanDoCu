@@ -17,6 +17,11 @@
   }
 }
 
+/* Ensure html background matches footer to prevent any visible gap */
+html {
+  background-color: var(--dark);
+}
+
 /* Footer */
 footer {
   background: var(--dark) !important;

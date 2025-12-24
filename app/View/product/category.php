@@ -4,7 +4,7 @@ require_once '../../../config/config.php';
 $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
 
 if (!$slug) {
-    header('Location: ../../../public/TrangChu.php');
+    header('Location: ../../../public/index.php');
     exit;
 }
 
@@ -14,11 +14,11 @@ $stmt->execute([$slug]);
 $category = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$category) {
-    header('Location: ../../../public/TrangChu.php');
+    header('Location: ../../../public/index.php');
     exit;
 }
 
 // Redirect to products page with category filter
-header('Location: products.php?category=' . $category['id']);
+header('Location: ' . BASE_URL . 'public/index.php?page=products&category=' . $category['id']);
 exit;
 ?>

@@ -1,4 +1,4 @@
 <?php
-// File này redirect đến Home.php để maintain URL pattern consistency
-require_once 'Home.php';
-?>
+// File này đã cũ, chuyển hướng về Router chính của website
+header('Location: /WebMuaBanDoCu/public/index.php');
+exit();
