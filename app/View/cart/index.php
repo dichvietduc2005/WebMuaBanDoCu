@@ -1,6 +1,6 @@
 <?php
 /**
- * View hiển thị giỏ hàng
+ * View hiển thị giỏ hàng - Amazon Style
  */
 require_once '../../../config/config.php';
 include_once __DIR__ . '/../../Components/header/Header.php';
@@ -14,7 +14,6 @@ $cartController = new CartController($pdo);
 $user_id = $cartController->getCurrentUserId();
 $is_guest = !$user_id;
 
-// Lấy dữ liệu giỏ hàng
 $cartItems = [];
 $cartTotal = 0;
 $cartItemCount = 0;
@@ -39,366 +38,223 @@ if (!$is_guest) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="/WebMuaBanDoCu/public/assets/css/cart.css" rel="stylesheet">
+    
     <style>
-        .cart-empty {
-            text-align: center;
-            padding: 60px 40px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        /* Hiệu ứng Zoom ảnh */
+        .product-img-container {
+            overflow: hidden;
+            border-radius: 8px;
+            display: block;
         }
-        .cart-item {
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
+        .product-img-container img {
+            transition: transform 0.3s ease;
+            transform-origin: center center;
         }
-        .cart-item:hover {
-            border-left-color: #0d6efd;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        .product-img-container:hover img {
+            transform: scale(1.15);
+            cursor: pointer;
         }
-        .quantity-display {
-            background: white;
-            border: 1px solid #dee2e6;
-            display: inline-block;
-            min-width: 40px;
-            text-align: center;
-            padding: 6px;
-            border-radius: 4px;
-        }
-        .btn-remove:hover {
-            color: #dc3545 !important;
-            transform: scale(1.1);
-        }
-        .product-price {
-            font-size: 1.1rem;
-            color: #dc3545;
-            font-weight: 600;
-        }
-        
-        /* Mobile Responsive Styles */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            .cart-empty {
-                padding: 40px 20px;
-            }
-            
-            .cart-empty .fa-4x {
-                font-size: 3rem;
-            }
-            
-            .cart-item {
-                padding: 15px !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .cart-item .row {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .cart-item .col-md-2 {
-                align-self: center;
-            }
-            
-            .cart-item .col-md-5 {
-                text-align: center;
-            }
-            
-            .cart-item .col-md-2:nth-child(3) {
-                align-self: center;
-            }
-            
-            .cart-item .col-md-3 {
-                text-align: center;
-            }
-            
-            .cart-item img {
-                max-width: 100px;
-                height: 100px;
-                object-fit: cover;
-            }
-            
-            .product-price {
-                font-size: 1.2rem;
-                margin: 8px 0;
-            }
-            
-            .quantity-display {
-                font-size: 1.1rem;
-                padding: 8px 12px;
-                min-width: 50px;
-            }
-            
-            .quantity-btn {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .btn-remove {
-                padding: 8px 16px;
-                font-size: 0.9rem;
-            }
-            
-            .order-summary-container {
-                margin-top: 20px;
-            }
-            
-            .checkout-button-container .btn {
-                font-size: 1.1rem;
-            }
-            
-            /* Sidebar responsive */
-            .col-lg-4 .bg-white {
-                margin-bottom: 15px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .d-flex.justify-content-between.align-items-center {
-                flex-direction: column;
-                align-items: stretch !important;
-                gap: 15px;
-            }
-            
-            .d-flex.justify-content-between.align-items-center h1 {
-                text-align: center;
-                font-size: 1.5rem;
-            }
-            
-            .cart-empty {
-                padding: 30px 15px;
-            }
-            
-            .cart-empty h3 {
-                font-size: 1.3rem;
-            }
-            
-            .cart-item {
-                padding: 12px !important;
-            }
-            
-            .cart-item h5 {
-                font-size: 1.1rem;
-            }
-            
-            .cart-item img {
-                max-width: 80px;
-                height: 80px;
-            }
-            
-            .product-price {
-                font-size: 1.1rem;
-            }
-            
-            .order-summary-container {
-                padding: 20px !important;
-            }
-            
-            .order-summary-container h4 {
-                font-size: 1.2rem;
-            }
+        /* Sidebar styling */
+        .order-summary-container .fs-4 {
+            font-size: 1.5rem !important;
         }
     </style>
 </head>
-<body>
+<body class="amazon-bg">
     <?php renderHeader($pdo); ?>
 
-    <div class="container py-4">
-        <div class="shopping-cart-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">
-                    <i class="fas fa-shopping-cart text-primary me-2"></i>
-                    Giỏ hàng của bạn
-                    <span class="badge bg-primary ms-2"><?= $cartItemCount ?></span>
-                </h1>
-                <a href="../index.php" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>
-                    <span class="d-none d-sm-inline">Tiếp tục mua sắm</span>
-                    <span class="d-sm-none">Tiếp tục</span>
-                </a>
+    <div class="container-fluid py-4 shopping-cart-container" style="max-width: 1500px;">
+        
+        <?php if (empty($cartItems)): ?>
+            <div class="cart-container bg-white p-5 rounded text-center shadow-sm">
+                <h2 class="mb-3">Giỏ hàng của bạn đang trống</h2>
+                <p><a href="../index.php" class="amazon-link">Tiếp tục mua sắm</a></p>
+            </div>
+        <?php else: ?>
+            
+            <div class="row">
+                <div class="col-lg-9 col-md-12 mb-4">
+                    <div class="bg-white p-4 rounded shadow-sm">
+                        <div class="d-flex justify-content-between align-items-end border-bottom pb-2 mb-3">
+                            <h2 class="h3 fw-normal mb-0">Giỏ hàng</h2>
+                            
+                        </div>
+
+                        <?php foreach ($cartItems as $item): ?>
+                            <div class="cart-item py-3 border-bottom" data-product-id="<?= $item['product_id'] ?>">
+                                <div class="row">
+                                    <div class="col-md-2 col-3 text-center">
+                                        <?php if (!empty($item['image_path'])): ?>
+                                            <a href="#" class="product-img-container">
+                                                <img src="/WebMuaBanDoCu/public/<?= htmlspecialchars($item['image_path']) ?>" 
+                                                     class="img-fluid" 
+                                                     alt="<?= htmlspecialchars($item['product_title']) ?>"
+                                                     style="max-height: 150px; object-fit: contain;">
+                                            </a>
+                                        <?php else: ?>
+                                            <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 100px;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="col-md-8 col-9">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h5 class="fs-5 mb-1">
+                                                    <a href="#" class="amazon-link-dark text-decoration-none fw-bold">
+                                                        <?= htmlspecialchars($item['product_title']) ?>
+                                                    </a>
+                                                </h5>
+                                                
+                                                
+                                                <?php if ($item['stock_quantity'] > 0): ?>
+    <?php if ($item['stock_quantity'] <= 5): ?>
+        <div class="text-danger small mb-1">
+            Chỉ còn <?= $item['stock_quantity'] ?> sản phẩm - Đặt hàng ngay.
+        </div>
+    <?php else: ?>
+        <div class="text-success small mb-1">
+            Còn hàng (Kho: <?= $item['stock_quantity'] ?>)
+        </div>
+    <?php endif; ?>
+<?php else: ?>
+    <div class="text-danger small mb-1 fw-bold">Tạm thời hết hàng</div>
+<?php endif; ?>
+                                                <div class="text-secondary small mb-2">Người bán: <?php echo htmlspecialchars($item['seller_name']); ?> </div>
+                                                
+                                                <div class="d-flex align-items-center flex-wrap gap-2 mt-2">
+                                                    <div class="amazon-qty-select d-flex align-items-center bg-light border rounded px-2 py-1 shadow-sm">
+                                                        <span class="small me-2">SL:</span>
+                                                        <span class="quantity-control quantity-decrease px-1" style="cursor:pointer;">-</span>
+                                                        <input type="text" 
+                                                               class="qty-input quantity-input border-0 bg-transparent text-center mx-1" 
+                                                               style="width: 30px; outline: none;" 
+                                                               value="<?= $item['quantity'] ?>" 
+                                                               readonly>
+                                                        <span class="quantity-control quantity-increase px-1" style="cursor:pointer;">+</span>
+                                                    </div>
+                                                    
+                                                    <div class="vr mx-2 text-secondary"></div>
+                                                    
+                                                    <button class="btn btn-link amazon-link p-0 text-decoration-none small btn-remove remove-item" 
+                                                            data-product-id="<?= $item['product_id'] ?>">
+                                                        Xóa
+                                                    </button>
+                                                    
+                                                    <div class="vr mx-2 text-secondary"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-md-none fw-bold fs-5">
+    <span class="text-secondary fs-6 fw-normal">Giá:</span> 
+    <?= formatPrice($item['current_price']) ?>
+</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2 d-none d-md-block text-end">
+                                        <span class="fw-bold fs-5"><?= formatPrice($item['current_price']) ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-12">
+                    
+                    <div class="bg-white p-3 rounded shadow-sm mb-3 order-summary-container border">
+                        <?php if ($cartTotal >= 5000000): ?>
+                            <div class="mb-3 text-success small">
+                                <i class="fas fa-check-circle"></i> Đơn hàng đủ điều kiện <strong>Miễn phí vận chuyển</strong>.
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="fs-5 mb-3 d-flex align-items-center gap-2">
+    <span>Tổng tiền:</span>
+    <span class="fw-bold text-danger fs-4"><?= formatPrice($cartTotal) ?></span>
+</div>
+
+                        <?php if ($is_guest): ?>
+                             <a href="../user/login.php" class="btn btn-warning w-100 shadow-sm rounded-3 py-2 border border-warning">
+                                Đăng nhập để thanh toán
+                            </a>
+                        <?php else: ?>
+                            <a href="../checkout/index.php" class="btn btn-amazon-primary w-100 shadow-sm rounded-3 py-2 fw-bold">
+                                Tiến hành thanh toán (<?= $cartItemCount ?> món)        
+                            </a>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="bg-white p-3 rounded shadow-sm mb-3 border">
+                        <h6 class="fw-bold mb-3" style="font-size: 16px;">Mã giảm giá / Quà tặng</h6>
+                        
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control" placeholder="Nhập mã tại đây" aria-label="Mã giảm giá">
+                            <button class="btn btn-outline-secondary" type="button">Áp dụng</button>
+                        </div>
+
+                        <button class="btn btn-outline-primary w-100 btn-sm d-flex justify-content-between align-items-center" type="button" data-bs-toggle="modal" data-bs-target="#couponModal">
+                            <span><i class="fas fa-ticket-alt me-2"></i>Chọn mã ưu đãi</span>
+                            <i class="fas fa-chevron-right small"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-3 rounded shadow-sm border">
+                        <h6 class="fw-bold mb-3" style="font-size: 16px;">Có thể bạn thích</h6>
+                        
+                        <div class="d-flex gap-2 mb-3 border-bottom pb-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center text-secondary" style="width: 60px; height: 60px; min-width: 60px;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            
+                            <div class="flex-grow-1">
+                                <a href="#" class="amazon-link-dark text-decoration-none small fw-bold d-block mb-1" style="line-height: 1.2;">
+                                    Tai nghe Bluetooth Sony chống ồn...
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span class="text-danger fw-bold small">1.200.000₫</span>
+                                    <button class="btn btn-sm btn-warning rounded-pill px-2 py-0" style="font-size: 11px; height: 24px;">
+                                        Thêm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mb-3 border-bottom pb-3">
+                             <div class="bg-light rounded d-flex align-items-center justify-content-center text-secondary" style="width: 60px; height: 60px; min-width: 60px;">
+                                <i class="fas fa-tshirt"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <a href="#" class="amazon-link-dark text-decoration-none small fw-bold d-block mb-1" style="line-height: 1.2;">
+                                    Áo thun nam Polo Coolmate...
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span class="text-danger fw-bold small">299.000₫</span>
+                                    <button class="btn btn-sm btn-warning rounded-pill px-2 py-0" style="font-size: 11px; height: 24px;">
+                                        Thêm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="text-end">
+                             <a href="#" class="amazon-link small">Xem thêm gợi ý <i class="fas fa-angle-double-right"></i></a>
+                         </div>
+
+                    </div>
+                </div>
             </div>
 
-            <?php if (empty($cartItems)): ?>
-                <div class="cart-empty">
-                    <i class="fas fa-shopping-cart fa-4x mb-4 text-muted"></i>
-                    <h3 class="mb-3">Giỏ hàng đang trống</h3>
-                    <p class="text-muted mb-4">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
-                    <a href="../index.php" class="btn btn-primary px-4">
-                        <i class="fas fa-store me-2"></i>Mua sắm ngay
-                    </a>
-                </div>
-            <?php else: ?>
-                <div class="row g-4">
-                    <!-- Danh sách sản phẩm (Cột trái) -->
-                    <div class="col-lg-8 col-12">
-                        <div class="bg-white rounded-3 shadow-sm p-3">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0 fw-bold">
-                                    <i class="fas fa-list text-primary me-2"></i>
-                                    Sản phẩm trong giỏ hàng (<?= $cartItemCount ?>)
-                                </h5>
-                            
-                            </div>
-                            
-                            <?php foreach ($cartItems as $item): ?>
-                                <div class="cart-item p-3 mb-3 rounded-2">
-                                    <!-- <div class="row align-items-center "> -->
-                                        <!-- Hình ảnh -->
-                                        <div class="col-md-2 col-12 text-center text-md-start">
-                                            <?php if (!empty($item['image_path'])): ?>
-                                                <img src="/WebMuaBanDoCu/public/<?= htmlspecialchars($item['image_path']) ?>" 
-                                                     class="img-thumbnail rounded-2" 
-                                                     alt="<?= htmlspecialchars($item['product_title']) ?>"
-                                                     style="max-width: 100px; height: 100px; object-fit: cover;">
-                                            <?php else: ?>
-                                                <div class="img-thumbnail rounded-2 d-flex align-items-center justify-content-center" style="height: 100px; width: 100px; margin: 0 auto;">
-                                                    <i class="fas fa-image fa-lg text-muted"></i>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                        
-                                        <!-- Thông tin sản phẩm -->
-                                        <div class="col-md-3 col-10 text-center text-md-start">
-                                            <h5 class="fw-bold mb-1"><?= htmlspecialchars($item['product_title']) ?></h5>
-                                            <small class="text-muted d-block mb-2">Mã SP: <?= $item['product_id'] ?></small>
-                                            <div class="product-price">
-                                                <?= formatPrice($item['current_price']) ?>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Số lượng -->
-                                        <div class="col-md-2 col-12 text-center">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="quantity-display">
-                                                    <?= $item['quantity'] ?>
-                                                </span>
-                                               
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- nút xóa -->
-                                        <div class="col-md-3 col-12 text-center text-md-end">
-                                            <div class="d-flex justify-content-end">
-                                                <button class="btn btn-sm btn-link text-danger btn-remove remove-item" 
-                                                        title="Xóa" 
-                                                        data-product-id="<?= $item['product_id'] ?>">
-                                                    <i class="fas fa-trash-alt me-1"></i>
-                                                    <span class="d-sm-none">Xóa</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    <!-- </div> -->
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    
-                    <!-- Sidebar bên phải -->
-                    <div class="col-lg-4 col-12">
-                        <!-- Tổng hợp đơn hàng -->
-                        <div class="order-summary-container bg-white rounded-3 shadow-sm p-4 mb-4">
-                            <h4 class="h5 mb-3 fw-bold">
-                                <i class="fas fa-receipt text-primary me-2"></i>Tóm tắt đơn hàng
-                            </h4>
-                            
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Tạm tính:</span>
-                                    <span><?= formatPrice($cartTotal) ?></span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Phí vận chuyển:</span>
-                                    <span class="text-success">Miễn phí</span>
-                                </div>
-                                <hr class="my-3">
-                                <div class="d-flex justify-content-between fw-bold fs-5">
-                                    <span>Tổng cộng:</span>
-                                    <span class="text-primary"><?= formatPrice($cartTotal) ?></span>
-                                </div>
-                            </div>
-                            
-                            <div class="checkout-button-container mt-4">
-                                <?php if ($is_guest): ?>
-                                    <div class="alert alert-warning mb-0">
-                                        <i class="fas fa-exclamation-circle me-2"></i>
-                                        Vui lòng <a href="../user/login.php" class="alert-link fw-bold">đăng nhập</a> để thanh toán
-                                    </div>
-                                <?php else: ?>
-                                    <a href="../checkout/index.php" class="btn btn-primary w-100 py-3 fw-bold">
-                                        <i class="fas fa-credit-card me-2"></i>THANH TOÁN NGAY
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <!-- Voucher/Mã giảm giá -->
-                        <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
-                            <h5 class="h6 mb-3 fw-bold">
-                                <i class="fas fa-tags text-success me-2"></i>Mã giảm giá
-                            </h5>
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Nhập mã giảm giá" id="couponCode">
-                                <button class="btn btn-outline-success" type="button" id="applyCoupon">
-                                    <i class="fas fa-check me-1"></i>Áp dụng
-                                </button>
-                            </div>
-                            <small class="text-muted">Nhập mã để được giảm giá đặc biệt</small>
-                        </div>
-
-                        <!-- Thông tin vận chuyển -->
-                        <div class="bg-white rounded-3 shadow-sm p-4 mb-4">
-                            <h5 class="h6 mb-3 fw-bold">
-                                <i class="fas fa-truck text-info me-2"></i>Thông tin vận chuyển
-                            </h5>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <span class="small">Miễn phí vận chuyển toàn quốc</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-clock text-warning me-2"></i>
-                                <span class="small">Giao hàng trong 2-3 ngày</span>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-shield-alt text-primary me-2"></i>
-                                <span class="small">Bảo hành chính hãng</span>
-                            </div>
-                        </div>
-
-                        <!-- Hỗ trợ khách hàng -->
-                        <div class="bg-white rounded-3 shadow-sm p-4">
-                            <h5 class="h6 mb-3 fw-bold">
-                                <i class="fas fa-headset text-danger me-2"></i>Hỗ trợ khách hàng
-                            </h5>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-phone text-success me-2"></i>
-                                <span class="small">Hotline: 1900-xxxx</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-envelope text-primary me-2"></i>
-                                <span class="small">Email: support@example.com</span>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <i class="fab fa-facebook-messenger text-info me-2"></i>
-                                <span class="small">Chat trực tuyến 24/7</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
+        <?php endif; ?>
     </div>
 
+    <?php include_once __DIR__ . '/../../Components/dialog/DeleteConfirmModal.php'; ?>
+    
     <?php footer(); ?>
-    <script src="/WebMuaBanDoCu/public/assets/js/main.js"></script>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/WebMuaBanDoCu/public/assets/js/cart.js"></script>
-    <script>
-        let userId = <?php echo $_SESSION['user_id'] ?>
-    </script>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
 </body>
-</html>
+</html>                                                 
