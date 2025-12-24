@@ -144,7 +144,7 @@ WebMuaBanDoCu/
 ├── public/
 │   ├── assets/          # CSS, JS, images
 │   ├── uploads/         # User uploaded files
-│   └── TrangChu.php     # Homepage
+│   └── index.php        # Homepage (New Entry Point)
 ├── modules/             # AJAX request handlers
 │   ├── cart/           # Cart AJAX
 │   └── payment/        # Payment AJAX
@@ -229,7 +229,7 @@ chmod 755 public/uploads/products
 ```
 
 ### 4. **Kiểm tra hoạt động**
-- Truy cập: `http://localhost/WebMuaBanDoCu/public/TrangChu.php`
+- Truy cập: `http://localhost/WebMuaBanDoCu/public/index.php` (hoặc `/public/`)
 - Đăng nhập admin: `admin@example.com` / `password`
 - Test user: `user1@example.com` / `password`
 

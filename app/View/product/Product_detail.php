@@ -683,8 +683,10 @@ if (isset($_SESSION['user_id'])) {
     }
     </script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/product_detail.js"></script>
-    <script>userId = <?php echo $_SESSION['user_id'] ?></script>
+    <script>userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?></script>
+    <?php require_once __DIR__ . '/../user/ChatView.php'; ?>
     <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
+
 </body>
 
 </html>

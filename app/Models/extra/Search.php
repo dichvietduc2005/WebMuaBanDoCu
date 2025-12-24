@@ -123,14 +123,15 @@ class SearchModel
     {
         if (strlen($keyword) < 2) return [];
 
-        $sql = "SELECT DISTINCT title 
-                FROM products 
-                WHERE status = 'active' AND stock_quantity > 0 AND title LIKE ? 
-                ORDER BY title ASC 
+        $sql = "SELECT p.id, p.title, pi.image_path 
+                FROM products p 
+                LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+                WHERE p.status = 'active' AND p.stock_quantity > 0 AND p.title LIKE ? 
+                ORDER BY p.title ASC 
                 LIMIT ?";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute(["%$keyword%", $limit]);
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
