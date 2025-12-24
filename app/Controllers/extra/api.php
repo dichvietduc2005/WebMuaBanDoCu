@@ -20,6 +20,7 @@ switch ($action) {
 
         try {
             $suggestions = $controller->getSearchSuggestions($pdo, $keyword, (int)$limit);
+            // suggestions bây giờ là: [{"title": "Iphone", "image_path": "abc.jpg", "id": 1}, ...]
             echo json_encode(['success' => true, 'suggestions' => $suggestions]);
         } catch (Exception $e) {
             error_log("Search suggestion error: " . $e->getMessage());

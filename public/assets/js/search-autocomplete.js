@@ -110,25 +110,50 @@ class SearchAutocomplete {
     }
 
     displaySuggestions(suggestions, keyword) {
-        if (!suggestions || suggestions.length === 0) {
-            this.hideSuggestions();
-            return;
+    if (!suggestions || suggestions.length === 0) {
+        this.hideSuggestions();
+        return;
+    }
+
+    const baseUrl = window.location.origin;
+    const projectPath = "/WebMuaBanDoCu";
+    const fallbackImage = `${baseUrl}${projectPath}/public/assets/images/nen.png`;
+
+    const html = suggestions.map((item, index) => {
+        const title = item.title || 'Unknown';
+        const highlightedText = this.highlightKeyword(title, keyword);
+        
+        let imgSrc = fallbackImage;
+
+        // Nếu có image_path từ database
+        if (item.image_path) {
+            // Nếu là path tương đối (bắt đầu bằng uploads/ hoặc assets/)
+            if (item.image_path.startsWith('uploads/') || item.image_path.startsWith('assets/')) {
+                imgSrc = `${baseUrl}${projectPath}/public/${item.image_path}`;
+            } else {
+                // Nếu là tên file thôi, add uploads/products
+                imgSrc = `${baseUrl}${projectPath}/public/uploads/products/${item.image_path}`;
+            }
         }
 
-        const html = suggestions.map((suggestion, index) => {
-            const highlightedText = this.highlightKeyword(suggestion, keyword);
-            return `
-                <div class="suggestion-item" data-index="${index}" data-value="${suggestion}">
-                    <i class="fas fa-search"></i>
-                    <span>${highlightedText}</span>
-                </div>
-            `;
-        }).join('');
+        console.log(`Product: "${title}", API returned image_path: "${item.image_path}", Final URL: "${imgSrc}"`);
 
-        this.suggestionsList.innerHTML = html;
-        this.showSuggestions();
-        this.bindSuggestionEvents();
-    }
+        return `
+            <div class="suggestion-item" data-index="${index}" data-value="${title}" data-id="${item.id || ''}">
+                <div class="suggestion-thumb">
+                    <img src="${imgSrc}" alt="${title}" onerror="this.src='${fallbackImage}'">
+                </div>
+                <div class="suggestion-info">
+                    <span class="suggestion-title">${highlightedText}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    this.suggestionsList.innerHTML = html;
+    this.showSuggestions();
+    this.bindSuggestionEvents();
+}
 
     highlightKeyword(text, keyword) {
         const regex = new RegExp(`(${keyword})`, 'gi');
@@ -230,51 +255,38 @@ const searchAutocompleteCSS = `
 
 .suggestion-item {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
+    align-items: center; /* Căn giữa ảnh và chữ theo chiều dọc */
+    gap: 15px;           /* Khoảng cách giữa ảnh và chữ */
+    padding: 10px 15px;
     cursor: pointer;
-    border-bottom: 1px solid #f3f4f6;
-    transition: background-color 0.2s ease;
-    border-radius: 8px;
-    border-top: 8px
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.suggestion-item:last-child {
-    border-bottom: none;
-    /* keep bottom corners rounded */
+/* Khung chứa ảnh nhỏ */
+.suggestion-thumb {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;      /* Không cho ảnh bị bóp méo */
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #eee;
 }
 
-.suggestion-item:hover,
-.suggestion-item.focused {
-    background-color: #f8fafc;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+.suggestion-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* Ảnh luôn lấp đầy khung */
 }
 
-.suggestion-item.loading {
-    cursor: default;
-    color: #6b7280;
-}
-
-.suggestion-item i {
-    color: #9ca3af;
+.suggestion-title {
     font-size: 14px;
-    width: 16px;
-}
-
-.suggestion-item.loading i {
-    color: #3b82f6;
-}
-
-.suggestion-item span {
-    flex: 1;
-    font-size: 14px;
-    color: #374151;
+    color: #333;
+    font-weight: 500;
 }
 
 .suggestion-item strong {
-    color: #3b82f6;
-    font-weight: 600;
+    color: #4f46e5;      /* Màu cho phần chữ đang gõ */
+    font-weight: 700;
 }
 
 /* Mobile responsive */

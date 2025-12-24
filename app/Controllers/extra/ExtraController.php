@@ -150,20 +150,24 @@ class ExtraController
     /**
      * Lấy gợi ý tìm kiếm (autocomplete)
      */
-    function getSearchSuggestions(PDO $pdo, $keyword, $limit = 10) {
-        if (strlen($keyword) < 2) {
-            return [];
-        }
-        
-        $sql = "SELECT DISTINCT p.title
-                FROM products p
-                WHERE p.status = 'active' AND p.stock_quantity > 0 AND p.title LIKE ?
-                ORDER BY p.title ASC
-                LIMIT ?";
+    // Trong file xử lý dữ liệu (ví dụ SearchModel hoặc ExtraController)
+    public function getSearchSuggestions($pdo, $keyword, $limit = 10) {
+        // Câu lệnh SQL lấy tiêu đề và ảnh đại diện của sản phẩm
+        $sql = "SELECT p.id, p.title, pi.image_path 
+                FROM products p 
+                LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+                WHERE p.title LIKE ? AND p.status = 'active'
+                ORDER BY p.created_at DESC
+                LIMIT $limit";
         
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(["%$keyword%", $limit]);
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmt->execute(["%$keyword%"]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Debug: Log để kiểm tra
+        error_log("Search results: " . json_encode($results));
+        
+        return $results;
     }
 
     /**

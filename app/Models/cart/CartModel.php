@@ -56,10 +56,11 @@ class CartModel
             SELECT
                 ci.product_id, ci.quantity, ci.added_price,
                 p.title AS product_title, p.price AS current_price, p.stock_quantity, p.status as product_status,
-                pi.image_path, (ci.quantity * ci.added_price) AS subtotal
+                pi.image_path, (ci.quantity * ci.added_price) AS subtotal,u.username as seller_name
             FROM cart_items ci
             JOIN carts c ON ci.cart_id = c.id
             JOIN products p ON ci.product_id = p.id
+            JOIN users u ON p.user_id = u.id
             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
             WHERE c.user_id = ? 
             AND (ci.status IS NULL OR ci.status = 'active')
