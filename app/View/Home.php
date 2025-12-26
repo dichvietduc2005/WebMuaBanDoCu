@@ -44,6 +44,10 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product-card-compact.css">
     <!-- Home Page Improvements - Hero & Product Cards -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/home-improvements.css">
+    <!-- Recent Orders Enhanced Styling -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/recent-orders-enhanced.css">
+    <!-- Chat Widget Modern Styles -->
+
     
     <?php
     // Render frontend theme styles from admin theme customization
@@ -162,10 +166,10 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-rating">
                                     <span class="stars">
                                         <i class="fas fa-star"></i>
-                                        <?php echo isset($product['rating']) ? number_format($product['rating'], 1) : '5.0'; ?>
+                                        <?php echo isset($product['rating']) && $product['rating'] > 0 ? number_format($product['rating'], 1) : '4.5'; ?>
                                     </span>
                                     <span class="separator">•</span>
-                                    <span class="sales">Đã bán <?php echo isset($product['sales_count']) ? number_format($product['sales_count']) : rand(10, 500); ?></span>
+                                    <span class="sales">Đã bán <?php echo isset($product['sales_count']) && $product['sales_count'] > 0 ? number_format($product['sales_count']) : '0'; ?></span>
                                 </div>
                             </div>
                             
@@ -247,10 +251,10 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <div class="product-rating">
                                     <span class="stars">
                                         <i class="fas fa-star"></i>
-                                        <?php echo isset($product['rating']) ? number_format($product['rating'], 1) : '5.0'; ?>
+                                        <?php echo isset($product['rating']) && $product['rating'] > 0 ? number_format($product['rating'], 1) : '4.5'; ?>
                                     </span>
                                     <span class="separator">•</span>
-                                    <span class="sales">Đã bán <?php echo isset($product['sales_count']) ? number_format($product['sales_count']) : rand(10, 500); ?></span>
+                                    <span class="sales">Đã bán <?php echo isset($product['sales_count']) && $product['sales_count'] > 0 ? number_format($product['sales_count']) : '0'; ?></span>
                                 </div>
                             </div>
                             
@@ -280,29 +284,31 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
 
             <div class="categories-grid">
                 <?php
-                // Map slug -> FontAwesome icon
-                $icon_map = [
-                    'am-nhac-nhac-cu' => 'fas fa-music',
-                    'dien-thoai-may-tinh-bang' => 'fas fa-mobile-alt',
-                    'laptop-may-tinh' => 'fas fa-laptop',
-                    'thoi-trang-phu-kien' => 'fas fa-tshirt',
-                    'do-gia-dung-noi-that' => 'fas fa-home',
-                    'xe-co-phuong-tien' => 'fas fa-motorcycle',
-                    'sach-van-phong-pham' => 'fas fa-book',
-                    'the-thao-giai-tri' => 'fas fa-football-ball',
-                    'dien-may-cong-nghe' => 'fas fa-tv',
-                    'me-va-be' => 'fas fa-baby',
-                    'suc-khoe-lam-dep' => 'fas fa-heart',
-                    'thu-cung-phu-kien' => 'fas fa-paw',
-                    'am-thuc' => 'fas fa-utensils'
+                // Map slug -> FontAwesome icon + color
+                $category_styles = [
+                    'am-nhac-nhac-cu' => ['icon' => 'fas fa-music', 'color' => '#e91e63', 'bg' => '#fce4ec'],
+                    'dien-thoai-may-tinh-bang' => ['icon' => 'fas fa-mobile-alt', 'color' => '#2196f3', 'bg' => '#e3f2fd'],
+                    'laptop-may-tinh' => ['icon' => 'fas fa-laptop', 'color' => '#673ab7', 'bg' => '#ede7f6'],
+                    'thoi-trang-phu-kien' => ['icon' => 'fas fa-tshirt', 'color' => '#ff9800', 'bg' => '#fff3e0'],
+                    'do-gia-dung-noi-that' => ['icon' => 'fas fa-couch', 'color' => '#795548', 'bg' => '#efebe9'],
+                    'xe-co-phuong-tien' => ['icon' => 'fas fa-motorcycle', 'color' => '#f44336', 'bg' => '#ffebee'],
+                    'sach-van-phong-pham' => ['icon' => 'fas fa-book', 'color' => '#4caf50', 'bg' => '#e8f5e9'],
+                    'the-thao-giai-tri' => ['icon' => 'fas fa-futbol', 'color' => '#00bcd4', 'bg' => '#e0f7fa'],
+                    'dien-may-cong-nghe' => ['icon' => 'fas fa-tv', 'color' => '#607d8b', 'bg' => '#eceff1'],
+                    'me-va-be' => ['icon' => 'fas fa-baby', 'color' => '#ff4081', 'bg' => '#fce4ec'],
+                    'suc-khoe-lam-dep' => ['icon' => 'fas fa-heart', 'color' => '#e91e63', 'bg' => '#fce4ec'],
+                    'thu-cung-phu-kien' => ['icon' => 'fas fa-paw', 'color' => '#8bc34a', 'bg' => '#f1f8e9'],
+                    'am-thuc' => ['icon' => 'fas fa-utensils', 'color' => '#ff5722', 'bg' => '#fbe9e7']
                 ];
 
                 foreach ($categories as $category):
-                    $icon = $icon_map[$category['slug']] ?? 'fas fa-cube';
+                    $style = $category_styles[$category['slug']] ?? ['icon' => 'fas fa-cube', 'color' => '#9e9e9e', 'bg' => '#fafafa'];
                 ?>
                     <div class="category-card"
                         onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo $category['slug']; ?>'">
-                        <i class="<?php echo $icon; ?> category-icon"></i>
+                        <div class="category-icon-box" style="background: <?php echo $style['bg']; ?>; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">
+                            <i class="<?php echo $style['icon']; ?>" style="color: <?php echo $style['color']; ?>; font-size: 20px;"></i>
+                        </div>
                         <div class="category-name"><?php echo htmlspecialchars($category['name']); ?></div>
                     </div>
                 <?php endforeach; ?>
@@ -320,8 +326,12 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                     <?php foreach ($recent_orders as $order): ?>
                         <div class="order-card">
                             <div class="order-header">
-                                <div class="order-number">#<?php echo htmlspecialchars($order['order_number']); ?></div>
-                                <div class="order-date"><?php echo date('d/m/Y', strtotime($order['created_at'])); ?></div>
+                                <div class="order-number">
+                                    <i class="fas fa-hashtag"></i><?php echo htmlspecialchars($order['order_number']); ?>
+                                </div>
+                                <div class="order-date">
+                                    <i class="fas fa-calendar-alt"></i><?php echo date('d/m/Y', strtotime($order['created_at'])); ?>
+                                </div>
                             </div>
 
                             <div class="order-status">
@@ -343,8 +353,12 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                             </div>
 
                             <div class="order-total">
-                                Tổng tiền: <strong><?php echo formatPrice($order['total_amount']); ?></strong>
-                                <br><small><?php echo $order['item_count']; ?> sản phẩm</small>
+                                <strong <?php if (strlen(formatPrice($order['total_amount'])) > 20) echo 'class="long-price"'; ?>>
+                                    <i class="fas fa-wallet"></i><?php echo formatPrice($order['total_amount']); ?>
+                                </strong>
+                                <small>
+                                    <i class="fas fa-box"></i><?php echo $order['item_count']; ?> sản phẩm
+                                </small>
                             </div>
 
                             <div class="order-actions">
@@ -366,12 +380,9 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
         <?php endif; ?>
     </div>
 
-    <?php renderFooter(); ?>
-
+    <?php require_once __DIR__ . '/components/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;</script>
-    <?php require_once __DIR__ . '/user/ChatView.php'; ?>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"></script>
+
     <script src="<?php echo BASE_URL; ?>public/assets/js/components/header.js"></script>
 
 </body>

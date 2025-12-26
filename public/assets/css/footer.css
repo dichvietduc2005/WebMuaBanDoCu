@@ -20,14 +20,17 @@
 /* Ensure html background matches footer to prevent any visible gap */
 html {
   background-color: var(--dark);
+  scroll-behavior: smooth;
 }
 
 /* Footer */
 footer {
-  background: var(--dark) !important;
-  color: white !important;
-  padding: 60px 0 30px;
-  margin-top: 60px;
+  background: #111111 !important; /* Deeper black for better contrast */
+  color: #ffffff !important;
+  padding: 80px 0 40px;
+  margin-top: 0; /* Remove top gap to stick to content above */
+  position: relative;
+  z-index: 10;
 }
 
 .footer-grid {

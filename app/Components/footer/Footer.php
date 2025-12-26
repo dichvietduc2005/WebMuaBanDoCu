@@ -70,6 +70,29 @@ function footer() {
             </div>
         </div>
     </footer>
+
+    <!-- Chat Widget Global Integration -->
+    <?php
+    // Ensure BASE_URL is defined
+    $baseUrl = defined('BASE_URL') ? BASE_URL : '/WebMuaBanDoCu/'; // Fallback path if needed
+    ?>
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/chat_widget_modern.css">
+    
+    <?php 
+    // Include Chat HTML
+    // Allow for flexible path resolution
+    $chatViewPath = __DIR__ . '/../../View/user/ChatView.php';
+    if (file_exists($chatViewPath)) {
+        require_once $chatViewPath;
+    }
+    ?>
+
+    <!-- Chat Widget Logic -->
+    <script>
+        window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;
+    </script>
+    <script src="<?php echo $baseUrl; ?>public/assets/js/user_chat_system.js"></script>
+
     <?php
 }
 

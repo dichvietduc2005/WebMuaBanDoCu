@@ -46,12 +46,10 @@ function toggle_chat_widget() {
 
     if (!isChatOpen) {
         // Open Chat
-        chatContainer.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
-        chatContainer.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
+        chatContainer.classList.add('active'); // CSS handles display:flex
         
         if (triggerBtn) {
-            triggerBtn.classList.add('scale-0', 'opacity-0');
-            setTimeout(() => triggerBtn.classList.add('hidden'), 300); // Wait for transition
+            triggerBtn.classList.add('hidden'); // CSS handles display:none
         }
         
         isChatOpen = true;
@@ -76,15 +74,10 @@ function toggle_chat_widget() {
         
     } else {
         // Close Chat
-        chatContainer.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
-        chatContainer.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
+        chatContainer.classList.remove('active'); // Reverts to display:none
         
         if (triggerBtn) {
             triggerBtn.classList.remove('hidden');
-            // Small delay to allow display:block to apply before animating opacity
-            setTimeout(() => {
-                triggerBtn.classList.remove('scale-0', 'opacity-0');
-            }, 10);
         }
         
         isChatOpen = false;

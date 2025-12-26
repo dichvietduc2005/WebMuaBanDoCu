@@ -57,10 +57,25 @@ class FrontendThemeRenderer {
         echo "  --theme-secondary: {$secondaryColor};";
         echo "  --theme-accent: {$accentColor};";
         echo "  --theme-bg: {$backgroundColor};";
+        echo "  --theme-section-bg: #ffffff;"; // Default to white
+        // Simple dark mode detection: if bg is black/dark, make section dark gray
+        if (strtolower($backgroundColor) == '#000000' || strtolower($backgroundColor) == '#111111' || strtolower($backgroundColor) == '#1f2937') {
+             echo "  --theme-section-bg: #1f2937;"; // Dark gray for sections in dark mode
+             echo "  --theme-text: #f3f4f6;"; // Light text
+        }
+        
         echo "  --theme-text: {$textColor};";
         echo "  --gradient-primary: linear-gradient(135deg, {$primaryColor}, {$secondaryColor}) !important;";
         echo "  --gradient-accent: linear-gradient(135deg, {$accentColor}, {$primaryColor}) !important;";
         echo "}";
+        
+        // Base Styles using Theme Variables
+        echo "html { background-color: var(--theme-bg) !important; scroll-behavior: smooth; }";
+        echo "body { color: var(--theme-text) !important; }";
+        echo "footer { background-color: #111111 !important; color: white !important; padding-top: 60px; margin-top: 0; }"; 
+        echo ".chat-container { background-color: var(--theme-section-bg) !important; color: var(--theme-text) !important; }";
+        
+        // Apply to sections via generic class if needed, but CSS variable is better
         
         // Links
         echo "a:not(.btn):not(.nav-link) { color: {$primaryColor}; }";
@@ -192,10 +207,21 @@ class FrontendThemeRenderer {
                 background-size: cover !important;
                 min-height: 100vh;
             }";
-            // Content containers have white background for readability
+            // Container stays transparent - sections inside have white bg for readability
             echo ".container { 
+                background: transparent !important;
+                box-shadow: none !important;
+            }";
+            // Sections have white/light bg for readability on background image
+            echo ".section { 
                 background: rgba(255, 255, 255, 0.98) !important;
-                box-shadow: 0 0 40px rgba(0, 0, 0, 0.15) !important;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1) !important;
+            }";
+            // Footer container transparent to show dark footer bg
+            echo "footer .container { 
+                background: transparent !important; 
+                box-shadow: none !important; 
+                max-width: 1200px !important;
             }";
         }
         
