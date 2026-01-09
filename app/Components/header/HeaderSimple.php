@@ -30,41 +30,30 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/footer.css">
 
     <header class="header-simple d-lg-none">
-        <div class="header-container">
-            <!-- Logo -->
-            <a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="header-logo">
-                <i class="fas fa-recycle header-logo-icon"></i>
-                <!-- <span class="header-logo-text">HIHand</span> -->
-            </a>
-
-            <!-- Search Bar -->
-            <div class="header-search">
-                <form class="header-search-form" method="GET" action="<?php echo BASE_URL; ?>app/View/extra/search_advanced.php">
-                    <input type="text" 
-                           class="header-search-input" 
-                           name="q" 
-                           placeholder="Tìm sản phẩm..."
-                           value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
-                           autocomplete="off">
-                    <button type="submit" class="header-search-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-                
-                <!-- Search Suggestions -->
-                <div class="header-search-suggestions" id="searchSuggestions">
-                    <!-- Suggestions will be added by JavaScript -->
+        <!-- Header Top Bar: Menu, Logo, Actions -->
+        <div class="header-top-bar">
+            <div class="header-top-container">
+                <!-- Left: Hamburger Menu (Logged-in only) -->
+                <div class="header-top-left">
+                    <?php if ($is_logged_in): ?>
+                        <button class="header-menu-btn" type="button" onclick="toggleHeaderMenu()" aria-label="Menu">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    <?php endif; ?>
                 </div>
-            </div>
 
-            <!-- Action Buttons -->
-            <div class="header-actions">
+                <!-- Center: Logo -->
+                <div class="header-top-center">
+                    <a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="header-logo">
+                        <i class="fas fa-recycle header-logo-icon"></i>
+                        <span class="header-logo-text">HIHand</span>
+                    </a>
+                </div>
+
+                <!-- Right: Action Buttons -->
+                <div class="header-top-right">
+                    <div class="header-actions">
                 <?php if ($is_logged_in): ?>
-                    <!-- Menu Button (Mobile/Tablet) -->
-                    <button class="header-menu-btn d-lg-none" type="button" onclick="toggleHeaderMenu()" aria-label="Menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
-
                     <!-- Notifications -->
                     <a href="<?php echo BASE_URL; ?>app/View/extra/notifications.php" 
                        class="header-icon-btn" 
@@ -131,6 +120,32 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
                         </a>
                     </div>
                 <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Search Section: Orange Background -->
+        <div class="header-search-section">
+            <div class="header-search-container">
+                <div class="header-search">
+                    <form class="header-search-form" method="GET" action="<?php echo BASE_URL; ?>app/View/extra/search_advanced.php" id="headerSearchFormElement">
+                        <input type="text" 
+                               class="header-search-input" 
+                               name="q" 
+                               placeholder="Tìm sản phẩm..."
+                               value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
+                               autocomplete="off">
+                        <button type="button" class="header-search-btn" id="headerSearchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    
+                    <!-- Search Suggestions -->
+                    <div class="header-search-suggestions" id="searchSuggestions">
+                        <!-- Suggestions will be added by JavaScript -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -243,30 +258,101 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
         }
     });
 
-    // Search autocomplete (simplified)
+    // Search Expand Animation (Mobile)
+    const searchForm = document.querySelector('.header-search-form');
     const searchInput = document.querySelector('.header-search-input');
-    const searchSuggestions = document.getElementById('searchSuggestions');
+    const searchBtn = document.getElementById('headerSearchBtn');
+    const formElement = document.getElementById('headerSearchFormElement');
     
-    if (searchInput && searchSuggestions) {
-        searchInput.addEventListener('focus', function() {
-            // Show suggestions if needed
-        });
+    if (searchForm && searchInput && searchBtn && formElement) {
+        const isMobile = () => window.innerWidth <= 767;
 
-        searchInput.addEventListener('blur', function() {
-            setTimeout(() => {
-                searchSuggestions.classList.remove('show');
-            }, 200);
-        });
-
-        searchInput.addEventListener('input', function() {
-            const query = this.value.trim();
-            if (query.length > 0) {
-                // Load suggestions via AJAX if needed
-                // For now, just show/hide container
+        // Click button to toggle search expand or submit form
+        searchBtn.addEventListener('click', function(e) {
+            if (isMobile()) {
+                if (!searchForm.classList.contains('active')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    searchForm.classList.add('active');
+                    setTimeout(() => searchInput.focus(), 100);
+                } else if (searchInput.value.trim()) {
+                    // If already expanded and has text, submit form
+                    formElement.submit();
+                }
             } else {
-                searchSuggestions.classList.remove('show');
+                // On desktop, always submit
+                if (searchInput.value.trim()) {
+                    formElement.submit();
+                }
             }
         });
+
+        // Allow Enter key to submit form
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.trim()) {
+                formElement.submit();
+            }
+        });
+
+        // Focus input to expand
+        searchInput.addEventListener('focus', function() {
+            if (isMobile()) {
+                searchForm.classList.add('active');
+            }
+        });
+
+        // Blur to collapse (only on mobile and no input value)
+        searchInput.addEventListener('blur', function() {
+            if (isMobile() && !this.value.trim()) {
+                setTimeout(() => {
+                    searchForm.classList.remove('active');
+                }, 200);
+            }
+        });
+
+        // Close search on escape (if empty)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isMobile() && searchForm.classList.contains('active')) {
+                if (!searchInput.value.trim()) {
+                    searchForm.classList.remove('active');
+                    searchInput.blur();
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 767) {
+                searchForm.classList.remove('active');
+            }
+        });
+    }
+
+    // Hide header on scroll down, show on scroll up
+    let lastScrollTop = 0;
+    const header = document.querySelector('.header-simple');
+    let scrollThreshold = 100; // Scroll threshold in pixels
+    
+    if (header) {
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > scrollThreshold) {
+                // Scrolled past threshold
+                if (scrollTop > lastScrollTop) {
+                    // Scrolling down - hide header
+                    header.classList.add('header-hidden');
+                } else {
+                    // Scrolling up - show header
+                    header.classList.remove('header-hidden');
+                }
+            } else {
+                // Near top - always show header
+                header.classList.remove('header-hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
     }
     </script>
     

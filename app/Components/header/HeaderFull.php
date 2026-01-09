@@ -31,7 +31,7 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top d-none d-lg-block">
         <div class="container-fluid px-2 px-sm-3 px-lg-4">
             <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center me-auto me-lg-4" href="<?php echo BASE_URL; ?>public/index.php?page=home">
+            <a class="navbar-brand d-flex align-items-center me-auto me-lg-4 text-decoration-none" href="<?php echo BASE_URL; ?>public/index.php?page=home" style="transition: none; opacity: 1;">
                 <i class="fas fa-recycle text-primary me-2" style="font-size: clamp(24px, 6vw, 32px);"></i>
                 <h1 class="mb-0 fw-bold text-gradient d-none d-sm-inline"
                     style="font-size: clamp(20px, 5vw, 28px); color: #2563eb;">HIHand Shop</h1>
@@ -45,10 +45,18 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                 <div style="display: flex; gap: 12px; align-items: center;">
                         <!-- Categories Button -->
                         <div class="dropdown">
+                            <style>
+                            .categories-btn, .categories-btn:hover, .categories-btn:focus, .categories-btn:active, .categories-btn.show {
+                                background-color: white !important;
+                                color: #4f46e5 !important;
+                                border-color: #e5e7eb !important;
+                                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+                            }
+                            </style>
                             <button
                                 class="btn d-flex align-items-center categories-btn"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                style="height: 50px; padding: 0 14px; border-radius: 10px; border: 2px solid #e5e7eb; background: white; color: #4f46e5; font-weight: 600; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);">
+                                style="height: 50px; padding: 0 14px; border-radius: 10px; border: 2px solid #e5e7eb; background: white; color: #4f46e5; font-weight: 600; font-size: 14px; transition: none; white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);">
                                 <i class="fas fa-list" style="font-size: 16px; margin-right: 6px;"></i>
                                 <span>Danh mục</span>
                             </button>
@@ -131,35 +139,78 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                                 background: #c4b5e9;
                             }
                             
-                            .categories-btn:hover {
-                                border-color: #4f46e5;
-                                background: #f9f8ff;
-                                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
-                            }
-                            
                             .categories-btn[aria-expanded="true"] {
                                 border-color: #4f46e5;
                                 background: #f9f8ff;
                                 box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
                             }
+                            
+                            /* Desktop Search Section - Orange Background */
+                            .desktop-search-section {
+                                background: #FF8C42;
+                                padding: 12px;
+                                border-radius: 8px;
+                                width: 100%;
+                            }
+                            
+                            .desktop-search-form {
+                                display: flex;
+                                gap: 0;
+                                width: 100%;
+                            }
+                            
+                            .desktop-search-input {
+                                flex: 1;
+                                height: 50px;
+                                font-size: 15px;
+                                border: none;
+                                border-radius: 8px 0 0 8px;
+                                padding: 0 16px;
+                                background: white;
+                                color: #1f2937;
+                                outline: none;
+                            }
+                            
+                            .desktop-search-btn {
+                                height: 50px;
+                                width: 50px;
+                                border: none;
+                                border-radius: 0 8px 8px 0;
+                                background: #2563eb;
+                                color: white;
+                                cursor: pointer;
+                                font-size: 16px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                padding: 0;
+                                transition: all 0.2s ease;
+                            }
+                            
+                            .desktop-search-btn:hover {
+                                background: #1d4ed8;
+                                opacity: 0.9;
+                            }
                         </style>
 
-                    <!-- Search Form - Simple -->
-                    <form id="search-form2" style="width: 100%; display: flex; position: relative;" method="GET"
-                        action="<?php echo BASE_URL; ?>app/View/extra/search_advanced.php" onsubmit="return validateSearchForm(event);">
-                        <input type="text" id="search-input" name="q"
-                            placeholder="Tìm sản phẩm..."
-                            style="flex: 1; height: 50px; font-size: 15px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 16px; background: white; color: #1f2937; outline: none;"
-                            value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
-                            autocomplete="off">
-                        <button type="submit" style="height: 50px; width: 50px; margin-left: 8px; border: none; border-radius: 8px; background: #e5e7eb; color: #6b7280; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; padding: 0;">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
+                    <!-- Search Form - With Orange Background Section -->
+                    <div class="desktop-search-section">
+                        <form id="search-form2" class="desktop-search-form" method="GET"
+                            action="<?php echo BASE_URL; ?>app/View/extra/search_advanced.php" onsubmit="return validateSearchForm(event);">
+                            <input type="text" id="search-input-desktop" name="q"
+                                placeholder="Tìm sản phẩm..."
+                                class="desktop-search-input"
+                                value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
+                                autocomplete="off">
+                            <button type="submit" class="desktop-search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
                     
                     <script>
                     function validateSearchForm(event) {
-                        const input = document.getElementById('search-input').value.trim();
+                        const input = document.getElementById('search-input-desktop').value.trim();
                         if (input === '') {
                             event.preventDefault();
                             alert('Vui lòng nhập từ khóa tìm kiếm');

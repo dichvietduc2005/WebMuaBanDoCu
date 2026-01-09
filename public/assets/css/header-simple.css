@@ -14,9 +14,57 @@
   position: sticky;
   top: 0;
   z-index: 1030;
-  padding: 12px 0;
+  transition: transform 0.3s ease-in-out;
 }
 
+.header-simple.header-hidden {
+  transform: translateY(-100%);
+}
+
+/* ============================================================
+   HEADER TOP BAR (White Section)
+   ============================================================ */
+
+.header-top-bar {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-top-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.header-top-left,
+.header-top-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.header-top-left {
+  justify-content: flex-start;
+}
+
+.header-top-right {
+  justify-content: flex-end;
+}
+
+.header-top-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Legacy support - keep for backward compatibility */
 .header-simple .header-container {
   max-width: 100%;
   margin: 0 auto;
@@ -37,6 +85,7 @@
   text-decoration: none;
   flex-shrink: 0;
   min-width: 0;
+  z-index: 1;
 }
 
 .header-logo:hover {
@@ -45,77 +94,97 @@
 
 .header-logo-icon {
   font-size: 24px;
-  color: #2563eb;
+  color: var(--primary, #2563eb);
   flex-shrink: 0;
 }
 
 .header-logo-text {
   font-size: 20px;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--primary, #2563eb);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-left: 4px;
 }
 
 /* ============================================================
-   SEARCH BAR SECTION
+   HEADER SEARCH SECTION (Orange Background)
    ============================================================ */
 
+.header-search-section {
+  background: #FF8C42 !important;
+  padding: 16px;
+  width: 100%;
+}
+
+.header-search-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
 .header-search {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
   position: relative;
 }
 
 .header-search-form {
   display: flex;
   gap: 0;
-  height: 44px;
-  border-radius: 12px;
+  height: 48px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  background: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
 }
 
 .header-search-input {
   flex: 1;
   min-width: 0;
-  height: 44px;
+  height: 48px;
   padding: 0 16px;
-  font-size: 16px; /* Prevent iOS zoom */
-  border: 2px solid #e5e7eb;
-  border-right: none;
-  border-radius: 12px 0 0 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px 0 0 8px;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
+  background: white;
+  color: #333;
+}
+
+.header-search-input::placeholder {
+  color: #999;
 }
 
 .header-search-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border: none;
+  box-shadow: none;
 }
 
 .header-search-btn {
-  width: 50px;
-  min-width: 50px;
-  height: 44px;
+  width: 56px;
+  min-width: 56px;
+  height: 48px;
   border: none;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: var(--primary, #4f46e5);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 8px 8px 0;
 }
 
 .header-search-btn:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .header-search-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
 }
 
 .header-search-btn i {
@@ -269,49 +338,60 @@
    ============================================================ */
 
 @media (max-width: 767px) {
-  .header-simple {
-    padding: 8px 0;
-  }
-
-  .header-simple .header-container {
-    padding: 0 12px;
-    gap: 8px;
+  /* Header Top Bar Mobile */
+  .header-top-container {
+    padding: 10px 12px;
   }
 
   /* Logo Mobile */
   .header-logo-icon {
-    font-size: 20px;
+    font-size: 22px;
+    flex-shrink: 0;
   }
 
   .header-logo-text {
-    font-size: 16px;
+    font-size: 14px;
   }
 
-  /* Search Mobile */
-  .header-search {
-    flex: 1;
-    min-width: 0;
+  /* Search Section Mobile */
+  .header-search-section {
+    padding: 12px;
   }
 
   .header-search-form {
-    height: 40px;
+    height: 44px;
+    width: 100% !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
   }
 
   .header-search-input {
-    height: 40px;
-    padding: 0 12px;
-    font-size: 16px; /* Prevent iOS zoom */
+    height: 44px;
+    padding: 0 14px;
+    font-size: 15px;
+    opacity: 1 !important;
+    width: auto !important;
+    pointer-events: auto !important;
+    flex: 1;
   }
 
   .header-search-btn {
-    width: 44px;
-    min-width: 44px;
-    height: 40px;
+    width: 48px;
+    min-width: 48px;
+    height: 44px;
+    background: var(--primary, #4f46e5) !important;
+    color: white !important;
+  }
+
+  .header-search-btn i {
+    font-size: 16px;
   }
 
   /* Actions Mobile */
   .header-actions {
     gap: 4px;
+    flex-shrink: 0;
   }
 
   .header-menu-btn,
@@ -319,6 +399,7 @@
     width: 36px;
     height: 36px;
     min-width: 36px;
+    border-radius: 6px;
   }
 
   .header-menu-btn i,
@@ -328,24 +409,26 @@
 
   /* Auth Buttons Mobile */
   .header-auth-buttons {
-    gap: 6px;
+    gap: 4px;
   }
 
   .header-btn-login,
   .header-btn-register {
     height: 36px;
-    padding: 0 12px;
-    font-size: 13px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 8px;
   }
 
   .header-btn-login span,
   .header-btn-register span {
-    display: none; /* Hide text on very small screens */
+    display: none;
   }
 
   .header-btn-login i,
   .header-btn-register i {
     margin: 0;
+    font-size: 16px;
   }
 }
 
@@ -354,20 +437,27 @@
    ============================================================ */
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .header-simple .header-container {
-    padding: 0 20px;
+  .header-top-container {
+    padding: 12px 20px;
+  }
+
+  .header-search-section {
+    padding: 16px 20px;
   }
 
   .header-search-form {
-    height: 42px;
+    height: 46px;
   }
 
   .header-search-input {
-    height: 42px;
+    height: 46px;
+    padding: 0 18px;
   }
 
   .header-search-btn {
-    height: 42px;
+    width: 52px;
+    min-width: 52px;
+    height: 46px;
   }
 }
 
@@ -376,9 +466,19 @@
    ============================================================ */
 
 @media (min-width: 1024px) {
-  .header-simple .header-container {
+  .header-top-container {
     max-width: 1400px;
-    padding: 0 24px;
+    margin: 0 auto;
+    padding: 14px 24px;
+  }
+
+  .header-search-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .header-search-section {
+    padding: 18px 24px;
   }
 
   .header-logo-text {
@@ -386,18 +486,19 @@
   }
 
   .header-search-form {
-    height: 48px;
+    height: 52px;
   }
 
   .header-search-input {
-    height: 48px;
+    height: 52px;
     padding: 0 20px;
+    font-size: 17px;
   }
 
   .header-search-btn {
-    width: 56px;
-    min-width: 56px;
-    height: 48px;
+    width: 60px;
+    min-width: 60px;
+    height: 52px;
   }
 
   .header-menu-btn,
@@ -421,7 +522,7 @@
 
 .header-menu-dropdown {
   position: fixed;
-  top: 60px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -436,11 +537,11 @@
 
 .header-menu-sidebar {
   position: fixed;
-  top: 60px;
+  top: 0;
   left: 0;
   width: 280px;
   max-width: 85vw;
-  height: calc(100vh - 60px);
+  height: 100vh;
   background: white;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
   overflow-y: auto;

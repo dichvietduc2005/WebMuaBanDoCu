@@ -51,8 +51,3 @@ if (isset($_SESSION['user_id'])) {
     $_SESSION['chat_widget_loaded'] = true;
 }
 ?>
-
-
-
-
-

@@ -1,59 +1,80 @@
 function add_event_btn_edit() {
-    document.getElementById('#btn-edit').addEventListener('click', function () {
-        const inputs = document.querySelectorAll('.info-group input');
-        inputs.forEach(input => {
-            input.disabled = false;
+    const editBtn = document.getElementById('btn-edit');
+    if (editBtn) {
+        editBtn.addEventListener('click', function () {
+            const inputs = document.querySelectorAll('#profile-form input');
+            inputs.forEach(input => {
+                // Prevent editing of username if desired, otherwise allow all
+                // For now allow all as per original logic, but usually username is fixed
+                if (input.id !== 'user_name') { 
+                    input.disabled = false;
+                }
+            });
+            this.classList.add('d-none');
+            document.getElementById('btn-save').classList.remove('d-none');
+            
+            // Focus first editable input
+            document.getElementById('user_full_name').focus();
         });
-        this.style.display = 'none';
-        document.getElementById('#btn-save').style.display = 'inline-block';
-    });
+    }
 }
 
 function add_event_btn_save() {
-    document.getElementById('#btn-save').addEventListener('click', function () {
-        let phone_input = document.getElementById('user_phone');
-        if (phone_input.value.length != 10) {
-            alert('Số điện thoại không hợp lệ. Vui lòng nhập lại.');
-            return;
-        }
-        for (let i = 0; i < phone_input.value.length; i++) {
-            if (isNaN(phone_input.value[i]) || phone_input.value[i] < '0' || phone_input.value[i] > '9') {
-                alert('Số điện thoại không hợp lệ. Vui lòng nhập lại.');
+    const saveBtn = document.getElementById('btn-save');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function () {
+            let phone_input = document.getElementById('user_phone');
+            
+            // Basic validation
+            if (phone_input.value.length != 10) {
+                alert('Số điện thoại không hợp lệ. Vui lòng nhập lại (10 số).');
                 return;
             }
-        }
+            // Check numeric
+            if (!/^\d+$/.test(phone_input.value)) {
+                 alert('Số điện thoại chỉ được chứa số.');
+                 return;
+            }
 
-        const data = {};
-        const inputs = document.querySelectorAll('.info-group input');
-        inputs.forEach(input => {
-            data[input.id] = input.value;
-            input.disabled = true;
+            const data = {};
+            // Collect data from inputs
+            const inputs = document.querySelectorAll('#profile-form input');
+            inputs.forEach(input => {
+                data[input.id] = input.value;
+                input.disabled = true; // Lock inputs immediately for better UX
+            });
+            data['user_id'] = userId;
+
+            // UI Toggle back
+            this.classList.add('d-none');
+            document.getElementById('btn-edit').classList.remove('d-none');
+
+            // Send Request
+            fetch('/WebMuaBanDoCu/app/Controllers/user/ProfileUserController.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(res => res.text())
+                .then(responseData => {
+                    if (responseData.trim() === "success") {
+                        // Success Feedback
+                        alert('Cập nhật thông tin thành công!');
+                    } else {
+                        // Error Feedback
+                        alert('Cập nhật thông tin thất bại: ' + responseData);
+                        // Re-enable edit mode on failure?
+                    }
+                })
+                .catch(err => {
+                    alert('Lỗi kết nối: ' + err);
+                });
         });
-        data['user_id'] = userId;
-
-        this.style.display = 'none';
-        document.getElementById('#btn-edit').style.display = 'inline-block';
-
-
-        fetch('/WebMuaBanDoCu/app/Controllers/user/ProfileUserController.php', { //
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(res => res.text())
-            .then(data => {
-                if (data == "success") {
-                    alert('Cập nhật thông tin thành công!');
-                } else {
-                    alert('Cập nhật thông tin thất bại: ' + data);
-                }
-            })
-
-
-    });
+    }
 }
 
-document.getElementById('#btn-save').style.display = 'none';
-add_event_btn_edit();
-add_event_btn_save();
+document.addEventListener('DOMContentLoaded', function() {
+    add_event_btn_edit();
+    add_event_btn_save();
+});

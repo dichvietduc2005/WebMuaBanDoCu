@@ -9,11 +9,11 @@
 
 /* Mobile - Product Grid */
 @media (max-width: 767px) {
-  /* Products grid - 1 column on mobile */
+  /* Products grid - 2 columns on mobile */
   .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4,
   .products-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
   }
 
   /* Product card mobile */
@@ -242,22 +242,22 @@
 
 @media (max-width: 767px) {
   .categories-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 12px !important;
   }
 
   .category-card {
-    padding: 16px 12px !important;
-    min-height: 100px !important;
+    padding: 12px 8px !important;
+    min-height: auto !important;
   }
 
   .category-card .category-icon {
-    font-size: 32px !important;
+    font-size: 28px !important;
     margin-bottom: 8px !important;
   }
 
   .category-card .category-name {
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
 }
 

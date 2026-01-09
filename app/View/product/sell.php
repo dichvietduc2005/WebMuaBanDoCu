@@ -52,7 +52,8 @@ if (!isset($_SESSION['user_id'])) {
                         <option value="">Chọn danh mục</option>
                         <?php
                         // Lấy danh sách danh mục
-                        $categories = fetchAllCategories($pdo);
+                        $categoryModel = new CategoryModel();
+                        $categories = $categoryModel->getAllActive();
                         foreach ($categories as $cat) {
                             echo '<option value="' . (int)$cat['id'] . '">' . htmlspecialchars($cat['name']) . '</option>';
                         }

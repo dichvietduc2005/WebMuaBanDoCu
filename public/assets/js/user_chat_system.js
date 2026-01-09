@@ -15,6 +15,10 @@ if (typeof window.chatSystemLoaded !== 'undefined' && window.chatSystemLoaded) {
 
 function add_scroll_event_to_container() {
     let containerMessages = document.getElementById("ChatMessagesContainer");
+    if (!containerMessages) {
+        console.warn('ChatMessagesContainer not found');
+        return;
+    }
     containerMessages.addEventListener('scroll', function () {
         if (Math.ceil(containerMessages.scrollTop) + containerMessages.clientHeight >= containerMessages.scrollHeight) {
             can_jump_bottom = true;
@@ -26,6 +30,10 @@ function add_scroll_event_to_container() {
 
 function jump_to_bottom() {
     let containerMessages = document.getElementById("ChatMessagesContainer");
+    if (!containerMessages) {
+        console.warn('ChatMessagesContainer not found');
+        return;
+    }
     containerMessages.scrollTop = containerMessages.scrollHeight;
 }
 

@@ -736,42 +736,42 @@ ul li {
 
 /* Hiệu ứng cho danh mục */
 .category-card {
-    background-color: #fff;
-    border-radius: var(--border-radius);
-    padding: 20px;
+    background-color: transparent;
+    border-radius: 0;
+    padding: 12px 8px;
     text-align: center;
-    transition: all var(--transition);
-    box-shadow: var(--shadow-sm);
+    transition: none;
+    box-shadow: none;
     cursor: pointer;
-    border: 1px solid #f1f5f9;
+    border: none;
 }
 
 .category-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow);
-    border-color: var(--secondary-color);
+    transform: none;
+    box-shadow: none;
+    border-color: transparent;
 }
 
 .category-icon {
-    font-size: 2rem;
-    margin-bottom: 12px;
-    color: var(--primary-color);
-    transition: all var(--transition);
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #333;
+    transition: none;
 }
 
 .category-card:hover .category-icon {
-    transform: scale(1.1);
-    color: var(--secondary-color);
+    transform: none;
+    color: #333;
 }
 
 .category-name {
-    font-weight: 600;
-    color: var(--text-dark);
-    transition: color var(--transition-fast);
+    font-weight: 500;
+    color: #333;
+    transition: none;
 }
 
 .category-card:hover .category-name {
-    color: var(--primary-color);
+    color: #333;
 }
 
 /* Breadcrumb navigation */

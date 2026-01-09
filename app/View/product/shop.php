@@ -207,13 +207,6 @@ try {
                     <div class="product-card"
                         onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $product['id']; ?>'">
                         <div class="product-image">
-                            <!-- Cart icon on right -->
-                            <?php if ($product['stock_quantity'] > 0): ?>
-                            <button type="button" class="cart-icon-btn" onclick="event.stopPropagation(); addToCart(event, <?php echo $product['id']; ?>)" title="Thêm vào giỏ">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
-                            <?php endif; ?>
-                            
                             <?php if ($product['image_path']): ?>
                                 <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>" 
                                      alt="<?php echo htmlspecialchars($product['title']); ?>">
@@ -244,29 +237,26 @@ try {
                                 <?php endif; ?>
                             </div>
                             
-                            <!-- Rating & Sales -->
-                            <div class="product-rating">
-                                <span class="stars">
-                                    <i class="fas fa-star"></i>
-                                    <?php echo isset($product['rating']) ? number_format($product['rating'], 1) : '5.0'; ?>
-                                </span>
-                                <span class="separator">•</span>
-                                <span class="sales">Đã bán <?php echo isset($product['sales_count']) ? number_format($product['sales_count']) : rand(10, 500); ?></span>
+                            <!-- Footer: Rating & Cart -->
+                            <div class="product-footer">
+                                <div class="product-rating">
+                                    <span class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <?php echo isset($product['rating']) && $product['rating'] > 0 ? number_format($product['rating'], 1) : '5.0'; ?>
+                                    </span>
+                                    <span class="separator">•</span>
+                                    <span class="sales">Đã bán <?php echo isset($product['sales_count']) && $product['sales_count'] > 0 ? number_format($product['sales_count']) : rand(0, 50); ?></span>
+                                </div>
+                                
+                                <?php if ($product['stock_quantity'] > 0): ?>
+                                <button type="button" class="btn-add-cart-footer" onclick="event.stopPropagation(); addToCart(event, <?php echo $product['id']; ?>)" title="Thêm vào giỏ">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                                <?php endif; ?>
                             </div>
                         </div>
-                        
-                        <!-- Quick Add Button (appears on hover) -->
-                        <div class="product-hover-action" onclick="event.stopPropagation();">
-                            <?php if ($product['stock_quantity'] > 0): ?>
-                                <button type="button" class="btn-quick-add" onclick="addToCart(event, <?php echo $product['id']; ?>)">
-                                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ
-                                </button>
-                            <?php else: ?>
-                                <button class="btn-quick-add disabled" disabled>
-                                    <i class="fas fa-ban"></i> Hết hàng
-                                </button>
-                            <?php endif; ?>
-                        </div>
+                            
+
                     </div>
                 <?php endforeach; ?>
             </div>

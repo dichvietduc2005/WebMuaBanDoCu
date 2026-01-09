@@ -39,9 +39,9 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
     <!-- Mobile & Tablet Responsive Enhancement - MUST LOAD AFTER header CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-responsive-enhanced.css">
     <!-- Unified Product Card Styles (Home & Search) -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/unified-product-cards.css">
-    <!-- Product Card Compact Optimization -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product-card-compact.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/unified-product-cards.css?v=<?php echo time(); ?>">
+    <!-- Product Card Compact Optimization (Disabled to allow Woodmart design) -->
+    <!-- <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product-card-compact.css"> -->
     <!-- Home Page Improvements - Hero & Product Cards -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/home-improvements.css">
     <!-- Recent Orders Enhanced Styling -->
@@ -106,8 +106,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
         <section class="section" id="featured-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm nổi bật</h2>
-                <a href="<?php echo BASE_URL; ?>public/index.php?page=products" class="view-all">Xem tất cả <i
-                        class="fas fa-arrow-right"></i></a>
+                <!-- <a href="<?php echo BASE_URL; ?>public/index.php?page=products" class="view-all">Xem tất cả <i
+                        class="fas fa-arrow-right"></i></a> -->
             </div>
 
             <div class="products-grid">
@@ -125,13 +125,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <span class="product-badge">Nổi bật</span>
                                 <?php endif; ?>
                                 
-                                <!-- Cart icon on right -->
-                                <?php if ($product['stock_quantity'] > 0): ?>
-                                <button type="button" class="cart-icon-btn" onclick="event.stopPropagation(); addToCart(event, <?php echo $product['id']; ?>)" title="Thêm vào giỏ">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
-                                <?php endif; ?>
-                                
                                 <?php if ($product['image_path']): ?>
                                     <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($product['title']); ?>">
@@ -142,7 +135,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <?php endif; ?>
                             </div>
                             <div class="product-content">
-                                <!-- Spec Tags (Category + Condition) -->
                                 <div class="product-specs">
                                     <?php if (!empty($product['category_name'])): ?>
                                         <span class="spec-tag"><?php echo htmlspecialchars($product['category_name']); ?></span>
@@ -150,10 +142,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <span class="spec-tag"><?php echo getConditionText($product['condition_status']); ?></span>
                                 </div>
                                 
-                                <!-- Product Title (Blue) -->
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
                                 
-                                <!-- Price Section -->
                                 <div class="product-price-section">
                                     <span class="current-price"><?php echo formatPrice($product['price']); ?></span>
                                     <?php if (isset($product['original_price']) && $product['original_price'] > $product['price']): ?>
@@ -162,28 +152,22 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <?php endif; ?>
                                 </div>
                                 
-                                <!-- Rating & Sales -->
-                                <div class="product-rating">
-                                    <span class="stars">
-                                        <i class="fas fa-star"></i>
-                                        <?php echo isset($product['rating']) && $product['rating'] > 0 ? number_format($product['rating'], 1) : '4.5'; ?>
-                                    </span>
-                                    <span class="separator">•</span>
-                                    <span class="sales">Đã bán <?php echo isset($product['sales_count']) && $product['sales_count'] > 0 ? number_format($product['sales_count']) : '0'; ?></span>
+                                <div class="product-footer">
+                                    <div class="product-rating">
+                                        <span class="stars">
+                                            <i class="fas fa-star"></i>
+                                            <?php echo isset($product['rating']) && $product['rating'] > 0 ? number_format($product['rating'], 1) : '4.5'; ?>
+                                        </span>
+                                        <span class="separator">•</span>
+                                        <span class="sales">Đã bán <?php echo isset($product['sales_count']) && $product['sales_count'] > 0 ? number_format($product['sales_count']) : '0'; ?></span>
+                                    </div>
+                                    
+                                    <?php if ($product['stock_quantity'] > 0): ?>
+                                    <button type="button" class="btn-add-cart-footer" onclick="event.stopPropagation(); addToCart(event, <?php echo $product['id']; ?>)" title="Thêm vào giỏ">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                    <?php endif; ?>
                                 </div>
-                            </div>
-                            
-                            <!-- Quick Add Button (appears on hover) -->
-                            <div class="product-hover-action" onclick="event.stopPropagation();">
-                                <?php if ($product['stock_quantity'] > 0): ?>
-                                    <button type="button" class="btn-quick-add" onclick="addToCart(event, <?php echo $product['id']; ?>)">
-                                        <i class="fas fa-cart-plus"></i> Thêm vào giỏ
-                                    </button>
-                                <?php else: ?>
-                                    <button class="btn-quick-add disabled" disabled>
-                                        <i class="fas fa-ban"></i> Hết hàng
-                                    </button>
-                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -194,8 +178,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
         <section class="section" id="regular-products">
             <div class="section-header">
                 <h2 class="section-title">Sản phẩm mới nhất</h2>
-                <a href="<?php echo BASE_URL; ?>public/index.php?page=products" class="view-all">Xem tất cả <i
-                        class="fas fa-arrow-right"></i></a>
+                <!-- <a href="<?php echo BASE_URL; ?>public/index.php?page=products" class="view-all">Xem tất cả <i
+                        class="fas fa-arrow-right"></i></a> -->
             </div>
 
             <div class="products-grid">
@@ -210,13 +194,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                         <div class="product-card"
                             onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $product['id']; ?>'">
                             <div class="product-image">
-                                <!-- Cart icon on right -->
-                                <?php if ($product['stock_quantity'] > 0): ?>
-                                <button type="button" class="cart-icon-btn" onclick="event.stopPropagation(); addToCart(event, <?php echo $product['id']; ?>)" title="Thêm vào giỏ">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
-                                <?php endif; ?>
-                                
                                 <?php if ($product['image_path']): ?>
                                     <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($product['title']); ?>">
@@ -227,7 +204,6 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                 <?php endif; ?>
                             </div>
                             <div class="product-content">
-                                <!-- Spec Tags (Category + Condition) -->
                                 <div class="product-specs">
                                     <?php if (!empty($product['category_name'])): ?>
                                         <span class="spec-tag"><?php echo htmlspecialchars($product['category_name']); ?></span>
@@ -235,10 +211,8 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <span class="spec-tag"><?php echo getConditionText($product['condition_status']); ?></span>
                                 </div>
                                 
-                                <!-- Product Title (Blue) -->
                                 <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
                                 
-                                <!-- Price Section -->
                                 <div class="product-price-section">
                                     <span class="current-price"><?php echo formatPrice($product['price']); ?></span>
                                     <?php if (isset($product['original_price']) && $product['original_price'] > $product['price']): ?>
@@ -247,28 +221,22 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <?php endif; ?>
                                 </div>
                                 
-                                <!-- Rating & Sales -->
-                                <div class="product-rating">
-                                    <span class="stars">
-                                        <i class="fas fa-star"></i>
-                                        <?php echo isset($product['rating']) && $product['rating'] > 0 ? number_format($product['rating'], 1) : '4.5'; ?>
-                                    </span>
-                                    <span class="separator">•</span>
-                                    <span class="sales">Đã bán <?php echo isset($product['sales_count']) && $product['sales_count'] > 0 ? number_format($product['sales_count']) : '0'; ?></span>
+                                <div class="product-footer">
+                                    <div class="product-rating">
+                                        <span class="stars">
+                                            <i class="fas fa-star"></i>
+                                            <?php echo isset($product['rating']) && $product['rating'] > 0 ? number_format($product['rating'], 1) : '5.0'; ?>
+                                        </span>
+                                        <span class="separator">•</span>
+                                        <span class="sales">Đã bán <?php echo isset($product['sales_count']) && $product['sales_count'] > 0 ? number_format($product['sales_count']) : rand(0, 50); ?></span>
+                                    </div>
+                                    
+                                    <?php if ($product['stock_quantity'] > 0): ?>
+                                    <button type="button" class="btn-add-cart-footer" onclick="event.stopPropagation(); addToCart(event, <?php echo $product['id']; ?>)" title="Thêm vào giỏ">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                    <?php endif; ?>
                                 </div>
-                            </div>
-                            
-                            <!-- Quick Add Button (appears on hover) -->
-                            <div class="product-hover-action" onclick="event.stopPropagation();">
-                                <?php if ($product['stock_quantity'] > 0): ?>
-                                    <button type="button" class="btn-quick-add" onclick="addToCart(event, <?php echo $product['id']; ?>)">
-                                        <i class="fas fa-cart-plus"></i> Thêm vào giỏ
-                                    </button>
-                                <?php else: ?>
-                                    <button class="btn-quick-add disabled" disabled>
-                                        <i class="fas fa-ban"></i> Hết hàng
-                                    </button>
-                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -278,43 +246,43 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
         <section class="section">
             <div class="section-header">
                 <h2 class="section-title">Danh mục sản phẩm</h2>
-                <a href="<?php echo BASE_URL; ?>app/View/product/categories.php" class="view-all">Xem tất cả <i
-                        class="fas fa-arrow-right"></i></a>
+                <!-- <a href="<?php echo BASE_URL; ?>app/View/product/categories.php" class="view-all">Xem tất cả <i
+                        class="fas fa-arrow-right"></i></a> -->
             </div>
 
             <div class="categories-grid">
                 <?php
-                // Map slug -> FontAwesome icon + color
+                // Map slug -> FontAwesome icon (template style - simplified)
                 $category_styles = [
-                    'am-nhac-nhac-cu' => ['icon' => 'fas fa-music', 'color' => '#e91e63', 'bg' => '#fce4ec'],
-                    'dien-thoai-may-tinh-bang' => ['icon' => 'fas fa-mobile-alt', 'color' => '#2196f3', 'bg' => '#e3f2fd'],
-                    'laptop-may-tinh' => ['icon' => 'fas fa-laptop', 'color' => '#673ab7', 'bg' => '#ede7f6'],
-                    'thoi-trang-phu-kien' => ['icon' => 'fas fa-tshirt', 'color' => '#ff9800', 'bg' => '#fff3e0'],
-                    'do-gia-dung-noi-that' => ['icon' => 'fas fa-couch', 'color' => '#795548', 'bg' => '#efebe9'],
-                    'xe-co-phuong-tien' => ['icon' => 'fas fa-motorcycle', 'color' => '#f44336', 'bg' => '#ffebee'],
-                    'sach-van-phong-pham' => ['icon' => 'fas fa-book', 'color' => '#4caf50', 'bg' => '#e8f5e9'],
-                    'the-thao-giai-tri' => ['icon' => 'fas fa-futbol', 'color' => '#00bcd4', 'bg' => '#e0f7fa'],
-                    'dien-may-cong-nghe' => ['icon' => 'fas fa-tv', 'color' => '#607d8b', 'bg' => '#eceff1'],
-                    'me-va-be' => ['icon' => 'fas fa-baby', 'color' => '#ff4081', 'bg' => '#fce4ec'],
-                    'suc-khoe-lam-dep' => ['icon' => 'fas fa-heart', 'color' => '#e91e63', 'bg' => '#fce4ec'],
-                    'thu-cung-phu-kien' => ['icon' => 'fas fa-paw', 'color' => '#8bc34a', 'bg' => '#f1f8e9'],
-                    'am-thuc' => ['icon' => 'fas fa-utensils', 'color' => '#ff5722', 'bg' => '#fbe9e7']
+                    'am-nhac-nhac-cu' => ['icon' => 'fas fa-music'],
+                    'dien-thoai-may-tinh-bang' => ['icon' => 'fas fa-mobile-alt'],
+                    'laptop-may-tinh' => ['icon' => 'fas fa-laptop'],
+                    'thoi-trang-phu-kien' => ['icon' => 'fas fa-bag-shopping'],
+                    'do-gia-dung-noi-that' => ['icon' => 'fas fa-chair'],
+                    'xe-co-phuong-tien' => ['icon' => 'fas fa-car'],
+                    'sach-van-phong-pham' => ['icon' => 'fas fa-book'],
+                    'the-thao-giai-tri' => ['icon' => 'fas fa-dumbbell'],
+                    'dien-may-cong-nghe' => ['icon' => 'fas fa-tv'],
+                    'me-va-be' => ['icon' => 'fas fa-baby-carriage'],
+                    'suc-khoe-lam-dep' => ['icon' => 'fas fa-spa'],
+                    'thu-cung-phu-kien' => ['icon' => 'fas fa-paw'],
+                    'am-thuc' => ['icon' => 'fas fa-burger']
                 ];
 
                 foreach ($categories as $category):
-                    $style = $category_styles[$category['slug']] ?? ['icon' => 'fas fa-cube', 'color' => '#9e9e9e', 'bg' => '#fafafa'];
+                    $style = $category_styles[$category['slug']] ?? ['icon' => 'fas fa-box'];
                 ?>
                     <div class="category-card"
                         onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo $category['slug']; ?>'">
-                        <div class="category-icon-box" style="background: <?php echo $style['bg']; ?>; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">
-                            <i class="<?php echo $style['icon']; ?>" style="color: <?php echo $style['color']; ?>; font-size: 20px;"></i>
+                        <div class="category-icon-box">
+                            <i class="<?php echo $style['icon']; ?>"></i>
                         </div>
                         <div class="category-name"><?php echo htmlspecialchars($category['name']); ?></div>
                     </div>
                 <?php endforeach; ?>
             </div>
         </section>
-        <?php if (isset($_SESSION['user_id']) && !empty($recent_orders)): ?>
+        <!-- <?php if (isset($_SESSION['user_id']) && !empty($recent_orders)): ?>
             <section class="section">
                 <div class="section-header">
                     <h2 class="section-title">Đơn hàng gần đây</h2>
@@ -377,12 +345,13 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                     <?php endforeach; ?>
                 </div>
             </section>
-        <?php endif; ?>
+        <?php endif; ?> -->
     </div>
 
     <?php require_once __DIR__ . '/components/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/components/header.js"></script>
 
 </body>

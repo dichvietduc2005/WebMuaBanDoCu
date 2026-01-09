@@ -127,8 +127,8 @@
 /* 4. Products Grid Mobile - Responsive Columns */
 @media (max-width: 480px) {
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
-    gap: 8px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
     justify-content: stretch !important;
   }
 
@@ -182,7 +182,7 @@
 
 @media (min-width: 481px) and (max-width: 767px) {
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
   }
 
@@ -206,23 +206,35 @@
 /* 5. Categories Grid Mobile */
 @media (max-width: 767px) {
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
-    gap: 8px !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
   }
 
   .category-card {
-    padding: 12px 8px !important;
-    border-radius: 8px;
+    padding: 16px 8px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  }
+
+  .category-icon-box {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 12px !important;
+  }
+
+  .category-icon-box i {
+    font-size: 24px !important;
   }
 
   .category-icon {
-    font-size: 28px !important;
-    margin-bottom: 4px;
+    font-size: 24px !important;
+    margin-bottom: 8px;
   }
 
   .category-name {
-    font-size: 11px !important;
-    line-height: 1.3;
+    font-size: 12px !important;
+    line-height: 1.4;
+    font-weight: 600 !important;
   }
 }
 
@@ -943,8 +955,25 @@
   }
 
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
-    gap: 12px !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .category-card {
+    padding: 16px 8px !important;
+  }
+
+  .category-icon-box {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .category-icon-box i {
+    font-size: 24px !important;
+  }
+
+  .category-name {
+    font-size: 13px !important;
   }
 
   .section-title {
@@ -1032,8 +1061,8 @@
   .nav-link:active,
   .product-card:active,
   .category-card:active {
-    background: rgba(0, 0, 0, 0.05);
-    transform: scale(0.98);
+    background: transparent;
+    transform: none;
   }
 }
 
@@ -1049,9 +1078,12 @@
 /* High contrast mode support */
 @media (prefers-contrast: more) {
   .product-card,
-  .category-card,
   .order-card {
     border: 2px solid var(--dark) !important;
+  }
+
+  .category-card {
+    border: none;
   }
 
   .btn-primary {

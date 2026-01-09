@@ -250,26 +250,28 @@ if (isset($_SESSION['user_id'])) {
                     <!-- Store Info Section -->
                     <div class="store-info-section">
                         <div class="store-header">
-                            <div class="store-avatar">
-                                <i class="fas fa-store"></i>
-                            </div>
-                            <div class="store-details">
-                                <div class="store-name"><?php echo htmlspecialchars($product['seller_name'] ?? 'Người bán'); ?></div>
-                                <div class="store-status online">
-                                    <i class="fas fa-circle"></i> Online
+                            <div class="store-header-row">
+                                <div class="store-avatar">
+                                    <i class="fas fa-store"></i>
                                 </div>
-                                <div class="store-stats">
-                                    <div class="store-stat-item">
-                                        <span class="store-stat-value"><?php echo $product['seller_products_count'] ?? 0; ?></span>
-                                        <span>Sản phẩm</span>
+                                <div class="store-details">
+                                    <div class="store-name"><?php echo htmlspecialchars($product['seller_name'] ?? 'Người bán'); ?></div>
+                                    <div class="store-status online">
+                                        <i class="fas fa-circle"></i> Online
                                     </div>
-                                    <div class="store-stat-item">
-                                        <span class="store-stat-value">4.8</span>
-                                        <span>Đánh giá</span>
-                                    </div>
-                                    <div class="store-stat-item">
-                                        <span class="store-stat-value">100%</span>
-                                        <span>Phản hồi</span>
+                                    <div class="store-stats">
+                                        <div class="store-stat-item">
+                                            <span class="store-stat-value"><?php echo $product['seller_products_count'] ?? 0; ?></span>
+                                            <span>Sản phẩm</span>
+                                        </div>
+                                        <div class="store-stat-item">
+                                            <span class="store-stat-value">4.8</span>
+                                            <span>Đánh giá</span>
+                                        </div>
+                                        <div class="store-stat-item">
+                                            <span class="store-stat-value">100%</span>
+                                            <span>Phản hồi</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

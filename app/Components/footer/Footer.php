@@ -1,4 +1,9 @@
 <?php
+// Ensure BASE_URL is defined
+if (!defined('BASE_URL')) {
+    require_once __DIR__ . '/../../config/config.php';
+}
+
 function footer() {
     // Prevent duplicate rendering
     static $footerRendered = false;

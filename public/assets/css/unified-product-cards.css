@@ -39,7 +39,7 @@
 .product-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary-color);
+    /* border-color removed per user feedback */
 }
 
 .product-image {
@@ -64,29 +64,36 @@
     transform: scale(1.05);
 }
 
-.cart-icon-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
+/* New Footer Cart Button */
+.product-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #f8fafc;
+}
+
+.btn-add-cart-footer {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #3b82f6;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary-color);
     cursor: pointer;
     transition: all 0.2s ease;
-    z-index: 2;
-    box-shadow: var(--shadow-md);
 }
 
-.cart-icon-btn:hover {
-    background: var(--primary-color);
-    color: white;
+.btn-add-cart-footer:hover {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
     transform: scale(1.1);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
 }
 
 .no-image {
@@ -96,131 +103,153 @@
 }
 
 .product-content {
-    padding: 12px;
+    padding: 16px;
     flex: 1;
     display: flex;
     flex-direction: column;
+    background: #fff;
+    z-index: 2;
 }
 
 .product-specs {
     display: flex;
     gap: 6px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
 }
 
 .spec-tag {
     display: inline-block;
-    background: #f3f4f6;
-    color: #6b7280;
-    padding: 2px 8px;
+    background: #f1f5f9; /* Light gray bg */
+    color: #64748b;     /* Slate color */
+    padding: 3px 8px;
     border-radius: 4px;
     font-size: 11px;
     font-weight: 500;
-    white-space: nowrap;
+    line-height: 1.2;
 }
 
 .product-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 6px;
-    color: #1e293b;
-    line-height: 1.3;
+    margin-bottom: 8px;
+    color: #333;
+    line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex: 1;
+    transition: color 0.2s;
+}
+
+.product-card:hover .product-title {
+    color: var(--primary-color);
 }
 
 .product-price-section {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin-bottom: 4px;
     flex-wrap: wrap;
+    margin-top: auto;
 }
 
 .current-price {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
-    color: #e63946;
+    color: var(--primary-color);
 }
 
 .original-price {
-    font-size: 11px;
+    font-size: 13px;
     color: #9ca3af;
     text-decoration: line-through;
 }
 
 .discount-percent {
-    font-size: 10px;
-    color: #ef4444;
+    font-size: 11px;
+    color: #fff;
     font-weight: 600;
+    background: #ef4444;
+    padding: 1px 4px;
+    border-radius: 2px;
 }
 
 .product-rating {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: 12px;
     color: #6b7280;
-    margin-bottom: 8px;
+    margin-bottom: 0px;
 }
 
 .stars {
-    color: #f59e0b;
+    color: #fbbf24;
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 1px;
 }
 
 .separator {
-    color: #d1d5db;
+    color: #e5e7eb;
 }
 
 .sales {
-    color: #10b981;
-    font-weight: 500;
+    color: #6b7280;
+    font-weight: 400;
 }
 
+/* Hover Action: Slide up over image */
 .product-hover-action {
-    padding: 8px;
-    border-top: 1px solid #f3f4f6;
-    background: #fafbfc;
-    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background: transparent; /* Or subtle gradient */
+    display: block;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 4;
 }
 
 .product-card:hover .product-hover-action {
-    display: block;
+    transform: translateY(0);
 }
 
 .btn-quick-add {
     width: 100%;
-    padding: 6px 8px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    padding: 8px 12px;
+    background: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 4px;
-    font-size: 12px;
+    border-radius: 20px; /* Pill shape */
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
 }
 
 .btn-quick-add:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.35);
 }
 
 .btn-quick-add.disabled {
-    background: #d1d5db;
+    background: #cbd5e1;
     cursor: not-allowed;
-    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
 }
 
 /* ============================================================
