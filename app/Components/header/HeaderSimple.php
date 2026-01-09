@@ -2,6 +2,8 @@
 // HeaderSimple.php - Simple and clean header design
 // No need to require config.php as it's already loaded when Header.php is included
 
+use App\Core\UrlHelper;
+
 function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_notifications = 0)
 {
     // Display error messages if any
@@ -25,9 +27,9 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
     ?>
     
     <!-- Header Simple CSS -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/header-simple.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/notifications.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/footer.css">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('header-simple.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('notifications.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('footer.css'); ?>">
 
     <header class="header-simple d-lg-none">
         <!-- Header Top Bar: Menu, Logo, Actions -->
@@ -44,7 +46,7 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
 
                 <!-- Center: Logo -->
                 <div class="header-top-center">
-                    <a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="header-logo">
+                    <a href="<?php echo UrlHelper::route('home'); ?>" class="header-logo">
                         <i class="fas fa-recycle header-logo-icon"></i>
                         <span class="header-logo-text">HIHand</span>
                     </a>
@@ -55,7 +57,7 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
                     <div class="header-actions">
                 <?php if ($is_logged_in): ?>
                     <!-- Notifications -->
-                    <a href="<?php echo BASE_URL; ?>app/View/extra/notifications.php" 
+                    <a href="<?php echo UrlHelper::to('app/View/extra/notifications.php'); ?>" 
                        class="header-icon-btn" 
                        title="Thông báo">
                         <i class="fas fa-bell"></i>
@@ -65,7 +67,7 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
                     </a>
 
                     <!-- Cart -->
-                    <a href="<?php echo BASE_URL; ?>app/View/cart/index.php" 
+                    <a href="<?php echo UrlHelper::to('app/View/cart/index.php'); ?>" 
                        class="header-icon-btn" 
                        title="Giỏ hàng">
                         <i class="fas fa-shopping-cart"></i>
@@ -87,34 +89,34 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
                                 </h6>
                             </li>
                             <?php if ($_SESSION['user_role'] == 'admin'): ?>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/admin/QuanLyTaiKhoanView.php">
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/admin/QuanLyTaiKhoanView.php'); ?>">
                                     <i class="fas fa-solid fa-medal me-2"></i>Quản lý tài khoản</a></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/admin/DanhSachBoxChatView.php">
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/admin/DanhSachBoxChatView.php'); ?>">
                                     <i class="fas fa-solid fa-envelope me-2"></i>Xem tin nhắn từ người dùng</a></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/admin/products.php">
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/admin/products.php'); ?>">
                                     <i class="fas fa-solid fa-check me-2"></i>Duyệt sản phẩm</a></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/admin/manage_products.php">
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/admin/manage_products.php'); ?>">
                                     <i class="fas fa-cogs me-2"></i>Quản lý sản phẩm</a></li>
                             <?php endif; ?>
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/product/Product.php">
+                            <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/product/Product.php'); ?>">
                                 <i class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/order/order_history.php">
+                            <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/order/order_history.php'); ?>">
                                 <i class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/user/ProfileUserView.php">
+                            <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/user/ProfileUserView.php'); ?>">
                                 <i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>public/index.php?page=logout">
+                            <li><a class="dropdown-item" href="<?php echo UrlHelper::route('logout'); ?>">
                                 <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                         </ul>
                     </div>
                 <?php else: ?>
                     <!-- Guest: Login/Register Buttons -->
                     <div class="header-auth-buttons">
-                        <a href="<?php echo BASE_URL; ?>public/index.php?page=login" class="header-btn-login">
+                        <a href="<?php echo UrlHelper::route('login'); ?>" class="header-btn-login">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Đăng nhập</span>
                         </a>
-                        <a href="<?php echo BASE_URL; ?>public/index.php?page=register" class="header-btn-register">
+                        <a href="<?php echo UrlHelper::route('register'); ?>" class="header-btn-register">
                             <i class="fas fa-user-plus"></i>
                             <span>Đăng ký</span>
                         </a>
@@ -129,7 +131,7 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
         <div class="header-search-section">
             <div class="header-search-container">
                 <div class="header-search">
-                    <form class="header-search-form" method="GET" action="<?php echo BASE_URL; ?>app/View/extra/search_advanced.php" id="headerSearchFormElement">
+                    <form class="header-search-form" method="GET" action="<?php echo UrlHelper::to('app/View/extra/search_advanced.php'); ?>" id="headerSearchFormElement">
                         <input type="text" 
                                class="header-search-input" 
                                name="q" 
@@ -168,57 +170,57 @@ function renderHeaderSimple($pdo, $categories = [], $cart_count = 0, $unread_not
                     <ul class="header-menu-list">
                         <?php if ($_SESSION['user_role'] == 'admin'): ?>
                             <li class="header-menu-item">
-                                <a href="<?php echo BASE_URL; ?>app/View/admin/QuanLyTaiKhoanView.php" class="header-menu-link">
+                                <a href="<?php echo UrlHelper::to('app/View/admin/QuanLyTaiKhoanView.php'); ?>" class="header-menu-link">
                                     <i class="fas fa-solid fa-medal"></i>
                                     <span>Quản lý tài khoản</span>
                                 </a>
                             </li>
                             <li class="header-menu-item">
-                                <a href="<?php echo BASE_URL; ?>app/View/admin/DanhSachBoxChatView.php" class="header-menu-link">
+                                <a href="<?php echo UrlHelper::to('app/View/admin/DanhSachBoxChatView.php'); ?>" class="header-menu-link">
                                     <i class="fas fa-solid fa-envelope"></i>
                                     <span>Xem tin nhắn từ người dùng</span>
                                 </a>
                             </li>
                             <li class="header-menu-item">
-                                <a href="<?php echo BASE_URL; ?>app/View/admin/products.php" class="header-menu-link">
+                                <a href="<?php echo UrlHelper::to('app/View/admin/products.php'); ?>" class="header-menu-link">
                                     <i class="fas fa-solid fa-check"></i>
                                     <span>Duyệt sản phẩm</span>
                                 </a>
                             </li>
                             <li class="header-menu-item">
-                                <a href="<?php echo BASE_URL; ?>app/View/admin/manage_products.php" class="header-menu-link">
+                                <a href="<?php echo UrlHelper::to('app/View/admin/manage_products.php'); ?>" class="header-menu-link">
                                     <i class="fas fa-cogs"></i>
                                     <span>Quản lý sản phẩm</span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <li class="header-menu-item">
-                            <a href="<?php echo BASE_URL; ?>app/View/product/Product.php" class="header-menu-link">
+                            <a href="<?php echo UrlHelper::to('app/View/product/Product.php'); ?>" class="header-menu-link">
                                 <i class="fas fa-box"></i>
                                 <span>Tin đăng của tôi</span>
                             </a>
                         </li>
                         <li class="header-menu-item">
-                            <a href="<?php echo BASE_URL; ?>app/View/order/order_history.php" class="header-menu-link">
+                            <a href="<?php echo UrlHelper::to('app/View/order/order_history.php'); ?>" class="header-menu-link">
                                 <i class="fas fa-history"></i>
                                 <span>Lịch sử mua hàng</span>
                             </a>
                         </li>
                         <li class="header-menu-item">
-                            <a href="<?php echo BASE_URL; ?>app/View/user/ProfileUserView.php" class="header-menu-link">
+                            <a href="<?php echo UrlHelper::to('app/View/user/ProfileUserView.php'); ?>" class="header-menu-link">
                                 <i class="fas fa-user"></i>
                                 <span>Thông tin cá nhân</span>
                             </a>
                         </li>
                         <li class="header-menu-item">
-                            <a href="<?php echo BASE_URL; ?>app/View/product/sell.php" class="header-menu-link">
+                            <a href="<?php echo UrlHelper::to('app/View/product/sell.php'); ?>" class="header-menu-link">
                                 <i class="fas fa-plus-circle"></i>
                                 <span>Đăng tin bán hàng</span>
                             </a>
                         </li>
                         <li class="header-menu-divider"></li>
                         <li class="header-menu-item">
-                            <a href="<?php echo BASE_URL; ?>public/index.php?page=logout" class="header-menu-link">
+                            <a href="<?php echo UrlHelper::route('logout'); ?>" class="header-menu-link">
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span>Đăng xuất</span>
                             </a>

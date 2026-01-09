@@ -4,66 +4,14 @@ if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../../../config/config.php';
 }
 
-// Get database connection
-global $pdo;
-if (!isset($pdo) || $pdo === null) {
-    // Explicitly load Database class if possible
-    $dbPath = __DIR__ . '/../../Core/Database.php';
-    if (file_exists($dbPath)) {
-        require_once $dbPath;
-    }
+// View logic only - data is passed from Controller
 
-    if (class_exists('Database')) {
-        $db = Database::getInstance();
-        $pdo = $db->getConnection();
-    } else {
-        // Fallback
-        try {
-            $db_host = $_ENV['DB_HOST'] ?? 'localhost';
-            $db_name = $_ENV['DB_NAME'] ?? 'muabandocu';
-            $db_user = $_ENV['DB_USER'] ?? 'root';
-            $db_pass = $_ENV['DB_PASS'] ?? '';
-            
-            $dsn = "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4";
-            $pdo = new PDO($dsn, $db_user, $db_pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-        } catch (Exception $e) {
-            error_log("ProfileUserView DB error: " . $e->getMessage());
-        }
-    }
-}
+// Ensure variables are initialized to avoid undefined errors if accessed directly (fallback)
+$categories = $categories ?? [];
+$cart_count = $cart_count ?? 0;
+$unread_notifications = $unread_notifications ?? 0;
+global $pdo; // Header might still need $pdo if it's not fully refactored yet, though we passed it from controller
 
-// Ensure variables are initialized to avoid undefined errors
-$categories = [];
-$cart_count = 0;
-$unread_notifications = 0;
-
-if (isset($pdo) && $pdo) {
-    // 1. Fetch Categories (Force load)
-    try {
-        // DEBUG: Select ALL to be safe
-        $stmt = $pdo->query("SELECT * FROM categories ORDER BY name ASC");
-        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-        error_log("Profile header category load error: " . $e->getMessage());
-    }
-
-    // 2. Fetch User Data (Cart & Notifications) if logged in
-    if (isset($_SESSION['user_id'])) {
-        try {
-            // Cart count
-            $stmt = $pdo->prepare("SELECT SUM(quantity) FROM cart WHERE user_id = ?");
-            $stmt->execute([$_SESSION['user_id']]);
-            $cart_count = (int)$stmt->fetchColumn();
-
-            // Notifications
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
-            $stmt->execute([$_SESSION['user_id']]);
-            $unread_notifications = (int)$stmt->fetchColumn();
-        } catch (Exception $e) {
-             error_log("Profile header user data load error: " . $e->getMessage());
-        }
-    }
-}
 
 // Header will use these passed variables
 require_once __DIR__ . '/../../Components/header/Header.php';
@@ -78,17 +26,24 @@ require_once __DIR__ . '/../../Components/header/Header.php';
     <title>Thông tin cá nhân</title>
     
     <!-- Fonts & Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <?php
+    // Basic CSS
+    $assetManager = new \App\Core\AssetManager();
+    $assetManager->addCss('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css', 'core');
+    $assetManager->addCss('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap', 'core');
+    $assetManager->addCss('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css', 'core');
     
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    // Components
+    $assetManager->addCss('assets/css/footer.css', 'components');
     
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/index.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/footer.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/profile_user.css?v=2.1">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-profile-page.css">
+    // Page Specific
+    $assetManager->addCss('assets/css/pages/home.css', 'pages'); // Base structure
+    $assetManager->addCss('assets/css/pages/profile.css', 'pages'); // Profile specific
+    
+    // Render
+    $assetManager->renderCss();
+    ?>
+
 
     <style>
         body {

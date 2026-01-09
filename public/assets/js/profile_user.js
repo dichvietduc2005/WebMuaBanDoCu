@@ -50,7 +50,7 @@ function add_event_btn_save() {
             document.getElementById('btn-edit').classList.remove('d-none');
 
             // Send Request
-            fetch('/WebMuaBanDoCu/app/Controllers/user/ProfileUserController.php', {
+            fetch('/WebMuaBanDoCu/public/index.php?page=profile_update', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

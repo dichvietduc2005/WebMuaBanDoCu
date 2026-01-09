@@ -1,0 +1,85 @@
+/* ============================================================
+   RESPONSIVE UTILITIES (Merged)
+   Includes: Mobile Responsive Enhanced and other global responsive utilities
+   ============================================================ */
+
+@import url('../core/variables.css');
+
+/* ----------------------------------
+   GLOBAL MOBILE IMPROVEMENTS
+   ---------------------------------- */
+
+/* Universal box sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Responsive Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Mobile Typography adjustment */
+@media (max-width: 767px) {
+    body {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.125rem; }
+    
+    /* Better touch targets for buttons/links */
+    button, .btn, a.btn, input[type="submit"] {
+        min-height: 44px; /* Apple recommendation for touch targets */
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    
+    /* Prevent input zoom on iOS */
+    input[type="text"], 
+    input[type="number"], 
+    input[type="email"], 
+    input[type="password"], 
+    select, 
+    textarea {
+        font-size: 16px;
+    }
+}
+
+/* ----------------------------------
+   LAYOUT UTILITIES
+   ---------------------------------- */
+.d-mobile-none {
+    display: none !important;
+}
+
+@media (min-width: 768px) {
+    .d-mobile-none {
+        display: block !important; /* Or flex/inline etc. depending on context, using block generically */
+    }
+    .d-desktop-none {
+        display: none !important;
+    }
+}
+@media (max-width: 767px) {
+    .d-desktop-block {
+        display: none !important;
+    }
+}
+
+/* ----------------------------------
+   FLEXBOX GRID HELPERS FOR MOBILE
+   ---------------------------------- */
+@media (max-width: 576px) {
+    .flex-column-mobile {
+        flex-direction: column !important;
+    }
+    .w-100-mobile {
+        width: 100% !important;
+    }
+}
+
+/* Add contents from mobile-responsive-enhanced.css here if found */

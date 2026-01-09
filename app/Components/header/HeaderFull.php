@@ -2,6 +2,8 @@
 // HeaderFull.php - Full header for desktop (≥992px)
 // Mobile/Tablet will use HeaderSimple.php
 
+use App\Core\UrlHelper;
+
 function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notifications = 0)
 {
     // Display error messages if any
@@ -23,15 +25,15 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
     ?>
     
     <!-- Header Component CSS -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/components/header.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/header-mobile-fix.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/notifications.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/footer.css">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('components/header.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('header-mobile-fix.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('notifications.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('footer.css'); ?>">
 
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top d-none d-lg-block">
         <div class="container-fluid px-2 px-sm-3 px-lg-4">
             <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center me-auto me-lg-4 text-decoration-none" href="<?php echo BASE_URL; ?>public/index.php?page=home" style="transition: none; opacity: 1;">
+            <a class="navbar-brand d-flex align-items-center me-auto me-lg-4 text-decoration-none" href="<?php echo UrlHelper::route('home'); ?>" style="transition: none; opacity: 1;">
                 <i class="fas fa-recycle text-primary me-2" style="font-size: clamp(24px, 6vw, 32px);"></i>
                 <h1 class="mb-0 fw-bold text-gradient d-none d-sm-inline"
                     style="font-size: clamp(20px, 5vw, 28px); color: #2563eb;">HIHand Shop</h1>
@@ -65,7 +67,7 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                                 
                                 <!-- All Categories Header -->
                                 <li style="padding: 12px 16px; border-bottom: 1px solid #f0f0f0; background: white; border-radius: 12px 12px 0 0;">
-                                    <a href="<?php echo BASE_URL; ?>public/index.php?page=products"
+                                    <a href="<?php echo UrlHelper::route('products'); ?>"
                                        style="display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #1f2937; font-weight: 600; font-size: 14px;">
                                         <span>Tất cả danh mục</span>
                                         <i class="fas fa-check" style="color: #fbbf24; font-size: 16px;"></i>
@@ -76,7 +78,7 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                                     <div style="max-height: 380px; overflow-y: auto; padding: 8px 0;">
                                         <?php foreach ($categories as $index => $category): ?>
                                             <li style="animation: slideIn 0.3s ease forwards; animation-delay: <?php echo $index * 0.03; ?>s;">
-                                                <a href="<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo htmlspecialchars($category['slug'] ?? ''); ?>"
+                                                <a href="<?php echo UrlHelper::to('app/View/product/category.php?slug=' . urlencode($category['slug'] ?? '')); ?>"
                                                    style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 14px; color: #4b5563; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent;"
                                                    onmouseover="this.style.backgroundColor='#f9f8ff'; this.style.color='#4f46e5'; this.style.borderLeftColor='#4f46e5';"
                                                    onmouseout="this.style.backgroundColor='white'; this.style.color='#4b5563'; this.style.borderLeftColor='transparent';">
@@ -196,7 +198,7 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                     <!-- Search Form - With Orange Background Section -->
                     <div class="desktop-search-section">
                         <form id="search-form2" class="desktop-search-form" method="GET"
-                            action="<?php echo BASE_URL; ?>app/View/extra/search_advanced.php" onsubmit="return validateSearchForm(event);">
+                            action="<?php echo UrlHelper::to('app/View/extra/search_advanced.php'); ?>" onsubmit="return validateSearchForm(event);">
                             <input type="text" id="search-input-desktop" name="q"
                                 placeholder="Tìm sản phẩm..."
                                 class="desktop-search-input"
@@ -225,7 +227,7 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                 <div class="d-flex align-items-center gap-2">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <!-- Notifications -->
-                        <a href="<?php echo BASE_URL; ?>app/View/extra/notifications.php"
+                        <a href="<?php echo UrlHelper::to('app/View/extra/notifications.php'); ?>"
                             class="btn btn-link text-dark p-1 position-relative notifications-bell" title="Thông báo">
                             <i class="fas fa-bell" style="font-size: 20px;"></i>
                             <?php if ($unread_notifications > 0): ?>
@@ -241,7 +243,7 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
 
 
                         <!-- Cart -->
-                        <a href="<?php echo BASE_URL; ?>app/View/cart/index.php"
+                        <a href="<?php echo UrlHelper::to('app/View/cart/index.php'); ?>"
                             class="btn btn-link text-dark p-1 position-relative" title="Giỏ hàng">
                             <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
                             <?php if ($cart_count > 0): ?>
@@ -272,28 +274,28 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                                 </li>
                                 <?php
                                 if ($_SESSION['user_role'] == 'admin') {
-                                    echo '<li><a class="dropdown-item" href="' . BASE_URL . 'app/View/admin/QuanLyTaiKhoanView.php"><i class="fas fa-solid fa-medal me-2"></i>Quản lý tài khoản</a></li>';
-                                    echo '<li><a class="dropdown-item" href="' . BASE_URL . 'app/View/admin/DanhSachBoxChatView.php"><i class="fas fa-solid fa-envelope me-2"></i>Xem tin nhắn từ người dùng</a></li>';
-                                    echo '<li><a class="dropdown-item" href="' . BASE_URL . 'app/View/admin/products.php"><i class="fas fa-solid fa-check me-2"></i>Duyệt sản phẩm</a></li>';
-                                    echo '<li><a class="dropdown-item" href="' . BASE_URL . 'app/View/admin/manage_products.php"><i class="fas fa-cogs me-2"></i>Quản lý sản phẩm</a></li>';
+                                    echo '<li><a class="dropdown-item" href="' . UrlHelper::to('app/View/admin/QuanLyTaiKhoanView.php') . '"><i class="fas fa-solid fa-medal me-2"></i>Quản lý tài khoản</a></li>';
+                                    echo '<li><a class="dropdown-item" href="' . UrlHelper::to('app/View/admin/DanhSachBoxChatView.php') . '"><i class="fas fa-solid fa-envelope me-2"></i>Xem tin nhắn từ người dùng</a></li>';
+                                    echo '<li><a class="dropdown-item" href="' . UrlHelper::to('app/View/admin/products.php') . '"><i class="fas fa-solid fa-check me-2"></i>Duyệt sản phẩm</a></li>';
+                                    echo '<li><a class="dropdown-item" href="' . UrlHelper::to('app/View/admin/manage_products.php') . '"><i class="fas fa-cogs me-2"></i>Quản lý sản phẩm</a></li>';
                                 }
                                 ?>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/product/Product.php"><i
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/product/Product.php'); ?>"><i
                                             class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/order/order_history.php"><i
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/order/order_history.php'); ?>"><i
                                             class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>app/View/user/ProfileUserView.php"><i
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::to('app/View/user/ProfileUserView.php'); ?>"><i
                                             class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>public/index.php?page=logout"><i
+                                <li><a class="dropdown-item" href="<?php echo UrlHelper::route('logout'); ?>"><i
                                             class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
 
                         <!-- Post Ad Button -->
-                        <a href="<?php echo BASE_URL; ?>app/View/product/sell.php"
+                        <a href="<?php echo UrlHelper::to('app/View/product/sell.php'); ?>"
                             class="btn btn-warning d-flex align-items-center justify-content-center fw-bold shadow"
                             title="Đăng tin bán hàng"
                             style="height: 50px; min-width: 136px; padding: 0 20px; font-size: 15px; line-height: 1; gap: 8px; border-radius: 12px; background: linear-gradient(135deg, #fbbf24, #f59e0b); border: none; transition: all 0.3s ease;">
@@ -303,12 +305,12 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                     <?php else: ?>
                         <!-- Guest user buttons -->
                         <div class="d-flex gap-3">
-                            <a href="<?php echo BASE_URL; ?>public/index.php?page=login"
+                            <a href="<?php echo UrlHelper::route('login'); ?>"
                                 class="btn btn-primary border-0 d-flex align-items-center justify-content-center fw-semibold shadow-sm"
                                 style="height: 48px; padding: 0 20px; font-size: 15px; line-height: 1; border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #2563eb); transition: all 0.3s ease;">
                                 <i class="fas fa-sign-in-alt me-2" style="font-size: 18px;"></i>Đăng nhập
                             </a>
-                            <a href="<?php echo BASE_URL; ?>public/index.php?page=register"
+                            <a href="<?php echo UrlHelper::route('register'); ?>"
                                 class="btn btn-success border-0 d-flex align-items-center justify-content-center fw-semibold shadow-sm"
                                 style="height: 48px; padding: 0 20px; font-size: 15px; line-height: 1; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); transition: all 0.3s ease;">
                                 <i class="fas fa-user-plus me-2" style="font-size: 18px;"></i>Đăng ký
@@ -321,16 +323,16 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
     </nav>
 
     <!-- Notifications Popup JS -->
-    <script src="<?php echo BASE_URL; ?>public/assets/js/notifications.js"></script>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/search-autocomplete.js"></script>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/cart-count-realtime.js"></script>
+    <script src="<?php echo UrlHelper::js('notifications.js'); ?>"></script>
+    <script src="<?php echo UrlHelper::js('search-autocomplete.js'); ?>"></script>
+    <script src="<?php echo UrlHelper::js('cart-count-realtime.js'); ?>"></script>
     
     <!-- Global userId variable for chat system -->
     <script>
         window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;
         let userId = window.userId;
     </script>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/components/header.js"></script>
+    <script src="<?php echo UrlHelper::js('components/header.js'); ?>"></script>
     
     <?php
 }

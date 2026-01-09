@@ -79,7 +79,10 @@
 </div>
 
 <!-- Scripts -->
-<script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"></script>
+<?php
+use App\Core\UrlHelper;
+?>
+<script src="<?php echo UrlHelper::js('user_chat_system.js'); ?>"></script>
 <style>
     /* =====================================================
        CHAT WIDGET - MOBILE RESPONSIVE STYLES

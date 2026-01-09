@@ -149,91 +149,104 @@ class CartController
         $user_id = $this->ensureUserIsLoggedIn();
         return $this->cartModel->clearCart($user_id);
     }
+
+
+    /**
+     * Handle API requests (AJAX)
+     */
+    public function handleRequest()
+    {
+        // Ensure JSON response
+        header('Content-Type: application/json');
+        
+        $action = $_POST['action'] ?? $_GET['action'] ?? '';
+        $response = ['success' => false, 'message' => 'Hành động không hợp lệ.'];
+
+        try {
+            switch ($action) {
+                case 'add':
+                    $product_id = (int)($_POST['product_id'] ?? 0);
+                    $quantity = (int)($_POST['quantity'] ?? 1);
+                    if ($product_id > 0 && $quantity > 0) {
+                        $this->addToCart($product_id, $quantity);
+                        $checkout = isset($_POST['checkout']) && $_POST['checkout'] == '1';
+                        
+                        $response = [
+                            'success' => true,
+                            'message' => 'Sản phẩm đã được thêm vào giỏ hàng.',
+                            'cart_count' => $this->getCartItemCount(),
+                            'checkout' => $checkout
+                        ];
+                    } else {
+                        throw new \Exception('Thông tin sản phẩm không hợp lệ.');
+                    }
+                    break;
+
+                case 'update':
+                    $product_id = (int)($_POST['product_id'] ?? 0);
+                    $quantity = (int)($_POST['quantity'] ?? 0);
+                    if ($product_id > 0) {
+                        $this->updateCartItemQuantity($product_id, $quantity);
+                        $response = [
+                            'success' => true,
+                            'message' => 'Giỏ hàng đã được cập nhật.',
+                            'cart_count' => $this->getCartItemCount(),
+                            'total' => $this->getCartTotal()
+                        ];
+                    } else {
+                        throw new \Exception('ID sản phẩm không hợp lệ.');
+                    }
+                    break;
+
+                case 'remove':
+                    $product_id = (int)($_POST['product_id'] ?? 0);
+                    if ($product_id > 0) {
+                        $this->removeCartItem($product_id);
+                        $response = [
+                            'success' => true,
+                            'message' => 'Sản phẩm đã được xóa khỏi giỏ hàng.',
+                            'cart_count' => $this->getCartItemCount(),
+                            'total' => $this->getCartTotal()
+                        ];
+                    } else {
+                        throw new \Exception('ID sản phẩm không hợp lệ.');
+                    }
+                    break;
+
+                case 'clear':
+                    $this->clearCart();
+                    $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.'];
+                    break;
+
+                case 'count':
+                    $response = [
+                        'success' => true,
+                        'count' => $this->getCartItemCount()
+                    ];
+                    break;
+                    
+                default:
+                    throw new \Exception('Hành động không hợp lệ: ' . htmlspecialchars($action));
+            }
+        } catch (\Exception $e) {
+            $response = ['success' => false, 'message' => $e->getMessage()];
+            http_response_code(400); 
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }
 
 /**
- * Xử lý các yêu cầu AJAX trực tiếp
+ * Xử lý các yêu cầu AJAX trực tiếp (Legacy Support)
  */
 if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
     require_once(__DIR__ . '/../../../config/config.php');
     require_once(__DIR__ . '/../../Models/cart/CartModel.php');
     
-    header('Content-Type: application/json');
+    // Auto-instantiate and handle
+    global $pdo;
     $cartController = new CartController($pdo);
-    
-    $action = $_POST['action'] ?? $_GET['action'] ?? '';
-    $response = ['success' => false, 'message' => 'Hành động không hợp lệ.'];
-
-    try {
-        switch ($action) {
-            case 'add':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                $quantity = (int)($_POST['quantity'] ?? 1);
-                if ($product_id > 0 && $quantity > 0) {
-                    $cartController->addToCart($product_id, $quantity);
-                    $checkout = isset($_POST['checkout']) && $_POST['checkout'] == '1';
-                    
-                    // Logging đã được xử lý trong method addToCart()
-                    $response = [
-                        'success' => true,
-                        'message' => 'Sản phẩm đã được thêm vào giỏ hàng.',
-                        'cart_count' => $cartController->getCartItemCount(),
-                        'checkout' => $checkout
-                    ];
-                } else {
-                    throw new \Exception('Thông tin sản phẩm không hợp lệ.');
-                }
-                break;
-
-            case 'update':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                $quantity = (int)($_POST['quantity'] ?? 0);
-                if ($product_id > 0) {
-                    $cartController->updateCartItemQuantity($product_id, $quantity);
-                    $response = [
-                        'success' => true,
-                        'message' => 'Giỏ hàng đã được cập nhật.',
-                        'cart_count' => $cartController->getCartItemCount(),
-                        'total' => $cartController->getCartTotal()
-                    ];
-                } else {
-                    throw new \Exception('ID sản phẩm không hợp lệ.');
-                }
-                break;
-
-            case 'remove':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                if ($product_id > 0) {
-                    // Logging đã được xử lý trong method removeCartItem()
-                    $cartController->removeCartItem($product_id);
-                    $response = [
-                        'success' => true,
-                        'message' => 'Sản phẩm đã được xóa khỏi giỏ hàng.',
-                        'cart_count' => $cartController->getCartItemCount(),
-                        'total' => $cartController->getCartTotal()
-                    ];
-                } else {
-                    throw new \Exception('ID sản phẩm không hợp lệ.');
-                }
-                break;
-
-            case 'clear':
-                $cartController->clearCart();
-                $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.'];
-                break;
-
-            case 'count':
-                $response = [
-                    'success' => true,
-                    'count' => $cartController->getCartItemCount()
-                ];
-                break;
-        }
-    } catch (\Exception $e) {
-        $response = ['success' => false, 'message' => $e->getMessage()];
-        http_response_code(400); // Bad Request
-    }
-
-    echo json_encode($response);
-    exit;
+    $cartController->handleRequest();
 }

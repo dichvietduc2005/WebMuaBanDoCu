@@ -56,6 +56,33 @@ switch ($page) {
         $controller->categories();
         break;
 
+    case 'product_detail':
+        require_once __DIR__ . '/../app/Models/product/ProductModel.php';
+        require_once __DIR__ . '/../app/Models/product/CategoryModel.php';
+        require_once __DIR__ . '/../app/Controllers/product/FrontendProductController.php';
+        $controller = new FrontendProductController();
+        $controller->detail();
+        break;
+
+    case 'profile':
+        require_once __DIR__ . '/../app/Controllers/user/ProfileUserController.php';
+        $controller = new ProfileUserController();
+        $controller->index();
+        break;
+
+    case 'profile_update':
+        require_once __DIR__ . '/../app/Controllers/user/ProfileUserController.php';
+        $controller = new ProfileUserController();
+        $controller->update();
+        break;
+
+    case 'cart_action':
+        require_once __DIR__ . '/../app/Models/cart/CartModel.php';
+        require_once __DIR__ . '/../app/Controllers/cart/CartController.php';
+        $controller = new CartController($pdo); // $pdo is from bootstrap.php
+        $controller->handleRequest();
+        break;
+
     case 'home':
     default:
         // Trang chủ mặc định

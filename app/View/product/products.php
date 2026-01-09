@@ -133,7 +133,7 @@ if (!isset($products)) {
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-style.css">
     <!-- Mobile Responsive CSS for Product Pages -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
-    <style>
+    <!-- <style>
         /* Custom overrides suitable for this page that Tailwind arbitrary values make too verbose */
         .line-clamp-2 {
             display: -webkit-box;
@@ -141,7 +141,7 @@ if (!isset($products)) {
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-    </style>
+    </style> -->
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">    
     <?php renderHeader($pdo); ?>

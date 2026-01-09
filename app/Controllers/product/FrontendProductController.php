@@ -161,4 +161,81 @@ class FrontendProductController
 
         require __DIR__ . '/../../View/product/categories.php';
     }
+
+
+    public function detail()
+    {
+        $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        
+        if (!$product_id) {
+            header('Location: ' . BASE_URL);
+            exit;
+        }
+
+        $product = $this->productModel->getProductById($product_id);
+
+        if (!$product) {
+            header('Location: ' . BASE_URL);
+            exit;
+        }
+
+        // Get Product Images
+        $product_images = $this->productModel->getProductImages($product_id);
+
+        // Get Related Products
+        $related_products = $this->productModel->getRelatedProducts($product['category_id'], $product_id);
+
+        // Log user action
+        if (function_exists('log_user_action')) {
+            $userId = $_SESSION['user_id'] ?? null;
+            log_user_action($this->pdo, $userId, 'view_product', "Xem chi tiết sản phẩm: " . htmlspecialchars($product['title']), [
+                'product_id' => $product_id,
+                'product_title' => $product['title'],
+                'category_id' => $product['category_id'],
+                'price' => $product['price'],
+                'seller_id' => $product['user_id'] ?? null
+            ]);
+        }
+
+        // Get Cart Count
+        $cart_count = 0;
+        if (isset($_SESSION['user_id'])) {
+            $stmt = $this->pdo->prepare("
+                SELECT SUM(ci.quantity) as total_quantity
+                FROM carts c 
+                JOIN cart_items ci ON c.id = ci.cart_id 
+                WHERE c.user_id = ?
+            ");
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $cart_count = $result['total_quantity'] ?? 0;
+            
+            // Get Unread Notifications
+            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+            $stmt->execute([$_SESSION['user_id']]);
+            $unread_notifications = (int)$stmt->fetchColumn();
+        } else {
+             $unread_notifications = 0;
+        }
+        
+        // Get Categories for Header
+        $categories = $this->categoryModel->getAllActive(); // Assuming getAllActive exists, or use direct query like ProfileUserController
+        if (empty($categories)) {
+             try {
+                $stmt = $this->pdo->query("SELECT id, name, slug, icon FROM categories WHERE status = 'active' ORDER BY name ASC");
+                $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                $categories = [];
+            }
+        }
+
+        // Get Review Stats
+        $review_stats = $this->productModel->getReviewStats($product_id);
+        
+        // Pass variables to view
+        // Note: View expects $product, $product_images, $related_products, $cart_count, etc.
+        global $pdo; // View still uses global $pdo for reviews and other legacy stuff if valid
+        $pdo = $this->pdo;
+
+        require __DIR__ . '/../../View/product/Product_detail.php';
+    }
 }

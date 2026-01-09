@@ -1,4 +1,6 @@
 <?php
+namespace App\Core;
+
 /**
  * Service Container - Dependency Injection Container
  * Quản lý tất cả dependencies của ứng dụng
@@ -48,7 +50,7 @@ class Container
     public function get($name)
     {
         if (!isset($this->services[$name])) {
-            throw new Exception("Service '{$name}' not found in container");
+            throw new \Exception("Service '{$name}' not found in container");
         }
         
         // Nếu đã có singleton, trả về nó
@@ -98,124 +100,4 @@ class Container
     }
 }
 
-/**
- * Container Setup - Đăng ký tất cả services
- * Gọi function này trong bootstrap.php
- */
-function setupContainer()
-{
-    $container = Container::getInstance();
-    
-    // ========== Database Service ==========
-    $container->register('database', function($c) {
-        return Database::getInstance();
-    });
-    
-    // PDO Connection
-    $container->register('pdo', function($c) {
-        $db = $c->get('database');
-        return $db->getConnection();
-    });
-    
-    // ========== Model Services ==========
-    // Product Models
-    $container->register('productModel', function($c) {
-        return new ProductModel();
-    });
-    
-    $container->register('categoryModel', function($c) {
-        return new CategoryModel();
-    });
-    
-    $container->register('productUserModel', function($c) {
-        return new ProductUserModel();
-    });
-    
-    // User Models
-    $container->register('userModel', function($c) {
-        return new UserModel();
-    });
-    
-    $container->register('authModel', function($c) {
-        return new Auth();
-    });
-    
-    // Order Models
-    $container->register('orderModel', function($c) {
-        return new OrderModel();
-    });
-    
-    // Cart Models
-    $container->register('cartModel', function($c) {
-        return new CartModel();
-    });
-    
-    // Admin Models
-    $container->register('themeModel', function($c) {
-        return new ThemeModel();
-    });
-    
-    $container->register('notificationModel', function($c) {
-        return new NotificationModel();
-    });
-    
-    // ========== Theme Service ==========
-    $container->register('frontendTheme', function($c) {
-        return new FrontendThemeRenderer();
-    });
-    
-    // ========== View Services ==========
-    $container->register('viewRenderer', function($c) {
-        return new ViewRenderer();
-    });
-    
-    $container->register('viewHelper', function($c) {
-        return new ViewHelper();
-    });
-    
-    // ========== Controller Services ==========
-    $container->register('homeController', function($c) {
-        return new HomeController();
-    });
-    
-    $container->register('productController', function($c) {
-        return new ProductController();
-    });
-    
-    $container->register('userController', function($c) {
-        return new UserController();
-    });
-    
-    $container->register('cartController', function($c) {
-        return new CartController();
-    });
-    
-    $container->register('orderController', function($c) {
-        return new OrderController();
-    });
-    
-    // ========== Application Config ==========
-    $container->register('config', function($c) {
-        return [
-            'app_name' => 'HIHand Shop',
-            'base_url' => BASE_URL,
-            'db_host' => $_ENV['DB_HOST'] ?? 'localhost',
-            'db_name' => $_ENV['DB_NAME'] ?? 'muabandocu',
-            'debug' => true,
-        ];
-    });
-    
-    return $container;
-}
-
-/**
- * Helper function - Tính năng riêng
- * Nếu không muốn dùng $container->get() everywhere, có thể dùng:
- * $pdo = service('pdo');
- * $productModel = service('productModel');
- */
-function service($name)
-{
-    return Container::getInstance()->get($name);
-}
 

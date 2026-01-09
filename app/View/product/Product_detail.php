@@ -1,61 +1,58 @@
 <?php
-// Sử dụng bootstrap để tăng hiệu suất tải trang
-require_once '../../../config/bootstrap.php';
+// Product Detail View - Data passed from Controller
+// Variables: $product, $product_images, $related_products, $cart_count, $pdo
+
+// Load bootstrap if not already loaded (supports both direct access and routing)
+if (!defined('BASE_URL')) {
+    require_once dirname(__DIR__, 3) . '/config/bootstrap.php';
+}
+
+
+
+use App\Core\UrlHelper;
 
 // Include required components
 require_once __DIR__ . '/../../Components/header/Header.php';
 require_once __DIR__ . '/../../Components/footer/Footer.php';
 
-// Lấy ID sản phẩm từ URL
-$product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+// Ensure variables (Fallback - should be set by controller)
+$product = $product ?? null;
+$product_images = $product_images ?? [];
+$related_products = $related_products ?? [];
+$cart_count = $cart_count ?? 0;
+$product_id = $product_id ?? ($product['id'] ?? 0);
 
-if (!$product_id) {
-    header('Location: ' . BASE_URL);
-    exit;
-}
+// All data including review_stats is now provided by FrontendProductController
 
-// Sử dụng ProductModel để lấy dữ liệu (với cache)
-$productModel = new ProductModel();
-$product = $productModel->getProductById($product_id);
 
 if (!$product) {
-    header('Location: ' . BASE_URL);
+    // Should have been handled by controller, but just in case
+    header('Location: ' . UrlHelper::route('home'));
     exit;
 }
 
-// Lấy hình ảnh sản phẩm
-$product_images = $productModel->getProductImages($product_id);
-
-// Lấy sản phẩm liên quan (cùng danh mục)
-$related_products = $productModel->getRelatedProducts($product['category_id'], $product_id);
-
-// Log user action: view product
-if (function_exists('log_user_action')) {
-    $userId = $_SESSION['user_id'] ?? null;
-    log_user_action($pdo, $userId, 'view_product', "Xem chi tiết sản phẩm: " . htmlspecialchars($product['title']), [
-        'product_id' => $product_id,
-        'product_title' => $product['title'],
-        'category_id' => $product['category_id'],
-        'price' => $product['price'],
-        'seller_id' => $product['user_id'] ?? null
-    ]);
+// Get categories for header
+$categories = $categories ?? [];
+if (empty($categories)) {
+    try {
+        $stmt = $pdo->query("SELECT id, name, slug, icon FROM categories WHERE status = 'active' ORDER BY name ASC");
+        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        $categories = [];
+    }
 }
 
-// Đếm số sản phẩm trong giỏ hàng
-$cart_count = 0;
-if (isset($_SESSION['user_id'])) {
-    $stmt = $pdo->prepare("
-        SELECT SUM(ci.quantity) as total_quantity
-        FROM carts c 
-        JOIN cart_items ci ON c.id = ci.cart_id 
-        WHERE c.user_id = ?
-    ");
-    $stmt->execute([$_SESSION['user_id']]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    $cart_count = $result['total_quantity'] ?? 0;
+// Get unread notifications count for header
+$unread_notifications = $unread_notifications ?? 0;
+if (isset($_SESSION['user_id']) && $unread_notifications === 0) {
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+        $stmt->execute([$_SESSION['user_id']]);
+        $unread_notifications = (int)$stmt->fetchColumn();
+    } catch (Exception $e) {
+        $unread_notifications = 0;
+    }
 }
-
-// Các helper functions đã được đưa vào app/helpers.php
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -70,15 +67,13 @@ if (isset($_SESSION['user_id'])) {
     <meta name="googlebot" content="noindex, nofollow">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/product_detail.css">
-    <!-- Mobile Responsive CSS for Product Pages -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
-    <!-- Shopee Style Product Detail -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product-detail-shopee.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/review-modal.css">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('product_detail.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('mobile-product-pages.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('product-detail-shopee.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('review-modal.css'); ?>">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('footer.css'); ?>">
     
     <!-- Thêm style inline để đảm bảo review system hiển thị -->
     <style>
@@ -119,30 +114,13 @@ if (isset($_SESSION['user_id'])) {
 </head>
 
 <body>
-    <?php renderHeader($pdo); ?>
+    <?php renderHeader($pdo, $categories, $cart_count, $unread_notifications); ?>
     <div class="product-detail-container">
-        <!-- Breadcrumb
-        <nav class="breadcrumb-custom">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="../index.php">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="categories.php">Danh mục</a></li>
-                <li class="breadcrumb-item"><a
-                        href="products.php?category=<?php echo $product['category_id']; ?>"><?php echo htmlspecialchars($product['category_name']); ?></a>
-                </li>
-                <li class="breadcrumb-item active"><?php echo htmlspecialchars($product['title']); ?></li>
-            </ol>
-        </nav> -->
-
         <!-- Product Main Info -->
         <div class="product-main">
             <div class="row">
                 <div class="col-md-6">
                     <div class="product-images">
-                        <!-- Back Button
-                        <a href="javascript:history.back()" class="product-back-button">
-                            <i class="fas fa-arrow-left"></i>
-                        </a> -->
-                        
                         <!-- Image Pagination -->
                         <?php if (!empty($product_images) && count($product_images) > 1): ?>
                         <div class="image-pagination">
@@ -152,7 +130,7 @@ if (isset($_SESSION['user_id'])) {
                         
                         <?php if (!empty($product_images)): ?>
                         <div class="main-image-wrapper">
-                            <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product_images[0]['image_path']); ?>"
+                            <img src="<?php echo UrlHelper::to('public/' . htmlspecialchars($product_images[0]['image_path'])); ?>"
                                 alt="<?php echo htmlspecialchars($product['title']); ?>" class="main-image" id="mainImage">
                         </div>
                         <?php if (count($product_images) > 1): ?>
@@ -160,11 +138,11 @@ if (isset($_SESSION['user_id'])) {
                             <div class="variations-label"><?php echo count($product_images); ?> phân loại có sẵn</div>
                             <div class="image-thumbnails">
                                 <?php foreach ($product_images as $index => $image): ?>
-                                <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($image['image_path']); ?>"
+                                <img src="<?php echo UrlHelper::to('public/' . htmlspecialchars($image['image_path'])); ?>"
                                     alt="Ảnh <?php echo $index + 1; ?>"
                                     class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>"
                                     data-index="<?php echo $index; ?>"
-                                    onclick="changeMainImage('<?php echo BASE_URL . 'public/' . htmlspecialchars($image['image_path']); ?>', this, <?php echo $index + 1; ?>)">
+                                    onclick="changeMainImage('<?php echo UrlHelper::to('public/' . htmlspecialchars($image['image_path'])); ?>', this, <?php echo $index + 1; ?>)">
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -275,7 +253,7 @@ if (isset($_SESSION['user_id'])) {
                                     </div>
                                 </div>
                             </div>
-                            <button class="view-shop-btn" onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/shop.php?seller=<?php echo $product['user_id']; ?>'">
+                            <button class="view-shop-btn" onclick="window.location.href='<?php echo UrlHelper::to('app/View/product/shop.php?seller=' . $product['user_id']); ?>'">
                                 Xem Shop
                             </button>
                         </div>
@@ -284,7 +262,6 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
 
-    
         <!-- Customer Reviews -->
         <div class="customer-reviews">
             <h3 class="reviews-header mb-4">Đánh giá <?php echo htmlspecialchars($product['title']); ?></h3>
@@ -329,7 +306,6 @@ if (isset($_SESSION['user_id'])) {
                                 <span class="me-2 small fw-bold text-dark" style="width:10px;"><?php echo $star; ?></span>
                                 <i class="fas fa-star text-warning me-2 small"></i>
                                 <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f1f1;">
-                                    <!-- Changed to Blue (#2f80ed) to match reference image -->
                                     <div class="progress-bar" role="progressbar" style="width: <?php echo $percent; ?>%; background-color: #2f80ed;"></div>
                                 </div>
                                 <span class="ms-3 small text-muted text-end" style="width: 35px;"><?php echo $percent > 0 ? round($percent).'%' : '0%'; ?></span>
@@ -435,7 +411,7 @@ if (isset($_SESSION['user_id'])) {
                                 <!-- Product Info -->
                                 <div class="review-product-info">
                                     <?php if (!empty($product_images)): ?>
-                                        <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product_images[0]['image_path']); ?>" alt="Product" class="review-product-img">
+                                        <img src="<?php echo UrlHelper::to('public/' . htmlspecialchars($product_images[0]['image_path'])); ?>" alt="Product" class="review-product-img">
                                     <?php else: ?>
                                         <div class="review-product-img d-inline-flex align-items-center justify-content-center bg-light">
                                             <i class="fas fa-image fa-2x text-muted"></i>
@@ -462,7 +438,7 @@ if (isset($_SESSION['user_id'])) {
                                     <textarea class="review-textarea" id="contentReview" placeholder="Mời bạn chia sẻ thêm cảm nhận..."></textarea>
                                 </div>
 
-                                <!-- Extra Inputs (Optional for now, but UI present) -->
+                                <!-- Extra Inputs -->
                                 <div class="review-options">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="recommendCheck" checked>
@@ -470,7 +446,6 @@ if (isset($_SESSION['user_id'])) {
                                             Tôi sẽ giới thiệu sản phẩm cho bạn bè, người thân
                                         </label>
                                     </div>
-                                    <!-- Placeholder for Image Upload -->
                                     <div class="upload-photo-btn" onclick="document.getElementById('reviewImages').click()">
                                         <i class="fas fa-camera me-1"></i> Gửi ảnh thực tế (tối đa 3 ảnh)
                                         <input type="file" id="reviewImages" hidden multiple accept="image/*">
@@ -500,7 +475,7 @@ if (isset($_SESSION['user_id'])) {
             <?php else: ?>
             <div class="reviews-footer text-center">
                 <div class="login-to-review">
-                    <p>Bạn cần <a href="/WebMuaBanDoCu/app/View/user/login.php" class="text-primary fw-bold">đăng nhập</a> để đánh giá sản phẩm</p>
+                    <p>Bạn cần <a href="<?php echo UrlHelper::to('app/View/user/login.php'); ?>" class="text-primary fw-bold">đăng nhập</a> để đánh giá sản phẩm</p>
                 </div>
             </div>
             <?php endif; ?>
@@ -513,9 +488,9 @@ if (isset($_SESSION['user_id'])) {
             <div class="related-grid">
                 <?php foreach ($related_products as $related): ?>
                 <div class="related-item"
-                    onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $related['id']; ?>'">
+                    onclick="window.location.href='<?php echo UrlHelper::to('app/View/product/Product_detail.php?id=' . $related['id']); ?>'">
                     <?php if ($related['image_path']): ?>
-                    <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($related['image_path']); ?>"
+                    <img src="<?php echo UrlHelper::to('public/' . htmlspecialchars($related['image_path'])); ?>"
                         alt="<?php echo htmlspecialchars($related['title']); ?>" class="related-image">
                     <?php else: ?>
                     <div class="related-image d-flex align-items-center justify-content-center bg-light">
@@ -524,7 +499,6 @@ if (isset($_SESSION['user_id'])) {
                     <?php endif; ?>
                     <div class="related-content">
                         <h6><?php echo htmlspecialchars($related['title']); ?></h6>
-                        
                         <div class="text-danger fw-bold"><?php echo formatPrice($related['price']); ?></div>
                         <div class="text-muted small">Tình trạng: <?php echo getConditionText($related['condition_status']); ?></div>
                     </div>
@@ -534,11 +508,13 @@ if (isset($_SESSION['user_id'])) {
         </div>
         <?php endif; ?>
     </div>
+    
     <?php footer(); ?>
-    <script>let product_id = <?php echo $product_id ?></script>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_review_system.js"></script>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>let product_id = <?php echo $product_id; ?>;</script>
+    <script src="<?php echo UrlHelper::js('user_review_system.js'); ?>"></script>
     <script>
     function changeMainImage(imagePath, thumbnail, index) {
         document.getElementById('mainImage').src = imagePath;
@@ -573,75 +549,70 @@ if (isset($_SESSION['user_id'])) {
     }
 
     function addToCart(productId) {
-    const quantity = parseInt(document.getElementById('quantity').value) || 1;
-    
-    <?php if (!isset($_SESSION['user_id'])): ?>
-    showToast('warning', 'Yêu cầu đăng nhập', 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-    setTimeout(() => {
-        window.location.href = '/WebMuaBanDoCu/app/View/user/login.php';
-    }, 2000);
-    return;
-    <?php endif; ?>
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        
+        <?php if (!isset($_SESSION['user_id'])): ?>
+        showToast('warning', 'Yêu cầu đăng nhập', 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+        setTimeout(() => {
+            window.location.href = '<?php echo UrlHelper::to('app/View/user/login.php'); ?>';
+        }, 2000);
+        return;
+        <?php endif; ?>
 
-    // Optimistic UI update
-    const cartCountElements = document.querySelectorAll('.cart-count');
-    if (cartCountElements.length > 0) {
-        cartCountElements.forEach(element => {
-            const currentCount = parseInt(element.textContent) || 0;
-            element.textContent = currentCount + quantity;
-            
-            if (currentCount === 0) {
-                element.style.display = 'flex';
-            }
-        });
-    }
-
-    // AJAX call to add to cart
-    $.ajax({
-        url: '../../../app/Controllers/cart/CartController.php',
-        method: 'POST',
-        data: {
-            action: 'add',
-            product_id: productId,
-            quantity: quantity
-        },
-        dataType: 'json',
-        success: function(response) {
-            console.log('Response:', response); // Debug log
-            if (response && response.success) {
-                // Hiển thị thông báo thành công
-                showToast('success', 'Thành công', response.message || 'Đã thêm sản phẩm vào giỏ hàng');
+        // Optimistic UI update
+        const cartCountElements = document.querySelectorAll('.cart-count');
+        if (cartCountElements.length > 0) {
+            cartCountElements.forEach(element => {
+                const currentCount = parseInt(element.textContent) || 0;
+                element.textContent = currentCount + quantity;
                 
-                // Cập nhật lại số lượng chính xác từ server
-                if (response.cart_count !== undefined) {
+                if (currentCount === 0) {
+                    element.style.display = 'flex';
+                }
+            });
+        }
+
+        // AJAX call to add to cart
+        $.ajax({
+            url: '<?php echo BASE_URL; ?>public/index.php?page=cart_action',
+            method: 'POST',
+            data: {
+                action: 'add',
+                product_id: productId,
+                quantity: quantity
+            },
+            dataType: 'json',
+            success: function(response) {
+                console.log('Response:', response);
+                if (response && response.success) {
+                    showToast('success', 'Thành công', response.message || 'Đã thêm sản phẩm vào giỏ hàng');
+                    
+                    if (response.cart_count !== undefined) {
+                        cartCountElements.forEach(element => {
+                            element.textContent = response.cart_count;
+                            element.style.display = response.cart_count > 0 ? 'flex' : 'none';
+                        });
+                    }
+                    
+                    document.dispatchEvent(new CustomEvent('cartItemAdded'));
+                } else {
+                    showToast('error', 'Lỗi', response?.message || 'Có lỗi xảy ra');
                     cartCountElements.forEach(element => {
-                        element.textContent = response.cart_count;
-                        element.style.display = response.cart_count > 0 ? 'flex' : 'none';
+                        const currentCount = parseInt(element.textContent) || 0;
+                        element.textContent = Math.max(0, currentCount - quantity);
                     });
                 }
-                
-                // Trigger cart updated event for real-time system
-                document.dispatchEvent(new CustomEvent('cartItemAdded'));
-            } else {
-                showToast('error', 'Lỗi', response?.message || 'Có lỗi xảy ra');
-                // Rollback optimistic update
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                showToast('error', 'Lỗi', 'Không thể kết nối đến server');
                 cartCountElements.forEach(element => {
                     const currentCount = parseInt(element.textContent) || 0;
                     element.textContent = Math.max(0, currentCount - quantity);
                 });
             }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error); // Debug log
-            showToast('error', 'Lỗi', 'Không thể kết nối đến server');
-            // Rollback optimistic update
-            cartCountElements.forEach(element => {
-                const currentCount = parseInt(element.textContent) || 0;
-                element.textContent = Math.max(0, currentCount - quantity);
-            });
-        }
-    });
-}
+        });
+    }
 
     function buyNow(productId) {
         const quantity = parseInt(document.getElementById('quantity').value) || 1;
@@ -649,14 +620,14 @@ if (isset($_SESSION['user_id'])) {
         <?php if (!isset($_SESSION['user_id'])): ?>
         showToast('warning', 'Yêu cầu đăng nhập', 'Vui lòng đăng nhập để mua sản phẩm');
         setTimeout(() => {
-            window.location.href = '<?php echo BASE_URL; ?>app/View/user/login.php?redirect=' + encodeURIComponent(window.location.href);
+            window.location.href = '<?php echo UrlHelper::to('app/View/user/login.php?redirect='); ?>' + encodeURIComponent(window.location.href);
         }, 1500);
         return;
         <?php endif; ?>
         
         // Add to cart first, then redirect to checkout
         $.ajax({
-            url: '../../../app/Controllers/cart/CartController.php',
+            url: '<?php echo BASE_URL; ?>public/index.php?page=cart_action',
             method: 'POST',
             data: {
                 action: 'add',
@@ -666,8 +637,7 @@ if (isset($_SESSION['user_id'])) {
             dataType: 'json',
             success: function(response) {
                 if (response && response.success) {
-                    // Redirect to checkout
-                    window.location.href = '<?php echo BASE_URL; ?>app/View/checkout/index.php';
+                    window.location.href = '<?php echo UrlHelper::to('app/View/checkout/index.php'); ?>';
                 } else {
                     showToast('error', 'Lỗi', response?.message || 'Có lỗi xảy ra');
                 }
@@ -679,18 +649,14 @@ if (isset($_SESSION['user_id'])) {
     }
 
     function showAllReviews() {
-        // Placeholder function for future implementation
         alert('Tính năng xem tất cả đánh giá sẽ được triển khai sau');
         console.log('Show all reviews functionality to be implemented');
     }
     </script>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/product_detail.js"></script>
-    <script>userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?></script>
+    <script src="<?php echo UrlHelper::js('product_detail.js'); ?>"></script>
+    <script>userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;</script>
     <?php require_once __DIR__ . '/../user/ChatView.php'; ?>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
-    
-    <!-- Footer -->
-    <?php footer(); ?>
+    <script src="<?php echo UrlHelper::js('user_chat_system.js'); ?>"></script>
 
 </body>
 

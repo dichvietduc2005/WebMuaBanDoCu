@@ -21,6 +21,11 @@ define('PUBLIC_PATH', BASE_PATH . '/public');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Load Composer autoload (PSR-4)
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+}
+
 // Load config chỉ khi file tồn tại
 if (file_exists(__DIR__ . '/config.php')) {
     require_once __DIR__ . '/config.php';
@@ -102,13 +107,53 @@ function show_error($message, $code = 500) {
     exit;
 }
 
-// Auto-load core classes để tách View Logic
+// Load core classes first (before creating aliases)
+require_once __DIR__ . '/../app/Core/Database.php';
+require_once __DIR__ . '/../app/Core/Container.php';
+
+// Use namespaced classes
+use App\Core\Container;
+use App\Core\Database;
+
+// Backward compatibility: Create aliases for old class names (without namespace)
+// This allows existing code to continue working without immediate refactoring
+if (!class_exists('Database', false)) {
+    class_alias('App\Core\Database', 'Database');
+}
+if (!class_exists('Container', false)) {
+    class_alias('App\Core\Container', 'Container');
+}
+
+// Helper function for UrlHelper (backward compatibility)
+if (!function_exists('url')) {
+    function url(string $type, ...$args) {
+        switch ($type) {
+            case 'css':
+                return \App\Core\UrlHelper::css(...$args);
+            case 'js':
+                return \App\Core\UrlHelper::js(...$args);
+            case 'asset':
+                return \App\Core\UrlHelper::asset(...$args);
+            case 'route':
+                return \App\Core\UrlHelper::route(...$args);
+            default:
+                return \App\Core\UrlHelper::to($type);
+        }
+    }
+}
+
+// Auto-load core classes để tách View Logic (backward compatibility)
+// Các classes này sẽ được autoload bởi Composer nếu có namespace
+require_once __DIR__ . '/../app/Core/UrlHelper.php';
 require_once __DIR__ . '/../app/Core/ViewRenderer.php';
 require_once __DIR__ . '/../app/Core/ViewHelper.php';
-require_once __DIR__ . '/../app/Core/Container.php';
 require_once __DIR__ . '/../app/Core/LayoutManager.php';
+require_once __DIR__ . '/../app/Core/AssetManager.php';
+
+
 
 // Setup Dependency Injection Container
+require_once __DIR__ . '/dependencies.php';
 $container = setupContainer();
 
 // Expose container globally (trích xuất PDO từ container)

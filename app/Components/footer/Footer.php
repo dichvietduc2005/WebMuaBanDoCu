@@ -1,8 +1,8 @@
 <?php
-// Ensure BASE_URL is defined
-if (!defined('BASE_URL')) {
-    require_once __DIR__ . '/../../config/config.php';
-}
+use App\Core\UrlHelper;
+
+// BASE_URL is already defined by bootstrap.php (loaded via index.php)
+
 
 function footer() {
     // Prevent duplicate rendering
@@ -28,10 +28,10 @@ function footer() {
                 <div class="footer-column">
                     <h3>Liên kết nhanh</h3>
                     <ul class="footer-links">
-                        <li><a href="<?php echo BASE_URL; ?>"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+                        <li><a href="<?php echo UrlHelper::route('home'); ?>"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Giới thiệu</a></li>
-                        <li><a href="<?php echo BASE_URL; ?>app/View/product/products.php"><i class="fas fa-chevron-right"></i> Sản phẩm</a></li>
-                        <li><a href="<?php echo BASE_URL; ?>app/View/product/sell.php"><i class="fas fa-chevron-right"></i> Đăng bán</a></li>
+                        <li><a href="<?php echo UrlHelper::to('app/View/product/products.php'); ?>"><i class="fas fa-chevron-right"></i> Sản phẩm</a></li>
+                        <li><a href="<?php echo UrlHelper::to('app/View/product/sell.php'); ?>"><i class="fas fa-chevron-right"></i> Đăng bán</a></li>
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Liên hệ</a></li>
                     </ul>
                 </div>
@@ -77,11 +77,7 @@ function footer() {
     </footer>
 
     <!-- Chat Widget Global Integration -->
-    <?php
-    // Ensure BASE_URL is defined
-    $baseUrl = defined('BASE_URL') ? BASE_URL : '/WebMuaBanDoCu/'; // Fallback path if needed
-    ?>
-    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/chat_widget_modern.css">
+    <link rel="stylesheet" href="<?php echo UrlHelper::css('chat_widget_modern.css'); ?>">
     
     <?php 
     // Include Chat HTML
@@ -96,7 +92,7 @@ function footer() {
     <script>
         window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;
     </script>
-    <script src="<?php echo $baseUrl; ?>public/assets/js/user_chat_system.js"></script>
+    <script src="<?php echo UrlHelper::js('user_chat_system.js'); ?>"></script>
 
     <?php
 }
