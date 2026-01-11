@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Handle payment option selection styling
   paymentOptions.forEach((option) => {
-    option.addEventListener("click", function() {
+    option.addEventListener("click", function () {
       const radio = this.querySelector('input[type="radio"]');
       if (radio && !radio.disabled) {
         radio.checked = true;
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const district = document.getElementById('district').value;
       const ward = document.getElementById('ward').value;
       const address = document.getElementById('specific_address').value;
-      
+
       // Bỏ district vì dùng API v2 (2 cấp)
       if (!fullname || !province || !ward || !address) {
         e.preventDefault();
@@ -40,9 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Check if container exists, if not create it
     let toastContainer = document.querySelector(".toast-container");
     if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.className = 'toast-container';
-        document.body.appendChild(toastContainer);
+      toastContainer = document.createElement('div');
+      toastContainer.className = 'toast-container';
+      document.body.appendChild(toastContainer);
     }
 
     const toastId = "toast-" + Date.now();
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
     toast.className = `toast ${type === "error" ? "toast-error" : ""}`;
     toast.id = toastId;
     toast.style.display = "flex";
-    
+
     toast.innerHTML = `
         <div class="toast-icon">
             <i class="fas ${type === "error" ? "fa-exclamation-circle" : "fa-check-circle"}"></i>
@@ -83,42 +83,104 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 3000);
   }
 
-  // Handle coupon button
-  const couponBtn = document.querySelector('.order-summary-card .btn-outline-primary');
-  const couponInput = document.querySelector('.order-summary-card .form-control[placeholder="Nhập mã ưu đãi"]');
-  
-  if (couponBtn && couponInput) {
-    couponBtn.addEventListener('click', async function() {
-        const code = couponInput.value.trim();
-        if (!code) {
-            showToast("Vui lòng nhập mã giảm giá", "error");
-            return;
-        }
+  // Reusable function to apply coupon
+  async function applyCouponCode(code, btnElement) {
+    if (!code) {
+      showToast("Vui lòng chọn hoặc nhập mã giảm giá", "error");
+      return;
+    }
 
-        couponBtn.disabled = true;
-        const originalText = couponBtn.innerHTML;
-        couponBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    if (btnElement) {
+      btnElement.disabled = true;
+      btnElement.dataset.originalText = btnElement.innerHTML;
+      btnElement.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    }
 
-        try {
-            const response = await fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=apply_coupon&code=${encodeURIComponent(code)}`
-            });
-            const data = await response.json();
-            
-            if (data.success) {
-                showToast(data.message, "success");
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                showToast(data.message, "error");
-            }
-        } catch (error) {
-            showToast("Lỗi kết nối máy chủ", "error");
-        } finally {
-            couponBtn.disabled = false;
-            couponBtn.innerHTML = originalText;
+    try {
+      const baseUrl = window.APP_CONFIG ? window.APP_CONFIG.baseUrl : '/WebMuaBanDoCu/';
+      const response = await fetch(`${baseUrl}app/Controllers/cart/CartController.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=apply_coupon&code=${encodeURIComponent(code)}`
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        showToast(data.message, "success");
+        setTimeout(() => location.reload(), 500);
+      } else {
+        showToast(data.message, "error");
+        if (btnElement) {
+          btnElement.disabled = false;
+          btnElement.innerHTML = btnElement.dataset.originalText;
         }
+      }
+    } catch (error) {
+      showToast("Lỗi kết nối máy chủ", "error");
+      if (btnElement) {
+        btnElement.disabled = false;
+        btnElement.innerHTML = btnElement.dataset.originalText;
+      }
+    }
+  }
+
+  // Handle manual apply in modal
+  const manualApplyBtn = document.getElementById('manual-apply-btn');
+  const manualInput = document.getElementById('manual-coupon-code');
+  if (manualApplyBtn && manualInput) {
+    manualApplyBtn.addEventListener('click', function () {
+      applyCouponCode(manualInput.value.trim(), manualApplyBtn);
+    });
+
+    // Allow enter key
+    manualInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        applyCouponCode(manualInput.value.trim(), manualApplyBtn);
+      }
+    });
+  }
+
+  // Handle confirm selection in modal
+  const confirmVoucherBtn = document.getElementById('confirm-voucher-btn');
+  if (confirmVoucherBtn) {
+    confirmVoucherBtn.addEventListener('click', function () {
+      const selectedRadio = document.querySelector('input[name="selected_voucher"]:checked');
+      if (selectedRadio) {
+        applyCouponCode(selectedRadio.value, confirmVoucherBtn);
+      } else {
+        showToast("Vui lòng chọn một mã giảm giá", "error");
+      }
+    });
+  }
+
+  // Handle remove coupon
+  const removeCouponBtn = document.getElementById('remove-coupon-btn');
+  if (removeCouponBtn) {
+    removeCouponBtn.addEventListener('click', async function () {
+      const originalText = removeCouponBtn.innerHTML;
+      removeCouponBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+      try {
+        const baseUrl = window.APP_CONFIG ? window.APP_CONFIG.baseUrl : '/WebMuaBanDoCu/';
+        const response = await fetch(`${baseUrl}app/Controllers/cart/CartController.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'action=remove_coupon'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showToast(data.message, "success");
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast(data.message || 'Lỗi khi gỡ mã', "error");
+          removeCouponBtn.innerHTML = originalText;
+        }
+      } catch (error) {
+        showToast("Lỗi kết nối máy chủ", "error");
+        removeCouponBtn.innerHTML = originalText;
+      }
     });
   }
 
