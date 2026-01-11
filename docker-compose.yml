@@ -41,6 +41,7 @@ services:
     environment:
       PMA_HOST: db
       PMA_ARBITRARY: 1
+      PMA_ABSOLUTE_URI: http://localhost:8081/
     ports:
       - "8081:80"
     networks:
