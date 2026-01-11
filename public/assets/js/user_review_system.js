@@ -317,16 +317,39 @@ function load_reviews() {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "product_id=" + product_id
     })
-    .then(res => res.json())
+    .then(res => {
+        // Check if response is actually JSON
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            // If not JSON, try to parse as text first to see what we got
+            return res.text().then(text => {
+                console.error('Expected JSON but got:', text.substring(0, 200));
+                throw new Error('Server returned non-JSON response');
+            });
+        }
+        return res.json();
+    })
     .then(data => {
         const reviewsBox = document.getElementById("reviewsList");
         if (!reviewsBox) return;
         
+        // Handle both array response and object with success flag
+        let reviews = [];
+        if (Array.isArray(data)) {
+            reviews = data;
+        } else if (data && data.success === false) {
+            // Error response
+            console.error('API error:', data.message);
+            reviews = [];
+        } else if (data && Array.isArray(data.reviews)) {
+            reviews = data.reviews;
+        }
+        
         // Don't clear if summary box is inside, but now it's outside
         reviewsBox.innerHTML = ''; // Clear previous reviews
         
-        if (data && data.length > 0) {
-            data.forEach(review => {
+        if (reviews && reviews.length > 0) {
+            reviews.forEach(review => {
                 reviewsBox.innerHTML += create_review_form(review);
             });
         } else {
@@ -340,13 +363,13 @@ function load_reviews() {
     })
     .catch(err => {
         console.error('Error loading reviews:', err);
-        const reviewsBox = document.getElementById("reviewsContainer");
+        const reviewsBox = document.getElementById("reviewsList") || document.getElementById("reviewsContainer");
         if (reviewsBox) {
             reviewsBox.innerHTML = `
-                <div class="no-reviews">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Không thể tải đánh giá</p>
-                    <small>Vui lòng thử lại sau</small>
+                <div class="no-reviews text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <p class="text-muted">Không thể tải đánh giá</p>
+                    <small class="text-muted">Vui lòng thử lại sau</small>
                 </div>
             `;
         }

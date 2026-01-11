@@ -12,8 +12,8 @@ function footer() {
     }
     $footerRendered = true;
     ?>
-    <footer class="footer">
-        <div class="container">
+    <footer class="footer" style="width: 100vw !important; max-width: 100vw !important; margin: 0 !important; margin-left: calc(-50vw + 50%) !important; margin-right: calc(-50vw + 50%) !important; padding-left: 0 !important; padding-right: 0 !important; left: 0 !important; right: 0 !important; position: relative !important; z-index: 100 !important; display: block !important;">
+        <div class="container-fluid px-3 px-md-4" style="max-width: 1400px; margin: 0 auto; width: 100%;">
             <div class="footer-grid">
                 <div class="footer-column">
                     <h3>Về chúng tôi</h3>

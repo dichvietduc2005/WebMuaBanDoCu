@@ -173,8 +173,49 @@ function getStatsData($pdo, $period, $year, $orderStatus) {
     $stmt->execute([$range['start'], $range['end']]);
     $revenueByDay = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Get additional data
-    $topProducts = getTopProducts($pdo, $range['start'], $range['end'], 10);
+    // Global stats (for stat cards that might stay global or need context)
+    $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE status = 'active'");
+    $totalUsersGlobal = (int) $stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) FROM orders");
+    $totalOrdersGlobal = (int) $stmt->fetchColumn();
+
+    $stmt = $pdo->query("
+        SELECT COALESCE(SUM(total_amount), 0) 
+        FROM orders 
+        WHERE DATE(created_at) = CURDATE() 
+          AND payment_status = 'paid'
+    ");
+    $todayRevenueGlobal = (float) $stmt->fetchColumn();
+
+    // Month-over-month growth stats
+    $stmt = $pdo->query("
+        SELECT COUNT(*) FROM orders 
+        WHERE YEAR(created_at) = YEAR(CURDATE()) AND MONTH(created_at) = MONTH(CURDATE())
+    ");
+    $ordersThisMonth = (int) $stmt->fetchColumn();
+    $stmt = $pdo->query("
+        SELECT COUNT(*) FROM orders 
+        WHERE YEAR(created_at) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) 
+          AND MONTH(created_at) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+    ");
+    $ordersLastMonth = (int) $stmt->fetchColumn();
+    $ordersMonthChange = $ordersLastMonth > 0 ? (($ordersThisMonth - $ordersLastMonth) / $ordersLastMonth) * 100 : 0;
+
+    $stmt = $pdo->query("
+        SELECT COUNT(*) FROM users 
+        WHERE YEAR(created_at) = YEAR(CURDATE()) AND MONTH(created_at) = MONTH(CURDATE())
+    ");
+    $usersThisMonth = (int) $stmt->fetchColumn();
+    $stmt = $pdo->query("
+        SELECT COUNT(*) FROM users 
+        WHERE YEAR(created_at) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) 
+          AND MONTH(created_at) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+    ");
+    $usersLastMonth = (int) $stmt->fetchColumn();
+    $usersMonthChange = $usersLastMonth > 0 ? (($usersThisMonth - $usersLastMonth) / $usersLastMonth) * 100 : 0;
+
+    $topProducts = getTopProducts($pdo, $range['start'], $range['end'], 20);
     $topCustomers = getTopCustomers($pdo, $range['start'], $range['end'], 5);
     $returnRate = getReturnRate($pdo, $range['start'], $range['end']);
     $recentOrders = getRecentOrdersDetailed($pdo, 10);
@@ -185,6 +226,12 @@ function getStatsData($pdo, $period, $year, $orderStatus) {
         'new_users' => $newUsers,
         'aov' => $aov,
         'growth_rate' => $growthRate,
+        'today_revenue' => $todayRevenueGlobal,
+        'total_orders' => $totalOrdersGlobal,
+        'total_users' => $totalUsersGlobal,
+        'orders_month_change' => $ordersMonthChange,
+        'new_users_month_change' => $usersMonthChange,
+        'month_revenue_change' => $growthRate, // If period is month, this matches
         'orders_by_status' => $ordersByStatus,
         'revenue_by_day' => $revenueByDay,
         'top_products' => $topProducts,

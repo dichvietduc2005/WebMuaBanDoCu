@@ -143,10 +143,28 @@ if (!isset($products)) {
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">    
+<body class="bg-[#f5f5f5] font-sans text-gray-800">
     <?php renderHeader($pdo); ?>
     
-    <div class="container mx-auto px-6 py-12 max-w-7xl">
+    <div class="container mx-auto px-6 py-6 max-w-7xl">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="flex list-none p-0 text-sm text-gray-500">
+                <li class="flex items-center">
+                    <a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="hover:text-blue-600 transition-colors"><i class="fas fa-home mr-1"></i> Trang chủ</a>
+                    <span class="mx-2 text-gray-300">›</span>
+                </li>
+                <?php if ($category): ?>
+                    <li class="flex items-center">
+                        <a href="<?php echo BASE_URL; ?>public/index.php?page=products" class="hover:text-blue-600 transition-colors">Sản phẩm</a>
+                        <span class="mx-2 text-gray-300">›</span>
+                    </li>
+                    <li class="text-blue-600 font-semibold"><?php echo htmlspecialchars($category_name ?? ''); ?></li>
+                <?php else: ?>
+                    <li class="text-blue-600 font-semibold">Tất cả sản phẩm</li>
+                <?php endif; ?>
+            </ol>
+        </nav>
         
         <?php if ($category): ?>
         <?php
@@ -157,12 +175,25 @@ if (!isset($products)) {
         ?>
         <?php endif; ?>
         
-        <div class="text-center mb-10 pt-4">
+        <?php if ($category): ?>
+            <!-- Category Hero Banner -->
+            <div class="category-banner bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 mb-8 text-white relative overflow-hidden shadow-lg border border-blue-500/20">
+                <div class="relative z-10">
+                    <h2 class="text-4xl font-extrabold mb-3 tracking-tight"><?php echo htmlspecialchars($category_name); ?></h2>
+                    <p class="text-blue-100 text-lg opacity-90 max-w-lg leading-relaxed">Khám phá hàng ngàn sản phẩm <?php echo mb_strtolower(htmlspecialchars($category_name)); ?> chất lượng, giá rẻ đang được đăng bán hôm nay.</p>
+                </div>
+                <!-- Decorative Shapes -->
+                <div class="absolute top-[-20%] right-[-5%] w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-[-30%] left-[-5%] w-48 h-48 bg-blue-300/20 rounded-full blur-2xl"></div>
+            </div>
+        <?php endif; ?>
+        
+        <div class="text-left mb-8 pt-4 border-b border-gray-200 pb-6">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">
                 <?php if ($category): ?>
-                    <?php echo htmlspecialchars($category_name); ?>
+                    Danh sách sản phẩm trong ngành
                 <?php else: ?>
-                    Danh sách sản phẩm
+                    Tất cả danh mục sản phẩm
                 <?php endif; ?>
             </h1>
             <?php if ($search): ?>
@@ -180,7 +211,7 @@ if (!isset($products)) {
         <?php else: ?>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
                 <?php foreach ($products as $product): ?>
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:translate-y-[-4px] hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col h-full" 
+                <div class="bg-white rounded-xl overflow-hidden shadow-[0_2px_15px_rgba(0,0,0,0.05)] hover:translate-y-[-6px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] transition-all duration-300 cursor-pointer group flex flex-col h-full ring-1 ring-gray-100" 
                      onclick="window.location.href='Product_detail.php?id=<?php echo $product['id']; ?>'">
                     <div class="relative h-[220px] w-full bg-gray-100 overflow-hidden">
                         <?php if ($product['image_path']): ?>

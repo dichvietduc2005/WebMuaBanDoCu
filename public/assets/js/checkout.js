@@ -1,168 +1,127 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Quantity controls
-  const quantityInputs = document.querySelectorAll(".quantity-input");
-  const decreaseBtns = document.querySelectorAll(".quantity-decrease");
-  const increaseBtns = document.querySelectorAll(".quantity-increase");
-  const removeBtns = document.querySelectorAll(".remove-btn");
+  const paymentOptions = document.querySelectorAll(".payment-option");
+  const checkoutForm = document.getElementById("checkout-form");
 
-  // Update quantity
-  function updateQuantity(input, change) {
-    let currentValue = parseInt(input.value);
-    let newValue = currentValue + change;
-
-    if (newValue < 1) newValue = 1;
-
-    input.value = newValue;
-    updateItemTotal(input);
-    showToast("Cập nhật giỏ hàng thành công", "success");
-  }
-
-  // Update item total
-  function updateItemTotal(input) {
-    const item = input.closest(".cart-item");
-    const priceText = item.querySelector(
-      ".item-price span:last-child"
-    ).textContent;
-    const price = parseInt(priceText.replace(/[^\d]/g, ""));
-    const quantity = parseInt(input.value);
-    const total = price * quantity;
-
-    item.querySelector(".item-total").textContent =
-      formatCurrency(total) + " VNĐ";
-
-    updateOrderSummary();
-  }
-
-  // Format currency
-  function formatCurrency(amount) {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  }
-
-  // Update order summary
-  function updateOrderSummary() {
-    let subtotal = 0;
-
-    document.querySelectorAll(".item-total").forEach((totalElement) => {
-      const totalText = totalElement.textContent;
-      subtotal += parseInt(totalText.replace(/[^\d]/g, ""));
+  // Handle payment option selection styling
+  paymentOptions.forEach((option) => {
+    option.addEventListener("click", function() {
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio && !radio.disabled) {
+        radio.checked = true;
+        // Update active class
+        paymentOptions.forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+      }
     });
+  });
 
-    const discount = 500000;
-    const total = subtotal - discount;
+  // Validation before submit
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", function (e) {
+      const fullname = document.getElementById('txt_billing_fullname').value;
+      const province = document.getElementById('province').value;
+      const district = document.getElementById('district').value;
+      const ward = document.getElementById('ward').value;
+      const address = document.getElementById('specific_address').value;
+      
+      // Bỏ district vì dùng API v2 (2 cấp)
+      if (!fullname || !province || !ward || !address) {
+        e.preventDefault();
+        showToast("Vui lòng điền đầy đủ thông tin giao hàng", "error");
+        return;
+      }
 
-    document.querySelector(
-      ".summary-row:nth-child(1) .summary-value"
-    ).textContent = formatCurrency(subtotal) + " VNĐ";
-
-    document.querySelector(
-      ".summary-row.total .summary-total-value"
-    ).textContent = formatCurrency(total) + " VNĐ";
+      showToast("Đang chuyển hướng đến cổng thanh toán...", "success");
+    });
   }
 
   // Show toast notification
   function showToast(message, type = "success") {
-    const toastContainer = document.querySelector(".toast-container");
-    const toastId = "toast-" + Date.now();
+    // Check if container exists, if not create it
+    let toastContainer = document.querySelector(".toast-container");
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container';
+        document.body.appendChild(toastContainer);
+    }
 
+    const toastId = "toast-" + Date.now();
     const toast = document.createElement("div");
     toast.className = `toast ${type === "error" ? "toast-error" : ""}`;
     toast.id = toastId;
+    toast.style.display = "flex";
+    
     toast.innerHTML = `
-                    <div class="toast-icon">
-                        <i class="fas ${
-                          type === "error"
-                            ? "fa-exclamation-circle"
-                            : "fa-check-circle"
-                        }"></i>
-                    </div>
-                    <div class="toast-content">
-                        <div class="toast-header">
-                            <div class="toast-title">${
-                              type === "error" ? "Lỗi" : "Thành công"
-                            }</div>
-                            <button class="toast-close" onclick="document.getElementById('${toastId}').remove()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="toast-message">${message}</div>
-                    </div>
-                `;
+        <div class="toast-icon">
+            <i class="fas ${type === "error" ? "fa-exclamation-circle" : "fa-check-circle"}"></i>
+        </div>
+        <div class="toast-content">
+            <div class="toast-header" style="background: none; border: none; padding: 0; display: flex; justify-content: space-between; align-items: center;">
+                <div class="toast-title" style="font-weight: 700;">${type === "error" ? "Lỗi" : "Thành công"}</div>
+                <button class="toast-close" type="button" style="background: none; border: none; cursor: pointer; color: #aaa;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="toast-message">${message}</div>
+        </div>
+    `;
 
     toastContainer.appendChild(toast);
 
+    // Close button event
+    toast.querySelector('.toast-close').addEventListener('click', () => toast.remove());
+
     // Auto remove after 3 seconds
     setTimeout(() => {
-      if (document.getElementById(toastId)) {
-        toast.style.animation = "slideOut 0.3s ease";
+      const t = document.getElementById(toastId);
+      if (t) {
+        t.style.animation = "slideOut 0.3s ease";
         setTimeout(() => {
-          toast.remove();
+          t.remove();
         }, 300);
       }
     }, 3000);
   }
 
-  // Remove item
-  function removeItem(btn) {
-    const item = btn.closest(".cart-item");
-    item.classList.add("removing");
+  // Handle coupon button
+  const couponBtn = document.querySelector('.order-summary-card .btn-outline-primary');
+  const couponInput = document.querySelector('.order-summary-card .form-control[placeholder="Nhập mã ưu đãi"]');
+  
+  if (couponBtn && couponInput) {
+    couponBtn.addEventListener('click', async function() {
+        const code = couponInput.value.trim();
+        if (!code) {
+            showToast("Vui lòng nhập mã giảm giá", "error");
+            return;
+        }
 
-    setTimeout(() => {
-      item.remove();
-      updateOrderSummary();
-      showToast("Đã xóa sản phẩm khỏi giỏ hàng", "success");
+        couponBtn.disabled = true;
+        const originalText = couponBtn.innerHTML;
+        couponBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
-      // Update cart count
-      const cartBadge = document.querySelector(".badge.bg-danger");
-      if (cartBadge) {
-        const currentCount = parseInt(cartBadge.textContent);
-        cartBadge.textContent = currentCount - 1;
-      }
-    }, 300);
+        try {
+            const response = await fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=apply_coupon&code=${encodeURIComponent(code)}`
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                showToast(data.message, "success");
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast(data.message, "error");
+            }
+        } catch (error) {
+            showToast("Lỗi kết nối máy chủ", "error");
+        } finally {
+            couponBtn.disabled = false;
+            couponBtn.innerHTML = originalText;
+        }
+    });
   }
 
-  // Event listeners
-  decreaseBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const input = btn.parentElement.querySelector(".quantity-input");
-      updateQuantity(input, -1);
-    });
-  });
-
-  increaseBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const input = btn.parentElement.querySelector(".quantity-input");
-      updateQuantity(input, 1);
-    });
-  });
-
-  quantityInputs.forEach((input) => {
-    input.addEventListener("change", () => {
-      if (input.value < 1) input.value = 1;
-      updateItemTotal(input);
-    });
-  });
-
-  removeBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      removeItem(btn);
-    });
-  });
-
-  // Checkout button
-  document
-    .querySelector(".checkout-btn")
-    .addEventListener("click", function () {
-      const isChecked = document.getElementById("termsCheck").checked;
-
-      if (!isChecked) {
-        showToast("Vui lòng chấp nhận điều khoản và điều kiện", "error");
-        return;
-      }
-
-      // Here you would normally redirect to checkout page
-      showToast("Đang chuyển hướng đến trang thanh toán...", "success");
-    });
-
-  // Initialize
-  updateOrderSummary();
+  // Global access
+  window.showCheckoutToast = showToast;
 });

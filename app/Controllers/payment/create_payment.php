@@ -128,7 +128,27 @@ $returnData = array('code' => '00'
 
 // ===== INSERT THÔNG TIN ĐƠN HÀNG VÀO DATABASE =====
 $order_created_successfully = false;
-try {    // $user_id đã được lấy ở trên và chắc chắn có giá trị
+try {
+    // 💾 LƯU THÔNG TIN NGƯỜI DÙNG (NẾU ĐƯỢC CHỌN)
+    if (isset($_POST['save_info']) && $_POST['save_info'] == '1') {
+        $specificAddress = $_POST['specific_address'] ?? '';
+        $update_user_stmt = $pdo->prepare("
+            UPDATE users 
+            SET full_name = ?, 
+                phone = ?, 
+                address = ? 
+            WHERE id = ?
+        ");
+        $update_user_stmt->execute([
+            $fullName,
+            $vnp_Bill_Mobile,
+            $specificAddress, // Lưu địa chỉ cụ thể để dễ tái sử dụng
+            $user_id
+        ]);
+        error_log("Đã cập nhật thông tin người dùng ID $user_id theo yêu cầu lưu thông tin.");
+    }
+
+    // $user_id đã được lấy ở trên và chắc chắn có giá trị
     // Lấy thông tin giỏ hàng bằng CartController mới
     $cartController = new CartController($pdo);
     $cartItems = $cartController->getCartItems();

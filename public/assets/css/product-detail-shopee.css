@@ -198,19 +198,19 @@
   gap: 8px;
 }
 
-.price-old {
-  font-size: 16px;
+.original-price {
+  font-size: 14px;
   color: #999;
   text-decoration: line-through;
   font-weight: 400;
 }
 
-.price-discount {
+.discount-badge {
   background: #ee4d2d;
   color: white;
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -855,6 +855,46 @@
 
   .view-shop-btn:hover {
     background: #d84315;
+  }
+
+  /* Description & Specs Mobile */
+  .description-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 20px;
+  }
+
+  .specs-table-wrapper {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .specs-table {
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .specs-table tr {
+    border-bottom: 1px solid #eee;
+  }
+
+  .specs-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .specs-label {
+    color: #666;
+    padding: 10px 0;
+    width: 40%;
+  }
+
+  .specs-value {
+    color: #333;
+    font-weight: 500;
+    padding: 10px 0;
   }
 }
 

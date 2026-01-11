@@ -19,18 +19,23 @@ function addToCart(event, productId) {
         },
         body: `action=add&product_id=${productId}&quantity=${quantity}`
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Response data:", data);
-        if (data.success) {
+    .then(response => {
+        return response.json().then(data => {
+            return { status: response.status, ok: response.ok, data: data };
+        });
+    })
+    .then(result => {
+        console.log("Response data:", result.data);
+        if (result.ok && result.data.success) {
             showToast('success', 'Thành công!', 'Sản phẩm đã được thêm vào giỏ hàng.');
-            updateCartIcon(data.cart_count);
+            updateCartIcon(result.data.cart_count);
         } else {
             // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
-            if (data.message && data.message.includes("Bạn cần đăng nhập")) {
+            if (result.data.message && result.data.message.includes("Bạn cần đăng nhập")) {
                  showLoginPromptToast();
             } else {
-                showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+                // Hiển thị message từ server (có thể là lỗi tồn kho hoặc lỗi khác)
+                showToast('error', 'Lỗi!', result.data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
             }
         }
     })

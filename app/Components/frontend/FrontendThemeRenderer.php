@@ -287,7 +287,7 @@ class FrontendThemeRenderer {
         $bannerHeight = $this->themeModel->getThemeSetting('banner_height', 300);
         $animationEnabled = $this->themeModel->getThemeSetting('animation_enabled', true);
         
-        $html = "<div class='frontend-banner-container' style='height: {$bannerHeight}px; position: relative; overflow: hidden; border-radius: 16px; margin-bottom: 2rem;'>";
+        $html = "<div class='frontend-banner-container' style='height: {$bannerHeight}px; position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>";
         $html .= "<div class='frontend-banner-slider' id='frontendBannerSlider'>";
         
         foreach ($banners as $index => $banner) {
@@ -299,7 +299,7 @@ class FrontendThemeRenderer {
             $html .= "data-animation='{$animationType}' ";
             $html .= "data-duration='{$transitionDuration}' ";
             $html .= "style='background-image: url(" . BASE_URL . ltrim($banner['image_path'], '/') . "); ";
-            $html .= "background-size: cover; background-position: center; ";
+            $html .= "background-size: cover; background-position: center; object-fit: cover; ";
             $html .= "position: absolute; top: 0; left: 0; width: 100%; height: 100%; ";
             
             if ($animationType === 'fade') {
@@ -335,6 +335,17 @@ class FrontendThemeRenderer {
                 $html .= "<span class='frontend-banner-indicator' data-slide='{$index}' style='width: 12px; height: 12px; border-radius: 50%; cursor: pointer; {$activeClass} transition: background 0.3s;'></span>";
             }
             $html .= "</div>";
+        }
+        
+        // Navigation Arrows
+        if (count($banners) > 1 && $animationEnabled) {
+            $html .= "<button class='banner-arrow prev' style='position: absolute; left: 16px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.3); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all 0.3; shadow: 0 4px 10px rgba(0,0,0,0.2);'><i class='fas fa-chevron-left'></i></button>";
+            $html .= "<button class='banner-arrow next' style='position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.3); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all 0.3; shadow: 0 4px 10px rgba(0,0,0,0.2);'><i class='fas fa-chevron-right'></i></button>";
+            
+            $html .= "<style>
+                .banner-arrow:hover { background: rgba(0,0,0,0.6) !important; transform: translateY(-50%) scale(1.1) !important; }
+                .frontend-banner-indicator:hover { background: white !important; transform: scale(1.2); }
+            </style>";
         }
         
         $html .= "</div>";
@@ -385,16 +396,35 @@ class FrontendThemeRenderer {
                 currentSlide = index;
             }
             
-            function nextSlide() {
-                const next = (currentSlide + 1) % slides.length;
-                showSlide(next);
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    clearInterval(autoSlide);
+                    showSlide(index);
+                    autoSlide = setInterval(nextSlide, slideInterval);
+                });
+            });
+            
+            const prevBtn = document.querySelector('.banner-arrow.prev');
+            const nextBtn = document.querySelector('.banner-arrow.next');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    clearInterval(autoSlide);
+                    const prev = (currentSlide - 1 + slides.length) % slides.length;
+                    showSlide(prev);
+                    autoSlide = setInterval(nextSlide, slideInterval);
+                });
             }
             
-            setInterval(nextSlide, slideInterval);
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    clearInterval(autoSlide);
+                    nextSlide();
+                    autoSlide = setInterval(nextSlide, slideInterval);
+                });
+            }
             
-            indicators.forEach((indicator, index) => {
-                indicator.addEventListener('click', () => showSlide(index));
-            });
+            let autoSlide = setInterval(nextSlide, slideInterval);
         })();
         </script>
         ";

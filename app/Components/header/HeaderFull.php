@@ -28,40 +28,32 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/notifications.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/footer.css">
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top d-none d-lg-block">
-        <div class="container-fluid px-2 px-sm-3 px-lg-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top d-none d-lg-block" id="mainHeader" style="min-height: auto;">
+        <div class="container-fluid px-2 px-sm-3 px-lg-4" style="padding-top: 4px; padding-bottom: 4px;">
             <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center me-auto me-lg-4 text-decoration-none" href="<?php echo BASE_URL; ?>public/index.php?page=home" style="transition: none; opacity: 1;">
-                <i class="fas fa-recycle text-primary me-2" style="font-size: clamp(24px, 6vw, 32px);"></i>
+            <a class="navbar-brand d-flex align-items-center me-auto me-lg-4 text-decoration-none" href="<?php echo BASE_URL; ?>public/index.php?page=home" style="transition: none; opacity: 1; padding: 0;">
+                <i class="fas fa-recycle text-primary me-2" style="font-size: clamp(20px, 5vw, 26px);"></i>
                 <h1 class="mb-0 fw-bold text-gradient d-none d-sm-inline"
-                    style="font-size: clamp(20px, 5vw, 28px); color: #2563eb;">HIHand Shop</h1>
-                <h1 class="mb-0 fw-bold text-gradient d-sm-none" style="font-size: clamp(16px, 4vw, 22px); color: #2563eb;">
+                    style="font-size: clamp(18px, 4vw, 24px); color: #2563eb; line-height: 1.2;">HIHand Shop</h1>
+                <h1 class="mb-0 fw-bold text-gradient d-sm-none" style="font-size: clamp(14px, 3vw, 18px); color: #2563eb; line-height: 1.2;">
                     HIHand</h1>
             </a>
 
             <!-- Main Content -->
-            <div class="d-flex flex-row align-items-center w-100 gap-3" style="justify-content: space-between;">
+            <div class="d-flex flex-row align-items-center w-100 gap-2" style="justify-content: space-between;">
                 <!-- Left: Categories Button -->
                 <div style="display: flex; gap: 12px; align-items: center;">
                         <!-- Categories Button -->
                         <div class="dropdown">
-                            <style>
-                            .categories-btn, .categories-btn:hover, .categories-btn:focus, .categories-btn:active, .categories-btn.show {
-                                background-color: white !important;
-                                color: #4f46e5 !important;
-                                border-color: #e5e7eb !important;
-                                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
-                            }
-                            </style>
                             <button
                                 class="btn d-flex align-items-center categories-btn"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                style="height: 50px; padding: 0 14px; border-radius: 10px; border: 2px solid #e5e7eb; background: white; color: #4f46e5; font-weight: 600; font-size: 14px; transition: none; white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);">
-                                <i class="fas fa-list" style="font-size: 16px; margin-right: 6px;"></i>
+                                style="height: 44px; padding: 0 16px; border-radius: 22px; border: none; background: white; color: #4f46e5; font-weight: 600; font-size: 14px; transition: all 0.3s ease; white-space: nowrap; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                                <i class="fas fa-list" style="font-size: 14px; margin-right: 8px;"></i>
                                 <span>Danh mục</span>
                             </button>
                             <ul class="dropdown-menu categories-dropdown-menu"
-                                style="min-width: 280px; max-width: 350px; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 12px 40px rgba(0,0,0,0.12); padding: 0; margin-top: 6px; animation: dropdownSlide 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;">
+                                style="min-width: 280px; max-width: 350px; border-radius: 12px; border: none; box-shadow: 0 12px 40px rgba(0,0,0,0.12); padding: 0; margin-top: 8px;">
                                 
                                 <!-- All Categories Header -->
                                 <li style="padding: 12px 16px; border-bottom: 1px solid #f0f0f0; background: white; border-radius: 12px 12px 0 0;">
@@ -74,16 +66,36 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                                 
                                 <?php if (!empty($categories)): ?>
                                     <div style="max-height: 380px; overflow-y: auto; padding: 8px 0;">
-                                        <?php foreach ($categories as $index => $category): ?>
-                                            <li style="animation: slideIn 0.3s ease forwards; animation-delay: <?php echo $index * 0.03; ?>s;">
+                                        <?php 
+                                        $cat_icons = [
+                                            'am-nhac-nhac-cu' => 'fas fa-music',
+                                            'dien-thoai-may-tinh-bang' => 'fas fa-mobile-alt',
+                                            'laptop-may-tinh' => 'fas fa-laptop',
+                                            'thoi-trang-phu-kien' => 'fas fa-bag-shopping',
+                                            'do-gia-dung-noi-that' => 'fas fa-chair',
+                                            'xe-co-phuong-tien' => 'fas fa-car',
+                                            'sach-van-phong-pham' => 'fas fa-book',
+                                            'the-thao-giai-tri' => 'fas fa-dumbbell',
+                                            'dien-may-cong-nghe' => 'fas fa-tv',
+                                            'me-va-be' => 'fas fa-baby-carriage',
+                                            'suc-khoe-lam-dep' => 'fas fa-spa',
+                                            'thu-cung-phu-kien' => 'fas fa-paw',
+                                            'am-thuc' => 'fas fa-burger'
+                                        ];
+                                        $current_slug = $_GET['slug'] ?? '';
+                                        foreach ($categories as $index => $category): 
+                                            $icon = $cat_icons[$category['slug']] ?? 'fas fa-box';
+                                            $isActive = ($current_slug === $category['slug']) ? 'background: #f3f4f6; color: #4f46e5; border-left: 3px solid #4f46e5;' : 'border-left: 3px solid transparent;';
+                                        ?>
+                                            <li>
                                                 <a href="<?php echo BASE_URL; ?>app/View/product/category.php?slug=<?php echo htmlspecialchars($category['slug'] ?? ''); ?>"
-                                                   style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 14px; color: #4b5563; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent;"
-                                                   onmouseover="this.style.backgroundColor='#f9f8ff'; this.style.color='#4f46e5'; this.style.borderLeftColor='#4f46e5';"
-                                                   onmouseout="this.style.backgroundColor='white'; this.style.color='#4b5563'; this.style.borderLeftColor='transparent';">
-                                                    <span><?php echo htmlspecialchars($category['name'] ?? 'Unnamed'); ?></span>
-                                                    <div style="width: 18px; height: 18px; border: 2px solid #e5e7eb; border-radius: 50%; transition: all 0.2s ease;" 
-                                                         onmouseover="this.style.borderColor='#4f46e5';"
-                                                         onmouseout="this.style.borderColor='#e5e7eb';"></div>
+                                                   class="category-dropdown-item"
+                                                   style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 14px; color: #4b5563; font-weight: 500; text-decoration: none; cursor: pointer; <?php echo $isActive; ?> transition: all 0.2s ease;">
+                                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                                        <i class="<?php echo $icon; ?>" style="width: 20px; text-align: center; opacity: 0.8;"></i>
+                                                        <span><?php echo htmlspecialchars($category['name'] ?? 'Unnamed'); ?></span>
+                                                    </div>
+                                                    <i class="fas fa-chevron-right" style="font-size: 10px; opacity: 0.3;"></i>
                                                 </a>
                                             </li>
                                         <?php endforeach; ?>
@@ -97,108 +109,12 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                         </div>
                 </div>
                 
-                <!-- Center: Search Form (Fixed Width) -->
-                <div style="flex: 0 0 auto; width: 500px; max-width: 100%; position: relative;">
-                    <style>
-                            @keyframes dropdownSlide {
-                                from {
-                                    opacity: 0;
-                                    transform: translateY(-8px);
-                                }
-                                to {
-                                    opacity: 1;
-                                    transform: translateY(0);
-                                }
-                            }
-                            
-                            @keyframes slideIn {
-                                from {
-                                    opacity: 0;
-                                    transform: scale(0.95);
-                                }
-                                to {
-                                    opacity: 1;
-                                    transform: scale(1);
-                                }
-                            }
-                            
-                            .categories-dropdown-menu::-webkit-scrollbar {
-                                width: 6px;
-                            }
-                            
-                            .categories-dropdown-menu::-webkit-scrollbar-track {
-                                background: transparent;
-                            }
-                            
-                            .categories-dropdown-menu::-webkit-scrollbar-thumb {
-                                background: #d4c5f9;
-                                border-radius: 3px;
-                            }
-                            
-                            .categories-dropdown-menu::-webkit-scrollbar-thumb:hover {
-                                background: #c4b5e9;
-                            }
-                            
-                            .categories-btn[aria-expanded="true"] {
-                                border-color: #4f46e5;
-                                background: #f9f8ff;
-                                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
-                            }
-                            
-                            /* Desktop Search Section - Orange Background */
-                            .desktop-search-section {
-                                background: #FF8C42;
-                                padding: 12px;
-                                border-radius: 8px;
-                                width: 100%;
-                            }
-                            
-                            .desktop-search-form {
-                                display: flex;
-                                gap: 0;
-                                width: 100%;
-                            }
-                            
-                            .desktop-search-input {
-                                flex: 1;
-                                height: 50px;
-                                font-size: 15px;
-                                border: none;
-                                border-radius: 8px 0 0 8px;
-                                padding: 0 16px;
-                                background: white;
-                                color: #1f2937;
-                                outline: none;
-                            }
-                            
-                            .desktop-search-btn {
-                                height: 50px;
-                                width: 50px;
-                                border: none;
-                                border-radius: 0 8px 8px 0;
-                                background: #2563eb;
-                                color: white;
-                                cursor: pointer;
-                                font-size: 16px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                padding: 0;
-                                transition: all 0.2s ease;
-                            }
-                            
-                            .desktop-search-btn:hover {
-                                background: #1d4ed8;
-                                opacity: 0.9;
-                            }
-                        </style>
-
-                    <!-- Search Form - With Orange Background Section -->
+                    <!-- Search Form - Modern Rounded Style -->
                     <div class="desktop-search-section">
                         <form id="search-form2" class="desktop-search-form" method="GET"
                             action="<?php echo BASE_URL; ?>app/View/extra/search_advanced.php" onsubmit="return validateSearchForm(event);">
                             <input type="text" id="search-input-desktop" name="q"
-                                placeholder="Tìm sản phẩm..."
+                                placeholder="Bạn tìm gì hôm nay?"
                                 class="desktop-search-input"
                                 value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
                                 autocomplete="off">
@@ -206,7 +122,22 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
+                        
+                        <!-- Search Suggestions - Hidden to focus on dynamic placeholder -->
+                        <!-- <div class="search-suggestions-container">
+                            <span class="suggestion-tag" onclick="fillSearch('Xe máy giá rẻ')">Xe máy giá rẻ</span>
+                            <span class="suggestion-tag" onclick="fillSearch('Dream Thái')">Dream Thái</span>
+                            <span class="suggestion-tag" onclick="fillSearch('iPhone 15')">iPhone 15</span>
+                            <span class="suggestion-tag" onclick="fillSearch('Đồ gia dụng')">Đồ gia dụng</span>
+                        </div> -->
                     </div>
+                    
+                    <script>
+                    function fillSearch(keyword) {
+                        document.getElementById('search-input-desktop').value = keyword;
+                        document.getElementById('search-form2').submit();
+                    }
+                    </script>
                     
                     <script>
                     function validateSearchForm(event) {
@@ -292,38 +223,90 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
                             </ul>
                         </div>
 
-                        <!-- Post Ad Button -->
-                        <a href="<?php echo BASE_URL; ?>app/View/product/sell.php"
-                            class="btn btn-warning d-flex align-items-center justify-content-center fw-bold shadow"
+                         <!-- Post Ad Button -->
+                         <a href="<?php echo BASE_URL; ?>app/View/product/sell.php"
+                            class="btn btn-warning d-flex align-items-center justify-content-center fw-bold"
                             title="Đăng tin bán hàng"
-                            style="height: 50px; min-width: 136px; padding: 0 20px; font-size: 15px; line-height: 1; gap: 8px; border-radius: 12px; background: linear-gradient(135deg, #fbbf24, #f59e0b); border: none; transition: all 0.3s ease;">
+                            style="height: 44px; min-width: 140px; padding: 0 20px; font-size: 15px; line-height: 1; gap: 8px; border-radius: 22px; border: none; transition: all 0.3s ease;">
                             <i class="fas fa-plus-circle" style="font-size: 18px;"></i>
-                            <span style="line-height: 1; font-weight: 600;">Đăng Tin</span>
+                            <span style="line-height: 1; font-weight: 700;">ĐĂNG TIN</span>
                         </a>
                     <?php else: ?>
-                        <!-- Guest user buttons -->
-                        <div class="d-flex gap-3">
-                            <a href="<?php echo BASE_URL; ?>public/index.php?page=login"
-                                class="btn btn-primary border-0 d-flex align-items-center justify-content-center fw-semibold shadow-sm"
-                                style="height: 48px; padding: 0 20px; font-size: 15px; line-height: 1; border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #2563eb); transition: all 0.3s ease;">
-                                <i class="fas fa-sign-in-alt me-2" style="font-size: 18px;"></i>Đăng nhập
-                            </a>
-                            <a href="<?php echo BASE_URL; ?>public/index.php?page=register"
-                                class="btn btn-success border-0 d-flex align-items-center justify-content-center fw-semibold shadow-sm"
-                                style="height: 48px; padding: 0 20px; font-size: 15px; line-height: 1; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); transition: all 0.3s ease;">
-                                <i class="fas fa-user-plus me-2" style="font-size: 18px;"></i>Đăng ký
-                            </a>
+                        <!-- Guest user dropdown -->
+                        <div class="dropdown">
+                            <button
+                                class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center justify-content-center"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="height: 44px; font-size: 15px; border-radius: 22px; border: 1px solid #e5e7eb; padding: 0 16px; background: white; color: #374151; font-weight: 600;">
+                                <i class="fas fa-user-circle me-2" style="font-size: 20px;"></i>
+                                <span>Tài khoản</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end guest-dropdown-menu">
+                                <li>
+                                    <a href="<?php echo BASE_URL; ?>public/index.php?page=login" class="btn btn-primary mb-2">Đăng nhập</a>
+                                </li>
+                                <li>
+                                    <a href="<?php echo BASE_URL; ?>public/index.php?page=register" class="btn btn-outline-primary">Đăng kỷ tài khoản</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Trợ giúp</a></li>
+                            </ul>
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
     </nav>
+    
+    <script>
+    // Auto-hide header on scroll
+    (function() {
+        const header = document.getElementById('mainHeader');
+        if (!header) return;
+        
+        let lastScrollTop = 0;
+        let scrollThreshold = 100; // Scroll 100px before hiding
+        let isScrolling = false;
+        
+        window.addEventListener('scroll', function() {
+            if (isScrolling) return;
+            
+            isScrolling = true;
+            requestAnimationFrame(function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > scrollThreshold) {
+                    // Scrolling down - hide header
+                    if (scrollTop > lastScrollTop) {
+                        header.style.transform = 'translateY(-100%)';
+                        header.style.transition = 'transform 0.3s ease-in-out';
+                    } 
+                    // Scrolling up - show header
+                    else {
+                        header.style.transform = 'translateY(0)';
+                        header.style.transition = 'transform 0.3s ease-in-out';
+                    }
+                } else {
+                    // Near top - always show
+                    header.style.transform = 'translateY(0)';
+                    header.style.transition = 'transform 0.3s ease-in-out';
+                }
+                
+                lastScrollTop = scrollTop;
+                isScrolling = false;
+            });
+        });
+        
+        // Ensure header is visible on page load
+        header.style.transition = 'transform 0.3s ease-in-out';
+    })();
+    </script>
 
     <!-- Notifications Popup JS -->
     <script src="<?php echo BASE_URL; ?>public/assets/js/notifications.js"></script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/search-autocomplete.js"></script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/cart-count-realtime.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/search-placeholder-animation.js"></script>
     
     <!-- Global userId variable for chat system -->
     <script>
