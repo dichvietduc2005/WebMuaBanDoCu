@@ -5,8 +5,9 @@
 
 class SearchAutocomplete {
     constructor() {
-        this.searchInput = document.getElementById('search-input');
-        this.searchForm = document.getElementById('search-form2');
+        // Hỗ trợ cả search-input (mobile) và search-input-desktop (desktop)
+        this.searchInput = document.getElementById('search-input-desktop') || document.getElementById('search-input');
+        this.searchForm = document.getElementById('search-form2') || document.getElementById('search-form');
         this.suggestionsList = null;
         this.isLoading = false;
         this.debounceTimer = null;

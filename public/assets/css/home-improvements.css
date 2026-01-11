@@ -100,7 +100,7 @@
    ============================================================ */
 
 .section {
-  margin: 0 0 32px 0;
+  margin: 40px 0 32px 0; /* Added 40px margin at top */
   padding: 30px 24px;
   background: var(--theme-section-bg, #ffffff);
   border-radius: 16px;

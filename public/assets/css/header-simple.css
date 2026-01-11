@@ -109,11 +109,11 @@
 }
 
 /* ============================================================
-   HEADER SEARCH SECTION (Orange Background)
+   HEADER SEARCH SECTION (No Background)
    ============================================================ */
 
 .header-search-section {
-  background: #FF8C42 !important;
+  background: transparent !important;
   padding: 16px;
   width: 100%;
 }

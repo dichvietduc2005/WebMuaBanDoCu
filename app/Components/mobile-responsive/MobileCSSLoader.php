@@ -67,70 +67,106 @@ class MobileCSSLoader
         }
     }
 
+    private static $forcedPageType = null;
+
     /**
-     * Auto-detect page type từ file path hoặc script name
+     * Ép kiểu page type thủ công (dùng trong controller nếu muốn ghi đè logic tự động)
+     */
+    public static function setPageType($type)
+    {
+        self::$forcedPageType = $type;
+    }
+
+    /**
+     * Auto-detect page type từ nhiều nguồn tin cậy
      * 
-     * @param string|null $scriptPath Đường dẫn script (nếu null sẽ dùng $_SERVER['SCRIPT_NAME'])
+     * @param string|null $path Đường dẫn kiểm tra (nếu null sẽ tự detect)
      * @return string|null Page type hoặc null nếu không detect được
      */
-    public static function detectPageType($scriptPath = null)
+    public static function detectPageType($path = null)
     {
-        if ($scriptPath === null) {
-            $scriptPath = $_SERVER['SCRIPT_NAME'] ?? '';
+        // 0. Ưu tiên giá trị được ép kiểu thủ công
+        if (self::$forcedPageType !== null) {
+            return self::$forcedPageType;
         }
 
-        // Normalize path
-        $scriptPath = str_replace('\\', '/', $scriptPath);
+        if ($path === null) {
+            // 1. Ưu tiên $_GET['page'] (do RewriteRule truyền vào public/index.php)
+            $pageParam = $_GET['page'] ?? '';
+            
+            // 2. Tiếp theo là REQUEST_URI (URL thực tế người dùng gõ)
+            $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+            
+            // 3. Cuối cùng là SCRIPT_NAME (file php thực tế đang chạy)
+            $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
 
-        // Product pages
-        if (strpos($scriptPath, '/product/') !== false || 
-            strpos($scriptPath, 'Product_detail') !== false ||
-            strpos($scriptPath, 'Product.php') !== false ||
-            strpos($scriptPath, 'sell.php') !== false ||
-            strpos($scriptPath, 'category.php') !== false ||
-            strpos($scriptPath, 'categories.php') !== false ||
-            strpos($scriptPath, 'products.php') !== false) {
-            return 'product';
+            // Kết hợp các nguồn để tìm kiếm pattern
+            $testPaths = [$pageParam, $requestUri, $scriptName];
+        } else {
+            $testPaths = [$path];
         }
 
-        // Order pages
-        if (strpos($scriptPath, '/order/') !== false ||
-            strpos($scriptPath, 'order_history') !== false ||
-            strpos($scriptPath, 'order_details') !== false) {
-            return 'order';
-        }
+        foreach ($testPaths as $testPath) {
+            if (empty($testPath)) continue;
+            
+            $testPath = str_replace('\\', '/', $testPath);
 
-        // Checkout page
-        if (strpos($scriptPath, '/checkout/') !== false ||
-            strpos($scriptPath, 'checkout') !== false) {
-            return 'checkout';
-        }
+            // Product pages
+            if (strpos($testPath, '/product/') !== false || 
+                strpos($testPath, 'product_detail') !== false ||
+                strpos($testPath, 'Product_detail') !== false ||
+                strpos($testPath, 'Product.php') !== false ||
+                strpos($testPath, 'sell.php') !== false ||
+                strpos($testPath, 'category') !== false ||
+                strpos($testPath, 'categories') !== false ||
+                strpos($testPath, 'products') !== false) {
+                return 'product';
+            }
 
-        // Auth pages
-        if (strpos($scriptPath, '/user/login') !== false ||
-            strpos($scriptPath, '/user/register') !== false ||
-            strpos($scriptPath, 'forgot_password') !== false ||
-            strpos($scriptPath, 'reset_password') !== false) {
-            return 'auth';
-        }
+            // Order pages
+            if (strpos($testPath, '/order/') !== false ||
+                strpos($testPath, 'order_history') !== false ||
+                strpos($testPath, 'order_details') !== false) {
+                return 'order';
+            }
 
-        // Profile page
-        if (strpos($scriptPath, 'ProfileUserView') !== false ||
-            strpos($scriptPath, '/user/profile') !== false) {
-            return 'profile';
-        }
+            // Checkout page
+            if (strpos($testPath, '/checkout/') !== false ||
+                strpos($testPath, 'checkout') !== false) {
+                return 'checkout';
+            }
 
-        // Search pages
-        if (strpos($scriptPath, '/extra/search') !== false ||
-            strpos($scriptPath, 'search_advanced') !== false ||
-            strpos($scriptPath, 'search.php') !== false) {
-            return 'search';
-        }
+            // Auth pages
+            if (strpos($testPath, '/user/login') !== false ||
+                strpos($testPath, '/user/register') !== false ||
+                strpos($testPath, 'login') !== false ||
+                strpos($testPath, 'register') !== false ||
+                strpos($testPath, 'forgot_password') !== false ||
+                strpos($testPath, 'reset_password') !== false) {
+                return 'auth';
+            }
 
-        // Notification page
-        if (strpos($scriptPath, '/extra/notifications') !== false ||
-            strpos($scriptPath, 'notifications.php') !== false) {
-            return 'notification';
+            // Profile page
+            if (strpos($testPath, 'ProfileUserView') !== false ||
+                strpos($testPath, '/user/profile') !== false ||
+                strpos($testPath, 'profile') !== false) {
+                return 'profile';
+            }
+
+            // Search pages
+            if (strpos($testPath, '/extra/search') !== false ||
+                strpos($testPath, 'search_advanced') !== false ||
+                strpos($testPath, 'search.php') !== false ||
+                strpos($testPath, 'search') !== false) {
+                return 'search';
+            }
+
+            // Notification page
+            if (strpos($testPath, '/extra/notifications') !== false ||
+                strpos($testPath, 'notifications.php') !== false ||
+                strpos($testPath, 'notification') !== false) {
+                return 'notification';
+            }
         }
 
         return null;

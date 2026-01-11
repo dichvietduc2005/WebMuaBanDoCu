@@ -22,6 +22,9 @@
 *.swo
 *~
 
+# Cursor
+.cursor/
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -30,3 +33,6 @@ desktop.ini
 # Upload files (nếu có)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Docker volumes (nếu có lưu trong source)
+# mysql_data/

@@ -36,14 +36,30 @@ $currentAdminPage = $currentAdminPage ?? 'dashboard';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CDN (Load FIRST - before other styles) -->
+    <!-- Font Awesome (Required for summary cards and buttons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind Play CDN (Used for development, added fallback check) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            important: false,
-            corePlugins: {
-                preflight: false
+        // Cấu hình Tailwind
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#4f46e5',
+                        }
+                    }
+                },
+                corePlugins: {
+                    preflight: false
+                }
             }
+        } else {
+            console.warn('Tailwind CDN bị chặn (Tracking Prevention). Đang sử dụng fallback style...');
+            // Có thể thêm link CSS dự phòng ở đây nếu cần
         }
     </script>
 
@@ -92,10 +108,14 @@ $currentAdminPage = $currentAdminPage ?? 'dashboard';
     <!-- Banner Slider CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-banner.css">
     
-    <!-- Custom style để đảm bảo Roboto được áp dụng -->
+    <!-- Custom style để đảm bảo Roboto được áp dụng và không đè icon -->
     <style>
-      body, * {
+      body {
         font-family: 'Roboto', sans-serif !important;
+      }
+      /* Đảm bảo FontAwesome không bị đè font */
+      .fas, .fab, .far, .fal, .fa-solid, .fa-brands {
+        font-family: "Font Awesome 6 Free" !important;
       }
     </style>
 

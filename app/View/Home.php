@@ -152,6 +152,11 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                     <?php endif; ?>
                                 </div>
                                 
+                                <div class="product-meta" style="display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af; margin-bottom: 8px;">
+                                    <span class="location"><i class="fas fa-location-dot me-1"></i><?php echo htmlspecialchars($product['location'] ?? 'Toàn quốc'); ?></span>
+                                    <span class="time"><i class="far fa-clock me-1"></i><?php echo isset($product['created_at']) ? date('d/m/Y', strtotime($product['created_at'])) : 'Vừa xong'; ?></span>
+                                </div>
+                                
                                 <div class="product-footer">
                                     <div class="product-rating">
                                         <span class="stars">
@@ -219,6 +224,11 @@ require_once __DIR__ . '/../Components/footer/Footer.php';
                                         <span class="original-price"><?php echo formatPrice($product['original_price']); ?></span>
                                         <span class="discount-percent">-<?php echo round((1 - $product['price']/$product['original_price']) * 100); ?>%</span>
                                     <?php endif; ?>
+                                </div>
+
+                                <div class="product-meta" style="display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af; margin-bottom: 8px;">
+                                    <span class="location"><i class="fas fa-location-dot me-1"></i><?php echo htmlspecialchars($product['location'] ?? 'Toàn quốc'); ?></span>
+                                    <span class="time"><i class="far fa-clock me-1"></i><?php echo isset($product['created_at']) ? ViewHelper::truncate(date('d/m/Y', strtotime($product['created_at'])), 10) : 'Vừa xong'; ?></span>
                                 </div>
                                 
                                 <div class="product-footer">

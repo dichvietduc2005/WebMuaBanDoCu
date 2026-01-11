@@ -679,14 +679,19 @@
 }
 
 /* Hiệu ứng hover cho nút đăng tin */
+/* Nút đăng tin nổi bật */
 .btn-warning[title="Đăng tin bán hàng"] {
     transition: all 0.3s ease !important;
+    background: #ff8800 !important; /* Cam đậm hơn */
+    color: white !important;
+    border-radius: 30px !important; /* Bo tròn đồng bộ */
+    padding: 0 25px !important;
 }
 
 .btn-warning[title="Đăng tin bán hàng"]:hover {
-    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    background: #e67a00 !important;
     transform: translateY(-3px) scale(1.02) !important;
-    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 8px 25px rgba(255, 136, 0, 0.4) !important;
 }
 
 .btn-warning[title="Đăng tin bán hàng"]:hover i {
@@ -974,8 +979,110 @@
     background: linear-gradient(135deg, #94a3b8, #64748b);
 }
 
-/* Add blur to mobile dropdown */
-.mobile-dropdown-menu {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+/* Shadow cho Header */
+#mainHeader {
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08) !important;
 }
+
+/* Guest Dropdown */
+.guest-dropdown-menu {
+    min-width: 200px;
+    padding: 10px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.guest-dropdown-menu .btn {
+    width: 100%;
+    margin-bottom: 8px;
+    justify-content: center;
+}
+
+/* Desktop Search Section */
+.desktop-search-section {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.desktop-search-form {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 25px;
+    padding: 2px;
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+    height: 44px;
+    position: relative;
+    overflow: hidden;
+}
+
+.desktop-search-form:focus-within {
+    background: #fff;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.desktop-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0 50px 0 20px; /* Space for button on right */
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+}
+
+.desktop-search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary-color, #3b82f6);
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: white !important;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.desktop-search-btn:hover {
+    background: var(--primary-hover, #2563eb);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.search-suggestions-container {
+    display: flex;
+    gap: 12px;
+    padding: 0 16px;
+    flex-wrap: wrap;
+}
+
+.suggestion-tag {
+    font-size: 12px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.suggestion-tag:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+}
+
+@media (max-width: 991px) {
+    .desktop-search-section {
+        display: none !important;
+    }
+}
+

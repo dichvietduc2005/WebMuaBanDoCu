@@ -57,94 +57,202 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_title; ?> - Cửa Hàng Đồ Cũ</title>    <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/WebMuaBanDoCu/public/assets/css/checkout.css" rel="stylesheet"> <!-- You might want a specific success page CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title><?php echo $page_title; ?> - Cửa Hàng Đồ Cũ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f8f9fa; }
-        .container { max-width: 800px; margin-top: 50px; }
-        .card { border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .card-header { background-color: <?php echo $payment_successful ? '#28a745' : '#dc3545'; ?>; color: white; text-align: center; padding: 15px; }
-        .card-header h4 { margin: 0; font-size: 1.5rem; }
-        .card-body { padding: 30px; }
-        .info-table { width: 100%; margin-bottom: 20px; }
-        .info-table td { padding: 10px 0; border-bottom: 1px solid #eee; }
-        .info-table td:first-child { font-weight: bold; width: 40%; }
-        .text-success { color: #28a745 !important; }
-        .text-danger { color: #dc3545 !important; }
-        .footer-links { text-align: center; margin-top: 30px; }
-        .footer-links a { margin: 0 10px; color: #007bff; text-decoration: none; }
-        .footer-links a:hover { text-decoration: underline; }
+        :root {
+            --success-color: #00b894;
+            --danger-color: #ff7675;
+            --bg-color: #f0f2f5;
+        }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-color);
+            color: #2d3436;
+        }
+        .container { max-width: 650px; padding: 40px 15px; }
+        .success-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: none;
+            transition: transform 0.3s ease;
+        }
+        .success-header {
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .status-icon.success {
+            background-color: rgba(0, 184, 148, 0.1);
+            color: var(--success-color);
+        }
+        .status-icon.error {
+            background-color: rgba(255, 118, 117, 0.1);
+            color: var(--danger-color);
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .card-title {
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+        .status-msg {
+            color: #636e72;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+        .order-info-box {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #dfe6e9;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #636e72; font-weight: 500; }
+        .info-value { color: #2d3436; font-weight: 600; text-align: right; }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-premium {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-amazon {
+            background: #FF9900;
+            color: #000;
+            border: none;
+        }
+        .btn-amazon:hover {
+            background: #e68a00;
+            transform: translateY(-2px);
+        }
+        .btn-outline-custom {
+            border: 2px solid #dfe6e9;
+            color: #2d3436;
+        }
+        .btn-outline-custom:hover {
+            background: #f8f9fa;
+            border-color: #b2bec3;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .info-value { text-align: left; }
+            .status-icon { width: 60px; height: 60px; font-size: 30px; }
+        }
     </style>
 </head>
 <body>
 <?php renderHeader($pdo); ?>
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <h4><?php echo $page_title; ?></h4>
+
+<div class="container">
+    <div class="success-card">
+        <div class="success-header">
+            <div class="status-icon <?php echo $payment_successful ? 'success' : 'error'; ?>">
+                <i class="fas <?php echo $payment_successful ? 'fa-check-circle' : 'fa-times-circle'; ?>"></i>
             </div>
-            <div class="card-body">
-                <p class="<?php echo $payment_successful ? 'text-success' : 'text-danger'; ?>" style="font-size: 1.1rem; text-align: center; margin-bottom: 25px;">
-                    <?php echo $payment_status_message; ?>
-                </p>
+            <h2 class="card-title"><?php echo $page_title; ?></h2>
+            <p class="status-msg"><?php echo $payment_status_message; ?></p>
+        </div>
 
-                <table class="info-table">
-                    <tr>
-                        <td>Mã đơn hàng của bạn:</td>
-                        <td><?php echo $app_order_id; ?></td>
-                    </tr>
-                    <tr>
-                        <td>Số tiền thanh toán:</td>
-                        <td><?php echo $display_amount; ?></td>
-                    </tr>
-                    <tr>
-                        <td>Nội dung thanh toán:</td>
-                        <td><?php echo $vnp_OrderInfo; ?></td>
-                    </tr>
-                    <?php if ($payment_successful): ?>
-                    <tr>
-                        <td>Mã giao dịch VNPAY:</td>
-                        <td><?php echo $vnp_TransactionNo; ?></td>
-                    </tr>
-                    <tr>
-                        <td>Ngân hàng:</td>
-                        <td><?php echo $vnp_BankCode; ?></td>
-                    </tr>
-                    <tr>
-                        <td>Thời gian thanh toán:</td>
-                        <td><?php echo $formatted_pay_date; ?></td>
-                    </tr>
-                    <?php endif; ?>
-                    <tr>
-                        <td>Mã phản hồi VNPAY:</td>
-                        <td><?php echo $vnp_ResponseCode; ?></td>
-                    </tr>
-                </table>
-
+        <div class="card-body px-4 pb-4 px-md-5 pb-md-5">
+            <div class="order-info-box">
+                <div class="info-row">
+                    <span class="info-label">Mã đơn hàng:</span>
+                    <span class="info-value">#<?php echo $app_order_id; ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Số tiền:</span>
+                    <span class="info-value text-danger fs-5"><?php echo $display_amount; ?></span>
+                </div>
                 <?php if ($payment_successful): ?>
-                    <p style="text-align: center;">Cảm ơn bạn đã mua hàng! Đơn hàng của bạn đang được xử lý.</p>
-                    <p style="text-align: center;">Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email <a href="mailto:support@example.com">support@example.com</a> hoặc số điện thoại 0123-456-789, cung cấp mã đơn hàng của bạn.</p>
+                <div class="info-row">
+                    <span class="info-label">Ngân hàng:</span>
+                    <span class="info-value"><?php echo $vnp_BankCode; ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Thời gian:</span>
+                    <span class="info-value"><?php echo $formatted_pay_date; ?></span>
+                </div>
+                <?php endif; ?>
+                <div class="info-row">
+                    <span class="info-label">Mô tả:</span>
+                    <span class="info-value text-truncate" style="max-width: 250px;"><?php echo $vnp_OrderInfo; ?></span>
+                </div>
+            </div>
+
+            <?php if ($payment_successful): ?>
+                <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success p-3 rounded-4 mb-4">
+                    <div class="d-flex gap-2">
+                        <i class="fas fa-gift mt-1"></i>
+                        <small>Cảm ơn bạn đã tin tưởng! Đơn hàng của bạn sẽ được xử lý trong vòng 24h tới.</small>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <div class="action-buttons">
+                <?php if ($payment_successful): ?>
+                    <a href="/WebMuaBanDoCu/app/View/order/order_history.php" class="btn-premium btn-amazon shadow-sm">
+                        <i class="fas fa-box-open"></i> Xem lịch sử đơn hàng
+                    </a>
                 <?php else: ?>
-                    <p style="text-align: center;">Nếu bạn tin rằng có lỗi xảy ra, vui lòng thử lại hoặc liên hệ với bộ phận hỗ trợ của chúng tôi.</p>
+                    <a href="/WebMuaBanDoCu/app/View/cart/index.php" class="btn-premium btn-amazon shadow-sm">
+                        <i class="fas fa-shopping-cart"></i> Xem lại giỏ hàng
+                    </a>
                 <?php endif; ?>
 
-                <div class="footer-links">
-                    <a href="/WebMuaBanDoCu/app/View/Home.php">Tiếp tục mua sắm</a>
-                    <?php if ($payment_successful && $app_order_id !== 'N/A'): ?>
-                        <a href="/WebMuaBanDoCu/app/View/order/order_history.php">Xem lịch sử đơn hàng</a>
-                    <?php else: ?>
-                         <a href="/WebMuaBanDoCu/app/View/cart/index.php">Xem lại giỏ hàng</a>
-                    <?php endif; ?>
-                </div>
+                <a href="/WebMuaBanDoCu/app/View/Home.php" class="btn-premium btn-outline-custom">
+                    <i class="fas fa-search"></i> Tiếp tục mua sản phẩm khác
+                </a>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small">Cần hỗ trợ? <a href="mailto:support@muabandocu.vn" class="text-decoration-none">Liên hệ ngay</a></p>
             </div>
         </div>
     </div>
-    <?php footer(); ?>
-    <script src="/WebMuaBanDoCu/public/assets/js/jquery-1.11.3.min.js"></script>
-    <script src="/WebMuaBanDoCu/public/assets/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<?php footer(); ?>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

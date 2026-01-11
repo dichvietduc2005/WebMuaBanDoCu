@@ -140,14 +140,21 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
 
-        <!-- Search Results -->
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>public/index.php?page=home"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Tìm kiếm</li>
+            </ol>
+        </nav>
+
         <div class="container">
             <div class="search-header">
-                <h1>Kết quả tìm kiếm</h1>
+                <h1 class="search-title">Kết quả tìm kiếm</h1>
                 <?php if (!empty($query)): ?>
                     <p class="search-query">
                         Kết quả cho: <strong>"<?= htmlspecialchars($query) ?>"</strong>
-                        <?php if ($total_count > 0): ?>
+<?php if ($total_count > 0): ?>
                             (<?= number_format($total_count) ?> sản phẩm)
                         <?php endif; ?>
                     </p>
@@ -190,12 +197,17 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
                                     
                                     <!-- Price Section -->
-                                    <div class="product-price-section">
+                                    <div class="product-price-section" style="margin-bottom: 8px;">
                                         <span class="current-price"><?php echo formatPrice($product['price']); ?></span>
                                         <?php if (isset($product['original_price']) && $product['original_price'] > $product['price']): ?>
                                             <span class="original-price"><?php echo formatPrice($product['original_price']); ?></span>
                                             <span class="discount-percent">-<?php echo round((1 - $product['price']/$product['original_price']) * 100); ?>%</span>
                                         <?php endif; ?>
+                                    </div>
+
+                                    <div class="product-meta" style="display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af; margin-bottom: 8px;">
+                                        <span class="location"><i class="fas fa-location-dot me-1"></i><?php echo htmlspecialchars($product['location'] ?? 'Toàn quốc'); ?></span>
+                                        <span class="time"><i class="far fa-clock me-1"></i><?php echo isset($product['created_at']) ? date('d/m/Y', strtotime($product['created_at'])) : 'Vừa xong'; ?></span>
                                     </div>
                                     
                                     <!-- Rating & Sales -->
@@ -263,11 +275,30 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     <?php endif; ?>
                 <?php else: ?>
-                    <div class="no-results">
-                        <i class="fas fa-inbox"></i>
-                        <h3>Không có sản phẩm này</h3>
-                        <p>Sản phẩm bạn tìm kiếm không tồn tại hoặc đã hết hàng</p>
-                        <a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="btn-back-home">Về trang chủ</a>
+                    <div class="no-results-illustration">
+                        <div class="empty-state-img">
+                            <img src="<?php echo BASE_URL; ?>public/assets/images/no-results.svg" alt="No products found" onerror="this.src='https://cdn-icons-png.flaticon.com/512/6134/6134065.png'; this.style.width='200px'">
+                        </div>
+                        <h3>Rất tiếc, không tìm thấy sản phẩm này</h3>
+                        <p>Chúng tôi không tìm thấy kết quả cho <strong>"<?= htmlspecialchars($query) ?>"</strong>. Vui lòng thử lại với từ khóa khác.</p>
+                        
+                        <div class="empty-state-actions">
+                            <a href="<?php echo BASE_URL; ?>public/index.php?page=products" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag me-2"></i> Xem tất cả sản phẩm
+                            </a>
+                            <a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="btn btn-outline-secondary">
+                                <i class="fas fa-home me-2"></i> Quay lại trang chủ
+                            </a>
+                        </div>
+                        
+                        <!-- Suggested keywords -->
+                        <div class="suggested-keywords mt-4">
+                            <p class="text-muted small">Bạn có thể tìm kiếm: 
+                                <a href="?q=xe+máy" class="ms-2">xe máy</a>, 
+                                <a href="?q=điện+thoại" class="ms-2">điện thoại</a>, 
+                                <a href="?q=laptop" class="ms-2">laptop</a>
+                            </p>
+                        </div>
                     </div>
                 <?php endif; ?>
             <?php else: ?>

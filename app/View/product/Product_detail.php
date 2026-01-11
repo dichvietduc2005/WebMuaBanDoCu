@@ -138,33 +138,43 @@ if (isset($_SESSION['user_id'])) {
             <div class="row">
                 <div class="col-md-6">
                     <div class="product-images">
-                        <!-- Back Button
-                        <a href="javascript:history.back()" class="product-back-button">
-                            <i class="fas fa-arrow-left"></i>
-                        </a> -->
-                        
-                        <!-- Image Pagination -->
-                        <?php if (!empty($product_images) && count($product_images) > 1): ?>
-                        <div class="image-pagination">
-                            <span id="currentImageIndex">1</span> / <span id="totalImages"><?php echo count($product_images); ?></span>
-                        </div>
-                        <?php endif; ?>
-                        
                         <?php if (!empty($product_images)): ?>
-                        <div class="main-image-wrapper">
+                        <div class="main-image-wrapper" id="mainImageWrapper">
                             <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($product_images[0]['image_path']); ?>"
                                 alt="<?php echo htmlspecialchars($product['title']); ?>" class="main-image" id="mainImage">
+                            
+                            <!-- Navigation Arrows -->
+                            <?php if (count($product_images) > 1): ?>
+                            <div class="image-navigation">
+                                <button class="nav-arrow" onclick="previousImage()" title="Ảnh trước">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="nav-arrow" onclick="nextImage()" title="Ảnh tiếp theo">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <!-- Image Counter -->
+                            <?php if (count($product_images) > 1): ?>
+                            <div class="image-pagination">
+                                <span id="currentImageIndex">1</span> / <span id="totalImages"><?php echo count($product_images); ?></span>
+                            </div>
+                            <?php endif; ?>
                         </div>
+                        
+                        <!-- Thumbnails -->
                         <?php if (count($product_images) > 1): ?>
                         <div class="product-variations">
-                            <div class="variations-label"><?php echo count($product_images); ?> phân loại có sẵn</div>
-                            <div class="image-thumbnails">
+                            <div class="variations-label"><?php echo count($product_images); ?> ảnh sản phẩm</div>
+                            <div class="image-thumbnails" id="imageThumbnails">
                                 <?php foreach ($product_images as $index => $image): ?>
                                 <img src="<?php echo BASE_URL . 'public/' . htmlspecialchars($image['image_path']); ?>"
                                     alt="Ảnh <?php echo $index + 1; ?>"
                                     class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>"
                                     data-index="<?php echo $index; ?>"
-                                    onclick="changeMainImage('<?php echo BASE_URL . 'public/' . htmlspecialchars($image['image_path']); ?>', this, <?php echo $index + 1; ?>)">
+                                    data-image-path="<?php echo BASE_URL . 'public/' . htmlspecialchars($image['image_path']); ?>"
+                                    onclick="selectImage(this, <?php echo $index; ?>)">
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -182,59 +192,79 @@ if (isset($_SESSION['user_id'])) {
                         <div class="product-info">
                             <h1><?php echo htmlspecialchars($product['title']); ?></h1>
                             
-                            <div class="price">
-                                <?php echo formatPrice($product['price']); ?>
+                            <div class="price-section">
+                                <div class="d-flex flex-column gap-1">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="price"><?php echo formatPrice($product['price']); ?></span>
+                                        <span class="original-price" style="font-size: 18px; color: #999; text-decoration: line-through;">
+                                            <?php echo formatPrice($product['price'] * 1.25); ?>
+                                        </span>
+                                        <span class="discount-badge" style="background: #ee4d2d; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 700;">
+                                            -20%
+                                        </span>
+                                    </div>
+                                    <div class="text-muted small mt-1">
+                                        <i class="fas fa-tags me-1"></i> Giá tốt nhất trong 30 ngày qua
+                                    </div>
+                                </div>
+                                <button class="wishlist-btn" id="wishlistBtn" onclick="toggleWishlist(<?php echo $product['id']; ?>)" title="Yêu thích">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
 
                             <div class="product-meta">
                                 <div class="meta-item">
-                                    <i class="fas fa-star text-warning"></i>
-                                    <span>Tình trạng: <?php echo getConditionText($product['condition_status']); ?></span>
+                                    <i class="fas fa-info-circle"></i>
+                                    <span><?php echo getConditionText($product['condition_status']); ?></span>
                                 </div>
                                 
                                 <div class="meta-item">
-                                    <i class="fas fa-box"></i>
-                                    <span>Còn lại: <?php echo $product['stock_quantity']; ?> sản phẩm</span>
+                                    <i class="fas fa-boxes"></i>
+                                    <span><?php echo $product['stock_quantity']; ?> sản phẩm còn lại</span>
                                 </div>
                             </div>
 
                             <!-- Shipping Info -->
-                            <div class="shipping-info">
+                            <!-- <div class="shipping-info">
                                 <div class="shipping-info-item">
                                     <i class="fas fa-truck"></i>
                                     <div>
-                                        <div>Nhận hàng trong 2-3 ngày</div>
-                                        <div class="shipping-free">Phí ship 0₫</div>
+                                        <div>Giao hàng <strong>2-3 ngày</strong></div>
+                                        <div class="shipping-free">
+                                            <i class="fas fa-check-circle">
+                                            
+                                            </i> Miễn phí vận chuyển</div>
                                     </div>
                                 </div>
-                                <div class="shipping-voucher">
-                                    <i class="fas fa-gift"></i> Tặng Voucher 15.000₫ nếu đơn giao sau thời gian trên.
+                                <div class="shipping-info-item">
+                                    <i class="fas fa-gift"></i>
+                                    <div class="shipping-voucher">Tặng voucher 15.000₫ nếu giao trễ</div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Shopee Guarantee -->
                             <div class="shopee-guarantee">
                                 <i class="fas fa-shield-alt"></i>
-                                <span>HIHand Xử Lý - Trả hàng miễn phí 15 ngày - Chính hãng</span>
+                                <span><strong>Bảo hành:</strong> Trả hàng miễn phí trong 15 ngày - 100% chính hãng</span>
                             </div>
 
                             <?php if ($product['stock_quantity'] > 0): ?>
                             <div class="quantity-selector">
                                 <span>Số lượng:</span>
                                 <div class="qty-controls">
-                                    <button class="qty-btn" onclick="decreaseQty()">-</button>
+                                    <button class="qty-btn" onclick="decreaseQty()" title="Giảm số lượng">−</button>
                                     <input type="number" class="qty-input" id="quantity" value="1" min="1"
                                         max="<?php echo $product['stock_quantity']; ?>" readonly>
-                                    <button class="qty-btn" onclick="increaseQty()">+</button>
+                                    <button class="qty-btn" onclick="increaseQty()" title="Tăng số lượng">+</button>
                                 </div>
                             </div>
 
                             <div class="action-buttons">
                                 <button class="btn-add-cart" onclick="addToCart(<?php echo $product['id']; ?>)">
-                                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                                    <i class="fas fa-cart-shopping"></i> Thêm vào giỏ
                                 </button>
                                 <button class="btn-buy-now" onclick="buyNow(<?php echo $product['id']; ?>)">
-                                    <i class="fas fa-shopping-bag"></i> Mua ngay
+                                    Mua ngay
                                 </button>
                             </div>
                             <?php else: ?>
@@ -247,8 +277,8 @@ if (isset($_SESSION['user_id'])) {
                         </div>
                     </div>
 
-                    <!-- Store Info Section -->
-                    <div class="store-info-section">
+                    <!-- Store Info Section - Hidden until implemented -->
+                    <div class="store-info-section" style="display: none;">
                         <div class="store-header">
                             <div class="store-header-row">
                                 <div class="store-avatar">
@@ -284,6 +314,68 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
 
+        <!-- Product Description & Specs Section -->
+        <?php if (!empty($product['description'])): ?>
+        <div class="product-description-section">
+            <div class="product-description-header">
+                <h3 class="description-title">Thông tin chi tiết</h3>
+            </div>
+            <div class="product-description-content">
+                <div class="description-layout">
+                    <!-- Left: Description Text -->
+                    <div class="description-text">
+                        <h2>Mô tả sản phẩm</h2>
+                        <div class="content">
+                            <?php 
+                            $description = htmlspecialchars($product['description']);
+                            echo nl2br($description);
+                            ?>
+                        </div>
+                        
+                        <h2 class="mt-4">Tại sao nên mua tại WebMuaBanDoCu?</h2>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-shield-alt text-success me-2"></i> Cam kết hàng chính hãng, đúng mô tả.</li>
+                            <li class="mb-2"><i class="fas fa-truck text-success me-2"></i> Giao hàng siêu tốc trong nội thành.</li>
+                            <li class="mb-2"><i class="fas fa-undo text-success me-2"></i> Đổi trả dễ dàng trong vòng 7 ngày.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Right: Specs Table -->
+                    <div class="specs-column">
+                        <div class="specs-table-wrapper">
+                            <h4>Thông số kỹ thuật</h4>
+                            <table class="specs-table">
+                                <tr>
+                                    <td class="specs-label">Danh mục</td>
+                                    <td class="specs-value"><?php echo htmlspecialchars($product['category_name']); ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="specs-label">Tình trạng</td>
+                                    <td class="specs-value"><?php echo getConditionText($product['condition_status']); ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="specs-label">Khu vực</td>
+                                    <td class="specs-value"><?php echo htmlspecialchars($product['location'] ?? 'Toàn quốc'); ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="specs-label">Ngày đăng</td>
+                                    <td class="specs-value"><?php echo date('d/m/Y', strtotime($product['created_at'])); ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="specs-label">Người bán</td>
+                                    <td class="specs-value"><?php echo htmlspecialchars($product['seller_name'] ?? 'Ẩn danh'); ?></td>
+                                </tr>
+                                <tr>
+                                    <td class="specs-label">Kho hàng</td>
+                                    <td class="specs-value"><?php echo $product['stock_quantity']; ?> sản phẩm</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
     
         <!-- Customer Reviews -->
         <div class="customer-reviews">
@@ -534,22 +626,67 @@ if (isset($_SESSION['user_id'])) {
         </div>
         <?php endif; ?>
     </div>
-    <?php footer(); ?>
+    <!-- End product-detail-container -->
+    
     <script>let product_id = <?php echo $product_id ?></script>
     <script src="/WebMuaBanDoCu/public/assets/js/user_review_system.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    function changeMainImage(imagePath, thumbnail, index) {
+    // Image Gallery Management
+    let currentImageIndex = 0;
+    let totalImages = document.querySelectorAll('.thumbnail').length || 1;
+
+    function updateImage(index) {
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        if (thumbnails.length === 0) return;
+
+        // Ensure index is within bounds
+        if (index < 0) index = thumbnails.length - 1;
+        if (index >= thumbnails.length) index = 0;
+
+        currentImageIndex = index;
+
+        // Update main image
+        const imagePath = thumbnails[index].getAttribute('data-image-path');
         document.getElementById('mainImage').src = imagePath;
 
         // Update active thumbnail
         document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        thumbnails[index].classList.add('active');
+
+        // Update pagination
+        const pageIndex = document.getElementById('currentImageIndex');
+        if (pageIndex) {
+            pageIndex.textContent = index + 1;
+        }
+    }
+
+    function nextImage() {
+        updateImage(currentImageIndex + 1);
+    }
+
+    function previousImage() {
+        updateImage(currentImageIndex - 1);
+    }
+
+    function selectImage(thumbnail, index) {
+        updateImage(index);
+    }
+
+    // Keyboard navigation for gallery
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') previousImage();
+    });
+
+    // Legacy function for backward compatibility
+    function changeMainImage(imagePath, thumbnail, index) {
+        document.getElementById('mainImage').src = imagePath;
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
         if (thumbnail) {
             thumbnail.classList.add('active');
         }
-
-        // Update pagination
         if (index && document.getElementById('currentImageIndex')) {
             document.getElementById('currentImageIndex').textContent = index;
         }
@@ -571,6 +708,34 @@ if (isset($_SESSION['user_id'])) {
             qtyInput.value = currentQty - 1;
         }
     }
+
+    // Wishlist functionality
+    function toggleWishlist(productId) {
+        const btn = document.getElementById('wishlistBtn');
+        const isActive = btn.classList.contains('active');
+        
+        if (isActive) {
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="far fa-heart"></i>';
+            localStorage.removeItem(`wishlist_${productId}`);
+            showToast('info', 'Đã xóa', 'Sản phẩm đã được xóa khỏi yêu thích');
+        } else {
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-heart"></i>';
+            localStorage.setItem(`wishlist_${productId}`, 'true');
+            showToast('success', 'Thành công', 'Đã thêm vào yêu thích');
+        }
+    }
+
+    // Load wishlist state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const productId = <?php echo $product_id; ?>;
+        if (localStorage.getItem(`wishlist_${productId}`)) {
+            const btn = document.getElementById('wishlistBtn');
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-heart"></i>';
+        }
+    });
 
     function addToCart(productId) {
     const quantity = parseInt(document.getElementById('quantity').value) || 1;
@@ -597,8 +762,12 @@ if (isset($_SESSION['user_id'])) {
     }
 
     // AJAX call to add to cart
+    // #region agent log
+    const cartUrl = '<?php echo BASE_URL; ?>app/Controllers/cart/CartController.php';
+    fetch('http://127.0.0.1:7244/ingest/1b4ef8e7-dc1d-41a5-8fd9-cd952da7468f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Product_detail.php:600',message:'addToCart called',data:{productId,quantity,url:cartUrl,currentUrl:window.location.href},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     $.ajax({
-        url: '../../../app/Controllers/cart/CartController.php',
+        url: cartUrl,
         method: 'POST',
         data: {
             action: 'add',
@@ -607,6 +776,9 @@ if (isset($_SESSION['user_id'])) {
         },
         dataType: 'json',
         success: function(response) {
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/1b4ef8e7-dc1d-41a5-8fd9-cd952da7468f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Product_detail.php:609',message:'AJAX success',data:{response},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
+            // #endregion
             console.log('Response:', response); // Debug log
             if (response && response.success) {
                 // Hiển thị thông báo thành công
@@ -632,8 +804,41 @@ if (isset($_SESSION['user_id'])) {
             }
         },
         error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error); // Debug log
-            showToast('error', 'Lỗi', 'Không thể kết nối đến server');
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/1b4ef8e7-dc1d-41a5-8fd9-cd952da7468f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Product_detail.php:634',message:'AJAX error',data:{status,error,statusCode:xhr.status,responseText:xhr.responseText?.substring(0,500)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3,H4'})}).catch(()=>{});
+            // #endregion
+            
+            // Try to parse response to get error message from server
+            let errorMessage = 'Không thể kết nối đến server';
+            let isValidationError = false;
+            
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response && response.message) {
+                    errorMessage = response.message;
+                    // 422 là validation error, không phải lỗi kết nối
+                    if (xhr.status === 422 || response.error_type === 'stock_error') {
+                        isValidationError = true;
+                    }
+                }
+            } catch (e) {
+                // If response is not JSON, it's likely a connection error
+                if (xhr.status === 0 || xhr.status >= 500) {
+                    console.error('Connection Error:', status, error);
+                }
+            }
+            
+            // Chỉ log error cho lỗi kết nối thực sự, không log cho validation errors
+            if (!isValidationError) {
+                console.error('AJAX Error:', status, error);
+                console.error('Response Text:', xhr.responseText);
+                showToast('error', 'Lỗi', errorMessage);
+            } else {
+                // Log validation errors ở mức info thay vì error
+                console.log('Validation Error:', errorMessage);
+                // Hiển thị validation errors dưới dạng warning thay vì error
+                showToast('warning', 'Thông báo', errorMessage);
+            }
             // Rollback optimistic update
             cartCountElements.forEach(element => {
                 const currentCount = parseInt(element.textContent) || 0;
@@ -656,7 +861,7 @@ if (isset($_SESSION['user_id'])) {
         
         // Add to cart first, then redirect to checkout
         $.ajax({
-            url: '../../../app/Controllers/cart/CartController.php',
+            url: '<?php echo BASE_URL; ?>app/Controllers/cart/CartController.php',
             method: 'POST',
             data: {
                 action: 'add',
