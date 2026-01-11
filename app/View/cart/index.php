@@ -54,7 +54,7 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
     <title>Giỏ hàng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="/WebMuaBanDoCu/public/assets/css/cart.css" rel="stylesheet">
+    <link href="<?php echo BASE_URL; ?>public/assets/css/cart.css" rel="stylesheet">
     
     <style>
         /* Hiệu ứng Zoom ảnh */
@@ -85,7 +85,7 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
         <?php if (empty($cartItems)): ?>
             <div class="cart-container bg-white p-5 rounded text-center shadow-sm">
                 <h2 class="mb-3">Giỏ hàng của bạn đang trống</h2>
-                <p><a href="../index.php" class="amazon-link">Tiếp tục mua sắm</a></p>
+                <p><a href="<?php echo BASE_URL; ?>public/index.php?page=home" class="amazon-link">Tiếp tục mua sắm</a></p>
             </div>
         <?php else: ?>
             
@@ -103,7 +103,7 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
                                     <div class="col-md-2 col-3 text-center">
                                         <?php if (!empty($item['image_path'])): ?>
                                             <a href="#" class="product-img-container">
-                                                <img src="/WebMuaBanDoCu/public/<?= htmlspecialchars($item['image_path']) ?>" 
+                                                <img src="<?php echo BASE_URL; ?>public/<?= htmlspecialchars($item['image_path']) ?>" 
                                                      class="img-fluid" 
                                                      alt="<?= htmlspecialchars($item['product_title']) ?>"
                                                      style="max-height: 150px; object-fit: contain;">
@@ -204,11 +204,11 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
                         </div>
 
                         <?php if ($is_guest): ?>
-                             <a href="../user/login.php" class="btn btn-warning w-100 shadow-sm rounded-3 py-2 border border-warning">
+                             <a href="<?php echo BASE_URL; ?>public/index.php?page=login" class="btn btn-warning w-100 shadow-sm rounded-3 py-2 border border-warning">
                                 Đăng nhập để thanh toán
                             </a>
                         <?php else: ?>
-                            <a href="../checkout/index.php" class="btn btn-amazon-primary w-100 shadow-sm rounded-3 py-2 fw-bold">
+                            <a href="<?php echo BASE_URL; ?>app/View/checkout/index.php" class="btn btn-amazon-primary w-100 shadow-sm rounded-3 py-2 fw-bold">
                                 Tiến hành thanh toán (<?= $cartItemCount ?> món)        
                             </a>
                         <?php endif; ?>
@@ -223,7 +223,7 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
                                 <div class="d-flex gap-2 mb-3 border-bottom pb-3">
                                     <div class="product-img-container rounded bg-light d-flex align-items-center justify-content-center overflow-hidden" style="width: 60px; height: 60px; min-width: 60px;">
                                         <?php if (!empty($suggestion['image_path'])): ?>
-                                            <img src="/WebMuaBanDoCu/public/<?= htmlspecialchars($suggestion['image_path']) ?>" 
+                                            <img src="<?php echo BASE_URL; ?>public/<?= htmlspecialchars($suggestion['image_path']) ?>" 
                                                  class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;"
                                                  onerror="this.src='https://placehold.co/100x100?text=No+Image'">
                                         <?php else: ?>
@@ -232,7 +232,7 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
                                     </div>
                                     
                                     <div class="flex-grow-1">
-                                        <a href="../product/Product_detail.php?id=<?= $suggestion['id'] ?>" class="amazon-link-dark text-decoration-none small fw-bold d-block mb-1 text-truncate" style="line-height: 1.2; max-width: 160px;">
+                                        <a href="<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?= $suggestion['id'] ?>" class="amazon-link-dark text-decoration-none small fw-bold d-block mb-1 text-truncate" style="line-height: 1.2; max-width: 160px;">
                                             <?= htmlspecialchars($suggestion['title']) ?>
                                         </a>
                                         <div class="d-flex justify-content-between align-items-center mt-1">
@@ -251,12 +251,12 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
                         <?php endif; ?>
 
                          <div class="text-end">
-                             <a href="../product/Product.php" class="amazon-link small">Xem thêm gợi ý <i class="fas fa-angle-double-right"></i></a>
+                             <a href="<?php echo BASE_URL; ?>app/View/product/Product.php" class="amazon-link small">Xem thêm gợi ý <i class="fas fa-angle-double-right"></i></a>
                          </div>
 
                          <script>
                          function addToCart(productId) {
-                             fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+                             fetch('<?php echo BASE_URL; ?>app/Controllers/cart/CartController.php', {
                                  method: 'POST',
                                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                  body: `action=add&product_id=${productId}&quantity=1`
@@ -284,6 +284,6 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
     <?php footer(); ?>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/WebMuaBanDoCu/public/assets/js/cart.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/cart.js"></script>
 </body>
 </html>                                                 

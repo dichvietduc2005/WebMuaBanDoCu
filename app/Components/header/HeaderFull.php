@@ -311,6 +311,7 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
     <!-- Global userId variable for chat system -->
     <script>
         window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;
+        window.baseUrl = '<?php echo BASE_URL; ?>';
         let userId = window.userId;
     </script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/components/header.js"></script>

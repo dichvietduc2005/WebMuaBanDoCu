@@ -6,7 +6,7 @@ include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 // Kiểm tra đăng nhập
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+    header('Location: ' . BASE_URL . 'public/index.php?page=login');
     exit;
 }
 ?>
@@ -23,8 +23,8 @@ if (!isset($_SESSION['user_id'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/index.css">
-    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/sell.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/index.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/sell.css">
     <!-- Mobile Responsive CSS for Product Pages -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
 </head>
@@ -38,7 +38,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="sell-desc">
             Đăng bán đồ cũ của bạn một cách dễ dàng
         </div>
-        <form method="POST" action="../../Models/sell/SellModel.php" enctype="multipart/form-data">
+        <form method="POST" action="<?php echo BASE_URL; ?>app/Models/sell/SellModel.php" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="title" class="form-label">Tiêu đề sản phẩm</label>
                 <input type="text" id="title" name="title" class="form-control" placeholder="Nhập tiêu đề sản phẩm..."
@@ -124,10 +124,9 @@ if (!isset($_SESSION['user_id'])) {
     <script>
         userId = <?php echo $_SESSION['user_id'] ?>
     </script>
-    <script src="/WebMuaBanDoCu/public/assets/js/main.js"> </script>
-
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
-    <script src="/WebMuaBanDoCu/public/assets/js/sell.js"> </script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"> </script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"> </script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/sell.js"> </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <?php footer(); ?>

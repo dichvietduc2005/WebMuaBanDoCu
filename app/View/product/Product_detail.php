@@ -73,7 +73,7 @@ if (isset($_SESSION['user_id'])) {
      <link href="../../../public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/product_detail.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product_detail.css">
     <!-- Mobile Responsive CSS for Product Pages -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
     <!-- Shopee Style Product Detail -->
@@ -607,7 +607,7 @@ if (isset($_SESSION['user_id'])) {
                 <div class="related-item"
                     onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $related['id']; ?>'">
                     <?php if ($related['image_path']): ?>
-                    <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($related['image_path']); ?>"
+                    <img src="<?php echo BASE_URL; ?>public/<?php echo htmlspecialchars($related['image_path']); ?>"
                         alt="<?php echo htmlspecialchars($related['title']); ?>" class="related-image">
                     <?php else: ?>
                     <div class="related-image d-flex align-items-center justify-content-center bg-light">
@@ -743,7 +743,7 @@ if (isset($_SESSION['user_id'])) {
     <?php if (!isset($_SESSION['user_id'])): ?>
     showToast('warning', 'Yêu cầu đăng nhập', 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
     setTimeout(() => {
-        window.location.href = '/WebMuaBanDoCu/app/View/user/login.php';
+        window.location.href = '<?php echo BASE_URL; ?>public/index.php?page=login';
     }, 2000);
     return;
     <?php endif; ?>

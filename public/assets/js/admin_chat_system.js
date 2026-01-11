@@ -90,7 +90,8 @@ function deleteMessage(messageId, messageElement) {
         return;
     }
     
-    fetch("/WebMuaBanDoCu/app/Controllers/message/DeleteMessageController.php", {
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    fetch(base + "app/Controllers/message/DeleteMessageController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "message_id=" + messageId
@@ -116,7 +117,8 @@ function editMessage(messageId, currentContent, messageElement) {
         return;
     }
     
-    fetch("/WebMuaBanDoCu/app/Controllers/message/UpdateMessageController.php", {
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    fetch(base + "app/Controllers/message/UpdateMessageController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "message_id=" + messageId + "&content=" + encodeURIComponent(newContent.trim())
@@ -155,7 +157,8 @@ function load_messages() {
     const chatBox = document.getElementById("chatBox");
     const wasAtBottom = chatBox && (Math.ceil(chatBox.scrollTop) + chatBox.clientHeight >= chatBox.scrollHeight - 20);
     
-    fetch("/WebMuaBanDoCu/app/Controllers/message/GetMessagesController.php", {
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    fetch(base + "app/Controllers/message/GetMessagesController.php", {
         method: "POST",
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -278,7 +281,8 @@ function send_messages() {
     // Đảm bảo sẽ scroll sau khi gửi
     can_jump_bottom = true;
     
-    fetch("/WebMuaBanDoCu/app/Controllers/message/SendMessageController.php", {
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    fetch(base + "app/Controllers/message/SendMessageController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "content=" + encodeURIComponent(content) + "&role=admin" + "&box_chat_id=" + userId

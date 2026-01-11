@@ -227,6 +227,6 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
     let userId = null;
     let can_jump_bottom = true;
   </script>
-  <script src="/WebMuaBanDoCu/public/assets/js/admin_chat_system.js?v=3"></script>
+  <script src="<?php echo BASE_URL; ?>public/assets/js/admin_chat_system.js?v=3"></script>
 
 <?php include APP_PATH . '/View/admin/layouts/AdminFooter.php'; ?>
