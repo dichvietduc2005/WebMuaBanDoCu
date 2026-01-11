@@ -13,25 +13,21 @@ function getAllCoupons($pdo)
 
 function createCoupon($pdo, $data)
 {
-    try {
-        $sql = "INSERT INTO coupons (code, discount_type, discount_value, max_discount_amount, min_order_value, start_date, end_date, usage_limit, status) 
-                VALUES (:code, :discount_type, :discount_value, :max_discount_amount, :min_order_value, :start_date, :end_date, :usage_limit, :status)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':code' => $data['code'],
-            ':discount_type' => $data['discount_type'],
-            ':discount_value' => $data['discount_value'],
-            ':max_discount_amount' => $data['max_discount_amount'] ?? null,
-            ':min_order_value' => $data['min_order_value'] ?? 0,
-            ':start_date' => $data['start_date'] ?: null,
-            ':end_date' => $data['end_date'] ?: null,
-            ':usage_limit' => $data['usage_limit'] ?? 0,
-            ':status' => $data['status'] ?? 1
-        ]);
-        return true;
-    } catch (PDOException $e) {
-        return false;
-    }
+    $sql = "INSERT INTO coupons (code, discount_type, discount_value, max_discount_amount, min_order_value, start_date, end_date, usage_limit, status) 
+            VALUES (:code, :discount_type, :discount_value, :max_discount_amount, :min_order_value, :start_date, :end_date, :usage_limit, :status)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':code' => $data['code'],
+        ':discount_type' => $data['discount_type'],
+        ':discount_value' => $data['discount_value'],
+        ':max_discount_amount' => !empty($data['max_discount_amount']) ? $data['max_discount_amount'] : null,
+        ':min_order_value' => !empty($data['min_order_value']) ? $data['min_order_value'] : 0,
+        ':start_date' => !empty($data['start_date']) ? date('Y-m-d H:i:s', strtotime($data['start_date'])) : null,
+        ':end_date' => !empty($data['end_date']) ? date('Y-m-d H:i:s', strtotime($data['end_date'])) : null,
+        ':usage_limit' => !empty($data['usage_limit']) ? $data['usage_limit'] : 0,
+        ':status' => $data['status'] ?? 1
+    ]);
+    return true;
 }
 
 function deleteCoupon($pdo, $id)

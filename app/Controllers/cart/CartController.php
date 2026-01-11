@@ -14,7 +14,7 @@
  */
 class StockException extends \Exception
 {
-    public function __construct($message = "", $code = 0, \Throwable $previous = null)
+    public function __construct($message = "", $code = 0, ?\Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
@@ -71,16 +71,18 @@ class CartController
             // #region agent log
             file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:54', 'message' => 'product found', 'data' => ['product_exists' => !empty($product), 'product_status' => $product['status'] ?? null, 'stock_quantity' => $product['stock_quantity'] ?? null, 'product_id' => $product['id'] ?? null], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H4')) . "\n", FILE_APPEND);
             // #endregion
-            if (!$product) throw new \Exception("Sản phẩm không tồn tại.");
-            if ($product['status'] != 'active') throw new \Exception("Sản phẩm không còn được bán.");
-            
+            if (!$product)
+                throw new \Exception("Sản phẩm không tồn tại.");
+            if ($product['status'] != 'active')
+                throw new \Exception("Sản phẩm không còn được bán.");
+
             $cart_id = $this->cartModel->getOrCreateCartId($user_id);
             $existing_item = $this->cartModel->findCartItem($cart_id, $product_id);
-            
+
             // Calculate available quantity considering existing cart items
             $existing_quantity = $existing_item ? $existing_item['quantity'] : 0;
             $available_quantity = $product['stock_quantity'] - $existing_quantity;
-            
+
             // Validate requested quantity against available stock
             if ($available_quantity < $quantity) {
                 $message = "Không đủ hàng trong kho. ";
@@ -102,7 +104,7 @@ class CartController
             } else {
                 $result = $this->cartModel->addNewCartItem($cart_id, $product_id, $quantity, $product['price'], $product['condition_status']);
             }
-            
+
             // Log user action after successful add
             if (function_exists('log_user_action') && $result) {
                 try {
@@ -151,19 +153,47 @@ class CartController
         return array_reduce($items, fn($count, $item) => $count + $item['quantity'], 0);
     }
 
+    public function getDiscountedTotal()
+    {
+        $cartTotal = $this->getCartTotal();
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        $appliedCoupon = $_SESSION['applied_coupon'] ?? null;
+
+        if (!$appliedCoupon) {
+            return $cartTotal;
+        }
+
+        $discountAmount = 0;
+        if ($appliedCoupon['discount_type'] === 'percent') {
+            $discountAmount = ($cartTotal * $appliedCoupon['discount_value']) / 100;
+        } else {
+            $discountAmount = $appliedCoupon['discount_value'];
+        }
+
+        // Ensure max_discount_amount is respected (if it exists in session)
+        if (isset($appliedCoupon['max_discount_amount'])) {
+            $maxDiscount = (float) $appliedCoupon['max_discount_amount'];
+            if ($maxDiscount > 0) {
+                $discountAmount = min($discountAmount, $maxDiscount);
+            }
+        }
+
+        return max(0, $cartTotal - $discountAmount);
+    }
+
     public function updateCartItemQuantity($product_id, $quantity)
     {
         $user_id = $this->ensureUserIsLoggedIn();
-
         if ($quantity <= 0) {
             return $this->removeCartItem($product_id);
         }
-
         $product = $this->cartModel->findProductById($product_id);
         if (!$product) {
             throw new \Exception("Sản phẩm không tồn tại.");
         }
-        
+
         if ($product['stock_quantity'] < $quantity) {
             $message = "Số lượng cập nhật vượt quá số lượng tồn kho. ";
             $message .= "Tồn kho hiện có: {$product['stock_quantity']}. ";
@@ -177,7 +207,6 @@ class CartController
     public function removeCartItem($product_id)
     {
         $user_id = $this->ensureUserIsLoggedIn();
-
         // Log before removing
         if (function_exists('log_user_action')) {
             try {
@@ -190,7 +219,6 @@ class CartController
                 error_log('Log remove_from_cart error: ' . $e->getMessage());
             }
         }
-
         return $this->cartModel->removeItem($user_id, $product_id);
     }
 
@@ -204,9 +232,11 @@ class CartController
     {
         $user_id = $this->ensureUserIsLoggedIn();
         $code = strtoupper(trim($code));
-        
-        $stmt = $this->pdo->prepare("SELECT * FROM coupons WHERE code = ? AND status = 1 AND (start_date IS NULL OR start_date <= CURDATE()) AND (end_date IS NULL OR end_date >= CURDATE())");
-        $stmt->execute([$code]);
+
+        // Use PHP's time which honors date_default_timezone_set('Asia/Ho_Chi_Minh')
+        $now = date('Y-m-d H:i:s');
+        $stmt = $this->pdo->prepare("SELECT * FROM coupons WHERE code = ? AND status = 1 AND (start_date IS NULL OR start_date <= ?) AND (end_date IS NULL OR end_date >= ?)");
+        $stmt->execute([$code, $now, $now]);
         $coupon = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$coupon) {
@@ -222,7 +252,8 @@ class CartController
         $_SESSION['applied_coupon'] = [
             'code' => $coupon['code'],
             'discount_type' => $coupon['discount_type'],
-            'discount_value' => $coupon['discount_value']
+            'discount_value' => $coupon['discount_value'],
+            'max_discount_amount' => $coupon['max_discount_amount']
         ];
 
         return $coupon;
@@ -230,7 +261,8 @@ class CartController
 
     public function removeCoupon()
     {
-        if (session_status() == PHP_SESSION_NONE) session_start();
+        if (session_status() == PHP_SESSION_NONE)
+            session_start();
         unset($_SESSION['applied_coupon']);
         return true;
     }
@@ -242,28 +274,20 @@ class CartController
 if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
     require_once(__DIR__ . '/../../../config/config.php');
     require_once(__DIR__ . '/../../Models/cart/CartModel.php');
-    require_once(__DIR__ . '/../../Models/admin/CouponModel.php');
-
     header('Content-Type: application/json');
     // #region agent log
     $logData = array('action' => $_POST['action'] ?? $_GET['action'] ?? '', 'post' => $_POST, 'session_id' => session_id(), 'user_id' => $_SESSION['user_id'] ?? null, 'session_status' => session_status(), 'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN');
     file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:157', 'message' => 'Request received', 'data' => $logData, 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H2,H3')) . "\n", FILE_APPEND);
     // #endregion
     $cartController = new CartController($pdo);
-
-    // Clean buffer to prevent JSON errors
-    if (ob_get_length())
-        ob_clean();
-    error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING); // Suppress minor errors
-
     $action = $_POST['action'] ?? $_GET['action'] ?? '';
     $response = ['success' => false, 'message' => 'Hành động không hợp lệ.'];
 
     try {
         switch ($action) {
             case 'add':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                $quantity = (int)($_POST['quantity'] ?? 1);
+                $product_id = (int) ($_POST['product_id'] ?? 0);
+                $quantity = (int) ($_POST['quantity'] ?? 1);
                 // #region agent log
                 file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:170', 'message' => 'add case - before validation', 'data' => ['product_id' => $product_id, 'quantity' => $quantity, 'product_id_valid' => $product_id > 0, 'quantity_valid' => $quantity > 0], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H3')) . "\n", FILE_APPEND);
                 // #endregion
@@ -274,7 +298,6 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
                     // #endregion
                     $cartController->addToCart($product_id, $quantity);
                     $checkout = isset($_POST['checkout']) && $_POST['checkout'] == '1';
-
                     // Logging đã được xử lý trong method addToCart()
                     $response = [
                         'success' => true,
@@ -324,26 +347,6 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
                 $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.'];
                 break;
 
-            case 'apply_coupon':
-                $code = $_POST['code'] ?? '';
-                if ($code) {
-                    $result = $cartController->applyCoupon($code);
-                    $response = array_merge(['success' => true], $result);
-                } else {
-                    throw new \Exception('Vui lòng nhập mã giảm giá.');
-                }
-                break;
-
-            case 'remove_coupon':
-                $cartController->removeCoupon();
-                $response = [
-                    'success' => true,
-                    'message' => 'Đã hủy mã giảm giá.',
-                    'total' => $cartController->getCartTotal(),
-                    'final_total' => $cartController->getCartTotal() // Reset về gốc
-                ];
-                break;
-
             case 'count':
                 $response = [
                     'success' => true,
@@ -353,12 +356,15 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
 
             case 'apply_coupon':
                 $code = $_POST['code'] ?? '';
-                if (empty($code)) throw new \Exception("Vui lòng nhập mã giảm giá.");
+                if (empty($code))
+                    throw new \Exception("Vui lòng nhập mã giảm giá.");
                 $coupon = $cartController->validateCoupon($code);
                 $response = [
                     'success' => true,
                     'message' => 'Áp dụng mã giảm giá thành công!',
-                    'coupon' => $coupon
+                    'coupon' => $coupon,
+                    'cart_total' => $cartController->getCartTotal(),
+                    'final_total' => $cartController->getDiscountedTotal()
                 ];
                 break;
 
@@ -372,7 +378,7 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
         file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:232', 'message' => 'catch block - stock exception', 'data' => ['exception_message' => $e->getMessage(), 'exception_code' => $e->getCode(), 'exception_file' => $e->getFile(), 'exception_line' => $e->getLine()], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H1,H2,H3,H4,H5')) . "\n", FILE_APPEND);
         // #endregion
         $response = array(
-            'success' => false, 
+            'success' => false,
             'message' => $e->getMessage(),
             'error_type' => 'stock_error'
         );

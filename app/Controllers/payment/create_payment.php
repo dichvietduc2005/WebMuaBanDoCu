@@ -23,7 +23,7 @@ if (!$user_id) {
         echo json_encode(['code' => '98', 'message' => 'Bạn cần đăng nhập để thanh toán.', 'data' => null]);
         exit;
     }
-      // Nếu là form submission trực tiếp, chuyển hướng đến trang đăng nhập
+    // Nếu là form submission trực tiếp, chuyển hướng đến trang đăng nhập
     $_SESSION['login_redirect_url'] = '/WebMuaBanDoCu/app/View/checkout/index.php';
     $_SESSION['error_message'] = 'Bạn cần đăng nhập để thanh toán.';
     header('Location: /WebMuaBanDoCu/app/router.php?controller=user&action=login');
@@ -31,13 +31,14 @@ if (!$user_id) {
 }
 // ===== KẾT THÚC KIỂM TRA ĐĂNG NHẬP =====
 
-// Khai báo global variables từ config
-global $vnp_TmnCode, $vnp_HashSecret, $vnp_Url, $vnp_Returnurl, $pdo;
+// Khởi tạo CartController để lấy tổng tiền chính xác (sau giảm giá)
+$cartController = new CartController($pdo);
+$finalTotal = $cartController->getDiscountedTotal();
 
-$vnp_TxnRef = $_POST['order_id']; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
+$vnp_TxnRef = $_POST['order_id']; //Mã đơn hàng
 $vnp_OrderInfo = $_POST['order_desc'];
 $vnp_OrderType = $_POST['order_type'] ?? 'billpayment';
-$vnp_Amount = $_POST['amount'] * 100;
+$vnp_Amount = $finalTotal * 100;
 $vnp_Locale = $_POST['language'];
 $vnp_BankCode = $_POST['bank_code'];
 $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
@@ -52,10 +53,10 @@ if (isset($fullName) && trim($fullName) != '') {
     $vnp_Bill_FirstName = array_shift($name);
     $vnp_Bill_LastName = array_pop($name);
 }
-$vnp_Bill_Address=$_POST['txt_inv_addr1'];
-$vnp_Bill_City=$_POST['txt_bill_city'];
-$vnp_Bill_Country=$_POST['txt_bill_country'];
-$vnp_Bill_State=$_POST['txt_bill_state'];
+$vnp_Bill_Address = $_POST['txt_inv_addr1'];
+$vnp_Bill_City = $_POST['txt_bill_city'];
+$vnp_Bill_Country = $_POST['txt_bill_country'];
+$vnp_Bill_State = $_POST['txt_bill_state'];
 
 $inputData = array(
     "vnp_Version" => "2.1.0",
@@ -83,13 +84,20 @@ if (isset($vnp_BankCode) && $vnp_BankCode != "") {
 }
 
 // Thêm billing info nếu có (chỉ thêm các tham số THỰC SỰ có giá trị)
-if (!empty($vnp_Bill_Mobile)) $inputData['vnp_Bill_Mobile'] = $vnp_Bill_Mobile;
-if (!empty($vnp_Bill_Email)) $inputData['vnp_Bill_Email'] = $vnp_Bill_Email;
-if (!empty($vnp_Bill_FirstName)) $inputData['vnp_Bill_FirstName'] = $vnp_Bill_FirstName;
-if (!empty($vnp_Bill_LastName)) $inputData['vnp_Bill_LastName'] = $vnp_Bill_LastName;
-if (!empty($vnp_Bill_Address)) $inputData['vnp_Bill_Address'] = $vnp_Bill_Address;
-if (!empty($vnp_Bill_City)) $inputData['vnp_Bill_City'] = $vnp_Bill_City;
-if (!empty($vnp_Bill_Country)) $inputData['vnp_Bill_Country'] = $vnp_Bill_Country;
+if (!empty($vnp_Bill_Mobile))
+    $inputData['vnp_Bill_Mobile'] = $vnp_Bill_Mobile;
+if (!empty($vnp_Bill_Email))
+    $inputData['vnp_Bill_Email'] = $vnp_Bill_Email;
+if (!empty($vnp_Bill_FirstName))
+    $inputData['vnp_Bill_FirstName'] = $vnp_Bill_FirstName;
+if (!empty($vnp_Bill_LastName))
+    $inputData['vnp_Bill_LastName'] = $vnp_Bill_LastName;
+if (!empty($vnp_Bill_Address))
+    $inputData['vnp_Bill_Address'] = $vnp_Bill_Address;
+if (!empty($vnp_Bill_City))
+    $inputData['vnp_Bill_City'] = $vnp_Bill_City;
+if (!empty($vnp_Bill_Country))
+    $inputData['vnp_Bill_Country'] = $vnp_Bill_Country;
 if (isset($vnp_Bill_State) && $vnp_Bill_State != "") {
     $inputData['vnp_Bill_State'] = $vnp_Bill_State;
 }
@@ -116,15 +124,19 @@ $vnp_Url_original = $vnp_Url; // Store original VNPAY URL for logging
 $vnp_Url = $vnp_Url . "?" . $query;
 $vnpSecureHash = ""; // Initialize
 if (isset($vnp_HashSecret)) {
-    $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+    $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
     $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
 }
 
 
 
-$returnData = array('code' => '00'
-    , 'message' => 'success'
-    , 'data' => $vnp_Url);
+$returnData = array(
+    'code' => '00'
+    ,
+    'message' => 'success'
+    ,
+    'data' => $vnp_Url
+);
 
 // ===== INSERT THÔNG TIN ĐƠN HÀNG VÀO DATABASE =====
 $order_created_successfully = false;
@@ -149,10 +161,9 @@ try {
     }
 
     // $user_id đã được lấy ở trên và chắc chắn có giá trị
-    // Lấy thông tin giỏ hàng bằng CartController mới
-    $cartController = new CartController($pdo);
+    // Lấy thông tin giỏ hàng (CartController đã được khởi tạo ở đầu file)
     $cartItems = $cartController->getCartItems();
-    $cartTotal = $cartController->getCartTotal();
+    // $finalTotal đã được tính toán ở đầu file
 
     if (empty($cartItems)) {
         throw new Exception("Giỏ hàng trống. Không thể tạo đơn hàng.");
@@ -167,7 +178,7 @@ try {
 
     // Kết hợp địa chỉ giao hàng và ghi chú khách hàng vào ghi chú đơn hàng cho DB
     // $vnp_OrderInfo is the general description for VNPAY from $_POST['order_desc']
-    $order_notes_for_db = $vnp_OrderInfo; 
+    $order_notes_for_db = $vnp_OrderInfo;
 
     if (!empty($customer_order_notes)) {
         $order_notes_for_db .= "\nGhi chú khách hàng: " . $customer_order_notes;
@@ -194,12 +205,12 @@ try {
             created_at, updated_at
         ) VALUES (?, ?, ?, 'pending', 'vnpay', 'pending', ?, NOW(), NOW())
     ");
-    
+
     $stmt_order->execute([
         $order_number,
-        $user_id, 
-        $cartTotal,
-        $order_notes_for_db // Sử dụng ghi chú đã kết hợp đầy đủ cho DB
+        $user_id,
+        $finalTotal,
+        $order_notes_for_db
     ]);
 
     $order_id = $pdo->lastInsertId();
@@ -238,7 +249,7 @@ try {
         $check_stock_stmt = $pdo->prepare("SELECT stock_quantity FROM products WHERE id = ?");
         $check_stock_stmt->execute([$item['product_id']]);
         $current_stock = $check_stock_stmt->fetchColumn();
-        
+
         if ($current_stock < $quantity) {
             throw new Exception("Sản phẩm (ID: {$item['product_id']}) không đủ số lượng. Còn lại: $current_stock, yêu cầu: $quantity");
         }
@@ -246,28 +257,29 @@ try {
 
     // Nếu mọi thứ thành công, commit transaction
     $pdo->commit();
-    
+
     // Log user action
     if (function_exists('log_user_action')) {
         log_user_action($pdo, $user_id, 'create_order', "Tạo đơn hàng: $order_number", [
             'order_id' => $order_id,
             'order_number' => $order_number,
-            'total_amount' => $cartTotal,
+            'total_amount' => $finalTotal,
             'payment_method' => 'vnpay',
             'items_count' => count($cartItems)
         ]);
     }
-    
+
     $order_created_successfully = true;
     error_log("Đã tạo đơn hàng (chưa xóa giỏ hàng): Order ID = $order_id, Order Number = $order_number cho user_id = $user_id.");
 
 } catch (Exception $e) {
     // Nếu có lỗi, rollback transaction
     if ($pdo->inTransaction()) {
-        $pdo->rollBack();    }
+        $pdo->rollBack();
+    }
     error_log("Lỗi khi tạo đơn hàng cho user_id = $user_id: " . $e->getMessage() . " | Dữ liệu POST: " . print_r($_POST, true));
     log_vnpay_debug_data("CREATE_PAYMENT - ORDER CREATION FAILED", ["error" => $e->getMessage(), "post_data" => $_POST]); // <--- LOG LỖI TẠO ĐƠN HÀNG
-      // Xử lý lỗi và không redirect sang VNPAY
+    // Xử lý lỗi và không redirect sang VNPAY
     if (isset($_POST['redirect'])) {
         $_SESSION['checkout_error_message'] = "Lỗi khi tạo đơn hàng: " . $e->getMessage();
         header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
@@ -283,7 +295,8 @@ try {
 if ($order_created_successfully) {
     if (isset($_POST['redirect'])) {
         // Check if $vnp_Url is valid before redirecting
-        if (empty($vnp_Url) || !filter_var($vnp_Url, FILTER_VALIDATE_URL)) {            error_log("VNPAY Create Payment Error: Invalid or empty VNPAY URL. URL was: '" . $vnp_Url . "'");
+        if (empty($vnp_Url) || !filter_var($vnp_Url, FILTER_VALIDATE_URL)) {
+            error_log("VNPAY Create Payment Error: Invalid or empty VNPAY URL. URL was: '" . $vnp_Url . "'");
             log_vnpay_debug_data("CREATE_PAYMENT - INVALID VNPAY URL", ["vnp_Url" => $vnp_Url]); // <--- LOG URL KHÔNG HỢP LỆ
             $_SESSION['checkout_error_message'] = "Lỗi nghiêm trọng: Không thể tạo URL thanh toán VNPAY. Vui lòng liên hệ quản trị viên.";
             header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
@@ -304,7 +317,8 @@ if ($order_created_successfully) {
         if (empty($_SESSION['checkout_error_message'])) {
             // Fallback error message if not set by the catch block
             $_SESSION['checkout_error_message'] = "Không thể khởi tạo thanh toán. Đã xảy ra lỗi không xác định.";
-        }        header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
+        }
+        header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
         exit;
     } else {
         // AJAX response for failure

@@ -35,10 +35,12 @@ if (isset($_GET['action'])) {
             'status' => isset($_POST['status']) ? 1 : 0
         ];
 
-        if (createCoupon($pdo, $data)) {
-            echo json_encode(['success' => true, 'message' => 'Tạo mã giảm giá thành công!']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Lỗi: Mã giảm giá có thể đã tồn tại.']);
+        try {
+            if (createCoupon($pdo, $data)) {
+                echo json_encode(['success' => true, 'message' => 'Tạo mã giảm giá thành công!']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Lỗi [' . get_class($e) . ' ' . $e->getCode() . ']: ' . $e->getMessage()]);
         }
         exit;
     }
