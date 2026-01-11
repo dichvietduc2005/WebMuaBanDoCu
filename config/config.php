@@ -114,7 +114,11 @@ try {
 }
 
 // Application constants
-define('BASE_URL', $_ENV['BASE_URL'] ?? '/WebMuaBanDoCu/');
+$baseUrl = $_ENV['BASE_URL'] ?? '/WebMuaBanDoCu/';
+if (strpos($baseUrl, '/') !== 0) $baseUrl = '/' . $baseUrl; // Đảm bảo bắt đầu bằng /
+if (substr($baseUrl, -1) !== '/') $baseUrl .= '/'; // Đảm bảo kết thúc bằng /
+
+define('BASE_URL', $baseUrl);
 define('ASSETS_URL', BASE_URL . 'public/assets/');
 define('CSS_URL', ASSETS_URL . 'css/');
 define('JS_URL', ASSETS_URL . 'js/');
@@ -138,8 +142,8 @@ function getConfig($key, $default = null) {
 }
 
 // VNPAY Configuration - Sử dụng environment variables để bảo mật
-$vnp_TmnCode = $_ENV['VNPAY_TMN_CODE'] ?? "X4DCQ1UX";
-$vnp_HashSecret = $_ENV['VNPAY_HASH_SECRET'] ?? "MPI8C42IYO31NDYYLS2HN2KYD0XBYIFH";
+$vnp_TmnCode = $_ENV['VNPAY_TMN_CODE'] ?? "5HOTQ8NB";
+$vnp_HashSecret = $_ENV['VNPAY_HASH_SECRET'] ?? "JUHW3LNEC8O3JNJNN6AGRQKF81Y94DXZ";
 $vnp_Url = $_ENV['VNPAY_URL'] ?? "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 $vnp_Returnurl = $_ENV['VNPAY_RETURN_URL'] ?? "http://localhost/WebMuaBanDoCu/app/Controllers/payment/return.php";
 $vnp_apiUrl = $_ENV['VNPAY_API_URL'] ?? "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";

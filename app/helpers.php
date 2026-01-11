@@ -63,19 +63,23 @@ if (!function_exists('getStatusText')) {
 if (!function_exists('getStatusBadge')) {
     /**
      * Chuyển mã trạng thái đơn hàng thành class CSS của badge
+     * Updated: Mapping to status-* classes with high contrast colors
      */
     function getStatusBadge($status) {
         $badges = [
-            'pending' => 'badge-warning',
-            'confirmed' => 'badge-info',
-            'shipping' => 'badge-primary',
-            'delivered' => 'badge-success',
-            'cancelled' => 'badge-danger',
-            'success' => 'badge-success',
-            'paid' => 'badge-success',
-            'failed' => 'badge-danger'
+            'pending' => 'status-pending',
+            'confirmed' => 'status-confirmed',
+            'shipping' => 'status-delivered',
+            'delivered' => 'status-delivered',
+            'cancelled' => 'status-cancelled',
+            'success' => 'status-delivered',
+            'paid' => 'status-paid',
+            'unpaid' => 'status-unpaid',
+            'pending_payment' => 'status-pending-payment',
+            'failed' => 'status-failed',
+            'payment-failed' => 'status-payment-failed'
         ];
-        return $badges[$status] ?? 'badge-secondary';
+        return $badges[$status] ?? 'status-pending';
     }
 }
 

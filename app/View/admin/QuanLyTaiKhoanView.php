@@ -120,27 +120,27 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
       nhưng sẽ ảnh hưởng đến khả năng đăng nhập của người dùng.
     </p>
 
-    <div class="flex justify-end gap-2 mt-5 text-xs">
+    <div class="flex justify-end gap-3 mt-6">
       <button
         type="button"
         id="account-modal-cancel"
-        class="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+        class="px-4 py-2 text-xs font-semibold text-gray-500 transition-colors bg-gray-100 rounded-xl hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
       >
-        Hủy
+        Bỏ qua
       </button>
       <button
         type="button"
         id="block-account-button"
-        class="hidden px-3 py-1.5 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
+        class="hidden px-5 py-2 text-xs font-bold text-white transition-all bg-red-500 shadow-md rounded-xl hover:bg-red-600 shadow-red-200 dark:shadow-none"
       >
-        Khóa tài khoản
+        <i class="fas fa-lock me-1.5"></i>Khóa ngay
       </button>
       <button
         type="button"
         id="unlock-account-button"
-        class="hidden px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700"
+        class="hidden px-5 py-2 text-xs font-bold text-white transition-all bg-emerald-500 shadow-md rounded-xl hover:bg-emerald-600 shadow-emerald-200 dark:shadow-none"
       >
-        Mở khóa tài khoản
+        <i class="fas fa-unlock me-1.5"></i>Mở khóa
       </button>
     </div>
   </div>
@@ -346,20 +346,20 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
                   </td>
                   <td class="px-4 py-3 text-right">
                     <?php $isActive = $row['status'] === 'active'; ?>
-                    <div class="inline-flex items-center justify-end gap-1.5">
+                    <div class="inline-flex items-center justify-end gap-2">
                       <button
                         type="button"
-                        class="js-user-action inline-flex items-center gap-1 px-2.5 py-1 text-[11px] rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        class="js-user-action inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-xl transition-all <?php echo $isActive ? 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400'; ?>"
                         data-user-id="<?php echo (int) $row['id']; ?>"
                         data-username="<?php echo htmlspecialchars($row['username'], ENT_QUOTES, 'UTF-8'); ?>"
                         data-action="<?php echo $isActive ? 'block' : 'unlock'; ?>"
                         title="<?php echo $isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'; ?>"
                       >
                         <?php if ($isActive): ?>
-                          <i class="fas fa-lock"></i>
+                          <i class="fas fa-shield-halved"></i>
                           <span>Khóa</span>
                         <?php else: ?>
-                          <i class="fas fa-unlock"></i>
+                          <i class="fas fa-lock-open"></i>
                           <span>Mở khóa</span>
                         <?php endif; ?>
                       </button>
@@ -413,6 +413,6 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
   </div>
 
   <!-- Script xử lý khóa/mở khóa tài khoản hiện có -->
-  <script src="/WebMuaBanDoCu/public/assets/js/admin_accounts_action.js?v=1"></script>
+  <script src="<?php echo BASE_URL; ?>public/assets/js/admin_accounts_action.js?v=1"></script>
 
 <?php include APP_PATH . '/View/admin/layouts/AdminFooter.php'; ?>

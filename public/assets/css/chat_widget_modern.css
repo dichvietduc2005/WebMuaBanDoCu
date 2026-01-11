@@ -1,0 +1,390 @@
+/* ============================================================
+   MODERN CHAT WIDGET - THEME ADAPTIVE (SINGLE COLOR)
+   Uses CSS variables from admin theme customization
+   ============================================================ */
+
+/* === Reset & Font === */
+#chat-widget,
+#chat-widget *,
+.chat-container,
+.chat-container *,
+.chat-trigger-btn {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ============================================================
+   TRIGGER BUTTON - Fixed position, uses single theme color
+   ============================================================ */
+.chat-trigger-btn {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    width: 56px !important;
+    height: 56px !important;
+    background: var(--primary, #2563eb) !important;
+    border-radius: 50% !important;
+    border: none !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+    color: white !important;
+    font-size: 24px !important;
+    cursor: pointer !important;
+    z-index: 999998 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.chat-trigger-btn i,
+.chat-trigger-btn i.fa-solid,
+.chat-trigger-btn i.fa-comment-dots {
+    font-size: 24px !important;
+    color: white !important;
+    line-height: 1 !important;
+}
+
+.chat-trigger-btn:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+.chat-trigger-btn:active {
+    transform: scale(0.95) !important;
+}
+
+.chat-trigger-btn.hidden {
+    display: none !important;
+}
+
+/* ============================================================
+   CHAT CONTAINER - Modern floating panel
+   ============================================================ */
+.chat-container {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    width: 380px !important;
+    height: 520px !important;
+    max-height: calc(100vh - 48px) !important;
+    max-width: calc(100vw - 48px) !important;
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+    z-index: 999999 !important;
+    overflow: hidden !important;
+    flex-direction: column !important;
+    
+    /* Hidden by default */
+    display: none !important;
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+}
+
+.chat-container.active {
+    display: flex !important;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    animation: chatSlideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes chatSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ============================================================
+   CHAT HEADER - Single theme color (no gradient)
+   ============================================================ */
+.chat-header {
+    background: var(--primary, #2563eb) !important;
+    color: white !important;
+    padding: 16px 20px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: none !important;
+    min-height: 64px !important;
+}
+
+.chat-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    color: white !important;
+}
+
+.status-dot {
+    width: 10px !important;
+    height: 10px !important;
+    background: #22c55e !important;
+    border-radius: 50% !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    animation: pulse 2s infinite !important;
+    flex-shrink: 0 !important;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    color: white !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.2s !important;
+    flex-shrink: 0 !important;
+}
+
+.close-btn i,
+.close-btn i.fa-solid,
+.close-btn i.fa-xmark {
+    font-size: 16px !important;
+    color: white !important;
+    line-height: 1 !important;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ============================================================
+   CHAT BODY - Messages area
+   ============================================================ */
+.chat-body {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #f9fafb !important;
+    overflow: hidden !important;
+}
+
+.chat-messages-container {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Custom scrollbar */
+.chat-messages-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* ============================================================
+   MESSAGES - Theme adaptive bubble style
+   ============================================================ */
+.chat-messages,
+#messages {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+/* Base message style */
+.user-message,
+.admin-message {
+    max-width: 80% !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    position: relative !important;
+    margin: 0 !important;
+}
+
+/* User messages - Right side, uses single theme color */
+.user-message {
+    align-self: flex-end !important;
+    background: var(--primary, #2563eb) !important;
+    color: white !important;
+    border-radius: 18px 18px 4px 18px !important;
+    margin-left: 15% !important;
+}
+
+/* Admin messages - Left side, light gray */
+.admin-message {
+    align-self: flex-start !important;
+    background: #e5e7eb !important;
+    color: #1f2937 !important;
+    border-radius: 18px 18px 18px 4px !important;
+    margin-right: 15% !important;
+}
+
+/* Remove all ::before and ::after labels */
+.user-message::before,
+.user-message::after,
+.admin-message::before,
+.admin-message::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Add spacing between different senders */
+.user-message + .admin-message,
+.admin-message + .user-message {
+    margin-top: 8px !important;
+}
+
+/* ============================================================
+   INPUT AREA - Clean, no focus glow
+   ============================================================ */
+.chat-input-area {
+    background: #ffffff !important;
+    padding: 12px 16px 16px !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+.input-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background: #f3f4f6 !important;
+    border-radius: 24px !important;
+    padding: 6px 6px 6px 18px !important;
+    border: 1px solid #e5e7eb !important;
+    transition: border-color 0.2s !important;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--primary, #2563eb) !important;
+    box-shadow: none !important;
+}
+
+.input-wrapper input,
+.input-wrapper input#chat-input {
+    flex: 1 !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 10px 0 !important;
+    font-size: 14px !important;
+    color: #1f2937 !important;
+    outline: none !important;
+    min-width: 0 !important;
+    box-shadow: none !important;
+}
+
+.input-wrapper input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.input-wrapper input::placeholder {
+    color: #9ca3af !important;
+}
+
+.input-wrapper button,
+.input-wrapper button#button-send-message {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    border-radius: 50% !important;
+    background: var(--primary, #2563eb) !important;
+    border: none !important;
+    color: white !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.15s, opacity 0.15s !important;
+    flex-shrink: 0 !important;
+}
+
+.input-wrapper button:hover {
+    opacity: 0.9 !important;
+    transform: scale(1.05) !important;
+}
+
+.input-wrapper button:active {
+    transform: scale(0.95) !important;
+}
+
+.input-wrapper button i,
+.input-wrapper button i.fa-solid,
+.input-wrapper button i.fa-paper-plane {
+    font-size: 16px !important;
+    color: white !important;
+    line-height: 1 !important;
+}
+
+/* ============================================================
+   RESPONSIVE - Mobile friendly
+   ============================================================ */
+@media (max-width: 480px) {
+    .chat-container {
+        bottom: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        border-radius: 0 !important;
+    }
+    
+    .chat-trigger-btn {
+        bottom: 16px !important;
+        right: 16px !important;
+        width: 52px !important;
+        height: 52px !important;
+    }
+    
+    .chat-trigger-btn i {
+        font-size: 22px !important;
+    }
+}
+
+/* ============================================================
+   EMPTY STATE - When no messages
+   ============================================================ */
+.chat-messages:empty::before,
+#messages:empty::before {
+    content: "Xin chào! Chúng tôi có thể giúp gì cho bạn?";
+    display: block;
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+/* ============================================================
+   FONT AWESOME ICON FIX
+   ============================================================ */
+.chat-trigger-btn i.fa-comment-dots::before,
+.close-btn i.fa-xmark::before,
+.input-wrapper button i.fa-paper-plane::before {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", FontAwesome !important;
+    font-weight: 900 !important;
+}

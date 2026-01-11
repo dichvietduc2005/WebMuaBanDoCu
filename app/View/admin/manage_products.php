@@ -27,11 +27,12 @@ $regular_products = array_filter($all_products, function($p) { return !$p['featu
 function renderStatusBadge(?string $status): string {
     $status = strtolower((string)$status);
     $map = [
-        'pending' => ['Chờ duyệt', 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'],
-        'active' => ['Đang bán', 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'],
-        'reject' => ['Đã từ chối', 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'],
-        'inactive' => ['Ẩn', 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'],
-        'hidden' => ['Ẩn', 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'],
+        'pending' => ['Chờ duyệt', 'bg-amber-50 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400'],
+        'active' => ['Đang bán', 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400'],
+        'sold' => ['Đã bán', 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'],
+        'reject' => ['Đã từ chối', 'bg-rose-50 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400'],
+        'inactive' => ['Ẩn', 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'],
+        'hidden' => ['Ẩn', 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'],
     ];
 
     [$label, $classes] = $map[$status] ?? ['Không rõ', 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'];
@@ -68,11 +69,11 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
     <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
       <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+          <h2 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
             Quản lý tất cả sản phẩm
           </h2>
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Quản lý trạng thái nổi bật, tình trạng và trạng thái hiển thị của sản phẩm.
+          <p class="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
+            Hệ thống quản lý trạng thái, tình trạng và hiển thị sản phẩm
           </p>
         </div>
         <form method="get" action="<?php echo BASE_URL; ?>public/admin/index.php" class="flex flex-wrap items-center gap-2 text-xs md:justify-end">
@@ -103,11 +104,25 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
             <option value="Đã qua sử dụng" <?php echo $conditionFilter === 'Đã qua sử dụng' ? 'selected' : ''; ?>>Đã qua sử dụng</option>
             <option value="Kém" <?php echo $conditionFilter === 'Kém' ? 'selected' : ''; ?>>Kém</option>
           </select>
+          <input
+            type="number"
+            name="min_price"
+            value="<?php echo htmlspecialchars($_GET['min_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+            placeholder="Giá từ..."
+            class="w-24 px-2 py-1 text-xs border rounded-lg border-gray-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+          >
+          <input
+            type="number"
+            name="max_price"
+            value="<?php echo htmlspecialchars($_GET['max_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+            placeholder="...đến"
+            class="w-24 px-2 py-1 text-xs border rounded-lg border-gray-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+          >
           <button
             type="submit"
-            class="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+            class="inline-flex items-center px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
           >
-            <i class="mr-1 fas fa-filter"></i> Lọc
+            <i class="mr-1.5 fas fa-search"></i> Tìm kiếm
           </button>
         </form>
       </div>
@@ -304,27 +319,24 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
                     <a
                       href="<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo (int) $product['id']; ?>"
                       target="_blank"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20"
-                      title="Xem chi tiết sản phẩm"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-200 dark:shadow-none"
                     >
                       <i class="fas fa-eye"></i>
-                      <span>Xem chi tiết</span>
+                      <span>Chi tiết</span>
                     </a>
                     <a
                       href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?php echo (int) $product['id']; ?>"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-amber-700 bg-amber-50 rounded-full hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20 action-btn"
-                      title="Bỏ nổi bật"
+                      class="group relative inline-flex items-center justify-center w-8 h-8 text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-500 hover:text-white transition-all dark:bg-amber-500/10 dark:text-amber-400 action-btn"
                     >
-                      <i class="fas fa-star-half-alt"></i>
-                      <span>Bỏ nổi bật</span>
+                      <i class="fas fa-star-half-alt text-[12px]"></i>
+                      <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Bỏ nổi bật</span>
                     </a>
                     <a
                       href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=delete&id=<?php echo (int) $product['id']; ?>"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-red-600 bg-red-50 rounded-full hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 delete action-btn"
-                      title="Xóa sản phẩm"
+                      class="group relative inline-flex items-center justify-center w-8 h-8 text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all dark:bg-red-500/10 dark:text-red-400 delete action-btn"
                     >
-                      <i class="fas fa-trash"></i>
-                      <span>Xóa</span>
+                      <i class="fas fa-trash text-[12px]"></i>
+                      <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Xóa</span>
                     </a>
                     </div>
                   </td>
@@ -388,8 +400,9 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
                         <img
                           src="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
                           alt="Ảnh sản phẩm"
-                          class="object-cover w-16 h-16 rounded-xl"
+                          class="object-cover w-16 h-16 rounded-xl cursor-zoom-in lightbox-trigger"
                           onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($placeholderSvg, ENT_QUOTES, 'UTF-8'); ?>';"
+                          data-full-img="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
                         >
                         <div class="absolute z-30 hidden w-40 h-40 p-1 bg-white border rounded-xl shadow-xl -right-2 top-1/2 -translate-y-1/2 group-hover:block dark:bg-gray-900 dark:border-gray-700">
                           <img
@@ -454,27 +467,24 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
                     <a
                       href="<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo (int) $product['id']; ?>"
                       target="_blank"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20"
-                      title="Xem chi tiết sản phẩm"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-200 dark:shadow-none"
                     >
                       <i class="fas fa-eye"></i>
-                      <span>Xem chi tiết</span>
+                      <span>Chi tiết</span>
                     </a>
                     <a
                       href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=toggle_featured&id=<?php echo (int) $product['id']; ?>"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-sky-700 bg-sky-50 rounded-full hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20 action-btn"
-                      title="Đặt nổi bật"
+                      class="group relative inline-flex items-center justify-center w-8 h-8 text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-600 hover:text-white transition-all dark:bg-emerald-500/10 dark:text-emerald-400 action-btn"
                     >
-                      <i class="fas fa-star"></i>
-                      <span>Đặt nổi bật</span>
+                      <i class="fas fa-star text-[12px]"></i>
+                      <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Nổi bật</span>
                     </a>
                     <a
                       href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=delete&id=<?php echo (int) $product['id']; ?>"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-red-600 bg-red-50 rounded-full hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 delete action-btn"
-                      title="Xóa sản phẩm"
+                      class="group relative inline-flex items-center justify-center w-8 h-8 text-red-600 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all dark:bg-red-500/10 dark:text-red-400 delete action-btn"
                     >
-                      <i class="fas fa-trash"></i>
-                      <span>Xóa</span>
+                      <i class="fas fa-trash text-[12px]"></i>
+                      <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Xóa</span>
                     </a>
                     </div>
                   </td>
@@ -531,8 +541,12 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
       color: #991b1b;
     }
     .status-select[data-current="sold"] {
-      background-color: #e0e7ff;
-      color: #3730a3;
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+    .dark .status-select[data-current="sold"] {
+      background-color: rgba(107, 114, 128, 0.1);
+      color: #9ca3af;
     }
     
     /* Style động cho condition */
@@ -619,6 +633,40 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
         });
       });
       
+      // Select All Toggle Logic
+      function setupSelectAll(allId, tableId) {
+        const selectAll = document.getElementById(allId);
+        if (!selectAll) return;
+        
+        selectAll.addEventListener('change', function() {
+          const checkboxes = document.querySelectorAll(`#${tableId} .product-checkbox`);
+          checkboxes.forEach(cb => {
+            cb.checked = this.checked;
+            // Trigger change styling if needed
+            const row = cb.closest('tr');
+            if (this.checked) {
+              row.classList.add('bg-indigo-50/30', 'dark:bg-indigo-500/5');
+            } else {
+              row.classList.remove('bg-indigo-50/30', 'dark:bg-indigo-500/5');
+            }
+          });
+          updateBulkActionVisibility();
+        });
+      }
+
+      setupSelectAll('select-all-featured', 'featured-table');
+      setupSelectAll('select-all-regular', 'regular-table');
+
+      function updateBulkActionVisibility() {
+        const checked = document.querySelectorAll('.product-checkbox:checked').length;
+        const btns = document.querySelectorAll('.bulk-action-btn');
+        btns.forEach(btn => btn.disabled = checked === 0);
+      }
+
+      document.querySelectorAll('.product-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateBulkActionVisibility);
+      });
+
       // Set initial active tab (featured)
       switchTab('featured');
 
@@ -697,7 +745,33 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
           }
         });
       });
+      // Image Lightbox Logic
+      const triggers = document.querySelectorAll('.lightbox-trigger');
+      triggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const fullImgUrl = this.getAttribute('data-full-img');
+          const overlay = document.createElement('div');
+          overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm cursor-zoom-out animate-fadeIn';
+          overlay.innerHTML = `
+            <div class="relative max-w-4xl max-h-[90vh] p-4">
+              <img src="${fullImgUrl}" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl animate-zoomIn">
+              <button class="absolute -top-10 right-0 text-white text-3xl hover:text-gray-300">&times;</button>
+              <p class="absolute -bottom-10 left-0 right-0 text-center text-white/70 text-sm">Click bất cứ đâu để đóng</p>
+            </div>
+          `;
+          overlay.onclick = () => overlay.remove();
+          document.body.appendChild(overlay);
+        });
+      });
     });
   </script>
+  
+  <style>
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+    .animate-zoomIn { animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  </style>
 
 <?php include APP_PATH . '/View/admin/layouts/AdminFooter.php'; ?>

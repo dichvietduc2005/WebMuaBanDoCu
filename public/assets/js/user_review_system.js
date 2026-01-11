@@ -90,20 +90,52 @@ function checkAndFixAdblockIssues() {
 }
 
 function create_review_form(review) {
+    // Generate stars HTML
+    const rating = parseInt(review.rating) || 5;
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            starsHtml += '<i class="fas fa-star"></i>';
+        } else {
+            starsHtml += '<i class="far fa-star"></i>';
+        }
+    }
+
+    const isRecommended = review.is_recommended == 1;
+    const sent_at = review.sent_at ? new Date(review.sent_at) : new Date();
+    const formattedDate = sent_at.toLocaleDateString('vi-VN');
+    const firstLetter = review.username ? review.username.charAt(0).toUpperCase() : '?';
+
     return `
-    <div class="review-item">
-        <div class="reviewer-info">
-            <div class="reviewer-avatar">
-                <i class="fa-solid fa-user"></i>
+    <div class="review-item border-bottom pb-4 mb-4">
+        <div class="d-flex justify-content-between mb-2">
+            <div class="reviewer-info d-flex align-items-center">
+                <div class="reviewer-avatar fw-bold bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:28px; height:28px; font-size:14px;">
+                    ${firstLetter}
+                </div>
+                <div class="reviewer-name fw-bold text-dark">${review.username}</div>
             </div>
-            <div class="reviewer-details">
-                <div class="reviewer-name">${review.username}</div>
-                <div class="review-date">${review.sent_at}</div>
+            ${isRecommended ? '<div class="text-success small fw-medium"><i class="fas fa-check-circle me-1"></i>Sẽ giới thiệu</div>' : ''}
+        </div>
+        
+        <div class="review-rating-row mb-3 d-flex align-items-center">
+            <div class="text-warning small me-3">
+                ${starsHtml}
+            </div>
+            <div class="verified-badge text-success small">
+                <i class="fas fa-check-circle me-1"></i>Đã mua tại WebMuaBanDoCu
             </div>
         </div>
-        <div class="review-text">
-            ${review.content}
-        </div>
+
+        <div class="review-text text-dark mb-3" style="font-size: 15px; line-height: 1.5;">${review.content}</div>
+        
+        <div class="review-footer d-flex justify-content-between align-items-center">
+            <div class="review-actions small">
+                <a href="#" class="text-secondary text-decoration-none me-4"><i class="far fa-thumbs-up me-1"></i> Hữu ích (0)</a>
+                <a href="#" class="text-secondary text-decoration-none"><i class="far fa-comment-dots me-1"></i> Thảo luận</a>
+            </div>
+            <div class="review-date small text-muted">${formattedDate}</div>
+         </div>
     </div>`;
 }
 
@@ -113,26 +145,102 @@ function add_event_button_send() {
     
     if (!sendButton || !inputReview) return;
     
+
+    // Star Rating Logic (Modal)
+    const stars = document.querySelectorAll('.review-stars-group i');
+    const ratingInput = document.getElementById('reviewRating');
+    const ratingLabel = document.getElementById('ratingLabel');
+    
+    if (stars.length > 0 && ratingInput) {
+        stars.forEach(star => {
+            // Click
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                const label = this.getAttribute('data-label');
+                
+                ratingInput.value = rating;
+                if(ratingLabel) ratingLabel.textContent = label;
+                
+                // Update visual active state
+                stars.forEach(s => {
+                    if (s.getAttribute('data-rating') <= rating) {
+                        s.classList.add('active');
+                        // Ensure fas/far consistency if we were swapping classes
+                        // But CSS uses .active to color, so just keeping .active is enough 
+                        // if base class has fa-star. 
+                        // In HTML we have <i class="fas fa-star ..."> so just toggling active is key.
+                        // However, previous code might have swapped fas/far. Let's stick to simple active toggle.
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Hover effect
+            star.addEventListener('mouseenter', function() {
+                const rating = this.getAttribute('data-rating');
+                const label = this.getAttribute('data-label');
+                
+                if(ratingLabel) ratingLabel.textContent = label;
+
+                stars.forEach(s => {
+                     if (s.getAttribute('data-rating') <= rating) {
+                        s.style.transform = 'scale(1.2)';
+                        s.style.color = '#f59e0b'; // Force color on hover
+                    } else {
+                        s.style.transform = 'scale(1)';
+                        s.style.color = '#ddd';
+                    }
+                });
+            });
+            
+            // Mouse leave - restore selection
+            star.parentElement.addEventListener('mouseleave', function() {
+                const currentRating = ratingInput.value;
+                const activeStar = document.querySelector(`.review-stars-group i[data-rating="${currentRating}"]`);
+                if(activeStar && ratingLabel) ratingLabel.textContent = activeStar.getAttribute('data-label');
+
+                stars.forEach(s => {
+                    s.style.transform = 'scale(1)';
+                    s.style.color = ''; // Remove inline style to revert to CSS class
+                    
+                    if (s.getAttribute('data-rating') <= currentRating) {
+                         s.classList.add('active');
+                    } else {
+                         s.classList.remove('active');
+                    }
+                });
+            });
+        });
+    }
+
     sendButton.addEventListener('click', function () {
         send_review();
     });
     
-    // Allow Enter key to submit (but allow Shift+Enter for new line)
-    inputReview.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            send_review();
-        }
-    });
+    // Allow Enter key to submit (but allow Shift+Enter for new line) - Modal textarea
+    if(inputReview) {
+        inputReview.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                send_review();
+            }
+        });
+    }
+
 }
 
 function send_review() {
     let sendButton = document.getElementById('sendButton');
     let inputReview = document.getElementById('contentReview');
+    let ratingInput = document.getElementById('reviewRating'); // Get rating
     
     if (!sendButton || !inputReview) return;
     
     const content = inputReview.value.trim();
+    const rating = ratingInput ? ratingInput.value : 5; // Default to 5
+    const recommendCheck = document.getElementById('recommendCheck');
+    const isRecommended = recommendCheck && recommendCheck.checked ? 1 : 0;
     
     // Validation
     if (content.length < 5) {
@@ -153,7 +261,7 @@ function send_review() {
     fetch("/WebMuaBanDoCu/app/Controllers/review/SendReviewController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: "content=" + encodeURIComponent(content) + "&product_id=" + product_id
+        body: "content=" + encodeURIComponent(content) + "&product_id=" + product_id + "&rating=" + rating + "&is_recommended=" + isRecommended
     })
     .then(res => res.text())
     .then(data => {
@@ -162,17 +270,26 @@ function send_review() {
             inputReview.value = '';
             load_reviews();
             
-            // Ẩn form và hiển thị thông báo đã đánh giá
-            const reviewForm = document.querySelector('.review-form');
-            const reviewsFooter = document.querySelector('.reviews-footer');
-            if (reviewForm && reviewsFooter) {
-                reviewsFooter.innerHTML = `
-                    <div class="already-reviewed">
-                        <i class="fas fa-check-circle text-success"></i>
-                        <p>Bạn đã đánh giá sản phẩm này rồi</p>
-                        <small>Cảm ơn bạn đã chia sẻ ý kiến!</small>
-                    </div>
-                `;
+            // Close Modal
+            const modalEl = document.getElementById('reviewModal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+            }
+
+            // Update UI to "Already Reviewed"
+            const reviewTrigger = document.querySelector('.btn-write-review');
+            if (reviewTrigger) {
+                const footer = reviewTrigger.closest('.reviews-footer');
+                if (footer) {
+                    footer.innerHTML = `
+                        <div class="already-reviewed">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <p>Bạn đã đánh giá sản phẩm này rồi</p>
+                            <small>Cảm ơn bạn đã chia sẻ ý kiến!</small>
+                        </div>
+                    `;
+                }
             }
         } else {
             // Kiểm tra nếu là lỗi duplicate review
@@ -200,36 +317,59 @@ function load_reviews() {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "product_id=" + product_id
     })
-    .then(res => res.json())
+    .then(res => {
+        // Check if response is actually JSON
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            // If not JSON, try to parse as text first to see what we got
+            return res.text().then(text => {
+                console.error('Expected JSON but got:', text.substring(0, 200));
+                throw new Error('Server returned non-JSON response');
+            });
+        }
+        return res.json();
+    })
     .then(data => {
-        const reviewsBox = document.getElementById("reviewsContainer");
+        const reviewsBox = document.getElementById("reviewsList");
         if (!reviewsBox) return;
         
+        // Handle both array response and object with success flag
+        let reviews = [];
+        if (Array.isArray(data)) {
+            reviews = data;
+        } else if (data && data.success === false) {
+            // Error response
+            console.error('API error:', data.message);
+            reviews = [];
+        } else if (data && Array.isArray(data.reviews)) {
+            reviews = data.reviews;
+        }
+        
+        // Don't clear if summary box is inside, but now it's outside
         reviewsBox.innerHTML = ''; // Clear previous reviews
         
-        if (data && data.length > 0) {
-            data.forEach(review => {
+        if (reviews && reviews.length > 0) {
+            reviews.forEach(review => {
                 reviewsBox.innerHTML += create_review_form(review);
             });
         } else {
             reviewsBox.innerHTML = `
-                <div class="no-reviews">
-                    <i class="fas fa-comment-slash"></i>
-                    <p>Chưa có đánh giá nào cho sản phẩm này</p>
-                    <small>Hãy là người đầu tiên đánh giá sản phẩm này!</small>
+                <div class="no-reviews text-center py-5">
+                    <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này</p>
                 </div>
             `;
         }
     })
     .catch(err => {
         console.error('Error loading reviews:', err);
-        const reviewsBox = document.getElementById("reviewsContainer");
+        const reviewsBox = document.getElementById("reviewsList") || document.getElementById("reviewsContainer");
         if (reviewsBox) {
             reviewsBox.innerHTML = `
-                <div class="no-reviews">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Không thể tải đánh giá</p>
-                    <small>Vui lòng thử lại sau</small>
+                <div class="no-reviews text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <p class="text-muted">Không thể tải đánh giá</p>
+                    <small class="text-muted">Vui lòng thử lại sau</small>
                 </div>
             `;
         }

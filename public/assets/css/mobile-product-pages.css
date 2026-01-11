@@ -1,0 +1,460 @@
+/* ============================================================
+   MOBILE RESPONSIVE - PRODUCT PAGES
+   Covers: products.php, Product_detail.php, category.php, categories.php, sell.php
+   ============================================================ */
+
+/* ============================================================
+   PRODUCT LISTING PAGE (products.php)
+   ============================================================ */
+
+/* Mobile - Product Grid */
+@media (max-width: 767px) {
+  /* Products grid - 2 columns on mobile */
+  .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4,
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* Product card mobile */
+  .bg-white.rounded-xl {
+    border-radius: 12px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Product image mobile */
+  .h-\\[220px\\] {
+    height: 180px !important;
+  }
+
+  /* Product title mobile */
+  .text-lg {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Product price mobile */
+  .text-xl.font-bold {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Product meta info mobile */
+  .text-sm {
+    font-size: 11px !important;
+  }
+
+  /* Add to cart button mobile */
+  .add-to-cart-btn,
+  button.w-full {
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+
+  /* Pagination mobile */
+  .pagination {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .pagination a,
+  .pagination span {
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+
+  /* Breadcrumb mobile */
+  .breadcrumb {
+    font-size: 12px !important;
+    padding: 8px 0 !important;
+  }
+
+  /* Page title mobile */
+  .text-3xl {
+    font-size: 20px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Search results text mobile */
+  .text-gray-600,
+  .text-gray-500 {
+    font-size: 13px !important;
+  }
+}
+
+/* Tablet - Product Grid */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .h-\\[220px\\] {
+    height: 200px !important;
+  }
+
+  .text-lg {
+    font-size: 15px !important;
+  }
+}
+
+/* ============================================================
+   PRODUCT DETAIL PAGE (Product_detail.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  .product-detail-container {
+    padding: 12px !important;
+  }
+
+  /* Breadcrumb mobile */
+  .breadcrumb-custom {
+    margin-bottom: 12px !important;
+  }
+
+  .breadcrumb-custom .breadcrumb {
+    font-size: 11px !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Product main section - stack vertically */
+  .product-main .row {
+    flex-direction: column !important;
+  }
+
+  .product-main .col-md-6 {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Product images mobile */
+  .product-images {
+    width: 100% !important;
+  }
+
+  .main-image {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px !important;
+    object-fit: contain !important;
+  }
+
+  /* Product info mobile */
+  .product-info h1 {
+    font-size: 18px !important;
+    margin-bottom: 12px !important;
+    line-height: 1.3 !important;
+  }
+
+  .product-info .price {
+    font-size: 20px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Product actions mobile */
+  .product-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .product-actions button,
+  .product-actions .btn {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+  }
+
+  /* Product description mobile */
+  .product-description {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    padding: 12px !important;
+  }
+
+  /* Product specs mobile */
+  .product-specs {
+    font-size: 12px !important;
+  }
+
+  .product-specs table {
+    font-size: 12px !important;
+  }
+
+  /* Related products mobile */
+  .related-products {
+    margin-top: 24px !important;
+  }
+
+  .related-products .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
+/* Tablet - Product Detail */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .product-main .col-md-6 {
+    width: 50% !important;
+  }
+
+  .product-info h1 {
+    font-size: 22px !important;
+  }
+
+  .related-products .products-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* ============================================================
+   CATEGORY PAGE (category.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Category filter mobile */
+  .category-filters {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .category-filters select,
+  .category-filters input {
+    width: 100% !important;
+    min-height: 44px !important;
+    font-size: 14px !important;
+  }
+
+  /* Category products grid */
+  .category-products {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
+/* ============================================================
+   CATEGORIES LIST PAGE (categories.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .category-card {
+    padding: 12px 8px !important;
+    min-height: auto !important;
+  }
+
+  .category-card .category-icon {
+    font-size: 28px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .category-card .category-name {
+    font-size: 12px !important;
+  }
+}
+
+/* ============================================================
+   SELL PAGE (sell.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Sell form mobile */
+  .sell-form {
+    padding: 12px !important;
+  }
+
+  .sell-form .form-group {
+    margin-bottom: 16px !important;
+  }
+
+  .sell-form label {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+  }
+
+  .sell-form input[type="text"],
+  .sell-form input[type="number"],
+  .sell-form input[type="email"],
+  .sell-form select,
+  .sell-form textarea {
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+  }
+
+  .sell-form textarea {
+    min-height: 100px !important;
+    resize: vertical !important;
+  }
+
+  /* Image upload mobile */
+  .image-upload-area {
+    min-height: 120px !important;
+    padding: 16px !important;
+  }
+
+  .image-upload-area .upload-icon {
+    font-size: 32px !important;
+  }
+
+  /* Submit button mobile */
+  .sell-form button[type="submit"],
+  .sell-form .btn-submit {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Form sections mobile */
+  .form-section {
+    margin-bottom: 20px !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .form-section h3 {
+    font-size: 16px !important;
+    margin-bottom: 12px !important;
+  }
+}
+
+/* Tablet - Sell Page */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sell-form {
+    max-width: 700px !important;
+    margin: 0 auto !important;
+  }
+
+  .sell-form input[type="text"],
+  .sell-form input[type="number"],
+  .sell-form select,
+  .sell-form textarea {
+    font-size: 15px !important;
+  }
+}
+
+/* ============================================================
+   COMMON PRODUCT PAGE ELEMENTS
+   ============================================================ */
+
+/* Mobile - Common adjustments */
+@media (max-width: 767px) {
+  /* Container padding */
+  .container,
+  .container-fluid {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Section spacing */
+  .section {
+    margin: 20px 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Buttons - touch friendly */
+  button,
+  .btn,
+  a.btn {
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    touch-action: manipulation !important;
+  }
+
+  /* Forms - prevent zoom on iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevent iOS zoom */
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Labels */
+  label {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+  }
+
+  /* Cards */
+  .card,
+  .bg-white.rounded-xl {
+    border-radius: 12px !important;
+    padding: 12px !important;
+  }
+
+  /* Headings */
+  h1 {
+    font-size: 20px !important;
+  }
+
+  h2 {
+    font-size: 18px !important;
+  }
+
+  h3 {
+    font-size: 16px !important;
+  }
+
+  /* Text */
+  p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+}
+
+/* ============================================================
+   LANDSCAPE MODE OPTIMIZATION
+   ============================================================ */
+
+@media (max-width: 767px) and (orientation: landscape) {
+  .product-main .col-md-6 {
+    width: 50% !important;
+  }
+
+  .product-images {
+    max-height: 200px !important;
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+/* Touch feedback */
+@media (hover: none) {
+  button:active,
+  .btn:active,
+  a:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

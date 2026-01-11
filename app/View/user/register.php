@@ -6,7 +6,7 @@ require_once($config_path);
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {
-    header('Location: /WebMuaBanDoCu/public/index.php');
+    header('Location: ' . BASE_URL . 'public/index.php');
     exit();
 }
 
@@ -46,7 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký - Web Mua Bán Đồ Cũ</title>
-    <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo BASE_URL; ?>public/assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Mobile Responsive CSS for Auth Pages -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-auth-pages.css">
     <style>
         .register-container {
             max-width: 500px;
@@ -87,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php if ($success_message): ?>
                 <div class="success-message">
                     <?php echo htmlspecialchars($success_message); ?>
-                    <br><a href="/WebMuaBanDoCu/public/index.php?page=login">Đăng nhập ngay</a>
+                    <br><a href="<?php echo BASE_URL; ?>public/index.php?page=login">Đăng nhập ngay</a>
                 </div>
             <?php endif; ?>
               <form method="POST">
@@ -152,8 +154,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
             </form>
               <div class="text-center mt-3">
-                <p>Đã có tài khoản? <a href="/WebMuaBanDoCu/public/index.php?page=login">Đăng nhập</a></p>
-                <p><a href="/WebMuaBanDoCu/public/index.php">Về trang chủ</a></p>
+                <p>Đã có tài khoản? <a href="<?php echo BASE_URL; ?>public/index.php?page=login">Đăng nhập</a></p>
+                <p><a href="<?php echo BASE_URL; ?>public/index.php">Về trang chủ</a></p>
             </div>
         </div>
     </div>

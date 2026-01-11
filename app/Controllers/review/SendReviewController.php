@@ -24,8 +24,16 @@ try {
         exit;
     }
     
-    $stmt = $pdo->prepare("INSERT INTO review_products (user_id, product_id, content, sent_at, username) VALUES (?, ?, ?, NOW(),?)");
-    $stmt->execute([$userId, $product_id, $content, $username]);
+    $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : 5;
+    
+    // Validate rating
+    if ($rating < 1) $rating = 1;
+    if ($rating > 5) $rating = 5;
+
+    $is_recommended = isset($_POST['is_recommended']) ? (int)$_POST['is_recommended'] : 1;
+
+    $stmt = $pdo->prepare("INSERT INTO review_products (user_id, product_id, content, rating, is_recommended, sent_at, username) VALUES (?, ?, ?, ?, ?, NOW(),?)");
+    $stmt->execute([$userId, $product_id, $content, $rating, $is_recommended, $username]);
     
     // Log user action
     if (function_exists('log_user_action')) {

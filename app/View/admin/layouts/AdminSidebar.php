@@ -8,17 +8,18 @@ function adminMenuItem(string $page, string $label, string $iconPath, int $badge
     $isActive = $currentAdminPage === $page;
     $baseUrl = BASE_URL . 'public/admin/index.php?page=' . urlencode($page);
 
-    $itemClasses = 'menu-item group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-in-out';
+    $itemClasses = 'menu-item group flex items-center gap-3 rounded-lg px-3 py-3.5 text-sm font-medium transition-all duration-200 ease-in-out';
     $itemClasses .= $isActive
         ? ' bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-500/30 border-l-4 border-indigo-900 scale-[1.02]'
         : ' text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:text-indigo-600 hover:scale-[1.01] dark:text-gray-300 dark:hover:bg-gray-800/80 dark:hover:text-white';
 
     $iconContainerClasses = 'inline-flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-300 ease-in-out';
     $iconContainerClasses .= $isActive
-        ? ' bg-white/20 text-white backdrop-blur-sm group-hover:scale-110 group-hover:rotate-6'
-        : ' bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100 group-hover:scale-110 group-hover:-rotate-6 dark:bg-indigo-500/10 dark:text-indigo-300';
+        ? ' bg-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:rotate-6'
+        : ' bg-indigo-50 group-hover:bg-indigo-100 group-hover:scale-110 group-hover:-rotate-6 dark:bg-indigo-500/10';
 
     $iconStroke = $isActive ? 'white' : 'currentColor';
+    $iconTextClass = $isActive ? 'text-white' : 'text-indigo-600';
 
     $badgeHtml = '';
     if ($badge > 0) {
@@ -29,7 +30,7 @@ function adminMenuItem(string $page, string $label, string $iconPath, int $badge
       <li>
         <a href="' . htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') . '" class="' . $itemClasses . '">
           <span class="' . $iconContainerClasses . '">
-            ' . sprintf($iconPath, $iconStroke, $iconStroke) . '
+            ' . sprintf($iconPath, $iconTextClass, $iconStroke) . '
           </span>
           <span class="menu-item-text flex-1">' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>
           ' . $badgeHtml . '
@@ -128,6 +129,13 @@ function adminMenuItem(string $page, string $label, string $iconPath, int $badge
             '<svg xmlns="http://www.w3.org/2000/svg" class="%s w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="%s">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>'
+          );
+
+          echo adminMenuItem('theme_customization', 'Tùy chỉnh giao diện',
+            '<svg xmlns="http://www.w3.org/2000/svg" class="%s w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="%s">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
             </svg>'
           );
           ?>

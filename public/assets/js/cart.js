@@ -86,9 +86,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- API Call Functions ---
-    async function callCartApi(action, productId, quantity) {
+    async function callCartApi(action, productId = null, quantity = null, extraData = {}) {
         const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php'; 
-        const body = `action=${action}&product_id=${productId}` + (quantity !== undefined ? `&quantity=${quantity}` : '');
+        let body = `action=${action}`;
+        if (productId) body += `&product_id=${productId}`;
+        if (quantity !== null) body += `&quantity=${quantity}`;
+        
+        // Append extra data
+        for (const key in extraData) {
+            body += `&${key}=${encodeURIComponent(extraData[key])}`;
+        }
 
         try {
             const response = await fetch(url, {
@@ -325,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateCartSummary(response.total);
         }
     }, 500);
+
 
     console.log('Cart script loaded successfully');
 });

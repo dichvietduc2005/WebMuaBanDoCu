@@ -1,0 +1,431 @@
+/* ============================================================
+   MOBILE RESPONSIVE - AUTH PAGES
+   Covers: login.php, register.php, forgot_password.php, reset_password.php
+   ============================================================ */
+
+/* ============================================================
+   LOGIN PAGE (login.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Body mobile */
+  body {
+    padding: 12px !important;
+    min-height: 100vh !important;
+    background-attachment: scroll !important; /* Better performance on mobile */
+  }
+
+  /* Login card mobile */
+  .login-card {
+    max-width: 100% !important;
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+    margin: 0 !important;
+  }
+
+  /* Login header mobile */
+  .login-header h2 {
+    font-size: 22px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .login-header p {
+    font-size: 13px !important;
+  }
+
+  /* Form controls mobile */
+  .form-control {
+    min-height: 48px !important;
+    padding: 12px 14px !important;
+    font-size: 16px !important; /* Prevent iOS zoom */
+    border-radius: 10px !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .form-control:focus {
+    box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.25) !important;
+    border-color: var(--primary-color, #4e73df) !important;
+  }
+
+  /* Form groups mobile */
+  .form-group {
+    margin-bottom: 16px !important;
+  }
+
+  .form-group label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+    color: #374151 !important;
+  }
+
+  /* Buttons mobile */
+  .btn-login,
+  .btn-primary {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .btn-google,
+  .btn-secondary {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+
+  /* Links mobile */
+  .login-footer a {
+    font-size: 13px !important;
+    padding: 8px 0 !important;
+    display: block !important;
+    text-align: center !important;
+  }
+
+  /* Error/Success messages mobile */
+  .error-message,
+  .success-message,
+  .alert {
+    padding: 12px !important;
+    margin-bottom: 16px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+  }
+
+  /* Remember me checkbox mobile */
+  .form-check {
+    margin-bottom: 16px !important;
+  }
+
+  .form-check-input {
+    width: 20px !important;
+    height: 20px !important;
+    cursor: pointer !important;
+  }
+
+  .form-check-label {
+    font-size: 13px !important;
+    margin-left: 8px !important;
+    cursor: pointer !important;
+  }
+}
+
+/* ============================================================
+   REGISTER PAGE (register.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Container mobile */
+  .container {
+    padding: 12px !important;
+  }
+
+  /* Register container mobile */
+  .register-container {
+    max-width: 100% !important;
+    margin: 20px 0 !important;
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Register header mobile */
+  .register-header {
+    margin-bottom: 24px !important;
+  }
+
+  .register-header h2 {
+    font-size: 22px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .register-header p {
+    font-size: 13px !important;
+  }
+
+  /* Form groups mobile */
+  .form-group {
+    margin-bottom: 16px !important;
+  }
+
+  .form-group label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="password"],
+  .form-group input[type="tel"] {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 14px !important;
+    font-size: 16px !important; /* Prevent iOS zoom */
+    border-radius: 10px !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* Submit button mobile */
+  .btn-register,
+  .btn-primary,
+  button[type="submit"] {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    margin-top: 8px !important;
+  }
+
+  /* Login link mobile */
+  .login-link {
+    text-align: center !important;
+    margin-top: 16px !important;
+    font-size: 13px !important;
+  }
+
+  .login-link a {
+    color: var(--primary-color, #4e73df) !important;
+    font-weight: 600 !important;
+  }
+}
+
+/* ============================================================
+   FORGOT PASSWORD PAGE (forgot_password.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Forgot password container */
+  .forgot-password-container,
+  .reset-password-container {
+    max-width: 100% !important;
+    padding: 20px 16px !important;
+    margin: 20px 0 !important;
+    border-radius: 16px !important;
+  }
+
+  .forgot-password-header,
+  .reset-password-header {
+    margin-bottom: 24px !important;
+    text-align: center !important;
+  }
+
+  .forgot-password-header h2,
+  .reset-password-header h2 {
+    font-size: 22px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .forgot-password-header p,
+  .reset-password-header p {
+    font-size: 13px !important;
+    color: #666 !important;
+  }
+
+  /* Form mobile */
+  .forgot-password-form,
+  .reset-password-form {
+    margin-bottom: 16px !important;
+  }
+
+  .forgot-password-form input,
+  .reset-password-form input {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 14px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Submit button mobile */
+  .btn-submit,
+  .btn-primary {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+  }
+
+  /* Back to login link mobile */
+  .back-to-login {
+    text-align: center !important;
+    margin-top: 16px !important;
+  }
+
+  .back-to-login a {
+    font-size: 13px !important;
+    color: var(--primary-color, #4e73df) !important;
+  }
+}
+
+/* ============================================================
+   RESET PASSWORD PAGE (reset_password.php)
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Same styles as forgot password */
+  .reset-password-container {
+    max-width: 100% !important;
+    padding: 20px 16px !important;
+  }
+
+  .password-strength {
+    font-size: 11px !important;
+    margin-top: 4px !important;
+  }
+
+  .password-requirements {
+    font-size: 11px !important;
+    margin-top: 8px !important;
+    padding: 8px !important;
+    background: #f8f9fa !important;
+    border-radius: 6px !important;
+  }
+}
+
+/* ============================================================
+   COMMON AUTH PAGE ELEMENTS
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Container padding */
+  .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Cards */
+  .card,
+  .login-card,
+  .register-container {
+    border-radius: 16px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Headings */
+  h1 {
+    font-size: 24px !important;
+  }
+
+  h2 {
+    font-size: 20px !important;
+  }
+
+  h3 {
+    font-size: 18px !important;
+  }
+
+  /* Text */
+  p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Divider */
+  .divider {
+    margin: 20px 0 !important;
+    font-size: 12px !important;
+  }
+
+  /* Social login buttons */
+  .btn-social {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+}
+
+/* Tablet - Auth Pages */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .login-card,
+  .register-container {
+    max-width: 500px !important;
+    padding: 30px 24px !important;
+  }
+
+  .form-control {
+    font-size: 15px !important;
+  }
+
+  .btn-login,
+  .btn-register,
+  .btn-primary {
+    font-size: 15px !important;
+  }
+}
+
+/* ============================================================
+   LANDSCAPE MODE
+   ============================================================ */
+
+@media (max-width: 767px) and (orientation: landscape) {
+  body {
+    padding: 8px !important;
+  }
+
+  .login-card,
+  .register-container {
+    padding: 16px !important;
+  }
+
+  .login-header h2,
+  .register-header h2 {
+    font-size: 18px !important;
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+/* Touch feedback */
+@media (hover: none) {
+  button:active,
+  .btn:active,
+  a:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus states */
+@media (max-width: 767px) {
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 2px solid var(--primary-color, #4e73df) !important;
+    outline-offset: 2px !important;
+  }
+}
+

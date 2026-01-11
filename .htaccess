@@ -1,11 +1,17 @@
 # Cấu hình cơ bản
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /WebMuaBanDoCu/
+    # RewriteBase /WebMuaBanDoCu/
+    
+    # Tự động nhận diện đường dẫn gốc
+    RewriteCond %{REQUEST_URI} ^/WebMuaBanDoCu/
+    RewriteRule ^ - [E=BASE:/WebMuaBanDoCu/]
+    RewriteCond %{REQUEST_URI} !^/WebMuaBanDoCu/
+    RewriteRule ^ - [E=BASE:/]
 
     # Cho phép truy cập trực tiếp vào file trong public/uploads
-    RewriteCond %{REQUEST_URI} ^/WebMuaBanDoCu/public/uploads/ [OR]
-    RewriteCond %{REQUEST_URI} ^/WebMuaBanDoCu/public/assets/
+    RewriteCond %{REQUEST_URI} ^%{ENV:BASE}public/uploads/ [OR]
+    RewriteCond %{REQUEST_URI} ^%{ENV:BASE}public/assets/
     RewriteRule ^ - [L]
 
     # Chuyển hướng tất cả các yêu cầu không phải là file hoặc thư mục tồn tại đến public/index.php

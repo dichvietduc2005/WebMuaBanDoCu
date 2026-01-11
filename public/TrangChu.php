@@ -1,5 +1,6 @@
 <?php
 // Chuyển hướng đến đường dẫn đúng
-header('Location: ../app/View/Home.php');
+// Chuyển hướng đến trang chủ thông qua router chính
+header('Location: index.php');
 exit();
 ?> 

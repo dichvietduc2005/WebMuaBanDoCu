@@ -5,8 +5,9 @@
 
 class SearchAutocomplete {
     constructor() {
-        this.searchInput = document.getElementById('search-input');
-        this.searchForm = document.getElementById('search-form2');
+        // Hỗ trợ cả search-input (mobile) và search-input-desktop (desktop)
+        this.searchInput = document.getElementById('search-input-desktop') || document.getElementById('search-input');
+        this.searchForm = document.getElementById('search-form2') || document.getElementById('search-form');
         this.suggestionsList = null;
         this.isLoading = false;
         this.debounceTimer = null;
@@ -85,7 +86,11 @@ class SearchAutocomplete {
             const data = await response.json();
             console.log('API Response:', data);
 
-            if (data.success && data.suggestions) {
+            // API returns: { success: true, data: { suggestions: [...] } }
+            if (data.success && data.data && data.data.suggestions) {
+                this.displaySuggestions(data.data.suggestions, keyword);
+            } else if (data.success && data.suggestions) {
+                // Fallback for old API format
                 this.displaySuggestions(data.suggestions, keyword);
             } else {
                 console.log('No suggestions found or API error');

@@ -1,7 +1,8 @@
 // Real-time Cart Count Manager
 class CartCountManager {
     constructor() {
-        this.apiUrl = '/WebMuaBanDoCu/app/Controllers/cart/CartCountAPI.php';
+        const base = window.baseUrl || '/WebMuaBanDoCu/';
+        this.apiUrl = base + 'app/Controllers/cart/CartCountAPI.php';
         this.updateInterval = 5000; // Update every 5 seconds
         this.intervalId = null;
         this.lastCount = 0;

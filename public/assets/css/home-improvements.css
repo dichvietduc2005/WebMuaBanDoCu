@@ -1,0 +1,291 @@
+/* ============================================================
+   HOME PAGE IMPROVEMENTS - TheGioiDiDong Inspired
+   ============================================================ */
+
+/* ============================================================
+   FEATURED PRODUCTS - 2 Columns on Mobile
+   ============================================================ */
+
+@media (max-width: 768px) {
+  #featured-products .products-grid,
+  #regular-products .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #featured-products .products-grid,
+  #regular-products .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+/* ============================================================
+   BANNER/SLIDER - Remove border-radius from overlay
+   ============================================================ */
+
+.frontend-banner-overlay {
+  border-radius: 0 !important;
+}
+
+.frontend-banner-container {
+  border-radius: 0 !important;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   CATEGORY CARDS - Modern Beautiful Design
+   ============================================================ */
+
+.category-card {
+  background: white !important;
+  border-radius: 16px !important;
+  padding: 20px 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid #f0f0f0 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.category-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  border-color: var(--primary, #4f46e5) !important;
+}
+
+.category-icon-box {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-bottom: 4px !important;
+}
+
+.category-card:hover .category-icon-box {
+  transform: scale(1.1) !important;
+  background: linear-gradient(135deg, var(--primary-light, #a5b4fc) 0%, var(--primary, #4f46e5) 100%) !important;
+}
+
+.category-icon-box i {
+  font-size: 28px !important;
+  color: var(--primary, #4f46e5) !important;
+  transition: all 0.3s ease !important;
+}
+
+.category-card:hover .category-icon-box i {
+  color: white !important;
+  transform: scale(1.1) !important;
+}
+
+.category-name {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #1f2937 !important;
+  transition: color 0.3s ease !important;
+}
+
+.category-card:hover .category-name {
+  color: var(--primary, #4f46e5) !important;
+}
+
+/* PRODUCT CARD STYLES REMOVED - using unified-product-cards.css */
+
+/* ============================================================
+   SECTION STYLING
+   ============================================================ */
+
+.section {
+  margin: 40px 0 32px 0; /* Added 40px margin at top */
+  padding: 30px 24px;
+  background: var(--theme-section-bg, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+@media (max-width: 991px) {
+  .section {
+    margin: 16px 0;
+    padding: 20px 12px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    margin: 12px 0;
+    padding: 16px 12px;
+    border-radius: 10px;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.section-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+@media (max-width: 767px) {
+  .section-header {
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 22px;
+  }
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 30px;
+  background: #d32323;
+  border-radius: 2px;
+}
+
+.section-title::after {
+  display: none !important;
+}
+
+.view-all {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(26, 115, 232, 0.08);
+  transition: all 0.2s ease;
+}
+
+.view-all:hover {
+  background: rgba(26, 115, 232, 0.15);
+  text-decoration: none;
+}
+
+/* ============================================================
+   CONTAINER BACKGROUND
+   ============================================================ */
+
+.container {
+  background: transparent !important;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (max-width: 991px) {
+  .container {
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding: 0 0;
+  }
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+
+.hero {
+  background: linear-gradient(135deg, var(--primary, #2563eb)dd, var(--secondary, #7c3aed)cc);
+  border-radius: 12px;
+  padding: 48px 32px;
+  margin: 16px 0 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero h2 {
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.2;
+  color: white;
+}
+
+.hero p {
+  font-size: clamp(14px, 2vw, 16px);
+  margin-bottom: 20px;
+  opacity: 0.95;
+  color: white;
+  line-height: 1.5;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-btn.btn-white {
+  background: white;
+  color: var(--primary, #2563eb);
+}
+
+.hero-btn.btn-transparent {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 767px) {
+  .hero {
+    padding: 32px 20px;
+    margin: 12px 0 16px;
+    border-radius: 0;
+    margin-left: -10px;
+    margin-right: -10px;
+    width: calc(100% + 20px);
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .hero-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}

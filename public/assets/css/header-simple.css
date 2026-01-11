@@ -1,0 +1,680 @@
+/* ============================================================
+   HEADER SIMPLE - CLEAN & MINIMAL DESIGN
+   Guest: Logo + Search + Login/Register
+   Logged-in: Logo + Menu + Search + Notifications + Cart
+   ============================================================ */
+
+/* ============================================================
+   BASE HEADER STYLES
+   ============================================================ */
+
+.header-simple {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  transition: transform 0.3s ease-in-out;
+}
+
+.header-simple.header-hidden {
+  transform: translateY(-100%);
+}
+
+/* ============================================================
+   HEADER TOP BAR (White Section)
+   ============================================================ */
+
+.header-top-bar {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-top-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.header-top-left,
+.header-top-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.header-top-left {
+  justify-content: flex-start;
+}
+
+.header-top-right {
+  justify-content: flex-end;
+}
+
+.header-top-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Legacy support - keep for backward compatibility */
+.header-simple .header-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ============================================================
+   LOGO SECTION
+   ============================================================ */
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+  min-width: 0;
+  z-index: 1;
+}
+
+.header-logo:hover {
+  text-decoration: none;
+}
+
+.header-logo-icon {
+  font-size: 24px;
+  color: var(--primary, #2563eb);
+  flex-shrink: 0;
+}
+
+.header-logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary, #2563eb);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 4px;
+}
+
+/* ============================================================
+   HEADER SEARCH SECTION (No Background)
+   ============================================================ */
+
+.header-search-section {
+  background: transparent !important;
+  padding: 16px;
+  width: 100%;
+}
+
+.header-search-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.header-search {
+  width: 100%;
+  position: relative;
+}
+
+.header-search-form {
+  display: flex;
+  gap: 0;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  background: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.header-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: white;
+  color: #333;
+}
+
+.header-search-input::placeholder {
+  color: #999;
+}
+
+.header-search-input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.header-search-btn {
+  width: 56px;
+  min-width: 56px;
+  height: 48px;
+  border: none;
+  background: var(--primary, #4f46e5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0 8px 8px 0;
+}
+
+.header-search-btn:hover {
+  opacity: 0.85;
+}
+
+.header-search-btn:active {
+  transform: scale(0.95);
+}
+
+.header-search-btn i {
+  font-size: 16px;
+}
+
+/* ============================================================
+   ACTION BUTTONS SECTION
+   ============================================================ */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Menu Toggler (Logged-in only) */
+.header-menu-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.header-menu-btn:hover {
+  background: #f5f5f5;
+}
+
+.header-menu-btn:active {
+  background: #e5e7eb;
+}
+
+.header-menu-btn i {
+  font-size: 20px;
+  color: #374151;
+}
+
+/* Icon Buttons (Notifications, Cart) */
+.header-icon-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  position: relative;
+  text-decoration: none;
+  color: #374151;
+}
+
+.header-icon-btn:hover {
+  background: #f5f5f5;
+  text-decoration: none;
+  color: #374151;
+}
+
+.header-icon-btn:active {
+  background: #e5e7eb;
+}
+
+.header-icon-btn i {
+  font-size: 18px;
+}
+
+/* Badge on icons */
+.header-icon-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Login/Register Buttons (Guest only) */
+.header-auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-btn-login,
+.header-btn-register {
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.header-btn-login {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.header-btn-login:hover {
+  opacity: 0.9;
+  text-decoration: none;
+  color: white;
+}
+
+.header-btn-register {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.header-btn-register:hover {
+  opacity: 0.9;
+  text-decoration: none;
+  color: white;
+}
+
+.header-btn-login:active,
+.header-btn-register:active {
+  transform: scale(0.98);
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* Header Top Bar Mobile */
+  .header-top-container {
+    padding: 10px 12px;
+  }
+
+  /* Logo Mobile */
+  .header-logo-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .header-logo-text {
+    font-size: 14px;
+  }
+
+  /* Search Section Mobile */
+  .header-search-section {
+    padding: 12px;
+  }
+
+  .header-search-form {
+    height: 44px;
+    width: 100% !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .header-search-input {
+    height: 44px;
+    padding: 0 14px;
+    font-size: 15px;
+    opacity: 1 !important;
+    width: auto !important;
+    pointer-events: auto !important;
+    flex: 1;
+  }
+
+  .header-search-btn {
+    width: 48px;
+    min-width: 48px;
+    height: 44px;
+    background: var(--primary, #4f46e5) !important;
+    color: white !important;
+  }
+
+  .header-search-btn i {
+    font-size: 16px;
+  }
+
+  /* Actions Mobile */
+  .header-actions {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .header-menu-btn,
+  .header-icon-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 6px;
+  }
+
+  .header-menu-btn i,
+  .header-icon-btn i {
+    font-size: 16px;
+  }
+
+  /* Auth Buttons Mobile */
+  .header-auth-buttons {
+    gap: 4px;
+  }
+
+  .header-btn-login,
+  .header-btn-register {
+    height: 36px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .header-btn-login span,
+  .header-btn-register span {
+    display: none;
+  }
+
+  .header-btn-login i,
+  .header-btn-register i {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+/* ============================================================
+   TABLET RESPONSIVE
+   ============================================================ */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header-top-container {
+    padding: 12px 20px;
+  }
+
+  .header-search-section {
+    padding: 16px 20px;
+  }
+
+  .header-search-form {
+    height: 46px;
+  }
+
+  .header-search-input {
+    height: 46px;
+    padding: 0 18px;
+  }
+
+  .header-search-btn {
+    width: 52px;
+    min-width: 52px;
+    height: 46px;
+  }
+}
+
+/* ============================================================
+   DESKTOP RESPONSIVE
+   ============================================================ */
+
+@media (min-width: 1024px) {
+  .header-top-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 14px 24px;
+  }
+
+  .header-search-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .header-search-section {
+    padding: 18px 24px;
+  }
+
+  .header-logo-text {
+    font-size: 22px;
+  }
+
+  .header-search-form {
+    height: 52px;
+  }
+
+  .header-search-input {
+    height: 52px;
+    padding: 0 20px;
+    font-size: 17px;
+  }
+
+  .header-search-btn {
+    width: 60px;
+    min-width: 60px;
+    height: 52px;
+  }
+
+  .header-menu-btn,
+  .header-icon-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .header-btn-login,
+  .header-btn-register {
+    height: 44px;
+    padding: 0 20px;
+    font-size: 15px;
+  }
+}
+
+/* ============================================================
+   MENU DROPDOWN (Logged-in)
+   ============================================================ */
+
+.header-menu-dropdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  display: none;
+}
+
+.header-menu-dropdown.show {
+  display: block;
+}
+
+.header-menu-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  max-width: 85vw;
+  height: 100vh;
+  background: white;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1041;
+}
+
+.header-menu-dropdown.show .header-menu-sidebar {
+  transform: translateX(0);
+}
+
+.header-menu-content {
+  padding: 20px;
+}
+
+.header-menu-user {
+  padding: 16px;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.header-menu-user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.header-menu-user-email {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.header-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.header-menu-item {
+  margin-bottom: 4px;
+}
+
+.header-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  font-size: 14px;
+}
+
+.header-menu-link:hover {
+  background: #f5f5f5;
+  text-decoration: none;
+  color: #374151;
+}
+
+.header-menu-link i {
+  width: 20px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.header-menu-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 12px 0;
+}
+
+/* ============================================================
+   SEARCH SUGGESTIONS
+   ============================================================ */
+
+.header-search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1100;
+  display: none;
+}
+
+.header-search-suggestions.show {
+  display: block;
+}
+
+.header-search-suggestion-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.header-search-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.header-search-suggestion-item:hover {
+  background: #f5f5f5;
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .header-menu-sidebar,
+  .header-search-btn,
+  .header-btn-login,
+  .header-btn-register {
+    transition: none;
+  }
+}
+
+/* Focus states */
+.header-search-input:focus,
+.header-menu-btn:focus,
+.header-icon-btn:focus,
+.header-btn-login:focus,
+.header-btn-register:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+

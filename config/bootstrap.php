@@ -102,4 +102,17 @@ function show_error($message, $code = 500) {
     exit;
 }
 
-// Sẵn sàng cho ứng dụng 
+// Auto-load core classes để tách View Logic
+require_once __DIR__ . '/../app/Core/ViewRenderer.php';
+require_once __DIR__ . '/../app/Core/ViewHelper.php';
+require_once __DIR__ . '/../app/Core/Container.php';
+require_once __DIR__ . '/../app/Core/LayoutManager.php';
+
+// Setup Dependency Injection Container
+$container = setupContainer();
+
+// Expose container globally (trích xuất PDO từ container)
+// Này là compatibility layer - giữ code cũ vẫn hoạt động
+if (!isset($pdo)) {
+    $pdo = $container->get('pdo');
+}

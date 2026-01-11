@@ -1,12 +1,24 @@
-// Use global userId if available, otherwise declare locally
-if (typeof window.userId === 'undefined') {
-    window.userId = null;
-}
-let chatVisible = true;
-let can_jump_bottom = true;
+// Prevent double loading of this script
+if (typeof window.chatSystemLoaded !== 'undefined' && window.chatSystemLoaded) {
+    // Script already loaded, exit
+} else {
+    // Mark this script as loaded
+    window.chatSystemLoaded = true;
+
+    // Use global userId if available, otherwise declare locally
+    if (typeof window.userId === 'undefined') {
+        window.userId = null;
+    }
+    
+    // Removed unused globals: chatVisible
+    let can_jump_bottom = true;
 
 function add_scroll_event_to_container() {
     let containerMessages = document.getElementById("ChatMessagesContainer");
+    if (!containerMessages) {
+        console.warn('ChatMessagesContainer not found');
+        return;
+    }
     containerMessages.addEventListener('scroll', function () {
         if (Math.ceil(containerMessages.scrollTop) + containerMessages.clientHeight >= containerMessages.scrollHeight) {
             can_jump_bottom = true;
@@ -18,6 +30,10 @@ function add_scroll_event_to_container() {
 
 function jump_to_bottom() {
     let containerMessages = document.getElementById("ChatMessagesContainer");
+    if (!containerMessages) {
+        console.warn('ChatMessagesContainer not found');
+        return;
+    }
     containerMessages.scrollTop = containerMessages.scrollHeight;
 }
 
@@ -27,27 +43,57 @@ function on_key_press(event){
     }
 }
 
-function toggleChat() {
-    let load_new_messages = null
+let isChatOpen = false;
+let chatInterval = null;
+
+function toggle_chat_widget() {
     let chatContainer = document.getElementById("chat-widget");
-    if (chatVisible) {
-        load_new_messages = setInterval(() => {
+    let triggerBtn = document.getElementById("chat-trigger");
+    
+    if (!chatContainer) return;
+
+    if (!isChatOpen) {
+        // Open Chat
+        chatContainer.classList.add('active'); // CSS handles display:flex
+        
+        if (triggerBtn) {
+            triggerBtn.classList.add('hidden'); // CSS handles display:none
+        }
+        
+        isChatOpen = true;
+
+        // Load messages immediately
+        load_messages();
+        
+        // Start polling
+        if (chatInterval) clearInterval(chatInterval);
+        chatInterval = setInterval(() => {
             load_messages();
             if (can_jump_bottom) {
                 jump_to_bottom();
             }
-
-        }, 1000)
+        }, 1000);
         
-        chatContainer.classList.remove('unactive')
-        chatContainer.classList.add('active')
-        chatVisible = false;
+        // Focus input
+         setTimeout(() => {
+             const input = document.getElementById("chat-input");
+             if(input) input.focus();
+        }, 300);
+        
     } else {
-        jump_to_bottom();
-        clearInterval(load_new_messages);
-        chatVisible = true;
-        chatContainer.classList.remove('active')
-        chatContainer.classList.add('unactive')
+        // Close Chat
+        chatContainer.classList.remove('active'); // Reverts to display:none
+        
+        if (triggerBtn) {
+            triggerBtn.classList.remove('hidden');
+        }
+        
+        isChatOpen = false;
+        
+        if (chatInterval) {
+            clearInterval(chatInterval);
+            chatInterval = null;
+        }
     }
 }
 
@@ -101,6 +147,7 @@ function load_messages() {
             });
 
         });
-}
+    }
 
-add_scroll_event_to_container();
+    add_scroll_event_to_container();
+}

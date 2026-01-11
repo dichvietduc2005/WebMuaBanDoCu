@@ -1,8 +1,19 @@
 <?php
+// Ensure BASE_URL is defined
+if (!defined('BASE_URL')) {
+    require_once __DIR__ . '/../../config/config.php';
+}
+
 function footer() {
+    // Prevent duplicate rendering
+    static $footerRendered = false;
+    if ($footerRendered) {
+        return; // Already rendered, skip
+    }
+    $footerRendered = true;
     ?>
-    <footer class="footer">
-        <div class="container">
+    <footer class="footer" style="width: 100vw !important; max-width: 100vw !important; margin: 0 !important; margin-left: calc(-50vw + 50%) !important; margin-right: calc(-50vw + 50%) !important; padding-left: 0 !important; padding-right: 0 !important; left: 0 !important; right: 0 !important; position: relative !important; z-index: 100 !important; display: block !important;">
+        <div class="container-fluid px-3 px-md-4" style="max-width: 1400px; margin: 0 auto; width: 100%;">
             <div class="footer-grid">
                 <div class="footer-column">
                     <h3>Về chúng tôi</h3>
@@ -61,17 +72,32 @@ function footer() {
             
             <div class="copyright">
                 &copy; 2025 Mua Bán Đồ Cũ. Tất cả quyền được bảo lưu.
-                <div class="mt-2 d-sm-none">
-                    <div class="social-links justify-content-center">
-                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
             </div>
         </div>
     </footer>
+
+    <!-- Chat Widget Global Integration -->
+    <?php
+    // Ensure BASE_URL is defined
+    $baseUrl = defined('BASE_URL') ? BASE_URL : '/WebMuaBanDoCu/'; // Fallback path if needed
+    ?>
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/chat_widget_modern.css">
+    
+    <?php 
+    // Include Chat HTML
+    // Allow for flexible path resolution
+    $chatViewPath = __DIR__ . '/../../View/user/ChatView.php';
+    if (file_exists($chatViewPath)) {
+        require_once $chatViewPath;
+    }
+    ?>
+
+    <!-- Chat Widget Logic -->
+    <script>
+        window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;
+    </script>
+    <script src="<?php echo $baseUrl; ?>public/assets/js/user_chat_system.js"></script>
+
     <?php
 }
 
