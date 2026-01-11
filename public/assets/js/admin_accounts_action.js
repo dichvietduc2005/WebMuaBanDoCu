@@ -27,7 +27,8 @@ function add_event_block_account() {
         const originalText = this.innerText;
         this.innerText = 'Đang xử lý...';
 
-        fetch(`/WebMuaBanDoCu/app/Controllers/admin/QuanLyTaiKhoanController.php`, {
+        const base = window.baseUrl || '/WebMuaBanDoCu/';
+        fetch(`${base}app/Controllers/admin/QuanLyTaiKhoanController.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -64,7 +65,8 @@ function add_event_unlock_account() {
         const originalText = this.innerText;
         this.innerText = 'Đang xử lý...';
 
-        fetch(`/WebMuaBanDoCu/app/Controllers/admin/QuanLyTaiKhoanController.php`, {
+        const base = window.baseUrl || '/WebMuaBanDoCu/';
+        fetch(`${base}app/Controllers/admin/QuanLyTaiKhoanController.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

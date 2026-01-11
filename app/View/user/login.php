@@ -3,7 +3,7 @@ $config_path = __DIR__ . '/../../../config/config.php';
 require_once($config_path);
 
 if (isset($_SESSION['user_id'])) {
-    header('Location: /WebMuaBanDoCu/public/index.php');
+    header('Location: ' . BASE_URL . 'public/index.php');
     exit();
 }
 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($result['success']) {
             $_SESSION['success_toast'] = "Đăng nhập thành công!";
-            $redirect_url = '/WebMuaBanDoCu/public/index.php';
+            $redirect_url = BASE_URL . 'public/index.php';
             if (isset($_SESSION['login_redirect_url'])) {
                 $redirect_url = $_SESSION['login_redirect_url'];
                 unset($_SESSION['login_redirect_url']);
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - Web Mua Bán Đồ Cũ</title>
-    <link href="/WebMuaBanDoCu/public/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo BASE_URL; ?>public/assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Mobile Responsive CSS for Auth Pages -->
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         body {
             font-family: 'Inter', sans-serif;
-            background-image: url('/WebMuaBanDoCu/public/assets/images/nen2.jpg');
+            background-image: url('<?php echo BASE_URL; ?>public/assets/images/nen2.jpg');
             /* Sử dụng hình nền có sẵn */
             background-size: cover;
             background-position: center;
@@ -236,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label for="remember_me" class="form-check-label small text-muted">Ghi nhớ tôi</label>
                     </div>
                     <div class="text-right links">
-                        <a href="/WebMuaBanDoCu/app/View/user/forgot_password.php"
+                        <a href="<?php echo BASE_URL; ?>app/View/user/forgot_password.php"
                             class="small text-decoration-none">Quên
                             mật khẩu?</a>
                     </div>
@@ -266,9 +266,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <div class="text-center mt-4 links ">
                 <p class="text-muted small">Bạn chưa có tài khoản?
-                    <a href="/WebMuaBanDoCu/public/index.php?page=register">Đăng ký ngay</a>
+                    <a href="<?php echo BASE_URL; ?>public/index.php?page=register">Đăng ký ngay</a>
                 </p>
-                <a href="/WebMuaBanDoCu/public/index.php" class="text-muted small">
+                <a href="<?php echo BASE_URL; ?>public/index.php" class="text-muted small">
                     <i class="fas fa-arrow-left me-1"></i> Quay lại trang chủ
                 </a>
             </div>
@@ -295,14 +295,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     return result.user.getIdToken();
                 })
                 .then((idToken) => {
-                    fetch('/WebMuaBanDoCu/app/Controllers/user/FirebaseAuthController.php', {
+                    const base = '<?php echo BASE_URL; ?>';
+                    fetch(base + 'app/Controllers/user/FirebaseAuthController.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ idToken: idToken })
                     })
                         .then(response => response.json())
                         .then(data => {
-                            if (data.success) window.location.href = '/WebMuaBanDoCu/public/index.php';
+                            if (data.success) window.location.href = base + 'public/index.php';
                             else alert(data.message);
                         });
                 })

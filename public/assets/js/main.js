@@ -11,7 +11,8 @@ function addToCart(event, productId) {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
     }
 
-    fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    fetch(base + 'app/Controllers/cart/CartController.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -63,8 +64,9 @@ function buyNow(event, productId) {
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
 
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
     // Thêm sản phẩm vào giỏ hàng và chuyển đến trang checkout ngay lập tức
-    fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+    fetch(base + 'app/Controllers/cart/CartController.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -76,7 +78,7 @@ function buyNow(event, productId) {
     .then(data => {
         if (data.success) {
             // Chuyển hướng đến trang checkout
-            window.location.href = '/WebMuaBanDoCu/app/View/checkout/index.php';
+            window.location.href = base + 'app/View/checkout/index.php';
         } else {
             // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
             if (data.message && data.message.includes("Bạn cần đăng nhập")) {
@@ -137,7 +139,8 @@ function showLoginPromptToast() {
     toastEl.setAttribute('aria-atomic', 'true');
 
     // Xác định đường dẫn đến trang đăng nhập một cách linh hoạt
-    const loginPath = '/WebMuaBanDoCu/public/index.php?page=login';
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const loginPath = base + 'public/index.php?page=login';
 
     toastEl.innerHTML = `
         <div class="toast-body">
@@ -204,8 +207,9 @@ function createToastContainer() {
 
 // Cancel order function
 function cancelOrder(orderId) {
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
     showConfirmDialog('Xác nhận hủy đơn', 'Bạn có chắc muốn hủy đơn hàng này?', function() {
-        fetch('/WebMuaBanDoCu/modules/order/cancel_order.php', {
+        fetch(base + 'modules/order/cancel_order.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -231,8 +235,9 @@ function cancelOrder(orderId) {
 
 // Reorder function
 function reorder(orderId) {
+    const base = window.baseUrl || '/WebMuaBanDoCu/';
     showConfirmDialog('Xác nhận mua lại', 'Bạn có muốn mua lại các sản phẩm trong đơn hàng này?', function() {
-        fetch('/WebMuaBanDoCu/modules/order/reorder.php', {
+        fetch(base + 'modules/order/reorder.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

@@ -121,6 +121,9 @@ $currentAdminPage = $currentAdminPage ?? 'dashboard';
 
     <!-- Alpine.js cho các tương tác basic của TailAdmin -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+        window.baseUrl = '<?php echo BASE_URL; ?>';
+    </script>
   </head>
   <body>
     <!-- Page Wrapper -->

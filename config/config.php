@@ -114,7 +114,11 @@ try {
 }
 
 // Application constants
-define('BASE_URL', $_ENV['BASE_URL'] ?? '/WebMuaBanDoCu/');
+$baseUrl = $_ENV['BASE_URL'] ?? '/WebMuaBanDoCu/';
+if (strpos($baseUrl, '/') !== 0) $baseUrl = '/' . $baseUrl; // Đảm bảo bắt đầu bằng /
+if (substr($baseUrl, -1) !== '/') $baseUrl .= '/'; // Đảm bảo kết thúc bằng /
+
+define('BASE_URL', $baseUrl);
 define('ASSETS_URL', BASE_URL . 'public/assets/');
 define('CSS_URL', ASSETS_URL . 'css/');
 define('JS_URL', ASSETS_URL . 'js/');

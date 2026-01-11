@@ -413,6 +413,6 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
   </div>
 
   <!-- Script xử lý khóa/mở khóa tài khoản hiện có -->
-  <script src="/WebMuaBanDoCu/public/assets/js/admin_accounts_action.js?v=1"></script>
+  <script src="<?php echo BASE_URL; ?>public/assets/js/admin_accounts_action.js?v=1"></script>
 
 <?php include APP_PATH . '/View/admin/layouts/AdminFooter.php'; ?>
