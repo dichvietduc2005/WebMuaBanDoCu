@@ -176,6 +176,105 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // --- Event Handlers: COUPON ---
+    const applyCouponBtn = document.getElementById('apply-coupon-btn');
+    const removeCouponBtn = document.getElementById('remove-coupon-btn');
+    const couponInput = document.getElementById('coupon-code-input');
+
+    if (applyCouponBtn) {
+        applyCouponBtn.addEventListener('click', async function() {
+            const code = couponInput.value.trim();
+            if (!code) {
+                showToast('error', 'Lỗi', 'Vui lòng nhập mã giảm giá.');
+                return;
+            }
+
+            // Disable button loading
+            const originalText = applyCouponBtn.textContent;
+            applyCouponBtn.disabled = true;
+            applyCouponBtn.textContent = 'Đang áp dụng...';
+
+            const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php'; 
+            const body = `action=apply_coupon&code=${encodeURIComponent(code)}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: body
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('success', 'Thành công', data.message);
+                    updateCouponUI(true, code, data);
+                } else {
+                    showToast('error', 'Lỗi', data.message || 'Mã giảm giá không hợp lệ.');
+                }
+            } catch (error) {
+                console.error('Coupon Error:', error);
+                showToast('error', 'Lỗi hệ thống', 'Không thể áp dụng mã giảm giá.');
+            } finally {
+                applyCouponBtn.disabled = false;
+                applyCouponBtn.textContent = originalText;
+            }
+        });
+    }
+
+    if (removeCouponBtn) {
+        removeCouponBtn.addEventListener('click', async function() {
+             const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php'; 
+             const body = `action=remove_coupon`;
+             
+             try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: body
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('success', 'Thành công', data.message);
+                    updateCouponUI(false, null, data);
+                    couponInput.value = '';
+                }
+             } catch (error) {
+                 console.error('Remove Coupon Error:', error);
+             }
+        });
+    }
+
+    function updateCouponUI(isApplied, code, data) {
+        const inputGroup = document.getElementById('coupon-input-group');
+        const appliedInfo = document.getElementById('applied-coupon-info');
+        const appliedCodeText = document.getElementById('applied-code-text');
+        
+        const discountRow = document.getElementById('discount-row');
+        const discountAmountEl = document.getElementById('discount-amount');
+        const finalTotalEl = document.getElementById('cart-final-total');
+
+        if (isApplied) {
+            inputGroup.style.display = 'none';
+            appliedInfo.style.display = 'flex';
+            appliedCodeText.textContent = code;
+            
+            if (discountRow) discountRow.style.display = 'flex';
+            if (discountAmountEl) discountAmountEl.textContent = formatPrice(data.discount_amount);
+        } else {
+            inputGroup.style.display = 'flex';
+            appliedInfo.style.display = 'none';
+            appliedCodeText.textContent = '';
+            
+            if (discountRow) discountRow.style.display = 'none';
+            if (discountAmountEl) discountAmountEl.textContent = '0đ';
+        }
+        
+        if (finalTotalEl && data.final_total !== undefined) {
+            finalTotalEl.textContent = formatPrice(data.final_total);
+        }
+    }
+
     // --- Main Event Listener (Delegation) ---
     cartContainer.addEventListener('click', function(e) {
         const target = e.target;

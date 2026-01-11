@@ -47,7 +47,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         unset($_SESSION['error_message']);
     }
     ?>
-    
+
     <!-- Critical CSS for Chat - Load First -->
     <style>
         /* Chat Container - Critical Styles - Optimized for Fast Loading */
@@ -72,7 +72,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
             display: block !important;
             visibility: visible !important;
         }
-        
+
         .chat-container {
             position: fixed !important;
             bottom: 20px !important;
@@ -195,6 +195,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
 
         /* Responsive Enhancements */
         @media (max-width: 768px) {
+
             #chat-widget,
             .chat-container {
                 width: 85vw !important;
@@ -204,6 +205,7 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         }
 
         @media (max-width: 576px) {
+
             #chat-widget,
             .chat-container {
                 width: 90vw !important;
@@ -424,6 +426,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                                     class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
                                         <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/order/order_history.php"><i
                                                     class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
+                                        <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/vouchers.php"><i
+                                                    class="fas fa-ticket-alt me-2"></i>Kho Voucher</a></li>
                                         <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/ProfileUserView.php"><i
                                                     class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
                                         <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Cài đặt</a></li>
@@ -464,6 +468,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
                                                 class="fas fa-box me-2"></i>Tin đăng của tôi</a></li>
                                     <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/order/order_history.php"><i
                                                 class="fas fa-history me-2"></i>Lịch sử mua hàng</a></li>
+                                    <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/vouchers.php"><i
+                                                class="fas fa-ticket-alt me-2"></i>Kho Voucher</a></li>
                                     <li><a class="dropdown-item" href="/WebMuaBanDoCu/app/View/user/ProfileUserView.php"><i
                                                 class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
 
@@ -761,9 +767,12 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         }
     </style>
     <!-- Preload Critical CSS -->
-    <link rel="preload" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.3" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.3"></noscript>
-    
+    <link rel="preload" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.3" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/user_box_chat.css?v=1.3">
+    </noscript>
+
     <!-- Other CSS - Load After -->
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/notifications.css">
     <link rel="stylesheet" href="/WebMuaBanDoCu/public/assets/css/footer.css">
@@ -1822,8 +1831,8 @@ function renderHeader($pdo, $categories = [], $cart_count = 0, $unread_notificat
         // if (typeof window.toggleChat === 'undefined') {
         // window.toggleChat = window.ChatSystem.defaultToggleChat;
         // }
-    // Only declare userId here, chat functions are in user_chat_system.js
-    window.userId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 'null'; ?>;
+        // Only declare userId here, chat functions are in user_chat_system.js
+        window.userId = <?php echo isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 'null'; ?>;
     </script>
 
     <?php

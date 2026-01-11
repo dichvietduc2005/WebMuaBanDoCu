@@ -171,10 +171,26 @@ if (!$is_guest) {
                             </div>
                         <?php endif; ?>
 
-                        <div class="fs-5 mb-3 d-flex align-items-center gap-2">
-    <span>Tổng tiền:</span>
-    <span class="fw-bold text-danger fs-4"><?= formatPrice($cartTotal) ?></span>
-</div>
+                        <?php 
+                        $discountAmount = $cartController->getDiscountAmount();
+                        $finalTotal = $cartController->getFinalTotal();
+                        $appliedCoupon = $_SESSION['applied_coupon'] ?? null;
+                        ?>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính:</span>
+                            <span class="fw-bold" id="cart-subtotal"><?= formatPrice($cartTotal) ?></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 text-success" id="discount-row" style="<?= $discountAmount > 0 ? '' : 'display:none;' ?>">
+                            <span>Giảm giá:</span>
+                            <span class="fw-bold">-<span id="discount-amount"><?= formatPrice($discountAmount) ?></span></span>
+                        </div>
+
+                        <div class="fs-5 mb-3 d-flex justify-content-between align-items-center border-top pt-2">
+                            <span>Tổng cộng:</span>
+                            <span class="fw-bold text-danger fs-4" id="cart-final-total"><?= formatPrice($finalTotal) ?></span>
+                        </div>
 
                         <?php if ($is_guest): ?>
                              <a href="../user/login.php" class="btn btn-warning w-100 shadow-sm rounded-3 py-2 border border-warning">
@@ -190,15 +206,17 @@ if (!$is_guest) {
                     <div class="bg-white p-3 rounded shadow-sm mb-3 border">
                         <h6 class="fw-bold mb-3" style="font-size: 16px;">Mã giảm giá / Quà tặng</h6>
                         
-                        <div class="input-group mb-2">
-                            <input type="text" class="form-control" placeholder="Nhập mã tại đây" aria-label="Mã giảm giá">
-                            <button class="btn btn-outline-secondary" type="button">Áp dụng</button>
+                        <div class="input-group mb-2" id="coupon-input-group" style="<?= $appliedCoupon ? 'display:none;' : '' ?>">
+                            <input type="text" id="coupon-code-input" class="form-control" placeholder="Nhập mã tại đây" aria-label="Mã giảm giá">
+                            <button class="btn btn-outline-secondary" type="button" id="apply-coupon-btn">Áp dụng</button>
                         </div>
 
-                        <button class="btn btn-outline-primary w-100 btn-sm d-flex justify-content-between align-items-center" type="button" data-bs-toggle="modal" data-bs-target="#couponModal">
-                            <span><i class="fas fa-ticket-alt me-2"></i>Chọn mã ưu đãi</span>
-                            <i class="fas fa-chevron-right small"></i>
-                        </button>
+                        <div id="applied-coupon-info" class="alert alert-success d-flex justify-content-between align-items-center p-2 mb-0" style="<?= $appliedCoupon ? '' : 'display:none;' ?>">
+                            <span class="small">
+                                <i class="fas fa-tag me-1"></i> Mã: <strong id="applied-code-text"><?= htmlspecialchars($appliedCoupon['code'] ?? '') ?></strong>
+                            </span>
+                            <button type="button" class="btn-close btn-sm" id="remove-coupon-btn" aria-label="Close"></button>
+                        </div>
                     </div>
 
                     <div class="bg-white p-3 rounded shadow-sm border">

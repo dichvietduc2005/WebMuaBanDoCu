@@ -45,15 +45,18 @@ class CartController
         }
         return $_SESSION["user_id"] ?? null;
     }
-    
+
     public function addToCart($product_id, $quantity = 1)
     {
         $user_id = $this->ensureUserIsLoggedIn();
         try {
             $product = $this->cartModel->findProductById($product_id);
-            if (!$product) throw new \Exception("Sản phẩm không tồn tại.");
-            if ($product['status'] != 'active') throw new \Exception("Sản phẩm không còn được bán.");
-            if ($product['stock_quantity'] < $quantity) throw new \Exception("Không đủ hàng trong kho.");
+            if (!$product)
+                throw new \Exception("Sản phẩm không tồn tại.");
+            if ($product['status'] != 'active')
+                throw new \Exception("Sản phẩm không còn được bán.");
+            if ($product['stock_quantity'] < $quantity)
+                throw new \Exception("Không đủ hàng trong kho.");
 
             $cart_id = $this->cartModel->getOrCreateCartId($user_id);
 
@@ -111,11 +114,11 @@ class CartController
     public function updateCartItemQuantity($product_id, $quantity)
     {
         $user_id = $this->ensureUserIsLoggedIn();
-        
+
         if ($quantity <= 0) {
             return $this->removeCartItem($product_id);
         }
-        
+
         $product = $this->cartModel->findProductById($product_id);
         if ($product && $product['stock_quantity'] < $quantity) {
             throw new \Exception("Số lượng cập nhật vượt quá số lượng tồn kho.");
@@ -127,7 +130,7 @@ class CartController
     public function removeCartItem($product_id)
     {
         $user_id = $this->ensureUserIsLoggedIn();
-        
+
         // Log before removing
         if (function_exists('log_user_action')) {
             try {
@@ -140,7 +143,7 @@ class CartController
                 error_log('Log remove_from_cart error: ' . $e->getMessage());
             }
         }
-        
+
         return $this->cartModel->removeItem($user_id, $product_id);
     }
 
@@ -148,6 +151,93 @@ class CartController
     {
         $user_id = $this->ensureUserIsLoggedIn();
         return $this->cartModel->clearCart($user_id);
+    }
+    public function applyCoupon($code)
+    {
+        $this->ensureUserIsLoggedIn();
+
+        require_once __DIR__ . '/../../Models/admin/CouponModel.php';
+
+        $coupon = findCouponByCode($this->pdo, $code);
+
+        if (!$coupon) {
+            throw new \Exception("Mã giảm giá không tồn tại.");
+        }
+
+        if (isset($coupon['status']) && $coupon['status'] != 1) {
+            throw new \Exception("Mã giảm giá này hiện không khả dụng.");
+        }
+
+        $now = date('Y-m-d');
+        if (($coupon['start_date'] && $coupon['start_date'] > $now) || ($coupon['end_date'] && $coupon['end_date'] < $now)) {
+            throw new \Exception("Mã giảm giá đã hết hạn hoặc chưa bắt đầu.");
+        }
+
+        $cartTotal = $this->getCartTotal();
+        if ($cartTotal < $coupon['min_order_value']) {
+            throw new \Exception("Đơn hàng chưa đạt giá trị tối thiểu (" . number_format($coupon['min_order_value']) . "đ)");
+        }
+
+        if (session_status() == PHP_SESSION_NONE)
+            session_start();
+        $_SESSION['applied_coupon'] = $coupon;
+
+        return [
+            'success' => true,
+            'message' => 'Áp dụng mã giảm giá thành công!',
+            'discount_amount' => $this->getDiscountAmount(),
+            'final_total' => $this->getFinalTotal()
+        ];
+    }
+
+    public function removeCoupon()
+    {
+        if (session_status() == PHP_SESSION_NONE)
+            session_start();
+        unset($_SESSION['applied_coupon']);
+        return [
+            'success' => true,
+            'message' => 'Đã gỡ bỏ mã giảm giá.',
+            'discount_amount' => 0,
+            'final_total' => $this->getCartTotal()
+        ];
+    }
+
+    public function getDiscountAmount()
+    {
+        if (session_status() == PHP_SESSION_NONE)
+            session_start();
+        if (!isset($_SESSION['applied_coupon']))
+            return 0;
+
+        $coupon = $_SESSION['applied_coupon'];
+        $total = $this->getCartTotal();
+
+        // Re-validate min order value
+        if ($total < $coupon['min_order_value']) {
+            // Silently remove invalid coupon
+            unset($_SESSION['applied_coupon']);
+            return 0;
+        }
+
+        $discount = 0;
+        if ($coupon['discount_type'] == 'percent') {
+            $discount = $total * ($coupon['discount_value'] / 100);
+
+            // Apply Max Discount Limit
+            if (isset($coupon['max_discount_amount']) && $coupon['max_discount_amount'] > 0) {
+                $discount = min($discount, $coupon['max_discount_amount']);
+            }
+        } else {
+            $discount = $coupon['discount_value'];
+        }
+
+        return min($discount, $total);
+    }
+
+    public function getFinalTotal()
+    {
+        return $this->getCartTotal() - $this->getDiscountAmount();
     }
 }
 
@@ -157,22 +247,28 @@ class CartController
 if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
     require_once(__DIR__ . '/../../../config/config.php');
     require_once(__DIR__ . '/../../Models/cart/CartModel.php');
-    
+    require_once(__DIR__ . '/../../Models/admin/CouponModel.php');
+
     header('Content-Type: application/json');
     $cartController = new CartController($pdo);
-    
+
+    // Clean buffer to prevent JSON errors
+    if (ob_get_length())
+        ob_clean();
+    error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING); // Suppress minor errors
+
     $action = $_POST['action'] ?? $_GET['action'] ?? '';
     $response = ['success' => false, 'message' => 'Hành động không hợp lệ.'];
 
     try {
         switch ($action) {
             case 'add':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                $quantity = (int)($_POST['quantity'] ?? 1);
+                $product_id = (int) ($_POST['product_id'] ?? 0);
+                $quantity = (int) ($_POST['quantity'] ?? 1);
                 if ($product_id > 0 && $quantity > 0) {
                     $cartController->addToCart($product_id, $quantity);
                     $checkout = isset($_POST['checkout']) && $_POST['checkout'] == '1';
-                    
+
                     // Logging đã được xử lý trong method addToCart()
                     $response = [
                         'success' => true,
@@ -186,8 +282,8 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
                 break;
 
             case 'update':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                $quantity = (int)($_POST['quantity'] ?? 0);
+                $product_id = (int) ($_POST['product_id'] ?? 0);
+                $quantity = (int) ($_POST['quantity'] ?? 0);
                 if ($product_id > 0) {
                     $cartController->updateCartItemQuantity($product_id, $quantity);
                     $response = [
@@ -202,7 +298,7 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
                 break;
 
             case 'remove':
-                $product_id = (int)($_POST['product_id'] ?? 0);
+                $product_id = (int) ($_POST['product_id'] ?? 0);
                 if ($product_id > 0) {
                     // Logging đã được xử lý trong method removeCartItem()
                     $cartController->removeCartItem($product_id);
@@ -220,6 +316,26 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
             case 'clear':
                 $cartController->clearCart();
                 $response = ['success' => true, 'message' => 'Giỏ hàng đã được xóa sạch.'];
+                break;
+
+            case 'apply_coupon':
+                $code = $_POST['code'] ?? '';
+                if ($code) {
+                    $result = $cartController->applyCoupon($code);
+                    $response = array_merge(['success' => true], $result);
+                } else {
+                    throw new \Exception('Vui lòng nhập mã giảm giá.');
+                }
+                break;
+
+            case 'remove_coupon':
+                $cartController->removeCoupon();
+                $response = [
+                    'success' => true,
+                    'message' => 'Đã hủy mã giảm giá.',
+                    'total' => $cartController->getCartTotal(),
+                    'final_total' => $cartController->getCartTotal() // Reset về gốc
+                ];
                 break;
 
             case 'count':
