@@ -35,16 +35,9 @@ $productModel = new ProductModel();
 $suggestions = $productModel->getProducts(4); // Lấy 4 sản phẩm mới nhất/nổi bật
 
 // Xử lý mã giảm giá từ session
-$appliedCoupon = $_SESSION['applied_coupon'] ?? null;
+// Không áp dụng mã giảm giá ở trang giỏ hàng (chỉ áp dụng ở checkout)
+$finalTotal = $cartTotal;
 $discountAmount = 0;
-if ($appliedCoupon) {
-    if ($appliedCoupon['discount_type'] === 'percent') {
-        $discountAmount = ($cartTotal * $appliedCoupon['discount_value']) / 100;
-    } else {
-        $discountAmount = $appliedCoupon['discount_value'];
-    }
-}
-$finalTotal = max(0, $cartTotal - $discountAmount);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -188,16 +181,6 @@ $finalTotal = max(0, $cartTotal - $discountAmount);
                             </div>
                         <?php endif; ?>
 
-                        <div class="fs-6 mb-1 d-flex justify-content-between">
-                             <span class="text-muted">Tạm tính:</span>
-                             <span><?= formatPrice($cartTotal) ?></span>
-                         </div>
-                         <?php if ($discountAmount > 0): ?>
-                         <div class="fs-6 mb-2 d-flex justify-content-between text-danger">
-                             <span>Giảm giá:</span>
-                             <span>- <?= formatPrice($discountAmount) ?></span>
-                         </div>
-                         <?php endif; ?>
                          <div class="fs-5 mb-3 d-flex align-items-center gap-2 border-top pt-2">
                             <span>Tổng cộng:</span>
                             <span class="fw-bold text-danger fs-4"><?= formatPrice($finalTotal) ?></span>
