@@ -1,4 +1,12 @@
 <?php
+// Disable error display in production, but log errors
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
+// Start output buffering early to catch any unexpected output
+ob_start();
+
 require_once __DIR__ . '/../../../config/config.php';
 require_once __DIR__ . '/../../Models/admin/ThemeModel.php';
 
@@ -7,6 +15,37 @@ class ThemeController {
     
     public function __construct() {
         $this->themeModel = new ThemeModel();
+    }
+    
+    /**
+     * Helper method to ensure clean JSON output
+     */
+    private function sendJsonResponse($data, $statusCode = 200) {
+        // Clean all output buffers
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Set JSON header
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($statusCode);
+        
+        // Output JSON
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    
+    /**
+     * Helper method to handle errors and return JSON
+     */
+    private function handleError($message, $statusCode = 400, $exception = null) {
+        if ($exception) {
+            error_log("ThemeController error: " . $exception->getMessage() . " | " . $exception->getTraceAsString());
+        }
+        $this->sendJsonResponse([
+            'success' => false,
+            'message' => $message
+        ], $statusCode);
     }
 
     public function handleRequest() {
@@ -82,12 +121,8 @@ class ThemeController {
     }
 
     private function saveSettings() {
-        ob_clean();
-        header('Content-Type: application/json; charset=utf-8');
-        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['success' => false, 'message' => 'Method not allowed'], JSON_UNESCAPED_UNICODE);
-            exit;
+            $this->handleError('Method not allowed', 405);
         }
         
         try {
@@ -102,25 +137,29 @@ class ThemeController {
                 $this->themeModel->setThemeSetting($key, $value, $type);
             }
             
-            echo json_encode(['success' => true, 'message' => 'Cài đặt đã được lưu'], JSON_UNESCAPED_UNICODE);
+            $this->sendJsonResponse([
+                'success' => true,
+                'message' => 'Cài đặt đã được lưu'
+            ]);
         } catch (Exception $e) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+            $this->handleError($e->getMessage(), 400, $e);
+        } catch (Throwable $e) {
+            $this->handleError('Lỗi hệ thống', 500, $e);
         }
-        exit;
     }
 
     private function getSettings() {
-        ob_clean();
-        header('Content-Type: application/json; charset=utf-8');
         try {
             $settings = $this->themeModel->getAllThemeSettings();
-            echo json_encode(['success' => true, 'data' => $settings], JSON_UNESCAPED_UNICODE);
+            $this->sendJsonResponse([
+                'success' => true,
+                'data' => $settings
+            ]);
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode(['success' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+            $this->handleError($e->getMessage(), 500, $e);
+        } catch (Throwable $e) {
+            $this->handleError('Lỗi hệ thống', 500, $e);
         }
-        exit;
     }
 
     private function uploadBanner() {
@@ -871,7 +910,22 @@ class ThemeController {
 // Auto-execute if called directly
 if (basename($_SERVER['PHP_SELF']) === 'ThemeController.php' || 
     (isset($_GET['action']) || isset($_POST['action']))) {
-    $controller = new ThemeController();
-    $controller->handleRequest();
+    try {
+        $controller = new ThemeController();
+        $controller->handleRequest();
+    } catch (Throwable $e) {
+        // Ensure we always return JSON, even for unexpected errors
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code(500);
+        error_log("ThemeController fatal error: " . $e->getMessage() . " | " . $e->getTraceAsString());
+        echo json_encode([
+            'success' => false,
+            'message' => 'Lỗi hệ thống không mong đợi. Vui lòng thử lại sau.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 }
 
