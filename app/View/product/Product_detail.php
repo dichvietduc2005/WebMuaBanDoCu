@@ -727,13 +727,23 @@ if (isset($_SESSION['user_id'])) {
         }
     }
 
-    // Load wishlist state on page load
     document.addEventListener('DOMContentLoaded', () => {
         const productId = <?php echo $product_id; ?>;
         if (localStorage.getItem(`wishlist_${productId}`)) {
             const btn = document.getElementById('wishlistBtn');
             btn.classList.add('active');
             btn.innerHTML = '<i class="fas fa-heart"></i>';
+        }
+        const reviewModalEl = document.getElementById('reviewModal');
+        if (reviewModalEl) {
+            reviewModalEl.addEventListener('hidden.bs.modal', function () {
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('padding-right');
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(function (el) {
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                });
+            });
         }
     });
 
