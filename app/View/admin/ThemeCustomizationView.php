@@ -874,6 +874,15 @@ async function deletePreset(id) {
         formData.append('id', id);
         
         const response = await fetch(API_URL, { method: 'POST', body: formData });
+        
+        // Check content type before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text.substring(0, 200));
+            throw new Error('Server trả về dữ liệu không hợp lệ');
+        }
+        
         const result = await response.json();
         
         if (result.success) {
@@ -894,6 +903,15 @@ async function activatePreset(id) {
         formData.append('id', id);
         
         const response = await fetch(API_URL, { method: 'POST', body: formData });
+        
+        // Check content type before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text.substring(0, 200));
+            throw new Error('Server trả về dữ liệu không hợp lệ');
+        }
+        
         const result = await response.json();
         
         if (result.success) {
@@ -930,6 +948,15 @@ document.getElementById('presetForm').addEventListener('submit', async (e) => {
     
     try {
         const response = await fetch(API_URL, { method: 'POST', body: formData });
+        
+        // Check content type before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text.substring(0, 200));
+            throw new Error('Server trả về dữ liệu không hợp lệ');
+        }
+        
         const result = await response.json();
         
         if (result.success) {
@@ -1260,16 +1287,19 @@ document.getElementById('themeSettingsForm').addEventListener('submit', async (e
             body: formData
         });
         
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text.substring(0, 200));
+            throw new Error('Server trả về dữ liệu không hợp lệ. Vui lòng kiểm tra console để xem chi tiết.');
+        }
+        
         if (!response.ok) {
             throw new Error('HTTP error! status: ' + response.status);
         }
         
-        const text = await response.text();
-        if (!text) {
-            throw new Error('Empty response from server');
-        }
-        
-        const result = JSON.parse(text);
+        const result = await response.json();
         
         if (result.success) {
             showToast('Lưu thành công! Trang sẽ được tải lại.', 2000);
