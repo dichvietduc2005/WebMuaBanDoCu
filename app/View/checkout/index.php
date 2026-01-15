@@ -441,7 +441,7 @@ $discountAmount = $cartTotal - $finalTotal;
                                                 </div>
                                             <?php else: ?>
                                                 <div class="text-secondary small mt-1">
-                                                    HSD: <?php echo date('d.m.Y', strtotime($coupon['end_date'])); ?>
+                                                    HSD: <?php echo !empty($coupon['end_date']) ? date('d.m.Y', strtotime($coupon['end_date'])) : 'Không xác định'; ?>
                                                 </div>
                                             <?php endif; ?>
                                         </div>

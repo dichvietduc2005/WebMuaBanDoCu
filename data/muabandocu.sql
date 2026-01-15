@@ -287,6 +287,7 @@ CREATE TABLE IF NOT EXISTS `coupons` (
   `code` varchar(50) NOT NULL,
   `discount_type` enum('percent','fixed') NOT NULL DEFAULT 'percent',
   `discount_value` decimal(10,2) NOT NULL,
+  `max_discount_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
   `min_order_value` decimal(10,2) DEFAULT '0.00',
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
