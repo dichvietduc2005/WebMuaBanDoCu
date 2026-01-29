@@ -36,3 +36,6 @@ desktop.ini
 
 # Docker volumes (nếu có lưu trong source)
 # mysql_data/
+
+# Security (Quan trọng)
+config/firebase_admin_sdk.json
