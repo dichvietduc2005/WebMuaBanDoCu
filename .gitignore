@@ -29,7 +29,7 @@
 .DS_Store
 Thumbs.db
 desktop.ini
-
+.agent
 # Upload files (nếu có)
 /public/uploads/*
 !/public/uploads/.gitkeep
