@@ -10,14 +10,25 @@ $user_id = $_SESSION['user_id'];
 $action = $_GET['action'] ?? $_POST['action'] ?? null;
 $id = $_GET['id'] ?? $_POST['id'] ?? null;
 
-// // AJAX sửa sản phẩm
-// if ($action === 'edit_ajax' && $_SERVER['REQUEST_METHOD'] === 'POST' && $id) {
-//     updateProduct($pdo, $user_id, $id, $_POST);
-//     // Lấy lại trạng thái mới
-//     $product = getProductById($pdo, $user_id, $id);
-//     echo json_encode(['success' => true, 'status' => $product['status']]);
-//     exit;
-// }
+// AJAX sửa sản phẩm
+if ($action === 'edit_ajax' && $_SERVER['REQUEST_METHOD'] === 'POST' && $id) {
+    updateProduct($pdo, $user_id, $id, $_POST);
+    // Lấy lại trạng thái mới để cập nhật UI nếu cần
+    $product = getProductById($pdo, $user_id, $id);
+    echo json_encode(['success' => true, 'status' => $product['status']]);
+    exit;
+}
+
+// AJAX lấy chi tiết sản phẩm (bao gồm ảnh)
+if ($action === 'get_details_ajax' && $id) {
+    $product = getProductDetails($pdo, $user_id, $id);
+    if ($product) {
+        echo json_encode(['success' => true, 'data' => $product]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Không tìm thấy sản phẩm']);
+    }
+    exit;
+}
 
 // AJAX xóa sản phẩm
 if ($action === 'delete_ajax' && $id) {

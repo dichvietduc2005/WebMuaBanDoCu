@@ -24,11 +24,32 @@ function renderHeader($pdo, $categories = null, $cart_count = null, $unread_noti
 
     // Tự động load danh mục nếu chưa có
     if ($categories === null || empty($categories)) {
-        try {
-            $stmt = $pdo->query("SELECT id, name, slug, icon FROM categories WHERE status = 'active' ORDER BY name ASC");
-            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            $categories = [];
+        // Fallback robust logic centralized here
+        $modelPath = __DIR__ . '/../../Models/product/CategoryModel.php';
+        if (file_exists($modelPath)) {
+            require_once $modelPath;
+        }
+
+        if (class_exists('CategoryModel')) {
+            $cm = new CategoryModel();
+            if (method_exists($cm, 'getAllActive')) {
+                $categories = $cm->getAllActive();
+            } elseif (method_exists($cm, 'getAll')) {
+                $categories = $cm->getAll();
+            }
+        }
+
+        // Nếu Model không lấy được, dùng PDO query dự phòng (SELECT *)
+        if (empty($categories) && isset($pdo)) {
+            try {
+                $stmt = $pdo->query("SELECT * FROM categories ORDER BY name ASC");
+                if ($stmt) {
+                    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                }
+            } catch (Exception $e) {
+                // Silent fail
+                $categories = [];
+            }
         }
     }
 
@@ -38,7 +59,7 @@ function renderHeader($pdo, $categories = null, $cart_count = null, $unread_noti
             try {
                 $stmt = $pdo->prepare("SELECT SUM(quantity) FROM cart WHERE user_id = ?");
                 $stmt->execute([$_SESSION['user_id']]);
-                $cart_count = (int)$stmt->fetchColumn();
+                $cart_count = (int) $stmt->fetchColumn();
             } catch (Exception $e) {
                 $cart_count = 0;
             }
@@ -54,7 +75,7 @@ function renderHeader($pdo, $categories = null, $cart_count = null, $unread_noti
                 // Kiểm tra table notifications có tồn tại không trước khi query
                 $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
                 $stmt->execute([$_SESSION['user_id']]);
-                $unread_notifications = (int)$stmt->fetchColumn();
+                $unread_notifications = (int) $stmt->fetchColumn();
             } catch (Exception $e) {
                 $unread_notifications = 0;
             }
@@ -65,7 +86,7 @@ function renderHeader($pdo, $categories = null, $cart_count = null, $unread_noti
 
     // Render bản Desktop (CSS trong HeaderFull sẽ ẩn/hiện theo breakpoint)
     renderHeaderFull($pdo, $categories, $cart_count, $unread_notifications);
-    
+
     // Render bản Mobile/Simple
     renderHeaderSimple($pdo, $categories, $cart_count, $unread_notifications);
 }

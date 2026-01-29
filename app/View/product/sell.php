@@ -9,6 +9,15 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: ' . BASE_URL . 'public/index.php?page=login');
     exit;
 }
+
+// Fetch categories for Header and Form
+$categoryModel = new CategoryModel();
+$categories = [];
+if (method_exists($categoryModel, 'getAllActive')) {
+    $categories = $categoryModel->getAllActive();
+} elseif (method_exists($categoryModel, 'getAll')) {
+    $categories = $categoryModel->getAll();
+}
 ?>
 
 
@@ -27,10 +36,42 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/sell.css">
     <!-- Mobile Responsive CSS for Product Pages -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
+    <style>
+        /* FIX FOOTER: Reset breakout logic and ensure visibility */
+        .footer-wrapper footer,
+        body>.footer-wrapper>footer {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            left: auto !important;
+            right: auto !important;
+            position: relative !important;
+            background: #111111 !important;
+            /* Keep original dark theme */
+            padding: 40px 0 !important;
+            transform: none !important;
+            z-index: 9999 !important;
+            /* Force top visibility */
+        }
+
+        .footer-wrapper footer .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+        }
+    </style>
 </head>
 
 <body>
-    <?php renderHeader($pdo); ?>
+    <?php
+    // Fetch categories for Form (and pass to Header)
+    $categories = [];
+    if (class_exists('CategoryModel')) {
+        $categoryModel = new CategoryModel();
+        $categories = $categoryModel->getAllActive();
+    }
+
+    renderHeader($pdo, $categories);
+    ?>
     <div class="sell-card">
         <div class="sell-title">
             <i class="fas fa-store"></i> Đăng bán sản phẩm
@@ -51,11 +92,9 @@ if (!isset($_SESSION['user_id'])) {
                     <select id="category" name="category_id" class="form-control" required>
                         <option value="">Chọn danh mục</option>
                         <?php
-                        // Lấy danh sách danh mục
-                        $categoryModel = new CategoryModel();
-                        $categories = $categoryModel->getAllActive();
+                        // Use already fetched categories
                         foreach ($categories as $cat) {
-                            echo '<option value="' . (int)$cat['id'] . '">' . htmlspecialchars($cat['name']) . '</option>';
+                            echo '<option value="' . (int) $cat['id'] . '">' . htmlspecialchars($cat['name']) . '</option>';
                         }
                         ?>
                     </select>
@@ -63,7 +102,7 @@ if (!isset($_SESSION['user_id'])) {
             </div>
             <div class="mb-3">
                 <label for="price" class="form-label">Giá bán (VNĐ)</label>
-                <input type="number" id="price" name="price" class="form-control" placeholder="0" min="1000" required>
+                <input type="text" id="price" name="price" class="form-control" placeholder="Ví dụ: 500.000" required>
             </div>
             <div class="mb-3">
                 <label for="category" class="form-label">Tình trạng</label>
@@ -128,8 +167,11 @@ if (!isset($_SESSION['user_id'])) {
     <script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"> </script>
     <script src="<?php echo BASE_URL; ?>public/assets/js/sell.js"> </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <?php footer(); ?>
+
+    <!-- Footer -->
+    <div class="footer-wrapper" style="background: #fff; margin-top: auto; position: relative; z-index: 10;">
+        <?php footer(); ?>
+    </div>
 </body>
 
 </html>
