@@ -39,3 +39,8 @@ desktop.ini
 
 # Security (Quan trọng)
 config/firebase_admin_sdk.json
+
+# Antigravity Agent
+.agent/
+.gemini/
+.antigravity/

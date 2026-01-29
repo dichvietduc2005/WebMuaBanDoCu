@@ -25,21 +25,22 @@ class FrontendProductController
     {
         // Get pagination parameters
         // Ensure page is at least 1 to prevent negative offset
-        $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
-        if ($page < 1) $page = 1;
-        
-        $per_page = 12;
+        $page = isset($_GET['p']) ? (int) $_GET['p'] : 1;
+        if ($page < 1)
+            $page = 1;
+
+        $per_page = 10;
         $offset = ($page - 1) * $per_page;
 
         // Get filter parameters
         $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : $search;
-        $category = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+        $category = isset($_GET['category']) ? (int) $_GET['category'] : 0;
         $condition = isset($_GET['condition']) ? trim($_GET['condition']) : '';
-        $min_price = isset($_GET['min_price']) ? (int)$_GET['min_price'] : 0;
-        $max_price = isset($_GET['max_price']) ? (int)$_GET['max_price'] : 0;
+        $min_price = isset($_GET['min_price']) ? (int) $_GET['min_price'] : 0;
+        $max_price = isset($_GET['max_price']) ? (int) $_GET['max_price'] : 0;
         $sort_by = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
-        $in_stock = isset($_GET['in_stock']) ? (bool)$_GET['in_stock'] : true;
+        $in_stock = isset($_GET['in_stock']) ? (bool) $_GET['in_stock'] : true;
 
         $products = [];
         $total_products = 0;
@@ -58,7 +59,7 @@ class FrontendProductController
                     'sort_by' => $sort_by
                 ]);
             }
-            
+
             // Use SearchModel
             $products = SearchModel::searchProducts($this->pdo, $keyword, $category, $condition, $min_price, $max_price, $sort_by, $in_stock, $per_page, $offset);
             $total_products = SearchModel::countSearchResults($this->pdo, $keyword, $category, $condition, $min_price, $max_price, $in_stock);
@@ -75,7 +76,7 @@ class FrontendProductController
             // Default listing (Active products)
             // Can use ProductModel here or existing logic from view which constructed a query manually
             // Reusing logic from view for consistency but moved here
-            
+
             $where_conditions = ["p.status = 'active'"];
             $params = [];
 
@@ -112,13 +113,15 @@ class FrontendProductController
 
         // Helper functions for View
         if (!function_exists('formatPrice')) {
-            function formatPrice($price) {
+            function formatPrice($price)
+            {
                 return number_format($price, 0, ',', '.') . ' ₫';
             }
         }
-        
+
         if (!function_exists('getConditionText')) {
-            function getConditionText($condition) {
+            function getConditionText($condition)
+            {
                 $conditions = [
                     'new' => 'Mới',
                     'like_new' => 'Như mới',

@@ -25,12 +25,12 @@ try {
 
     // 4. LẤY 3 DỮ LIỆU BẠN CẦN TỪ TOKEN ĐÃ XÁC THỰC
     $userEmail = $verifiedIdToken->claims()->get('email');      // Email của người dùng
-    $fullName  = $verifiedIdToken->claims()->get('name');       // Tên đầy đủ
-    $googleId  = $verifiedIdToken->claims()->get('sub');        // UID duy nhất của Firebase
+    $fullName = $verifiedIdToken->claims()->get('name');       // Tên đầy đủ
+    $googleId = $verifiedIdToken->claims()->get('sub');        // UID duy nhất của Firebase
 
     // --- Tiếp tục logic xử lý với Database của bạn ---
     $auth = new Auth($pdo);
-    
+
     // Kiểm tra user tồn tại (tận dụng lớp Auth hiện có)
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$userEmail]);
@@ -40,10 +40,26 @@ try {
         // Đăng ký mới nếu chưa có
         $randomPass = bin2hex(random_bytes(10));
         $username = explode('@', $userEmail)[0] . rand(100, 999);
-        $auth->register($username, $userEmail, $randomPass, $fullName);
-        
+
+        // Capture and check registration result
+        $registerResult = $auth->register($username, $userEmail, $randomPass, $fullName);
+
+        if (!$registerResult['success']) {
+            error_log("Firebase user registration failed for: $userEmail - " . $registerResult['message']);
+            echo json_encode(['success' => false, 'message' => 'Không thể tạo tài khoản: ' . $registerResult['message']]);
+            exit();
+        }
+
+        // Re-fetch the newly created user
         $stmt->execute([$userEmail]);
         $user = $stmt->fetch();
+
+        // Double-check user was created
+        if (!$user) {
+            error_log("Firebase user re-fetch failed after registration for: $userEmail");
+            echo json_encode(['success' => false, 'message' => 'Lỗi hệ thống khi tạo tài khoản. Vui lòng thử lại.']);
+            exit();
+        }
     }
 
     // Thiết lập Session đăng nhập

@@ -17,7 +17,7 @@ function showToast(type, title, message) {
     toastContainer.appendChild(toastEl);
     const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
     toast.show();
-    toastEl.addEventListener('hidden.bs.toast', function() {
+    toastEl.addEventListener('hidden.bs.toast', function () {
         toastEl.remove();
     });
 }
@@ -71,7 +71,7 @@ function renderImagesDescPreview() {
     imagesDescPreview.innerHTML = '';
     selectedDescFiles.forEach((file, idx) => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const wrap = document.createElement('div');
             wrap.style.position = 'relative';
             wrap.style.display = 'inline-block';
@@ -98,7 +98,7 @@ function renderImagesDescPreview() {
             del.style.width = '22px';
             del.style.height = '22px';
             del.style.cursor = 'pointer';
-            del.onclick = function() {
+            del.onclick = function () {
                 selectedDescFiles.splice(idx, 1);
                 renderImagesDescPreview();
             };
@@ -113,6 +113,21 @@ function renderImagesDescPreview() {
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.querySelector('.sell-card form');
     if (!form) return;
+
+    // Auto-Format Price Input
+    var priceInput = document.getElementById('price');
+    if (priceInput) {
+        priceInput.addEventListener('input', function (e) {
+            // Remove non-digit chars
+            let value = this.value.replace(/\D/g, '');
+            // Format with dots
+            if (value) {
+                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+            this.value = value;
+        });
+    }
+
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -130,6 +145,11 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('description').value = fullDesc;
 
         var formData = new FormData(form);
+
+        // Clean Price before sending
+        let rawPrice = formData.get('price').toString().replace(/\./g, '');
+        formData.set('price', rawPrice);
+
         // Xóa các file ảnh mô tả cũ (nếu có)
         formData.delete('images[]');
         // Thêm lại đúng các file đã chọn
@@ -145,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 showToast(data.success ? 'success' : 'danger', data.success ? 'Thành công!' : 'Thất bại!', data.message);
                 if (data.success) {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         window.location.href = '/WebMuaBanDoCu/app/View/product/Product.php';
                     }, 1500);
                 }
@@ -156,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Tìm tất cả các wrapper có class 'custom-select-wrapper'
     const wrappers = document.querySelectorAll(".custom-select-wrapper");
 
@@ -184,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function() {
             optionDiv.innerHTML = selectEl.options[i].innerHTML;
 
             // Sự kiện click cho từng mục
-            optionDiv.addEventListener("click", function(e) {
+            optionDiv.addEventListener("click", function (e) {
                 // Cập nhật select gốc
                 for (let j = 0; j < selectEl.length; j++) {
                     if (selectEl.options[j].innerHTML == this.innerHTML) {
@@ -194,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 // Cập nhật div hiển thị
                 selectedDiv.innerHTML = this.innerHTML;
-                
+
                 // Đóng danh sách
                 selectedDiv.classList.remove("select-arrow-active");
                 itemsDiv.classList.add("select-hide");
@@ -204,7 +224,7 @@ document.addEventListener("DOMContentLoaded", function() {
         wrapper.appendChild(itemsDiv);
 
         // Sự kiện click để đóng/mở danh sách
-        selectedDiv.addEventListener("click", function(e) {
+        selectedDiv.addEventListener("click", function (e) {
             e.stopPropagation();
             closeAllSelect(this);
             this.nextSibling.classList.toggle("select-hide");
@@ -216,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function closeAllSelect(elmnt) {
         const items = document.querySelectorAll(".select-items");
         const selected = document.querySelectorAll(".select-selected");
-        
+
         selected.forEach((sel, i) => {
             if (elmnt !== sel) {
                 sel.classList.remove("select-arrow-active");

@@ -1,6 +1,6 @@
 <?php
 // Sử dụng bootstrap để tăng hiệu suất tải trang
-require_once '../../../config/bootstrap.php';
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
 // Include required components
 require_once __DIR__ . '/../../Components/header/Header.php';
@@ -70,7 +70,7 @@ if (isset($_SESSION['user_id'])) {
     <meta name="googlebot" content="noindex, nofollow">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../../../public/assets/css/footer.css" rel="stylesheet">
+    <link href="<?php echo BASE_URL; ?>public/assets/css/footer.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product_detail.css">
@@ -370,7 +370,8 @@ if (isset($_SESSION['user_id'])) {
                                 </div>
                                 <div class="store-details">
                                     <div class="store-name">
-                                        <?php echo htmlspecialchars($product['seller_name'] ?? 'Người bán'); ?></div>
+                                        <?php echo htmlspecialchars($product['seller_name'] ?? 'Người bán'); ?>
+                                    </div>
                                     <div class="store-status online">
                                         <i class="fas fa-circle"></i> Online
                                     </div>
@@ -443,22 +444,26 @@ if (isset($_SESSION['user_id'])) {
                                     <tr>
                                         <td class="specs-label">Tình trạng</td>
                                         <td class="specs-value">
-                                            <?php echo getConditionText($product['condition_status']); ?></td>
+                                            <?php echo getConditionText($product['condition_status']); ?>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="specs-label">Khu vực</td>
                                         <td class="specs-value">
-                                            <?php echo htmlspecialchars($product['location'] ?? 'Toàn quốc'); ?></td>
+                                            <?php echo htmlspecialchars($product['location'] ?? 'Toàn quốc'); ?>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="specs-label">Ngày đăng</td>
                                         <td class="specs-value">
-                                            <?php echo date('d/m/Y', strtotime($product['created_at'])); ?></td>
+                                            <?php echo date('d/m/Y', strtotime($product['created_at'])); ?>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="specs-label">Người bán</td>
                                         <td class="specs-value">
-                                            <?php echo htmlspecialchars($product['seller_name'] ?? 'Ẩn danh'); ?></td>
+                                            <?php echo htmlspecialchars($product['seller_name'] ?? 'Ẩn danh'); ?>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="specs-label">Kho hàng</td>
@@ -637,7 +642,7 @@ if (isset($_SESSION['user_id'])) {
                     <div class="related-grid">
                         <?php foreach ($related_products as $related): ?>
                             <div class="related-item"
-                                onclick="window.location.href='<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo $related['id']; ?>'">
+                                onclick="window.location.href='?page=product_detail&id=<?php echo $related['id']; ?>'">
                                 <?php if ($related['image_path']): ?>
                                     <img src="<?php echo BASE_URL; ?>public/<?php echo htmlspecialchars($related['image_path']); ?>"
                                         alt="<?php echo htmlspecialchars($related['title']); ?>" class="related-image">
@@ -651,7 +656,8 @@ if (isset($_SESSION['user_id'])) {
 
                                     <div class="text-danger fw-bold"><?php echo formatPrice($related['price']); ?></div>
                                     <div class="text-muted small">Tình trạng:
-                                        <?php echo getConditionText($related['condition_status']); ?></div>
+                                        <?php echo getConditionText($related['condition_status']); ?>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>

@@ -6,13 +6,13 @@ function add_event_btn_edit() {
             inputs.forEach(input => {
                 // Prevent editing of username if desired, otherwise allow all
                 // For now allow all as per original logic, but usually username is fixed
-                if (input.id !== 'user_name') { 
+                if (input.id !== 'user_name') {
                     input.disabled = false;
                 }
             });
             this.classList.add('d-none');
             document.getElementById('btn-save').classList.remove('d-none');
-            
+
             // Focus first editable input
             document.getElementById('user_full_name').focus();
         });
@@ -24,26 +24,24 @@ function add_event_btn_save() {
     if (saveBtn) {
         saveBtn.addEventListener('click', function () {
             let phone_input = document.getElementById('user_phone');
-            
-            // Basic validation
-            if (phone_input.value.length != 10) {
-                alert('Số điện thoại không hợp lệ. Vui lòng nhập lại (10 số).');
-                return;
-            }
-            // Check numeric
-            if (!/^\d+$/.test(phone_input.value)) {
-                 alert('Số điện thoại chỉ được chứa số.');
-                 return;
-            }
 
-            const data = {};
-            // Collect data from inputs
+            /* Phone validation removed */
+
+            // Use FormData for file upload
+            const formData = new FormData();
+
             const inputs = document.querySelectorAll('#profile-form input');
             inputs.forEach(input => {
-                data[input.id] = input.value;
-                input.disabled = true; // Lock inputs immediately for better UX
+                formData.append(input.id, input.value);
+                input.disabled = true;
             });
-            data['user_id'] = userId;
+            formData.append('user_id', userId);
+
+            // Add avatar if selected
+            const fileInput = document.getElementById('avatar-upload');
+            if (fileInput && fileInput.files[0]) {
+                formData.append('avatar', fileInput.files[0]);
+            }
 
             // UI Toggle back
             this.classList.add('d-none');
@@ -52,10 +50,8 @@ function add_event_btn_save() {
             // Send Request
             fetch('/WebMuaBanDoCu/app/Controllers/user/ProfileUserController.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                // Content-Type header MUST be removed for FormData to set boundary
+                body: formData
             }).then(res => res.text())
                 .then(responseData => {
                     if (responseData.trim() === "success") {
@@ -74,7 +70,54 @@ function add_event_btn_save() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// Avatar Upload Logic
+function add_event_avatar_upload() {
+    const avatarFrame = document.querySelector('.promax-avatar-frame');
+    const fileInput = document.getElementById('avatar-upload');
+    const avatarImg = document.querySelector('.promax-avatar-img');
+
+    if (avatarFrame && fileInput) {
+        // Trigger file input on frame click
+        avatarFrame.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate size/type if needed
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    alert('File quá lớn! Vui lòng chọn ảnh dưới 5MB.');
+                    return;
+                }
+
+                // Preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (avatarImg.tagName === 'IMG') {
+                        avatarImg.src = e.target.result;
+                    } else {
+                        // Replace div placeholder with img
+                        const newImg = document.createElement('img');
+                        newImg.src = e.target.result;
+                        newImg.className = 'promax-avatar-img';
+                        newImg.id = 'avatar-preview';
+                        avatarImg.parentNode.replaceChild(newImg, avatarImg);
+                    }
+                }
+                reader.readAsDataURL(file);
+
+                // Show Save Button automatically when image changes
+                document.getElementById('btn-save').classList.remove('d-none');
+                document.getElementById('btn-edit').classList.add('d-none');
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
     add_event_btn_edit();
     add_event_btn_save();
+    add_event_avatar_upload();
 });
