@@ -20,7 +20,7 @@ switch ($page) {
         $api = new NotificationAPI();
         $api->handleRequest();
         break;
-    
+
     case 'login':
         require_once __DIR__ . '/../app/View/user/login.php';
         break;
@@ -38,7 +38,11 @@ switch ($page) {
         header('Location: login');
         exit();
         break;
-        
+
+    case 'product_detail':
+        require_once __DIR__ . '/../app/View/product/Product_detail.php';
+        break;
+
     case 'payment_success':
         // Trang thanh toán thành công
         require_once __DIR__ . '/../app/View/payment/success.php';

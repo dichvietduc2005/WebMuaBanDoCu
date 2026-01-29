@@ -9,9 +9,11 @@
 
 /* Mobile - Product Grid */
 @media (max-width: 767px) {
+
   /* Products grid - 2 columns on mobile */
   .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4,
-  .products-grid {
+  .products-grid,
+  .products-grid-container {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
   }
@@ -87,7 +89,9 @@
 
 /* Tablet - Product Grid */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4 {
+
+  .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4,
+  .products-grid-container {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px !important;
   }
@@ -216,6 +220,7 @@
    ============================================================ */
 
 @media (max-width: 767px) {
+
   /* Category filter mobile */
   .category-filters {
     flex-direction: column !important;
@@ -266,6 +271,7 @@
    ============================================================ */
 
 @media (max-width: 767px) {
+
   /* Sell form mobile */
   .sell-form {
     padding: 12px !important;
@@ -352,6 +358,7 @@
 
 /* Mobile - Common adjustments */
 @media (max-width: 767px) {
+
   /* Container padding */
   .container,
   .container-fluid {
@@ -383,7 +390,8 @@
   input[type="tel"],
   select,
   textarea {
-    font-size: 16px !important; /* Prevent iOS zoom */
+    font-size: 16px !important;
+    /* Prevent iOS zoom */
     min-height: 44px !important;
     padding: 10px 12px !important;
   }
@@ -442,6 +450,7 @@
 
 /* Touch feedback */
 @media (hover: none) {
+
   button:active,
   .btn:active,
   a:active {
@@ -457,4 +466,3 @@
     transition-duration: 0.01ms !important;
   }
 }
-
