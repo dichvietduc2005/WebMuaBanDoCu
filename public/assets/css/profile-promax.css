@@ -1,0 +1,426 @@
+/* ==========================================================================
+   PROFILE PROMAX UI
+   Design Commitment: High-Contrast Digital Identity
+   Geometry: Mixed (Sharp Structure / Soft Interaction)
+   Palette: Graphite + White + Electric Blue
+   ========================================================================== */
+
+:root {
+    --promax-bg-sidebar: #ffffff;
+    /* White Sidebar */
+    --promax-bg-main: #f8fafc;
+    --promax-surface: #ffffff;
+    --promax-accent: #2563eb;
+    /* Electric Blue */
+    --promax-text-primary: #1e293b;
+    --promax-text-secondary: #64748b;
+    --promax-border: #e2e8f0;
+    --promax-input-bg: #f1f5f9;
+}
+
+/* --- LAYOUT STRUCTURE (The "Split" Betrayal) --- */
+
+.promax-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 80px);
+    /* Adjust based on navbar height */
+    background: var(--promax-bg-main);
+    overflow: hidden;
+    /* For rounded corners on container if needed */
+    margin-top: 0 !important;
+    /* Override bootstrap container margins */
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+/* SIDEBAR (Identity Rail) */
+.promax-sidebar {
+    background: var(--promax-bg-sidebar);
+    color: var(--promax-text-primary);
+    /* Dark text */
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+    border-right: 1px solid var(--promax-border);
+    /* Separation */
+}
+
+.promax-avatar-frame {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    /* Soft geometry for human element */
+    border: 4px solid white;
+    box-shadow: 0 0 0 1px var(--promax-border);
+    /* Distinct border */
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: visible;
+    /* For potential badges */
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    /* Clickable */
+}
+
+.promax-avatar-frame:hover {
+    transform: scale(1.05) rotate(-2deg);
+    border-color: var(--promax-accent);
+}
+
+.promax-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Avatar Edit Overlay */
+.promax-avatar-edit-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--promax-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 3px solid white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.promax-avatar-frame:hover .promax-avatar-edit-btn {
+    transform: scale(1.1);
+}
+
+/* User Details Block */
+.promax-user-details {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.promax-user-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+    color: var(--promax-text-primary);
+}
+
+.promax-user-role {
+    font-size: 0.875rem;
+    color: var(--promax-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2.5rem;
+    background: var(--promax-input-bg);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* NAVIGATION PILLS */
+.promax-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.promax-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    /* Soft-Tech geometry */
+    color: var(--promax-text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.promax-nav-item:hover {
+    background: var(--promax-input-bg);
+    color: var(--promax-text-primary);
+    transform: translateX(5px);
+}
+
+.promax-nav-item.active {
+    background: var(--promax-accent);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    border: 1px solid transparent;
+}
+
+.promax-nav-item i {
+    width: 24px;
+    margin-right: 12px;
+    text-align: center;
+}
+
+/* MAIN CONTENT (Workspace) */
+.promax-content {
+    padding: 3rem 4rem;
+    overflow-y: auto;
+    position: relative;
+    /* Brutalist background pattern */
+    background-image: radial-gradient(var(--promax-border) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.promax-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--promax-border);
+}
+
+.promax-title-group h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    /* Brutal typography */
+    color: var(--promax-text-primary);
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.promax-subtitle {
+    color: var(--promax-text-secondary);
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+/* ACTION BUTTONS (Floating/Contextual) */
+.promax-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-promax {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    /* Slightly sharp */
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-promax-primary {
+    background: var(--promax-text-primary);
+    /* Black/Graphite */
+    color: white;
+}
+
+.btn-promax-primary:hover {
+    background: black;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-promax-ghost {
+    background: transparent;
+    color: var(--promax-text-secondary);
+    border: 1px solid var(--promax-border);
+}
+
+.btn-promax-ghost:hover {
+    background: white;
+    color: var(--promax-text-primary);
+    border-color: var(--promax-text-primary);
+}
+
+/* FORM GRID */
+.promax-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 900px;
+    perspective: 1000px;
+    /* For 3D entry effects */
+}
+
+.promax-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    animation: slideUpFade 0.5s ease-out backwards;
+}
+
+/* Staggered Animation */
+.promax-field:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.promax-field:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.promax-field:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.promax-field:nth-child(4) {
+    animation-delay: 0.25s;
+}
+
+.promax-field:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+.promax-field:nth-child(6) {
+    animation-delay: 0.35s;
+}
+
+.promax-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--promax-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.promax-input-wrapper {
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.promax-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: white;
+    border: 2px solid var(--promax-border);
+    /* Raw border */
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: var(--promax-text-primary);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.promax-input:disabled {
+    background: var(--promax-input-bg);
+    opacity: 0.8;
+    border-color: transparent;
+    cursor: default;
+}
+
+.promax-input:focus {
+    outline: none;
+    border-color: var(--promax-accent);
+    background: white;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
+    /* Glow Trap Avoided - using crisp shadow */
+    transform: translateY(-2px);
+}
+
+.promax-field.full-width {
+    grid-column: span 2;
+}
+
+/* KEYFRAMES */
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE (Mobile First approach inverted for Split layout, so we adapt down) */
+@media (max-width: 992px) {
+    .promax-container {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: auto;
+        display: block;
+    }
+
+    .promax-sidebar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        position: sticky;
+        top: 0;
+    }
+
+    .promax-avatar-frame {
+        width: 60px;
+        height: 60px;
+        margin: 0;
+        border-width: 2px;
+    }
+
+    .promax-user-details {
+        text-align: left;
+        margin-left: 1rem;
+        flex-grow: 1;
+    }
+
+    .promax-user-name {
+        text-align: left;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .promax-user-role {
+        display: none;
+    }
+
+    .promax-nav {
+        display: none;
+        /* Hide nav on mobile header, maybe move to bottom sheet or hamburger */
+    }
+
+    .promax-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .promax-form-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .promax-field.full-width {
+        grid-column: span 1;
+    }
+
+    .promax-title-group h1 {
+        font-size: 1.75rem;
+    }
+}
