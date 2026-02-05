@@ -29,7 +29,7 @@ class MobileCSSLoader
     public static function loadMobileCSS($pageType, $baseUrl = null)
     {
         if ($baseUrl === null) {
-            $baseUrl = defined('BASE_URL') ? BASE_URL : '/WebMuaBanDoCu/';
+            $baseUrl = defined('BASE_URL') ? BASE_URL : '/';
         }
 
         // Kiểm tra page type hợp lệ

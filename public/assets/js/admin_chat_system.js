@@ -90,7 +90,7 @@ function deleteMessage(messageId, messageElement) {
         return;
     }
     
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     fetch(base + "app/Controllers/message/DeleteMessageController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -117,7 +117,7 @@ function editMessage(messageId, currentContent, messageElement) {
         return;
     }
     
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     fetch(base + "app/Controllers/message/UpdateMessageController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -157,7 +157,7 @@ function load_messages() {
     const chatBox = document.getElementById("chatBox");
     const wasAtBottom = chatBox && (Math.ceil(chatBox.scrollTop) + chatBox.clientHeight >= chatBox.scrollHeight - 20);
     
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     fetch(base + "app/Controllers/message/GetMessagesController.php", {
         method: "POST",
         headers: {
@@ -281,7 +281,7 @@ function send_messages() {
     // Đảm bảo sẽ scroll sau khi gửi
     can_jump_bottom = true;
     
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     fetch(base + "app/Controllers/message/SendMessageController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

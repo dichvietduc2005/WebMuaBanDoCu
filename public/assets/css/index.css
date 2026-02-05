@@ -390,8 +390,8 @@ body {
 }
 
 .product-image {
-  height: 140px;
   width: 100%;
+  aspect-ratio: 1 / 1; 
   background: var(--light);
   display: flex;
   align-items: center;
@@ -399,25 +399,29 @@ body {
   color: var(--gray);
   position: relative;
   overflow: hidden;
+  height: auto !important; 
 }
 
 /* Tối ưu kích thước image trên màn hình lớn để hiển thị nhiều sản phẩm hơn */
 @media (min-width: 1400px) {
   .product-image {
-    height: 130px;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
   }
 }
 
 @media (min-width: 1600px) {
   .product-image {
-    height: 120px;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
   }
 }
 
 .product-image img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   transition: var(--transition);
 }
 

@@ -42,13 +42,14 @@ if (!isset($pdo)) {
     // Thông tin kết nối database
     try {
         $db_host = $_ENV['DB_HOST'] ?? 'localhost';
+        $db_port = $_ENV['DB_PORT'] ?? '3306';
         $db_name = $_ENV['DB_NAME'] ?? 'muabandocu';
         $db_user = $_ENV['DB_USER'] ?? 'root';
         $db_pass = $_ENV['DB_PASS'] ?? '';
         $db_charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
 
         // Tạo DSN
-        $dsn = "mysql:host={$db_host};dbname={$db_name};charset={$db_charset}";
+        $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset={$db_charset}";
         
         // Tạo PDO object với error mode hiển thị đầy đủ thông tin
         $pdo = new PDO($dsn, $db_user, $db_pass, [
@@ -69,7 +70,7 @@ if (!isset($pdo)) {
 // Đường dẫn tương đối từ thư mục public
 function getRelativePath() {
     $scriptName = $_SERVER['SCRIPT_NAME'];
-    $basePath = '/WebMuaBanDoCu/'; // Điều chỉnh nếu cần
+    $basePath = BASE_URL; // Điều chỉnh nếu cần
     
     if (strpos($scriptName, '/public/') !== false) {
         return '..';
@@ -97,7 +98,7 @@ function show_error($message, $code = 500) {
     echo '<div style="text-align: center; margin: 50px auto; max-width: 800px; border: 1px solid #ddd; padding: 20px; border-radius: 5px;">';
     echo '<h1 style="color: #d9534f;">Lỗi ' . $code . '</h1>';
     echo '<p>' . $message . '</p>';
-    echo '<p><a href="' . ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/WebMuaBanDoCu/" style="color: #337ab7;">Về trang chủ</a></p>';
+    echo '<p><a href="' . ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . BASE_URL . '" style="color: #337ab7;">Về trang chủ</a></p>';
     echo '</div>';
     exit;
 }

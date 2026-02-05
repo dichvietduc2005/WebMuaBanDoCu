@@ -24,9 +24,9 @@ if (!$user_id) {
         exit;
     }
     // Nếu là form submission trực tiếp, chuyển hướng đến trang đăng nhập
-    $_SESSION['login_redirect_url'] = '/WebMuaBanDoCu/app/View/checkout/index.php';
+    $_SESSION['login_redirect_url'] = BASE_URL . 'app/View/checkout/index.php';
     $_SESSION['error_message'] = 'Bạn cần đăng nhập để thanh toán.';
-    header('Location: /WebMuaBanDoCu/app/router.php?controller=user&action=login');
+    header('Location: ' . BASE_URL . 'app/router.php?controller=user&action=login');
     exit;
 }
 // ===== KẾT THÚC KIỂM TRA ĐĂNG NHẬP =====
@@ -282,7 +282,7 @@ try {
     // Xử lý lỗi và không redirect sang VNPAY
     if (isset($_POST['redirect'])) {
         $_SESSION['checkout_error_message'] = "Lỗi khi tạo đơn hàng: " . $e->getMessage();
-        header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
+        header('Location: ' . BASE_URL . 'app/View/checkout/index.php');
         exit;
     } else {
         echo json_encode(['code' => '99', 'message' => 'Lỗi khi tạo đơn hàng: ' . $e->getMessage(), 'data' => null]);
@@ -299,7 +299,7 @@ if ($order_created_successfully) {
             error_log("VNPAY Create Payment Error: Invalid or empty VNPAY URL. URL was: '" . $vnp_Url . "'");
             log_vnpay_debug_data("CREATE_PAYMENT - INVALID VNPAY URL", ["vnp_Url" => $vnp_Url]); // <--- LOG URL KHÔNG HỢP LỆ
             $_SESSION['checkout_error_message'] = "Lỗi nghiêm trọng: Không thể tạo URL thanh toán VNPAY. Vui lòng liên hệ quản trị viên.";
-            header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
+            header('Location: ' . BASE_URL . 'app/View/checkout/index.php');
             exit;
         }
         header('Location: ' . $vnp_Url);
@@ -318,7 +318,7 @@ if ($order_created_successfully) {
             // Fallback error message if not set by the catch block
             $_SESSION['checkout_error_message'] = "Không thể khởi tạo thanh toán. Đã xảy ra lỗi không xác định.";
         }
-        header('Location: /WebMuaBanDoCu/app/View/checkout/index.php');
+        header('Location: ' . BASE_URL . 'app/View/checkout/index.php');
         exit;
     } else {
         // AJAX response for failure

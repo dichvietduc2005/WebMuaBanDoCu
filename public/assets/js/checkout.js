@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
-      const baseUrl = window.APP_CONFIG ? window.APP_CONFIG.baseUrl : '/WebMuaBanDoCu/';
+      const baseUrl = window.baseUrl || (window.APP_CONFIG ? window.APP_CONFIG.baseUrl : '/');
       const response = await fetch(`${baseUrl}app/Controllers/cart/CartController.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
       removeCouponBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
       try {
-        const baseUrl = window.APP_CONFIG ? window.APP_CONFIG.baseUrl : '/WebMuaBanDoCu/';
+        const baseUrl = window.baseUrl || (window.APP_CONFIG ? window.APP_CONFIG.baseUrl : '/');
         const response = await fetch(`${baseUrl}app/Controllers/cart/CartController.php`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

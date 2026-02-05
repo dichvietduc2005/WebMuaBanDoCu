@@ -24,11 +24,11 @@ $(document).ready(function() {
         let keyword = searchInput.val().trim();
         
         if (keyword.length === 0) {
-            window.location.href = '/WebMuaBanDoCu/public/index.php';
+            window.location.href = (window.baseUrl || '') + 'public/index.php';
             return;
         }
         // Chuyển hướng sang trang kết quả tìm kiếm với tham số keyword
-        window.location.href = '/WebMuaBanDoCu/app/View/product/products.php?keyword=' + encodeURIComponent(keyword);
+        window.location.href = (window.baseUrl || '') + 'app/View/product/products.php?keyword=' + encodeURIComponent(keyword);
     });
 
     // Xử lý nút xóa
@@ -64,7 +64,7 @@ $(document).ready(function() {
     // Tính năng gợi ý tìm kiếm (autocomplete)
     function fetchSuggestions(keyword) {
         $.ajax({
-            url: '/WebMuaBanDoCu/app/Controllers/extra/NotificationAPI.php',
+            url: (window.baseUrl || '') + 'app/Controllers/extra/NotificationAPI.php',
             method: 'GET',
             data: {
                 action: 'search_suggestions',

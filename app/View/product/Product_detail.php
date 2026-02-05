@@ -628,8 +628,7 @@ if (isset($_SESSION['user_id'])) {
                 <?php else: ?>
                     <div class="reviews-footer text-center">
                         <div class="login-to-review">
-                            <p>Bạn cần <a href="/WebMuaBanDoCu/app/View/user/login.php" class="text-primary fw-bold">đăng
-                                    nhập</a> để đánh giá sản phẩm</p>
+                            <p>Bạn cần <a href="<?php echo BASE_URL; ?>app/View/user/login.php" class="text-primary fw-bold">đăng nhập</a> để đánh giá sản phẩm</p>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -668,7 +667,7 @@ if (isset($_SESSION['user_id'])) {
         <!-- End product-detail-container -->
 
         <script>let product_id = <?php echo $product_id ?></script>
-        <script src="/WebMuaBanDoCu/public/assets/js/user_review_system.js"></script>
+        <script src="<?php echo BASE_URL; ?>public/assets/js/user_review_system.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
@@ -934,7 +933,7 @@ if (isset($_SESSION['user_id'])) {
         <script src="<?php echo BASE_URL; ?>public/assets/js/product_detail.js"></script>
         <script>userId = <?php echo isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 'null'; ?></script>
         <?php require_once __DIR__ . '/../user/ChatView.php'; ?>
-        <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
+        <script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"> </script>
 
 
         <!-- Footer -->

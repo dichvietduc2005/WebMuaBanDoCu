@@ -41,14 +41,19 @@ if (!defined('BASE_PATH')) define('BASE_PATH', realpath(__DIR__ . '/..'));
 if (!defined('APP_PATH')) define('APP_PATH', BASE_PATH . '/app');
 if (!defined('PUBLIC_PATH')) define('PUBLIC_PATH', BASE_PATH . '/public');
 
-// Thử load env variables nếu có file .env
+// Thử load env variables nếu có file .env (Không ghi đè biến môi trường hiện tại)
 $env_file = BASE_PATH . '/.env';
 if (file_exists($env_file)) {
     $lines = file($env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         if (strpos($line, '=') !== false && substr($line, 0, 1) !== '#') {
             list($key, $value) = explode('=', $line, 2);
-            $_ENV[trim($key)] = trim($value);
+            $key = trim($key);
+            $value = trim($value);
+            if (!isset($_ENV[$key])) {
+                $_ENV[$key] = $value;
+                putenv("$key=$value");
+            }
         }
     }
 }
@@ -78,13 +83,14 @@ if (file_exists($autoloader_file)) {
 try {
     // Thông tin kết nối database
     $db_host = $_ENV['DB_HOST'] ?? 'localhost';
+    $db_port = $_ENV['DB_PORT'] ?? '3306';
     $db_name = $_ENV['DB_NAME'] ?? 'muabandocu';
     $db_user = $_ENV['DB_USER'] ?? 'root';
     $db_pass = $_ENV['DB_PASS'] ?? '';
     $db_charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
 
     // Tạo DSN
-    $dsn = "mysql:host={$db_host};dbname={$db_name};charset={$db_charset}";
+    $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset={$db_charset}";
     
     // Tạo PDO object với error mode hiển thị đầy đủ thông tin
     $pdo = new PDO($dsn, $db_user, $db_pass, [
@@ -145,7 +151,9 @@ function getConfig($key, $default = null) {
 $vnp_TmnCode = $_ENV['VNPAY_TMN_CODE'] ?? "5HOTQ8NB";
 $vnp_HashSecret = $_ENV['VNPAY_HASH_SECRET'] ?? "JUHW3LNEC8O3JNJNN6AGRQKF81Y94DXZ";
 $vnp_Url = $_ENV['VNPAY_URL'] ?? "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-$vnp_Returnurl = $_ENV['VNPAY_RETURN_URL'] ?? "http://localhost/WebMuaBanDoCu/app/Controllers/payment/return.php";
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$vnp_Returnurl = $_ENV['VNPAY_RETURN_URL'] ?? $protocol . $host . BASE_URL . "app/Controllers/payment/return.php";
 $vnp_apiUrl = $_ENV['VNPAY_API_URL'] ?? "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
 
 // Expire time cho payment

@@ -48,7 +48,7 @@ function add_event_btn_save() {
             document.getElementById('btn-edit').classList.remove('d-none');
 
             // Send Request
-            fetch('/WebMuaBanDoCu/app/Controllers/user/ProfileUserController.php', {
+            fetch((window.baseUrl || '') + 'app/Controllers/user/ProfileUserController.php', {
                 method: 'POST',
                 // Content-Type header MUST be removed for FormData to set boundary
                 body: formData

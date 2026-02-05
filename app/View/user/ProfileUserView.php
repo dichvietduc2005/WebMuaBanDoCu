@@ -20,11 +20,12 @@ if (!isset($pdo) || $pdo === null) {
         // Fallback
         try {
             $db_host = $_ENV['DB_HOST'] ?? 'localhost';
+            $db_port = $_ENV['DB_PORT'] ?? '3306';
             $db_name = $_ENV['DB_NAME'] ?? 'muabandocu';
             $db_user = $_ENV['DB_USER'] ?? 'root';
             $db_pass = $_ENV['DB_PASS'] ?? '';
 
-            $dsn = "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4";
+            $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4";
             $pdo = new PDO($dsn, $db_user, $db_pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
         } catch (Exception $e) {
             error_log("ProfileUserView DB error: " . $e->getMessage());

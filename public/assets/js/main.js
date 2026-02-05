@@ -11,7 +11,7 @@ function addToCart(event, productId) {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
     }
 
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     fetch(base + 'app/Controllers/cart/CartController.php', {
         method: 'POST',
         headers: {
@@ -64,7 +64,7 @@ function buyNow(event, productId) {
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
 
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     // Thêm sản phẩm vào giỏ hàng và chuyển đến trang checkout ngay lập tức
     fetch(base + 'app/Controllers/cart/CartController.php', {
         method: 'POST',
@@ -139,7 +139,7 @@ function showLoginPromptToast() {
     toastEl.setAttribute('aria-atomic', 'true');
 
     // Xác định đường dẫn đến trang đăng nhập một cách linh hoạt
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     const loginPath = base + 'public/index.php?page=login';
 
     toastEl.innerHTML = `
@@ -207,7 +207,7 @@ function createToastContainer() {
 
 // Cancel order function
 function cancelOrder(orderId) {
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     showConfirmDialog('Xác nhận hủy đơn', 'Bạn có chắc muốn hủy đơn hàng này?', function() {
         fetch(base + 'modules/order/cancel_order.php', {
             method: 'POST',
@@ -235,7 +235,7 @@ function cancelOrder(orderId) {
 
 // Reorder function
 function reorder(orderId) {
-    const base = window.baseUrl || '/WebMuaBanDoCu/';
+    const base = window.baseUrl || '/';
     showConfirmDialog('Xác nhận mua lại', 'Bạn có muốn mua lại các sản phẩm trong đơn hàng này?', function() {
         fetch(base + 'modules/order/reorder.php', {
             method: 'POST',

@@ -20,7 +20,7 @@ if (!function_exists('render_global_chat_widget')) {
         
         // Check if BASE_URL is defined
         if (!defined('BASE_URL')) {
-            define('BASE_URL', '/WebMuaBanDoCu/');
+            define('BASE_URL', '/');
         }
         
         // Load chat widget component

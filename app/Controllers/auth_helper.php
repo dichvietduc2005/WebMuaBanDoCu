@@ -50,7 +50,7 @@ function requireLogin($redirect_url = null) {
             $_SESSION['login_redirect_url'] = $_SERVER['REQUEST_URI'];
         }
         
-        header('Location: /WebMuaBanDoCu/public/index.php?page=login');
+        header('Location: ' . BASE_URL . 'public/index.php?page=login');
         exit();
     }
     
@@ -125,7 +125,7 @@ function safeRedirect($url, $allowed_domains = []) {
     if (isset($parsed['host'])) {
         $current_host = $_SERVER['HTTP_HOST'];
         if ($parsed['host'] !== $current_host && !in_array($parsed['host'], $allowed_domains)) {
-            $url = '/WebMuaBanDoCu/public/index.php'; // Default fallback
+            $url = BASE_URL . 'public/index.php'; // Default fallback
         }
     }
     

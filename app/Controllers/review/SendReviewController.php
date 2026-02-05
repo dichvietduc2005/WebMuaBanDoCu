@@ -4,7 +4,7 @@ require_once '../../../config/config.php';
 $userId = $_SESSION['user_id'] ?? false;
 
 if (!$userId) {
-    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+    header('Location: ' . BASE_URL . 'app/View/user/login.php');
     exit;
 }
 

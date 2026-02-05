@@ -39,7 +39,7 @@ if (!empty($query)) {
                         <div class="product-item" onclick="window.location.href='../product/Product_detail.php?id=<?= $product['id'] ?>'">
                             <div class="product-image">
                                 <?php if (!empty($product['image_path'])): ?>
-                                    <img src="/WebMuaBanDoCu/public/<?= htmlspecialchars($product['image_path']) ?>" 
+                                    <img src="<?php echo BASE_URL; ?>public/<?= htmlspecialchars($product['image_path']) ?>" 
                                          alt="<?= htmlspecialchars($product['title']) ?>">
                                 <?php else: ?>
                                     <div class="no-image">

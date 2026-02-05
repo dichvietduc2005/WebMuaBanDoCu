@@ -89,7 +89,7 @@ document.querySelectorAll('.delete-btn').forEach(btn => {
             'Xác nhận xóa',
             'Bạn chắc chắn muốn xóa?',
             function onConfirm() {
-                fetch('../../Models/product/ProductUserModel.php?action=delete_ajax&id=' + id)
+                fetch((window.baseUrl || '') + 'app/Models/product/ProductUserModel.php?action=delete_ajax&id=' + id)
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
@@ -149,7 +149,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
     let rawPrice = formData.get('price').toString().replace(/\./g, '');
     formData.set('price', rawPrice);
 
-    fetch('../../Models/product/ProductUserModel.php', {
+    fetch((window.baseUrl || '') + 'app/Models/product/ProductUserModel.php', {
         method: 'POST',
         body: formData
     })
@@ -208,7 +208,7 @@ $(document).ready(function () {
         $('#edit_images_preview').html('<div class="text-muted small fst-italic">Đang tải dữ liệu...</div>');
 
         // Fetch Details
-        fetch(`../../Models/product/ProductUserModel.php?action=get_details_ajax&id=${id}`)
+        fetch((window.baseUrl || '') + `app/Models/product/ProductUserModel.php?action=get_details_ajax&id=${id}`)
             .then(res => res.json())
             .then(res => {
                 if (res.success) {
@@ -226,7 +226,7 @@ $(document).ready(function () {
                     let imgHtml = '';
                     if (data.images && data.images.length > 0) {
                         data.images.forEach(img => {
-                            let fullPath = `/WebMuaBanDoCu/public/${img.image_path}`;
+                            let fullPath = (window.baseUrl || '') + `public/${img.image_path}`;
                             // Only show secondary images or all? User asked for "detail images".
                             // Usually "is_primary=1" is the main one. We can show all.
                             imgHtml += `

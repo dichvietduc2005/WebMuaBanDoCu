@@ -6,7 +6,7 @@ require_once($config_path);
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {
-    header('Location: /WebMuaBanDoCu/public/index.php');
+    header('Location: ' . BASE_URL . 'public/index.php');
     exit();
 }
 
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         if ($result['success']) {
             // Ưu tiên chuyển hướng về trang đã lưu trong session, sau đó là GET param, cuối cùng là trang chủ
-            $redirect_url = '/WebMuaBanDoCu/public/index.php'; // Mặc định là trang chủ
+            $redirect_url = BASE_URL . 'public/index.php'; // Mặc định là trang chủ
             if (isset($_SESSION['login_redirect_url'])) {
                 $redirect_url = $_SESSION['login_redirect_url'];
                 unset($_SESSION['login_redirect_url']); // Xóa session sau khi sử dụng
@@ -137,13 +137,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
               <div class="text-center mt-3">
                 <p class="mb-2">
-                    <a href="/WebMuaBanDoCu/app/View/user/forgot_password.php" class="text-decoration-none">
+                    <a href="<?php echo BASE_URL; ?>app/View/user/forgot_password.php" class="text-decoration-none">
                         <i class="fas fa-key me-1"></i>
                         Quên mật khẩu?
                     </a>
                 </p>
-                <p>Chưa có tài khoản? <a href="/WebMuaBanDoCu/public/index.php?page=register">Đăng ký ngay</a></p>
-                <p><a href="/WebMuaBanDoCu/public/index.php">Về trang chủ</a></p>
+                <p>Chưa có tài khoản? <a href="<?php echo BASE_URL; ?>public/index.php?page=register">Đăng ký ngay</a></p>
+                <p><a href="<?php echo BASE_URL; ?>public/index.php">Về trang chủ</a></p>
             </div>
         </div>
     </div>

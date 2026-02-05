@@ -238,7 +238,7 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
         <?php endif; ?>
     </div>
     <script>userId = <?php echo $_SESSION['user_id'] ?></script>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"> </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
        <?php footer(); ?>
 </body>

@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../../Controllers/user/PasswordResetController.php');
 
 // Nếu đã đăng nhập thì chuyển về trang chủ
 if (isset($_SESSION['user_id'])) {
-    header('Location: /WebMuaBanDoCu/app/View/Home.php');
+    header('Location: ' . BASE_URL . 'app/View/Home.php');
     exit();
 }
 
@@ -251,7 +251,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $user_info) {
                 <?php echo htmlspecialchars($success_message); ?>
             </div>
             <div class="back-to-login">
-                <a href="/WebMuaBanDoCu/app/View/user/login.php">
+                <a href="<?php echo BASE_URL; ?>app/View/user/login.php">
                     <i class="fas fa-sign-in-alt me-2"></i>
                     Đăng nhập ngay
                 </a>
@@ -262,7 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $user_info) {
                 <?php echo htmlspecialchars($error_message); ?>
             </div>
             <div class="back-to-login">
-                <a href="/WebMuaBanDoCu/app/View/user/forgot_password.php">
+                <a href="<?php echo BASE_URL; ?>app/View/user/forgot_password.php">
                     <i class="fas fa-redo me-2"></i>
                     Yêu cầu reset mật khẩu mới
                 </a>
@@ -323,7 +323,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $user_info) {
         <?php endif; ?>
         
         <div class="back-to-login">
-            <a href="/WebMuaBanDoCu/app/View/user/login.php">
+            <a href="<?php echo BASE_URL; ?>app/View/user/login.php">
                 <i class="fas fa-arrow-left me-2"></i>
                 Quay lại đăng nhập
             </a>

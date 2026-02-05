@@ -3,7 +3,7 @@ require_once('../../../config/config.php');
 
 $user_id = $_SESSION['user_id'] ?? null;
 if (!$user_id) {
-    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+    header('Location: ' . BASE_URL . 'app/View/user/login.php');
     exit;
 }
 

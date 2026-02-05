@@ -11,7 +11,7 @@ include_once __DIR__ . '/../../Models/product/CategoryModel.php';
 $categories = [];
 // Kiểm tra đăng nhập
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+    header('Location: ' . BASE_URL . 'app/View/user/login.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
@@ -147,7 +147,7 @@ $total_pages = ceil($total_products / $limit);
                                     <td>
                                         <div class="product-info">
                                             <?php if (!empty($product['image_path'])): ?>
-                                                <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                                                <img src="<?php echo BASE_URL; ?>public/<?php echo htmlspecialchars($product['image_path']); ?>"
                                                     class="product-img" alt="Product">
                                             <?php else: ?>
                                                 <div class="product-img d-flex align-items-center justify-content-center bg-light">
@@ -223,7 +223,7 @@ $total_pages = ceil($total_products / $limit);
                 <?php foreach ($products as $product): ?>
                     <div class="product-card" id="card-<?= $product['id'] ?>">
                         <?php if (!empty($product['image_path'])): ?>
-                            <img src="/WebMuaBanDoCu/public/<?php echo htmlspecialchars($product['image_path']); ?>"
+                            <img src="<?php echo BASE_URL; ?>public/<?php echo htmlspecialchars($product['image_path']); ?>"
                                 class="card-img" alt="Product">
                         <?php else: ?>
                             <div class="card-img d-flex align-items-center justify-content-center bg-light">
@@ -424,7 +424,7 @@ $total_pages = ceil($total_products / $limit);
     <script>
         userId = <?php echo $_SESSION['user_id'] ?>
     </script>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"> </script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"> </script>
 </body>
 
 </html>

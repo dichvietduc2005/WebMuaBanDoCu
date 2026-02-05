@@ -408,7 +408,7 @@ if (!isset($products)) {
             button.disabled = true;
 
             try {
-                const response = await fetch('/WebMuaBanDoCu/app/Controllers/cart/CartController.php', {
+                const response = await fetch('<?php echo BASE_URL; ?>app/Controllers/cart/CartController.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

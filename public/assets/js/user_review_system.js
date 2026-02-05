@@ -258,7 +258,7 @@ function send_review() {
     sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
     sendButton.disabled = true;
     
-    fetch("/WebMuaBanDoCu/app/Controllers/review/SendReviewController.php", {
+    fetch((window.baseUrl || '') + "app/Controllers/review/SendReviewController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "content=" + encodeURIComponent(content) + "&product_id=" + product_id + "&rating=" + rating + "&is_recommended=" + isRecommended
@@ -312,7 +312,7 @@ function send_review() {
 }
 
 function load_reviews() {
-    fetch("/WebMuaBanDoCu/app/Controllers/review/LoadReviewsController.php", {
+    fetch((window.baseUrl || '') + "app/Controllers/review/LoadReviewsController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "product_id=" + product_id

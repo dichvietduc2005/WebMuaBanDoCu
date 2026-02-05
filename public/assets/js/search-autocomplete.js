@@ -81,7 +81,7 @@ class SearchAutocomplete {
         this.showLoadingState();
 
         try {
-            const response = await fetch(`/WebMuaBanDoCu/app/Controllers/extra/api.php?action=search_suggestions&keyword=${encodeURIComponent(keyword)}`);
+            const response = await fetch((window.baseUrl || '') + `app/Controllers/extra/api.php?action=search_suggestions&keyword=${encodeURIComponent(keyword)}`);
             
             const data = await response.json();
             console.log('API Response:', data);
@@ -121,7 +121,7 @@ class SearchAutocomplete {
     }
 
     const baseUrl = window.location.origin;
-    const projectPath = "/WebMuaBanDoCu";
+    const projectPath = window.baseUrl ? window.baseUrl.replace(/\/$/, '') : '';
     const fallbackImage = `${baseUrl}${projectPath}/public/assets/images/nen.png`;
 
     const html = suggestions.map((item, index) => {

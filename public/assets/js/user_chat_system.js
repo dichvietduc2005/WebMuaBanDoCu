@@ -104,7 +104,7 @@ function send_messages() {
 
     const content = input.value;
     input.value = "";
-    fetch("/WebMuaBanDoCu/app/Controllers/message/SendMessageController.php", {
+    fetch((window.baseUrl || '') + "app/Controllers/message/SendMessageController.php", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: "content=" + content + "&role=user"
@@ -124,7 +124,7 @@ function send_messages() {
 }
 
 function load_messages() {
-    fetch("/WebMuaBanDoCu/app/Controllers/message/GetMessagesController.php", {
+    fetch((window.baseUrl || '') + "app/Controllers/message/GetMessagesController.php", {
         method: "POST",
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'

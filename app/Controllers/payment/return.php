@@ -189,7 +189,7 @@ if ($order_number_from_vnpay) {
 }
 
 $queryString = http_build_query($redirectParams);
-$successPageUrl = '/WebMuaBanDoCu/app/View/payment/success.php';
+$successPageUrl = BASE_URL . 'app/View/payment/success.php';
 
 // Debug log
 error_log("VNPAY Return - Redirecting to: " . $successPageUrl . '?' . $queryString);

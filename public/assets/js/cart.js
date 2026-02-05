@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- API Call Functions ---
     async function callCartApi(action, productId = null, quantity = null, extraData = {}) {
-        const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php'; 
+        const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php'; 
         let body = `action=${action}`;
         if (productId) body += `&product_id=${productId}`;
         if (quantity !== null) body += `&quantity=${quantity}`;
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
             applyCouponBtn.disabled = true;
             applyCouponBtn.textContent = 'Đang áp dụng...';
 
-            const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php'; 
+            const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php'; 
             const body = `action=apply_coupon&code=${encodeURIComponent(code)}`;
 
             try {
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (removeCouponBtn) {
         removeCouponBtn.addEventListener('click', async function() {
-             const url = '/WebMuaBanDoCu/app/Controllers/cart/CartController.php'; 
+             const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php'; 
              const body = `action=remove_coupon`;
              
              try {

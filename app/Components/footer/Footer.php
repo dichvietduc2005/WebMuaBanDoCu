@@ -89,7 +89,7 @@ function footer()
     <!-- Chat Widget Global Integration -->
     <?php
     // Ensure BASE_URL is defined
-    $baseUrl = defined('BASE_URL') ? BASE_URL : '/WebMuaBanDoCu/'; // Fallback path if needed
+    $baseUrl = defined('BASE_URL') ? BASE_URL : '/'; // Fallback path if needed
     ?>
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/chat_widget_modern.css">
 

@@ -5,6 +5,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libzip-dev \
+    libicu-dev \
+    libsodium-dev \
+    libxml2-dev \
     zip \
     unzip \
     git \
@@ -13,7 +17,10 @@ RUN apt-get update && apt-get install -y \
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql gd bcmath
+    && docker-php-ext-install pdo_mysql gd bcmath zip intl sodium soap
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite

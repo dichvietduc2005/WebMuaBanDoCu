@@ -4,7 +4,7 @@ include_once __DIR__ . '/../../Components/header/Header.php';
 include_once __DIR__ . '/../../Components/footer/Footer.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /WebMuaBanDoCu/app/View/user/login.php');
+    header('Location: ' . BASE_URL . 'app/View/user/login.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
@@ -210,7 +210,7 @@ $unreadCount = count(array_filter($notifications, fn($n) => !$n['is_read']));
     </div>
 
     <script>
-        const API_URL = '/WebMuaBanDoCu/app/Controllers/NotificationController.php';
+        const API_URL = '<?php echo BASE_URL; ?>app/Controllers/NotificationController.php';
         
         // Toggle dropdown
         function toggleDropdown(id) {
@@ -423,7 +423,7 @@ $unreadCount = count(array_filter($notifications, fn($n) => !$n['is_read']));
     </script>
     
     <script>userId = <?php echo $_SESSION['user_id'] ?></script>
-    <script src="/WebMuaBanDoCu/public/assets/js/user_chat_system.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/user_chat_system.js"></script>
     <?php footer(); ?>
 </body>
 

@@ -52,7 +52,7 @@ async function loadProductDetail(productId) {
     `;
     
     try {
-        const response = await fetch(`${window.BASE_URL || '/WebMuaBanDoCu/'}app/Models/admin/GetProductDetailAPI.php?id=${productId}`);
+        const response = await fetch(`${window.baseUrl || '/'}app/Models/admin/GetProductDetailAPI.php?id=${productId}`);
         const data = await response.json();
         
         if (data.success) {
@@ -80,7 +80,7 @@ function renderProductDetail(product) {
     productImages = product.images || [];
     currentImageIndex = 0;
     
-    const baseUrl = window.BASE_URL || '/WebMuaBanDoCu/';
+    const baseUrl = window.baseUrl || '/';
     
     modalBody.innerHTML = `
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -241,7 +241,7 @@ function changeModalImage(direction) {
     if (currentImageIndex >= productImages.length) currentImageIndex = 0;
     
     // Re-render slider
-    const baseUrl = window.BASE_URL || '/WebMuaBanDoCu/';
+    const baseUrl = window.baseUrl || '/';
     const sliderContainer = document.querySelector('#modalProductBody .space-y-4');
     if (sliderContainer) {
         sliderContainer.innerHTML = renderImageSlider(productImages, baseUrl);

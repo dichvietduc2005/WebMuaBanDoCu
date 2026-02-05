@@ -181,7 +181,7 @@ class NotificationsPopup {
     async loadNotifications() {
         try {
             // console.log('Loading notifications from API...');
-            const response = await fetch('/WebMuaBanDoCu/public/index.php?page=notification_api&action=get_notifications');
+            const response = await fetch((window.baseUrl || '') + 'public/index.php?page=notification_api&action=get_notifications');
             
             // console.log('API Response status:', response.status);
             
@@ -236,7 +236,7 @@ class NotificationsPopup {
                 <div class="empty-state">
                     <i class="fas fa-bell-slash"></i>
                     <p>Vui lòng đăng nhập để xem danh sách hoạt động</p>
-                    <button class="btn-login" onclick="window.location.href='/WebMuaBanDoCu/app/View/user/login.php'">
+                    <button class="btn-login" onclick="window.location.href=\'' + (window.baseUrl || '') + 'app/View/user/login.php\'">
                         Đăng ký / Đăng nhập
                     </button>
                 </div>
@@ -358,7 +358,7 @@ class NotificationsPopup {
             const formData = new FormData();
             formData.append('action', 'mark_read');
 
-            const response = await fetch('/WebMuaBanDoCu/public/index.php?page=notification_api', {
+            const response = await fetch((window.baseUrl || '') + 'public/index.php?page=notification_api', {
                 method: 'POST',
                 body: formData
             });

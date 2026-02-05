@@ -303,8 +303,8 @@ CREATE TABLE IF NOT EXISTS `coupons` (
 -- Đang đổ dữ liệu cho bảng `coupons`
 --
 
-INSERT INTO `coupons` (`id`, `code`, `discount_type`, `discount_value`, `min_order_value`, `start_date`, `end_date`, `usage_limit`, `used_count`, `status`, `created_at`) VALUES
-(1, '6M53Q', 'percent', 10.00, 200000.00, '2025-12-19 18:42:00', '2025-12-20 18:42:00', 100, 0, 1, '2025-12-19 11:42:48');
+INSERT INTO `coupons` (`id`, `code`, `discount_type`, `discount_value`, `max_discount_amount`, `min_order_value`, `start_date`, `end_date`, `usage_limit`, `used_count`, `status`, `created_at`) VALUES
+(1, '6M53Q', 'percent', 10.00, 0.00, 200000.00, '2025-12-19 18:42:00', '2025-12-20 18:42:00', 100, 0, 1, '2025-12-19 11:42:48');
 
 -- --------------------------------------------------------
 

@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('images[]', file);
         });
 
-        fetch('../../Models/sell/SellModel.php', {
+        fetch((window.baseUrl || '') + 'app/Models/sell/SellModel.php', {
             method: 'POST',
             body: formData
         })
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 showToast(data.success ? 'success' : 'danger', data.success ? 'Thành công!' : 'Thất bại!', data.message);
                 if (data.success) {
                     setTimeout(function () {
-                        window.location.href = '/WebMuaBanDoCu/app/View/product/Product.php';
+                        window.location.href = (window.baseUrl || '') + 'app/View/product/Product.php';
                     }, 1500);
                 }
             })

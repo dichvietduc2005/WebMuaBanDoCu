@@ -231,16 +231,16 @@ $page_title = $payment_successful ? "Thanh toán thành công" : "Thanh toán th
 
             <div class="action-buttons">
                 <?php if ($payment_successful): ?>
-                    <a href="/WebMuaBanDoCu/app/View/order/order_history.php" class="btn-premium btn-amazon shadow-sm">
+                    <a href="<?= BASE_URL ?>app/View/order/order_history.php" class="btn-premium btn-amazon shadow-sm">
                         <i class="fas fa-box-open"></i> Xem lịch sử đơn hàng
                     </a>
                 <?php else: ?>
-                    <a href="/WebMuaBanDoCu/app/View/cart/index.php" class="btn-premium btn-amazon shadow-sm">
+                    <a href="<?= BASE_URL ?>app/View/cart/index.php" class="btn-premium btn-amazon shadow-sm">
                         <i class="fas fa-shopping-cart"></i> Xem lại giỏ hàng
                     </a>
                 <?php endif; ?>
 
-                <a href="/WebMuaBanDoCu/app/View/Home.php" class="btn-premium btn-outline-custom">
+                <a href="<?= BASE_URL ?>app/View/Home.php" class="btn-premium btn-outline-custom">
                     <i class="fas fa-search"></i> Tiếp tục mua sản phẩm khác
                 </a>
             </div>
