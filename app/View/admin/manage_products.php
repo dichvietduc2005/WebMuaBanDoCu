@@ -27,6 +27,12 @@ $featured_products = array_filter($all_products, function ($p) {
 $regular_products = array_filter($all_products, function ($p) {
   return !$p['featured'];
 });
+$active_products = array_filter($all_products, function ($p) {
+  return $p['status'] === 'active';
+});
+$sold_products = array_filter($all_products, function ($p) {
+  return $p['status'] === 'sold';
+});
 
 function renderStatusBadge(?string $status): string
 {
@@ -92,6 +98,7 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
           class="px-2 py-1 text-xs border rounded-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100">
           <option value="">Tất cả trạng thái</option>
           <option value="active" <?php echo $statusFilter === 'active' ? 'selected' : ''; ?>>Đang bán</option>
+          <option value="sold" <?php echo $statusFilter === 'sold' ? 'selected' : ''; ?>>Đã bán</option>
           <option value="pending" <?php echo $statusFilter === 'pending' ? 'selected' : ''; ?>>Chờ duyệt</option>
           <option value="reject" <?php echo $statusFilter === 'reject' ? 'selected' : ''; ?>>Đã từ chối</option>
           <option value="inactive" <?php echo $statusFilter === 'inactive' ? 'selected' : ''; ?>>Ẩn</option>
@@ -168,6 +175,25 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
           <span
             class="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-white bg-gray-500 rounded-full">
             <?php echo count($regular_products); ?>
+          </span>
+        </button>
+        <button type="button" data-tab="active_status"
+          class="product-tab px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">
+          <i class="mr-1.5 text-emerald-500 fas fa-check-circle"></i>
+          Đang bán
+          <span
+            class="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-white bg-emerald-500 rounded-full">
+            <?php echo count($active_products); ?>
+          </span>
+        </button>
+
+        <button type="button" data-tab="sold_status"
+          class="product-tab px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-gray-800 dark:hover:text-gray-300 transition-colors whitespace-nowrap">
+          <i class="mr-1.5 text-gray-500 fas fa-archive"></i>
+          Đã bán
+          <span
+            class="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-white bg-gray-500 rounded-full">
+            <?php echo count($sold_products); ?>
           </span>
         </button>
       </div>
@@ -467,6 +493,226 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
       </div>
     </div>
 
+    <!-- Sản phẩm đang bán -->
+    <div
+      class="product-tab-content rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] hidden"
+      data-tab-content="active_status">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+          <i class="mr-1 fas fa-check-circle"></i> Sản phẩm đang bán
+        </h3>
+        <div class="flex items-center gap-2 text-xs">
+          <label class="inline-flex items-center gap-1">
+            <input type="checkbox" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+              id="select-all-active">
+            <span>Chọn tất cả</span>
+          </label>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-left text-gray-700 align-middle dark:text-gray-200" id="active-table">
+          <thead
+            class="text-xs font-semibold tracking-wide text-gray-500 uppercase bg-emerald-50/50 dark:bg-emerald-900/10 dark:text-gray-400">
+            <tr>
+              <th class="w-10 px-4 py-3"></th>
+              <th class="px-4 py-3">Hình ảnh</th>
+              <th class="px-4 py-3">Tiêu đề</th>
+              <th class="px-4 py-3">Người đăng</th>
+              <th class="px-4 py-3">Giá</th>
+              <th class="px-4 py-3">Tình trạng</th>
+              <th class="px-4 py-3">Trạng thái</th>
+              <th class="px-4 py-3">Ngày đăng</th>
+              <th class="px-4 py-3">Hành động</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+            <?php foreach ($active_products as $product): ?>
+              <tr data-product-id="<?php echo (int) $product['id']; ?>"
+                class="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-colors">
+                <td class="px-4 py-3">
+                  <input type="checkbox"
+                    class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 product-checkbox"
+                    value="<?php echo (int) $product['id']; ?>">
+                </td>
+                <td class="px-4 py-3">
+                  <div class="relative group w-16 h-16">
+                    <?php
+                    $imagePath = $product['image_path'];
+                    if (strpos($imagePath, 'uploads/products') === false)
+                      $imagePath = 'uploads/products/' . ltrim($imagePath, '/');
+                    $imageUrl = BASE_URL . 'public/' . ltrim($imagePath, '/');
+                    ?>
+                    <img src="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                      class="object-cover w-16 h-16 rounded-xl cursor-zoom-in lightbox-trigger"
+                      data-full-img="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                      onerror="this.onerror=null;this.src='data:image/svg+xml;base64,...';">
+                  </div>
+                </td>
+                <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                  <?php echo htmlspecialchars($product['title']); ?>
+                </td>
+                <td class="px-4 py-3"><?php echo htmlspecialchars($product['username']); ?></td>
+                <td class="px-4 py-3 text-right font-medium text-emerald-600">
+                  <?php echo number_format((float) $product['price'], 0, ',', '.'); ?> đ
+                </td>
+
+                <td class="px-4 py-3">
+                  <select
+                    class="condition-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-emerald-500 cursor-pointer bg-transparent"
+                    data-product-id="<?php echo (int) $product['id']; ?>" data-field="condition_status"
+                    data-current="<?php echo htmlspecialchars($product['condition_status'] ?? ''); ?>">
+                    <option value="new" <?php echo ($product['condition_status'] ?? '') === 'new' ? 'selected' : ''; ?>>Mới
+                    </option>
+                    <option value="like_new" <?php echo ($product['condition_status'] ?? '') === 'like_new' ? 'selected' : ''; ?>>Như mới</option>
+                    <option value="good" <?php echo ($product['condition_status'] ?? '') === 'good' ? 'selected' : ''; ?>>Tốt
+                    </option>
+                    <option value="fair" <?php echo ($product['condition_status'] ?? '') === 'fair' ? 'selected' : ''; ?>>Khá
+                      tốt</option>
+                    <option value="poor" <?php echo ($product['condition_status'] ?? '') === 'poor' ? 'selected' : ''; ?>>Cũ
+                    </option>
+                  </select>
+                </td>
+
+                <td class="px-4 py-3">
+                  <select
+                    class="status-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-emerald-500 cursor-pointer bg-transparent"
+                    data-product-id="<?php echo (int) $product['id']; ?>" data-field="status"
+                    data-current="<?php echo htmlspecialchars($product['status'] ?? ''); ?>">
+                    <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Đang bán
+                    </option>
+                    <option value="sold" <?php echo ($product['status'] ?? '') === 'sold' ? 'selected' : ''; ?>>Đã bán
+                    </option>
+                    <option value="pending" <?php echo ($product['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Chờ
+                      duyệt</option>
+                    <option value="reject" <?php echo ($product['status'] ?? '') === 'reject' ? 'selected' : ''; ?>>Đã từ chối
+                    </option>
+                  </select>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-500"><?php echo htmlspecialchars($product['created_at']); ?></td>
+
+                <td class="px-4 py-3 text-xs actions">
+                  <div class="flex items-center justify-end gap-2">
+                    <a href="<?php echo BASE_URL; ?>app/View/product/Product_detail.php?id=<?php echo (int) $product['id']; ?>"
+                      target="_blank" class="text-gray-500 hover:text-emerald-600"><i class="fas fa-eye"></i></a>
+                    <a href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=delete&id=<?php echo (int) $product['id']; ?>"
+                      class="text-gray-500 hover:text-red-600 delete"><i class="fas fa-trash"></i></a>
+                  </div>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sản phẩm đã bán -->
+    <div
+      class="product-tab-content rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] hidden"
+      data-tab-content="sold_status">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400">
+          <i class="mr-1 fas fa-archive"></i> Sản phẩm đã bán
+        </h3>
+        <div class="flex items-center gap-2 text-xs">
+          <label class="inline-flex items-center gap-1">
+            <input type="checkbox" class="rounded border-gray-300 text-gray-600 focus:ring-gray-500" id="select-all-sold">
+            <span>Chọn tất cả</span>
+          </label>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-left text-gray-500 align-middle dark:text-gray-400" id="sold-table">
+          <thead
+            class="text-xs font-semibold tracking-wide text-gray-400 uppercase bg-gray-100 dark:bg-gray-800 dark:text-gray-500">
+            <tr>
+              <th class="w-10 px-4 py-3"></th>
+              <th class="px-4 py-3">Hình ảnh</th>
+              <th class="px-4 py-3">Tiêu đề</th>
+              <th class="px-4 py-3">Người đăng</th>
+              <th class="px-4 py-3">Giá</th>
+              <th class="px-4 py-3">Tình trạng</th>
+              <th class="px-4 py-3">Trạng thái</th>
+              <th class="px-4 py-3">Ngày đăng</th>
+              <th class="px-4 py-3">Hành động</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-gray-50/50 dark:bg-black/20">
+            <?php foreach ($sold_products as $product): ?>
+              <tr data-product-id="<?php echo (int) $product['id']; ?>"
+                class="grayscale hover:grayscale-0 transition-all duration-300">
+                <td class="px-4 py-3">
+                  <input type="checkbox" class="rounded border-gray-300 text-gray-600 focus:ring-gray-500 product-checkbox"
+                    value="<?php echo (int) $product['id']; ?>">
+                </td>
+                <td class="px-4 py-3">
+                  <div class="relative w-16 h-16 opacity-75">
+                    <?php
+                    $imagePath = $product['image_path'];
+                    if (strpos($imagePath, 'uploads/products') === false)
+                      $imagePath = 'uploads/products/' . ltrim($imagePath, '/');
+                    $imageUrl = BASE_URL . 'public/' . ltrim($imagePath, '/');
+                    ?>
+                    <img src="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                      class="object-cover w-16 h-16 rounded-xl lightbox-trigger"
+                      data-full-img="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                      onerror="this.onerror=null;this.src='data:image/svg+xml;base64,...';">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/10 rounded-xl">
+                      <span class="text-[10px] font-bold text-white bg-gray-800/80 px-1 rounded">SOLD</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 font-medium line-through decoration-gray-400">
+                  <?php echo htmlspecialchars($product['title']); ?>
+                </td>
+                <td class="px-4 py-3"><?php echo htmlspecialchars($product['username']); ?></td>
+                <td class="px-4 py-3 text-right"><?php echo number_format((float) $product['price'], 0, ',', '.'); ?> đ</td>
+
+                <td class="px-4 py-3">
+                  <select
+                    class="condition-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-gray-500 cursor-pointer bg-transparent"
+                    data-product-id="<?php echo (int) $product['id']; ?>" data-field="condition_status"
+                    data-current="<?php echo htmlspecialchars($product['condition_status'] ?? ''); ?>">
+                    <option value="new" <?php echo ($product['condition_status'] ?? '') === 'new' ? 'selected' : ''; ?>>Mới
+                    </option>
+                    <option value="like_new" <?php echo ($product['condition_status'] ?? '') === 'like_new' ? 'selected' : ''; ?>>Như mới</option>
+                    <option value="good" <?php echo ($product['condition_status'] ?? '') === 'good' ? 'selected' : ''; ?>>Tốt
+                    </option>
+                    <option value="fair" <?php echo ($product['condition_status'] ?? '') === 'fair' ? 'selected' : ''; ?>>Khá
+                      tốt</option>
+                    <option value="poor" <?php echo ($product['condition_status'] ?? '') === 'poor' ? 'selected' : ''; ?>>Cũ
+                    </option>
+                  </select>
+                </td>
+
+                <td class="px-4 py-3">
+                  <select
+                    class="status-select inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full border-0 focus:ring-2 focus:ring-gray-500 cursor-pointer bg-transparent"
+                    data-product-id="<?php echo (int) $product['id']; ?>" data-field="status"
+                    data-current="<?php echo htmlspecialchars($product['status'] ?? ''); ?>">
+                    <option value="sold" <?php echo ($product['status'] ?? '') === 'sold' ? 'selected' : ''; ?>>Đã bán
+                    </option>
+                    <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Đang bán
+                    </option>
+                    <option value="pending" <?php echo ($product['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Chờ
+                      duyệt</option>
+                    <option value="reject" <?php echo ($product['status'] ?? '') === 'reject' ? 'selected' : ''; ?>>Đã từ chối
+                    </option>
+                  </select>
+                </td>
+                <td class="px-4 py-3 text-xs"><?php echo htmlspecialchars($product['created_at']); ?></td>
+                <td class="px-4 py-3 text-xs actions">
+                  <div class="flex items-center justify-end gap-2">
+                    <a href="<?php echo BASE_URL; ?>app/Models/admin/AdminModelAPI.php?action=delete&id=<?php echo (int) $product['id']; ?>"
+                      class="text-gray-400 hover:text-red-600 delete"><i class="fas fa-trash"></i></a>
+                  </div>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   <?php endif; ?>
 </div>
 
@@ -642,6 +888,8 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
 
     setupSelectAll('select-all-featured', 'featured-table');
     setupSelectAll('select-all-regular', 'regular-table');
+    setupSelectAll('select-all-active', 'active-table');
+    setupSelectAll('select-all-sold', 'sold-table');
 
     function updateBulkActionVisibility() {
       const checked = document.querySelectorAll('.product-checkbox:checked').length;
