@@ -44,7 +44,7 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/order-history.css">
     <!-- Mobile Responsive CSS for Order Pages -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-order-pages.css">
+    <!-- <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-order-pages.css"> -->
     <!-- User chat styles are now included in Header.php -->
     
 </head>
@@ -215,7 +215,7 @@ $pending_count = getOrderCountByStatus($pdo, $current_user_id, 'pending');
                             </div>
                             
                             <a href="order_details.php?id=<?php echo $order['id']; ?>" class="view-details-btn">
-                                <i class="fas fa-eye"></i> Xem chi tiết
+                                Xem chi tiết
                             </a>
                         </div>
                     </div>
