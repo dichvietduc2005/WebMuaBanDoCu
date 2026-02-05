@@ -141,6 +141,12 @@ class CartController
         return $this->cartModel->getItemsByUserId($user_id);
     }
 
+    public function getSelectedCartItems(array $product_ids)
+    {
+        $user_id = $this->ensureUserIsLoggedIn();
+        return $this->cartModel->getItemsByUserIdAndProductIds($user_id, $product_ids);
+    }
+
     public function getCartTotal()
     {
         $items = $this->getCartItems();
@@ -243,7 +249,29 @@ class CartController
             throw new \Exception("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
         }
 
-        $cartTotal = $this->getCartTotal();
+        // --- UPDATE: Kiểm tra xem user đang checkout items nào (Selected hay All) ---
+        $cartTotal = 0;
+        $mode = 'ALL';
+        if (isset($_SESSION['checkout_selected_ids']) && !empty($_SESSION['checkout_selected_ids'])) {
+            // Trường hợp Selective Checkout
+            $mode = 'SELECTED (' . $_SESSION['checkout_selected_ids'] . ')';
+            $selected_ids = array_map('intval', explode(',', $_SESSION['checkout_selected_ids']));
+            $selectedItems = $this->cartModel->getItemsByUserIdAndProductIds($user_id, $selected_ids);
+
+            // Tính tổng tiền thủ công cho các items đã chọn
+            $cartTotal = array_reduce($selectedItems, function ($sum, $item) {
+                return $sum + ($item['quantity'] * $item['added_price']);
+            }, 0);
+        } else {
+            // Trường hợp Checkout All (Mặc định)
+            $cartTotal = $this->getCartTotal();
+        }
+
+        $logMsg = "CouponDebug: User $user_id apply code $code. Mode: $mode. CartTotal: $cartTotal. MinOrder: {$coupon['min_order_value']}\n";
+        file_put_contents(__DIR__ . '/../../../debug_log.txt', $logMsg, FILE_APPEND);
+
+        // --------------------------------------------------------------------------
+
         if ($cartTotal < $coupon['min_order_value']) {
             throw new \Exception("Đơn hàng phải tối thiểu " . number_format($coupon['min_order_value']) . " đ để áp dụng mã này.");
         }
@@ -253,7 +281,8 @@ class CartController
             'code' => $coupon['code'],
             'discount_type' => $coupon['discount_type'],
             'discount_value' => $coupon['discount_value'],
-            'max_discount_amount' => $coupon['max_discount_amount']
+            'max_discount_amount' => $coupon['max_discount_amount'],
+            'min_order_value' => $coupon['min_order_value'] // Store this to re-check in View if needed
         ];
 
         return $coupon;

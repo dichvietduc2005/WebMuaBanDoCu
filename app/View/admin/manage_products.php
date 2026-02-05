@@ -824,7 +824,7 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="<?php echo BASE_URL; ?>public/assets/js/main.js"></script>
-<script src="<?php echo BASE_URL; ?>public/assets/js/admin_Product.js"></script>
+<script src="<?php echo BASE_URL; ?>public/assets/js/admin_Product.js?v=<?php echo time(); ?>"></script>
 <script src="<?php echo BASE_URL; ?>public/assets/js/admin_products_manage.js"></script>
 <script>
   // Tab navigation cho sản phẩm
@@ -976,6 +976,28 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
           showToast('error', 'Lỗi', error.message || 'Đã xảy ra lỗi khi cập nhật');
         } finally {
           this.disabled = false;
+        }
+
+        // Logic ẩn dòng nếu đang ở chế độ lọc status (ví dụ: đang lọc 'Pending', duyệt xong -> ẩn)
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentStatusFilter = urlParams.get('status');
+
+        // Chỉ ẩn khi đang lọc theo status và field thay đổi là status
+        if (currentStatusFilter && field === 'status' && newValue !== currentStatusFilter) {
+          const row = this.closest('tr');
+          if (row) {
+            // Fade out effect
+            row.style.transition = 'all 0.5s ease';
+            row.style.opacity = '0';
+            setTimeout(() => {
+              row.remove();
+              // Update layout/empty state if needed
+              const remainingRows = document.querySelectorAll('tbody tr').length;
+              if (remainingRows === 0) {
+                location.reload(); // Reload to show empty state or new items
+              }
+            }, 500);
+          }
         }
       });
     });

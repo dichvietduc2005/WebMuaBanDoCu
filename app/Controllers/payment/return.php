@@ -6,6 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once(__DIR__ . '/../../../config/config.php');
 require_once(__DIR__ . '/../../helpers.php');
+require_once(__DIR__ . '/../../Models/cart/CartModel.php'); // Add CartModel include
 
 // Log session for debugging
 error_log("Payment return - Session ID: " . session_id());
@@ -63,8 +64,11 @@ $payment_message = "";
 // );
 
 if ($secureHash_calculated == $vnp_SecureHash_received) {
+    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Signature Matched. Order: $order_number_from_vnpay\n", FILE_APPEND);
+
     if ($_GET['vnp_ResponseCode'] == '00') {
         $payment_successful = true;
+        // ...
         $payment_message = "Thanh toán thành công!";
         // log_vnpay_debug_data("RETURN_URL - SUCCESS", ["order_number" => $order_number_from_vnpay, "message" => $payment_message]);
 
@@ -75,80 +79,86 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
                 $current_order_data = $stmt_check_order->fetch(PDO::FETCH_ASSOC);
 
                 if ($current_order_data && ($current_order_data['payment_status'] == 'pending' || $current_order_data['payment_status'] == '')) {
+                    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Order found and pending. processing...\n", FILE_APPEND);
                     $order_id = $current_order_data['id'];
-                    
+
                     // ✅ TRỪNG STOCK KHI THANH TOÁN THÀNH CÔNG
                     // Lấy danh sách sản phẩm cần trừ stock trước
                     $stmt_get_items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?");
                     $stmt_get_items->execute([$order_id]);
                     $order_items_for_stock = $stmt_get_items->fetchAll(PDO::FETCH_ASSOC);
-                    
+                    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Fetched " . count($order_items_for_stock) . " items for stock.\n", FILE_APPEND);
+
                     // Trừ stock cho từng sản phẩm
                     foreach ($order_items_for_stock as $item) {
                         $update_stock_stmt = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
                         $update_stock_stmt->execute([$item['quantity'], $item['product_id'], $item['quantity']]);
-                        
-                        if ($update_stock_stmt->rowCount() == 0) {
-                            error_log("WARNING: Không thể trừ stock cho product_id {$item['product_id']} với quantity {$item['quantity']} - có thể stock không đủ");
-                        }
                     }
-                    
+                    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Stock updated.\n", FILE_APPEND);
+
                     // Cập nhật trạng thái đơn hàng
                     $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'success', payment_status = 'paid', updated_at = NOW() WHERE id = ?");
                     $stmt_update_order->execute([$order_id]);
+                    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Order status updated to success.\n", FILE_APPEND);
 
-                     // Lấy danh sách sản phẩm trong đơn hàng và gửi thông báo cho từng người bán
+                    // Lấy danh sách sản phẩm trong đơn hàng và gửi thông báo cho từng người bán
                     $stmt_items = $pdo->prepare("SELECT oi.product_id, oi.product_title, p.user_id as seller_id FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
                     $stmt_items->execute([$order_id]);
                     $order_items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+                    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Fetched items for notification.\n", FILE_APPEND);
 
                     foreach ($order_items as $item) {
-                        $seller_id = $item['seller_id'];
-                        $product_title = $item['product_title'];
-                        $product_id = $item['product_id'];
-                        $message = "Sản phẩm <b>$product_title</b> của bạn đã được bán và thanh toán thành công!";
-                        $stmt_noti = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
-                        $stmt_noti->execute([$seller_id, $message]);
-                        
-                        // Cập nhật trạng thái sản phẩm thành 'sold'
-                        $stmt_update_product = $pdo->prepare("UPDATE products SET status = 'sold' WHERE id = ?");
-                        $stmt_update_product->execute([$product_id]);
-                        error_log("Updated product_id: $product_id status to 'sold'");
+                        try {
+                            $seller_id = $item['seller_id'];
+                            $product_title = $item['product_title'];
+                            $product_id = $item['product_id'];
+
+                            // Check if seller_id exists (optional safety)
+                            if (!$seller_id) {
+                                file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Skipping notification for item {$product_id} - No Seller ID.\n", FILE_APPEND);
+                                continue;
+                            }
+
+                            $message = "Sản phẩm <b>$product_title</b> của bạn đã được bán và thanh toán thành công!";
+                            $stmt_noti = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+                            $stmt_noti->execute([$seller_id, $message]);
+
+                            // Cập nhật trạng thái sản phẩm thành 'sold'
+                            $stmt_update_product = $pdo->prepare("UPDATE products SET status = 'sold' WHERE id = ?");
+                            $stmt_update_product->execute([$product_id]);
+                        } catch (Exception $e) {
+                            file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Error sending notification: " . $e->getMessage() . "\n", FILE_APPEND);
+                        }
                     }
-                    
+                    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Notifications sent and products marked sold.\n", FILE_APPEND);
+
                     // Cập nhật trạng thái giỏ hàng thành sold và ẩn đi thay vì xóa
                     $buyer_id = $current_order_data['buyer_id'];
                     if ($buyer_id) {
                         try {
-                            // Kiểm tra cấu trúc bảng cart_items
-                            $columns_check = $pdo->query("SHOW COLUMNS FROM cart_items");
-                            $columns = $columns_check->fetchAll(PDO::FETCH_COLUMN);
-                            
-                            $has_status = in_array('status', $columns);
-                            $has_hidden = in_array('is_hidden', $columns);
-                            
-                            if ($has_status && $has_hidden) {
-                                // Cập nhật trạng thái nếu cả hai column đều tồn tại
-                                $stmt_update_cart = $pdo->prepare("UPDATE cart_items ci 
-                                                                JOIN carts c ON ci.cart_id = c.id 
-                                                                SET ci.status = 'sold', ci.is_hidden = 1
-                                                                WHERE c.user_id = ?");
-                                $stmt_update_cart->execute([$buyer_id]);
-                                $affected_rows = $stmt_update_cart->rowCount();
-                                error_log("Updated $affected_rows cart items to 'sold' status for user_id: $buyer_id");
+                            // Sử dụng CartModel để xóa CHÍNH XÁC những sản phẩm đã mua
+                            $cartModel = new CartModel($pdo);
+
+                            // Lấy danh sách ID sản phẩm từ order items
+                            $bought_product_ids = array_column($order_items_for_stock, 'product_id');
+
+                            $logMsg = "ReturnDebug: Order Items Count: " . count($order_items_for_stock) . ". IDs: " . implode(',', $bought_product_ids) . "\n";
+                            file_put_contents(__DIR__ . '/../../../debug_log.txt', $logMsg, FILE_APPEND);
+
+                            if (!empty($bought_product_ids)) {
+                                $cartModel->removeBoughtItems($buyer_id, $bought_product_ids);
+                                error_log("Removed bought items from cart for user_id: $buyer_id. Items: " . implode(',', $bought_product_ids));
                             } else {
-                                // Fallback: xóa nếu không có columns cần thiết
-                                $stmt_delete_cart_items = $pdo->prepare("DELETE ci FROM cart_items ci 
-                                                                        JOIN carts c ON ci.cart_id = c.id 
-                                                                        WHERE c.user_id = ?");
-                                $stmt_delete_cart_items->execute([$buyer_id]);
-                                $affected_rows = $stmt_delete_cart_items->rowCount();
-                                error_log("Deleted $affected_rows cart items for user_id: $buyer_id (fallback - missing columns)");
+                                file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: bought_product_ids is EMPTY!\n", FILE_APPEND);
                             }
+
                         } catch (Exception $e) {
-                            error_log("Error updating cart status for user $buyer_id: " . $e->getMessage());
+                            error_log("Error clearing cart items for user $buyer_id: " . $e->getMessage());
                         }
                     }
+                } else {
+                    $status_log = $current_order_data ? $current_order_data['payment_status'] : 'NULL (Order not found)';
+                    file_put_contents(__DIR__ . '/../../../debug_log.txt', "ReturnDebug: Order skipped. Status: $status_log\n", FILE_APPEND);
                 }
 
             } catch (PDOException $e) {
@@ -161,10 +171,10 @@ if ($secureHash_calculated == $vnp_SecureHash_received) {
         // log_vnpay_debug_data("RETURN_URL - FAILED (VNPAY ERROR CODE)", ["order_number" => $order_number_from_vnpay, "vnp_ResponseCode" => $_GET['vnp_ResponseCode'], "message" => $payment_message]);
         if ($order_number_from_vnpay) {
             try {
-                              $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'failed', payment_status = 'failed', updated_at = NOW() WHERE order_number = ?");
-             $stmt_update_order->execute([$order_number_from_vnpay]);
+                $stmt_update_order = $pdo->prepare("UPDATE orders SET status = 'failed', payment_status = 'failed', updated_at = NOW() WHERE order_number = ?");
+                $stmt_update_order->execute([$order_number_from_vnpay]);
             } catch (PDOException $e) {
-                 error_log("VNPay Return: DB error updating failed payment status for order_number: " . $order_number_from_vnpay . " - " . $e->getMessage());
+                error_log("VNPay Return: DB error updating failed payment status for order_number: " . $order_number_from_vnpay . " - " . $e->getMessage());
                 //  log_vnpay_debug_data("RETURN_URL - DB UPDATE ERROR (FAIL CASE)", ["order_number" => $order_number_from_vnpay, "error" => $e->getMessage()]);
             }
         }

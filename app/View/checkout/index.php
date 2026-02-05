@@ -14,9 +14,45 @@ if (!$user_id) {
 }
 
 // Lấy thông tin giỏ hàng
+// Lấy thông tin giỏ hàng
 $cartController = new CartController($pdo);
-$cartItems = $cartController->getCartItems();
-$cartTotal = $cartController->getCartTotal();
+$selected_products_str = $_POST['selected_products'] ?? '';
+$selected_product_ids = [];
+
+if (!empty($selected_products_str)) {
+    // Chỉ reset mã giảm giá nếu danh sách sản phẩm thay đổi (Tránh reset khi reload trang)
+    if (isset($_SESSION['checkout_selected_ids']) && $_SESSION['checkout_selected_ids'] !== $selected_products_str) {
+        if (isset($_SESSION['applied_coupon'])) {
+            unset($_SESSION['applied_coupon']);
+        }
+    } elseif (!isset($_SESSION['checkout_selected_ids'])) {
+        // Lần đầu vào (chưa có session) -> Reset cho chắc
+        if (isset($_SESSION['applied_coupon'])) {
+            unset($_SESSION['applied_coupon']);
+        }
+    }
+
+    // Lưu danh sách ID đã chọn vào Session để Controller có thể truy cập khi validate AJAX
+    $_SESSION['checkout_selected_ids'] = $selected_products_str;
+    
+    $selected_product_ids = array_map('intval', explode(',', $selected_products_str));
+    $cartItems = $cartController->getSelectedCartItems($selected_product_ids);
+} else {
+    // Nếu không có POST (VD: reload trang), kiểm tra xem trong session có lưu không
+    if (isset($_SESSION['checkout_selected_ids']) && !empty($_SESSION['checkout_selected_ids'])) {
+        $selected_products_str = $_SESSION['checkout_selected_ids'];
+        $selected_product_ids = array_map('intval', explode(',', $selected_products_str));
+        $cartItems = $cartController->getSelectedCartItems($selected_product_ids);
+    } else {
+        // Fallback: Lấy hết
+        $cartItems = $cartController->getCartItems();
+    }
+}
+
+// Tính tổng tiền dựa trên items đã lọc
+$cartTotal = array_reduce($cartItems, function($sum, $item) {
+    return $sum + ($item['quantity'] * $item['added_price']);
+}, 0);
 
 // Fetch and sort coupons for modal
 $activeCoupons = getAllActiveCoupons($pdo);
@@ -63,10 +99,37 @@ $stmt = $pdo->prepare("SELECT full_name, email, phone, address FROM users WHERE 
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
-// Xử lý mã giảm giá từ session
+// Xử lý mã giảm giá (Tính toán lại dựa trên items ĐÃ CHỌN)
 $appliedCoupon = $_SESSION['applied_coupon'] ?? null;
-$finalTotal = $cartController->getDiscountedTotal();
-$discountAmount = $cartTotal - $finalTotal;
+$discountAmount = 0;
+
+if ($appliedCoupon) {
+    // Kiểm tra lại điều kiện tối thiểu với tổng tiền hiện tại (của các món đã chọn)
+    if ($cartTotal < $appliedCoupon['min_order_value']) {
+        // Không đủ điều kiện -> Gỡ mã
+        unset($_SESSION['applied_coupon']);
+        $appliedCoupon = null;
+    } else {
+        // Tính toán giảm giá
+        if ($appliedCoupon['discount_type'] === 'percent') {
+            $discountAmount = ($cartTotal * $appliedCoupon['discount_value']) / 100;
+        } else {
+            $discountAmount = $appliedCoupon['discount_value'];
+        }
+
+        // Áp dụng giới hạn giảm tối đa
+        if (isset($appliedCoupon['max_discount_amount']) && $appliedCoupon['max_discount_amount'] > 0) {
+            $discountAmount = min($discountAmount, $appliedCoupon['max_discount_amount']);
+        }
+    }
+}
+
+$finalTotal = max(0, $cartTotal - $discountAmount);
+
+// DEBUG LOGGING
+$debugMsg = "ViewDebug: CartTotal: $cartTotal | DiscountAmount: $discountAmount | AppliedCoupon: " . print_r($appliedCoupon, true) . "\n";
+file_put_contents(__DIR__ . '/../../../debug_log.txt', $debugMsg, FILE_APPEND);
+echo "<!-- DEBUG: See debug_log.txt -->";
 ?>
 <!DOCTYPE html>
 <html lang="vi">

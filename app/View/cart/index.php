@@ -87,13 +87,23 @@ $discountAmount = 0;
                     <div class="bg-white p-4 rounded shadow-sm">
                         <div class="d-flex justify-content-between align-items-end border-bottom pb-2 mb-3">
                             <h2 class="h3 fw-normal mb-0">Giỏ hàng</h2>
-                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="select-all-checkbox" checked>
+                                <label class="form-check-label user-select-none" for="select-all-checkbox">
+                                    Chọn tất cả
+                                </label>
+                            </div>
                         </div>
 
                         <?php foreach ($cartItems as $item): ?>
                             <div class="cart-item py-3 border-bottom" data-product-id="<?= $item['product_id'] ?>">
                                 <div class="row">
-                                    <div class="col-md-2 col-3 text-center">
+                                    <div class="col-md-2 col-3 text-center d-flex align-items-center justify-content-center gap-3">
+                                        <div class="form-check m-0">
+                                            <input class="form-check-input item-checkbox" type="checkbox" 
+                                                   value="<?= $item['product_id'] ?>" 
+                                                   data-price="<?= $item['added_price'] * $item['quantity'] ?>" checked>
+                                        </div>
                                         <?php if (!empty($item['image_path'])): ?>
                                             <a href="#" class="product-img-container">
                                                 <img src="<?php echo BASE_URL; ?>public/<?= htmlspecialchars($item['image_path']) ?>" 
@@ -191,9 +201,12 @@ $discountAmount = 0;
                                 Đăng nhập để thanh toán
                             </a>
                         <?php else: ?>
-                            <a href="<?php echo BASE_URL; ?>app/View/checkout/index.php" class="btn btn-amazon-primary w-100 shadow-sm rounded-3 py-2 fw-bold">
-                                Tiến hành thanh toán (<?= $cartItemCount ?> món)        
-                            </a>
+                            <form action="<?php echo BASE_URL; ?>app/View/checkout/index.php" method="POST" id="cart-checkout-form">
+                                <input type="hidden" name="selected_products" id="selected-products-input">
+                                <button type="submit" class="btn btn-amazon-primary w-100 shadow-sm rounded-3 py-2 fw-bold" id="btn-checkout">
+                                    Tiến hành thanh toán (<span id="selected-count"><?= $cartItemCount ?></span> món)        
+                                </button>
+                            </form>
                         <?php endif; ?>
                     </div>
 
@@ -253,6 +266,65 @@ $discountAmount = 0;
                                  }
                              });
                          }
+
+                         // Checkbox Logic
+                         document.addEventListener('DOMContentLoaded', function() {
+                             const selectAll = document.getElementById('select-all-checkbox');
+                             const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+                             const checkoutForm = document.getElementById('cart-checkout-form');
+                             const checkoutBtn = document.getElementById('btn-checkout');
+                             const selectedProductsInput = document.getElementById('selected-products-input');
+                             const selectedCountSpan = document.getElementById('selected-count');
+                             const totalAmountSpan = document.querySelector('.order-summary-container .text-danger.fs-4');
+
+                             function formatCurrency(amount) {
+                                 return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+                             }
+
+                             function updateTotal() {
+                                 let total = 0;
+                                 let count = 0;
+                                 let selectedIds = [];
+
+                                 itemCheckboxes.forEach(cb => {
+                                     if (cb.checked) {
+                                         total += parseFloat(cb.dataset.price);
+                                         count++;
+                                         selectedIds.push(cb.value);
+                                     }
+                                 });
+
+                                 if (totalAmountSpan) totalAmountSpan.textContent = formatCurrency(total);
+                                 if (selectedCountSpan) selectedCountSpan.textContent = count;
+                                 if (selectedProductsInput) selectedProductsInput.value = selectedIds.join(',');
+                                 
+                                 // Disable checkout if no items selected
+                                 if (checkoutBtn) checkoutBtn.disabled = count === 0;
+                             }
+
+                             if (selectAll) {
+                                 selectAll.addEventListener('change', function() {
+                                     itemCheckboxes.forEach(cb => cb.checked = this.checked);
+                                     updateTotal();
+                                 });
+                             }
+
+                             itemCheckboxes.forEach(cb => {
+                                 cb.addEventListener('change', function() {
+                                     // Uncheck "Select All" if one is unchecked
+                                     if (!this.checked && selectAll) selectAll.checked = false;
+                                     // Check "Select All" if all are checked
+                                     if (this.checked && selectAll) {
+                                         const allChecked = Array.from(itemCheckboxes).every(c => c.checked);
+                                         if (allChecked) selectAll.checked = true;
+                                     }
+                                     updateTotal();
+                                 });
+                             });
+
+                             // Initialize
+                             updateTotal();
+                         });
                          </script>
 
                     </div>
