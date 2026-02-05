@@ -21,12 +21,12 @@ if ($_POST['role'] === 'user') {
             $sql = "INSERT INTO box_chat (user_id) VALUES (?)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$user_id]);
-            $box_chat_id = $user_id;
+            $box_chat_id = $pdo->lastInsertId();
         } else {
             $sql = "UPDATE box_chat SET is_read = 0 WHERE user_id = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$user_id]);
-            $box_chat_id = $row['user_id'];
+            $box_chat_id = $row['id'];
         }
 
         $sql = "INSERT INTO messages (box_chat_id, role, content, sent_at) VALUES (?, ?, ?, NOW())";
@@ -40,16 +40,34 @@ if ($_POST['role'] === 'user') {
     }
     exit;
 } else {
-    try{
+    try {
+        $targetUserId = $_POST['box_chat_id']; // JS sends user_id here
+
+        // 1. Tìm hoặc tạo box_chat cho user này
+        $stmt = $pdo->prepare("SELECT id FROM box_chat WHERE user_id = ?");
+        $stmt->execute([$targetUserId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $boxChatId = $row['id'];
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO box_chat (user_id) VALUES (?)");
+            $stmt->execute([$targetUserId]);
+            $boxChatId = $pdo->lastInsertId();
+        }
+
+        // 2. Insert tin nhắn với boxChatId thực tế
         $sql = "INSERT INTO messages (box_chat_id, role, content, sent_at) VALUES (?, ?, ?, NOW())";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$_POST['box_chat_id'], 'admin', $_POST['content']]);
-    
+        $stmt->execute([$boxChatId, 'admin', $_POST['content']]);
+
+        // 3. Update trạng thái (vẫn dùng user_id là đúng cho query này)
         $sql = "UPDATE box_chat SET is_read = 1 WHERE user_id = ?";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$_POST['box_chat_id']]);
+        $stmt->execute([$targetUserId]);
+
         echo "success";
-    }catch (PDOException $e) {
+    } catch (PDOException $e) {
         echo ($e->getMessage());
         exit;
     }
