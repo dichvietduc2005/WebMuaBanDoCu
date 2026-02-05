@@ -20,36 +20,36 @@ function addToCart(event, productId) {
         },
         body: `action=add&product_id=${productId}&quantity=${quantity}`
     })
-    .then(response => {
-        return response.json().then(data => {
-            return { status: response.status, ok: response.ok, data: data };
-        });
-    })
-    .then(result => {
-        console.log("Response data:", result.data);
-        if (result.ok && result.data.success) {
-            showToast('success', 'Thành công!', 'Sản phẩm đã được thêm vào giỏ hàng.');
-            updateCartIcon(result.data.cart_count);
-        } else {
-            // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
-            if (result.data.message && result.data.message.includes("Bạn cần đăng nhập")) {
-                 showLoginPromptToast();
+        .then(response => {
+            return response.json().then(data => {
+                return { status: response.status, ok: response.ok, data: data };
+            });
+        })
+        .then(result => {
+            console.log("Response data:", result.data);
+            if (result.ok && result.data.success) {
+                showToast('success', 'Thành công!', 'Sản phẩm đã được thêm vào giỏ hàng.');
+                updateCartIcon(result.data.cart_count);
             } else {
-                // Hiển thị message từ server (có thể là lỗi tồn kho hoặc lỗi khác)
-                showToast('error', 'Lỗi!', result.data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+                // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
+                if (result.data.message && result.data.message.includes("Bạn cần đăng nhập")) {
+                    showLoginPromptToast();
+                } else {
+                    // Hiển thị message từ server (có thể là lỗi tồn kho hoặc lỗi khác)
+                    showToast('error', 'Lỗi!', result.data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+                }
             }
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
-    })
-    .finally(() => {
-        if (button) {
-            button.disabled = false;
-            button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
-        }
-    });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+        })
+        .finally(() => {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
+            }
+        });
 }
 
 // Buy now function - Mua ngay và chuyển đến trang checkout
@@ -59,7 +59,7 @@ function buyNow(event, productId) {
     const quantityInput = form.querySelector('.quantity-input');
     const quantity = quantityInput ? quantityInput.value : 1; // Default to 1 if not found
     const button = event.currentTarget;
-    
+
     // Hiển thị trạng thái loading
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
@@ -74,30 +74,30 @@ function buyNow(event, productId) {
         },
         body: `action=add&product_id=${productId}&quantity=${quantity}&checkout=1`
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Chuyển hướng đến trang checkout
-            window.location.href = base + 'app/View/checkout/index.php';
-        } else {
-            // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
-            if (data.message && data.message.includes("Bạn cần đăng nhập")) {
-                showLoginPromptToast();
-                button.disabled = false;
-                button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Chuyển hướng đến trang checkout
+                window.location.href = base + 'app/View/checkout/index.php';
             } else {
-                showToast('error', 'Lỗi!', data.message || 'Không thể mua sản phẩm.');
-                button.disabled = false;
-                button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+                // Kiểm tra xem có phải lỗi yêu cầu đăng nhập không
+                if (data.message && data.message.includes("Bạn cần đăng nhập")) {
+                    showLoginPromptToast();
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+                } else {
+                    showToast('error', 'Lỗi!', data.message || 'Không thể mua sản phẩm.');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+                }
             }
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi xử lý.');
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
-    });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi xử lý.');
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-bolt"></i> Mua ngay';
+        });
 }
 
 /**
@@ -165,7 +165,14 @@ function showLoginPromptToast() {
 function showToast(type, title, message) {
     const toastContainer = document.getElementById('toast-container') || createToastContainer();
     const toastEl = document.createElement('div');
-    toastEl.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+    toastEl.className = `toast align-items-center text-white border-0`;
+    // Force background colors to ensure visibility in mixed CSS environments (Tailwind/Bootstrap)
+    if (type === 'success') {
+        toastEl.style.backgroundColor = '#198754'; // Bootstrap success green
+    } else {
+        toastEl.style.backgroundColor = '#dc3545'; // Bootstrap danger red
+    }
+
     toastEl.setAttribute('role', 'alert');
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
@@ -183,7 +190,7 @@ function showToast(type, title, message) {
     if (window.bootstrap && window.bootstrap.Toast) {
         const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
         toast.show();
-        toastEl.addEventListener('hidden.bs.toast', function() {
+        toastEl.addEventListener('hidden.bs.toast', function () {
             toastEl.remove();
         });
     } else {
@@ -208,7 +215,7 @@ function createToastContainer() {
 // Cancel order function
 function cancelOrder(orderId) {
     const base = window.baseUrl || '/';
-    showConfirmDialog('Xác nhận hủy đơn', 'Bạn có chắc muốn hủy đơn hàng này?', function() {
+    showConfirmDialog('Xác nhận hủy đơn', 'Bạn có chắc muốn hủy đơn hàng này?', function () {
         fetch(base + 'modules/order/cancel_order.php', {
             method: 'POST',
             headers: {
@@ -217,26 +224,26 @@ function cancelOrder(orderId) {
             },
             body: `order_id=${orderId}`
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('success', 'Thành công!', 'Đơn hàng đã được hủy.');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showToast('error', 'Lỗi!', data.message || 'Không thể hủy đơn hàng.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi hủy đơn hàng.');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('success', 'Thành công!', 'Đơn hàng đã được hủy.');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('error', 'Lỗi!', data.message || 'Không thể hủy đơn hàng.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi hủy đơn hàng.');
+            });
     });
 }
 
 // Reorder function
 function reorder(orderId) {
     const base = window.baseUrl || '/';
-    showConfirmDialog('Xác nhận mua lại', 'Bạn có muốn mua lại các sản phẩm trong đơn hàng này?', function() {
+    showConfirmDialog('Xác nhận mua lại', 'Bạn có muốn mua lại các sản phẩm trong đơn hàng này?', function () {
         fetch(base + 'modules/order/reorder.php', {
             method: 'POST',
             headers: {
@@ -245,39 +252,39 @@ function reorder(orderId) {
             },
             body: `order_id=${orderId}`
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('success', 'Thành công!', 'Sản phẩm đã được thêm vào giỏ hàng.');
-                // Update cart count
-                const cartIconLink = document.querySelector('a[href="cart/index.php"][title="Giỏ hàng"]');
-                if (cartIconLink) {
-                    let cartCountBadge = cartIconLink.querySelector('.cart-count');
-                    if (data.cart_count > 0) {
-                        if (!cartCountBadge) {
-                            cartCountBadge = document.createElement('span');
-                            cartCountBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count';
-                            cartIconLink.appendChild(cartCountBadge);
-                            if (!cartIconLink.classList.contains('position-relative')) {
-                                cartIconLink.classList.add('position-relative');
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('success', 'Thành công!', 'Sản phẩm đã được thêm vào giỏ hàng.');
+                    // Update cart count
+                    const cartIconLink = document.querySelector('a[href="cart/index.php"][title="Giỏ hàng"]');
+                    if (cartIconLink) {
+                        let cartCountBadge = cartIconLink.querySelector('.cart-count');
+                        if (data.cart_count > 0) {
+                            if (!cartCountBadge) {
+                                cartCountBadge = document.createElement('span');
+                                cartCountBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count';
+                                cartIconLink.appendChild(cartCountBadge);
+                                if (!cartIconLink.classList.contains('position-relative')) {
+                                    cartIconLink.classList.add('position-relative');
+                                }
+                            }
+                            cartCountBadge.textContent = data.cart_count;
+                            cartCountBadge.style.display = '';
+                        } else {
+                            if (cartCountBadge) {
+                                cartCountBadge.style.display = 'none';
                             }
                         }
-                        cartCountBadge.textContent = data.cart_count;
-                        cartCountBadge.style.display = '';
-                    } else {
-                        if (cartCountBadge) {
-                            cartCountBadge.style.display = 'none';
-                        }
                     }
+                } else {
+                    showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
                 }
-            } else {
-                showToast('error', 'Lỗi!', data.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
-        });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Lỗi!', 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+            });
     });
 }
 
@@ -298,7 +305,7 @@ function showConfirmDialog(title, message, confirmCallback) {
 
     // Tạo ID duy nhất cho modal
     const modalId = 'confirmModal-' + Date.now();
-    
+
     // Tạo HTML cho modal
     const modalHTML = `
         <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}-label" aria-hidden="true">
@@ -319,42 +326,42 @@ function showConfirmDialog(title, message, confirmCallback) {
             </div>
         </div>
     `;
-    
+
     // Thêm modal vào container
     modalContainer.innerHTML = modalHTML;
-    
+
     // Lấy reference đến modal
     const modalElement = document.getElementById(modalId);
     const modal = new bootstrap.Modal(modalElement);
-    
+
     // Thêm sự kiện cho nút xác nhận
     const confirmBtn = modalElement.querySelector('.confirm-btn');
-    confirmBtn.addEventListener('click', function() {
+    confirmBtn.addEventListener('click', function () {
         modal.hide();
         if (typeof confirmCallback === 'function') {
             confirmCallback();
         }
     });
-    
+
     // Xóa modal sau khi đóng để tránh tràn DOM
     modalElement.addEventListener('hidden.bs.modal', function () {
         modalElement.remove();
     });
-    
+
     // Hiển thị modal
     modal.show();
 }
 
 // Category cards animation
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const categoryCards = document.querySelectorAll('.category-card');
     categoryCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.transform = 'translateY(-5px)';
             this.style.transition = 'transform 0.3s ease';
         });
-        
-        card.addEventListener('mouseleave', function() {
+
+        card.addEventListener('mouseleave', function () {
             this.style.transform = 'translateY(0)';
         });
     });

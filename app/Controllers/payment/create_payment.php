@@ -31,9 +31,42 @@ if (!$user_id) {
 }
 // ===== KẾT THÚC KIỂM TRA ĐĂNG NHẬP =====
 
-// Khởi tạo CartController để lấy tổng tiền chính xác (sau giảm giá)
 $cartController = new CartController($pdo);
-$finalTotal = $cartController->getDiscountedTotal();
+
+// --- UPDATE: Lấy items và tính tổng dựa trên Selection ---
+$cartItems = [];
+if (isset($_SESSION['checkout_selected_ids']) && !empty($_SESSION['checkout_selected_ids'])) {
+    $selected_ids = array_map('intval', explode(',', $_SESSION['checkout_selected_ids']));
+    $cartItems = $cartController->getSelectedCartItems($selected_ids);
+} else {
+    $cartItems = $cartController->getCartItems();
+}
+
+$cartTotal = array_reduce($cartItems, fn($total, $item) => $total + ($item['quantity'] * $item['added_price']), 0);
+
+// Xử lý mã giảm giá
+$appliedCoupon = $_SESSION['applied_coupon'] ?? null;
+$discountAmount = 0;
+
+if ($appliedCoupon) {
+    if ($cartTotal < $appliedCoupon['min_order_value']) {
+        // Không đủ điều kiện (logic tương tự View) -> Bỏ mã
+        $appliedCoupon = null;
+        unset($_SESSION['applied_coupon']);
+    } else {
+        if ($appliedCoupon['discount_type'] === 'percent') {
+            $discountAmount = ($cartTotal * $appliedCoupon['discount_value']) / 100;
+        } else {
+            $discountAmount = $appliedCoupon['discount_value'];
+        }
+        if (isset($appliedCoupon['max_discount_amount']) && $appliedCoupon['max_discount_amount'] > 0) {
+            $discountAmount = min($discountAmount, $appliedCoupon['max_discount_amount']);
+        }
+    }
+}
+
+$finalTotal = max(0, $cartTotal - $discountAmount);
+// --------------------------------------------------------
 
 $vnp_TxnRef = $_POST['order_id']; //Mã đơn hàng
 $vnp_OrderInfo = $_POST['order_desc'];
@@ -162,7 +195,7 @@ try {
 
     // $user_id đã được lấy ở trên và chắc chắn có giá trị
     // Lấy thông tin giỏ hàng (CartController đã được khởi tạo ở đầu file)
-    $cartItems = $cartController->getCartItems();
+    // $cartItems đã được lấy ở đầu file dựa trên logic Selection
     // $finalTotal đã được tính toán ở đầu file
 
     if (empty($cartItems)) {
