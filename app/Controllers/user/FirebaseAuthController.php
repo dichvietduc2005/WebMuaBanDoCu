@@ -68,7 +68,7 @@ try {
         // hoặc chuyển nó sang public trong file Auth.php
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_email'] = $user['email'];
-        $_SESSION['user_name'] = $user['full_name'];
+        $_SESSION['username'] = $user['full_name'];
         $_SESSION['user_role'] = $user['role'];
         // ... các session khác tương tự Auth.php
         $_SESSION['success_toast'] = "Đăng nhập bằng Google thành công!";
