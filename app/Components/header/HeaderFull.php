@@ -28,8 +28,17 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/notifications.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/footer.css">
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top d-none d-lg-block" id="mainHeader"
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top d-none d-lg-block" id="mainHeader"
         style="min-height: auto;">
+        <script>
+            // Add padding to body to prevent content from being hidden behind fixed header
+            document.addEventListener('DOMContentLoaded', function () {
+                const header = document.getElementById('mainHeader');
+                if (header) {
+                    document.body.style.paddingTop = (header.offsetHeight + 10) + 'px';
+                }
+            });
+        </script>
         <div class="container-fluid px-2 px-sm-3 px-lg-4" style="padding-top: 4px; padding-bottom: 4px;">
             <!-- Logo -->
             <a class="navbar-brand d-flex align-items-center me-auto me-lg-4 text-decoration-none"
@@ -265,48 +274,22 @@ function renderHeaderFull($pdo, $categories = [], $cart_count = 0, $unread_notif
         </div>
     </nav>
 
+    <!-- Spacer to prevent content from being hidden behind fixed header -->
+    <div id="headerSpacer" class="d-none d-lg-block" style="height: 80px;"></div>
+
     <script>
-        // Auto-hide header on scroll
-        (function () {
+        // Adjust spacer height to match header exactly
+        document.addEventListener('DOMContentLoaded', function () {
             const header = document.getElementById('mainHeader');
-            if (!header) return;
-
-            let lastScrollTop = 0;
-            let scrollThreshold = 100; // Scroll 100px before hiding
-            let isScrolling = false;
-
-            window.addEventListener('scroll', function () {
-                if (isScrolling) return;
-
-                isScrolling = true;
-                requestAnimationFrame(function () {
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-                    if (scrollTop > scrollThreshold) {
-                        // Scrolling down - hide header
-                        if (scrollTop > lastScrollTop) {
-                            header.style.transform = 'translateY(-100%)';
-                            header.style.transition = 'transform 0.3s ease-in-out';
-                        }
-                        // Scrolling up - show header
-                        else {
-                            header.style.transform = 'translateY(0)';
-                            header.style.transition = 'transform 0.3s ease-in-out';
-                        }
-                    } else {
-                        // Near top - always show
-                        header.style.transform = 'translateY(0)';
-                        header.style.transition = 'transform 0.3s ease-in-out';
+            const spacer = document.getElementById('headerSpacer');
+            if (header && spacer) {
+                new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        spacer.style.height = entry.target.offsetHeight + 'px';
                     }
-
-                    lastScrollTop = scrollTop;
-                    isScrolling = false;
-                });
-            });
-
-            // Ensure header is visible on page load
-            header.style.transition = 'transform 0.3s ease-in-out';
-        })();
+                }).observe(header);
+            }
+        });
     </script>
 
     <!-- Notifications Popup JS -->

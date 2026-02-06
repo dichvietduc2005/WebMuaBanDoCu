@@ -1,14 +1,36 @@
 // Add to cart function
-function addToCart(event, productId) {
-    event.preventDefault();
-    const form = event.target;
-    const quantityInput = form.querySelector('.quantity-input');
-    const quantity = quantityInput ? quantityInput.value : 1; // Default to 1 if not found
-    const button = form.querySelector('.btn-add-to-cart');
+function addToCart(arg1, arg2) {
+    let productId;
+    let quantity = 1;
+    let button = null;
+
+    // Detect if called as addToCart(event, productId) or addToCart(productId)
+    if (arg1 && arg1.preventDefault) {
+        // It's an event
+        arg1.preventDefault();
+        productId = arg2;
+        const form = arg1.target.closest('form'); // Use closest form to be safe
+        if (form) {
+            const quantityInput = form.querySelector('.quantity-input');
+            if (quantityInput) quantity = quantityInput.value;
+            button = form.querySelector('.btn-add-to-cart') || arg1.target.closest('button');
+        } else {
+            button = arg1.target.closest('button');
+        }
+    } else {
+        // It's a direct ID call (e.g. suggestion list)
+        productId = arg1;
+        // Try to find button using current event if possible, or leave null
+        if (window.event && window.event.target) {
+            button = window.event.target.closest('button');
+        }
+    }
 
     if (button) {
         button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
+        const originalHtml = button.innerHTML;
+        button.setAttribute('data-original-html', originalHtml);
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     }
 
     const base = window.baseUrl || '/';
@@ -47,7 +69,12 @@ function addToCart(event, productId) {
         .finally(() => {
             if (button) {
                 button.disabled = false;
-                button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
+                const originalHtml = button.getAttribute('data-original-html');
+                if (originalHtml) {
+                    button.innerHTML = originalHtml;
+                } else {
+                    button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
+                }
             }
         });
 }
@@ -165,39 +192,61 @@ function showLoginPromptToast() {
 function showToast(type, title, message) {
     const toastContainer = document.getElementById('toast-container') || createToastContainer();
     const toastEl = document.createElement('div');
-    toastEl.className = `toast align-items-center text-white border-0`;
-    // Force background colors to ensure visibility in mixed CSS environments (Tailwind/Bootstrap)
-    if (type === 'success') {
-        toastEl.style.backgroundColor = '#198754'; // Bootstrap success green
-    } else {
-        toastEl.style.backgroundColor = '#dc3545'; // Bootstrap danger red
-    }
 
-    toastEl.setAttribute('role', 'alert');
-    toastEl.setAttribute('aria-live', 'assertive');
-    toastEl.setAttribute('aria-atomic', 'true');
-    toastEl.style.minWidth = '320px';
+    // Style chuẩn 'Clean & Minimalist'
+    const iconBg = type === 'success' ? 'bg-green-100 dark:bg-green-800' : 'bg-red-100 dark:bg-red-800';
+    const iconColor = type === 'success' ? 'text-green-500 dark:text-green-200' : 'text-red-500 dark:text-red-200';
+    const iconSvg = type === 'success'
+        ? '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>'
+        : '<path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>';
+
+    toastEl.className = `flex items-center w-full max-w-sm p-4 mb-3 text-gray-500 bg-white rounded-xl shadow-lg dark:text-gray-400 dark:bg-gray-800 transform transition-all duration-500 translate-x-full opacity-0 filter blur-sm`;
+    toastEl.style.minWidth = '300px';
+
     toastEl.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body text-white">
-                <strong>${title}</strong> ${message}
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 ${iconColor} ${iconBg} rounded-lg">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                ${iconSvg}
+            </svg>
         </div>
+        <div class="ml-3 text-sm font-normal">
+            <span class="mb-1 text-sm font-semibold text-gray-900 dark:text-white block">${title}</span>
+            <div class="text-xs font-normal text-gray-500 dark:text-gray-400">${message}</div>
+        </div>
+        <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700 focus:outline-none" onclick="removeToast(this.parentElement)">
+            <span class="sr-only">Close</span>
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+        </button>
     `;
+
     toastContainer.appendChild(toastEl);
-    // Sử dụng Bootstrap 5 Toast
-    if (window.bootstrap && window.bootstrap.Toast) {
-        const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
-        toast.show();
-        toastEl.addEventListener('hidden.bs.toast', function () {
-            toastEl.remove();
+
+    // Animation loop
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            toastEl.classList.remove('translate-x-full', 'opacity-0', 'blur-sm');
         });
-    } else {
-        // Fallback: tự ẩn sau 3.5s nếu không có Bootstrap JS
-        toastEl.style.display = 'block';
-        setTimeout(() => toastEl.remove(), 3500);
-    }
+    });
+
+    const timeout = setTimeout(() => {
+        removeToast(toastEl);
+    }, 4000);
+
+    // Pause on hover
+    toastEl.addEventListener('mouseenter', () => clearTimeout(timeout));
+    toastEl.addEventListener('mouseleave', () => setTimeout(() => removeToast(toastEl), 2000));
+}
+
+function removeToast(element) {
+    if (!element) return;
+    element.classList.add('opacity-0', 'translate-x-full', 'blur-sm');
+    setTimeout(() => {
+        if (element.parentElement) {
+            element.parentElement.removeChild(element);
+        }
+    }, 500);
 }
 
 function createToastContainer() {

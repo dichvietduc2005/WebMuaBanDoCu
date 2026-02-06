@@ -74,11 +74,12 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product_detail.css">
-    <!-- Mobile Responsive CSS for Product Pages -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
     <!-- Shopee Style Product Detail -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product-detail-shopee.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/review-modal.css">
+    <!-- Mobile Responsive CSS for Product Pages (Loaded last for override) -->
+    <link rel="stylesheet"
+        href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css?v=<?php echo time(); ?>">
 
     <!-- Thêm style inline để đảm bảo review system hiển thị -->
     <style>
