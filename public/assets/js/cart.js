@@ -1,27 +1,27 @@
 document.addEventListener('DOMContentLoaded', function () {
     const cartContainer = document.querySelector('.shopping-cart-container');
-    
+
     // Nếu không tìm thấy class trong HTML, log lỗi để biết
     if (!cartContainer) {
         console.error("Lỗi: Không tìm thấy class .shopping-cart-container trong HTML");
-        return; 
+        return;
     }
 
     // --- 1. CẤU HÌNH MODAL XÓA (PHẦN MỚI SỬA) ---
     let pendingDeleteCallback = null;
     let deleteModalInstance = null;
-    
+
     // Tìm Modal theo ID (ID này nằm trong file Component PHP bạn đã include)
     const modalElement = document.getElementById('deleteConfirmModal');
-    
+
     if (modalElement) {
         // Khởi tạo Bootstrap Modal
         deleteModalInstance = new bootstrap.Modal(modalElement);
-        
+
         // Bắt sự kiện click nút "Xác nhận xóa" màu đỏ trong Modal
         const confirmBtn = document.getElementById('confirmDeleteBtn');
         if (confirmBtn) {
-            confirmBtn.addEventListener('click', function() {
+            confirmBtn.addEventListener('click', function () {
                 if (pendingDeleteCallback) {
                     pendingDeleteCallback(); // Thực hiện hành động xóa
                 }
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Helper: Show Confirm Dialog (Đã sửa để dùng Modal) ---
     function showConfirmDialog(title, message, callback) {
         pendingDeleteCallback = callback;
-        
+
         if (deleteModalInstance) {
             // Nếu tìm thấy Modal đẹp -> Hiện Modal đẹp
             deleteModalInstance.show();
@@ -87,11 +87,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- API Call Functions ---
     async function callCartApi(action, productId = null, quantity = null, extraData = {}) {
-        const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php'; 
+        const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php';
         let body = `action=${action}`;
         if (productId) body += `&product_id=${productId}`;
         if (quantity !== null) body += `&quantity=${quantity}`;
-        
+
         // Append extra data
         for (const key in extraData) {
             body += `&${key}=${encodeURIComponent(extraData[key])}`;
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
             el.textContent = formatPrice(newTotal);
         });
     }
-    
+
     function updateCartIconCount(newCount) {
         const cartCountElements = document.querySelectorAll('.cart-count');
         cartCountElements.forEach(element => {
@@ -154,25 +154,26 @@ document.addEventListener('DOMContentLoaded', function () {
     async function handleRemoveItem(productId) {
         const removeButton = document.querySelector(`.remove-item[data-product-id="${productId}"]`);
         const itemElement = removeButton ? removeButton.closest('.cart-item') : null;
-        
+
         if (!itemElement) return;
 
         // UI Loading
         itemElement.style.opacity = '0.5';
-        
+
         const response = await callCartApi('remove', productId);
 
         if (response && response.success) {
             showToast('success', 'Đã xóa!', response.message);
-            
+
             // UI Remove Animation
             itemElement.style.transition = 'all 0.3s ease';
             itemElement.style.transform = 'translateX(100%)';
             setTimeout(() => {
                 itemElement.remove();
-                updateCartSummary(response.total || 0);
                 updateCartIconCount(response.cart_count || 0);
-                
+
+                recalculateTotal();
+
                 // Nếu hết sản phẩm thì reload để hiện trang trống
                 if (document.querySelectorAll('.cart-item').length === 0) {
                     location.reload();
@@ -189,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const couponInput = document.getElementById('coupon-code-input');
 
     if (applyCouponBtn) {
-        applyCouponBtn.addEventListener('click', async function() {
+        applyCouponBtn.addEventListener('click', async function () {
             const code = couponInput.value.trim();
             if (!code) {
                 showToast('error', 'Lỗi', 'Vui lòng nhập mã giảm giá.');
@@ -201,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
             applyCouponBtn.disabled = true;
             applyCouponBtn.textContent = 'Đang áp dụng...';
 
-            const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php'; 
+            const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php';
             const body = `action=apply_coupon&code=${encodeURIComponent(code)}`;
 
             try {
@@ -229,26 +230,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (removeCouponBtn) {
-        removeCouponBtn.addEventListener('click', async function() {
-             const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php'; 
-             const body = `action=remove_coupon`;
-             
-             try {
+        removeCouponBtn.addEventListener('click', async function () {
+            const url = (window.baseUrl || '') + 'app/Controllers/cart/CartController.php';
+            const body = `action=remove_coupon`;
+
+            try {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
                     body: body
                 });
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showToast('success', 'Thành công', data.message);
                     updateCouponUI(false, null, data);
                     couponInput.value = '';
                 }
-             } catch (error) {
-                 console.error('Remove Coupon Error:', error);
-             }
+            } catch (error) {
+                console.error('Remove Coupon Error:', error);
+            }
         });
     }
 
@@ -256,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const inputGroup = document.getElementById('coupon-input-group');
         const appliedInfo = document.getElementById('applied-coupon-info');
         const appliedCodeText = document.getElementById('applied-code-text');
-        
+
         const discountRow = document.getElementById('discount-row');
         const discountAmountEl = document.getElementById('discount-amount');
         const finalTotalEl = document.getElementById('cart-final-total');
@@ -265,25 +266,25 @@ document.addEventListener('DOMContentLoaded', function () {
             inputGroup.style.display = 'none';
             appliedInfo.style.display = 'flex';
             appliedCodeText.textContent = code;
-            
+
             if (discountRow) discountRow.style.display = 'flex';
             if (discountAmountEl) discountAmountEl.textContent = formatPrice(data.discount_amount);
         } else {
             inputGroup.style.display = 'flex';
             appliedInfo.style.display = 'none';
             appliedCodeText.textContent = '';
-            
+
             if (discountRow) discountRow.style.display = 'none';
             if (discountAmountEl) discountAmountEl.textContent = '0đ';
         }
-        
+
         if (finalTotalEl && data.final_total !== undefined) {
             finalTotalEl.textContent = formatPrice(data.final_total);
         }
     }
 
     // --- Main Event Listener (Delegation) ---
-    cartContainer.addEventListener('click', function(e) {
+    cartContainer.addEventListener('click', function (e) {
         const target = e.target;
 
         // 1. Xử lý nút XÓA
@@ -303,10 +304,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // 2. Xử lý nút TĂNG/GIẢM số lượng
         const itemElement = target.closest('.cart-item');
         if (!itemElement) return;
-        
+
         const productId = itemElement.dataset.productId;
         const quantityInput = itemElement.querySelector('.quantity-input');
-        
+
         if (target.matches('.quantity-increase') || target.closest('.quantity-increase')) {
             let qty = parseInt(quantityInput.value) || 0;
             qty++;
@@ -323,13 +324,75 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-    
+
+    // --- Selection Logic ---
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const selectedCountSpan = document.getElementById('selected-count');
+    const selectedCountMobileSpan = document.querySelector('.selected-count-mobile');
+    const selectedProductsInput = document.getElementById('selected-products-input');
+
+    function recalculateTotal() {
+        let total = 0;
+        let count = 0;
+        let selectedIds = [];
+        const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+
+        document.querySelectorAll('.item-checkbox:checked').forEach(checkbox => {
+            const price = parseFloat(checkbox.dataset.price) || 0;
+            total += price;
+            count++;
+            selectedIds.push(checkbox.value);
+        });
+
+        // Update Total Price Text
+        updateCartSummary(total);
+
+        // Update Counts
+        if (selectedCountSpan) selectedCountSpan.textContent = count;
+        if (selectedCountMobileSpan) selectedCountMobileSpan.textContent = count;
+
+        // Update Hidden Input for Checkout
+        if (selectedProductsInput) selectedProductsInput.value = selectedIds.join(',');
+
+        // Update Select All Checkbox State
+        if (selectAllCheckbox) {
+            const allChecked = (itemCheckboxes.length > 0) && (document.querySelectorAll('.item-checkbox:checked').length === itemCheckboxes.length);
+            selectAllCheckbox.checked = allChecked;
+        }
+    }
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function () {
+            const isChecked = this.checked;
+            document.querySelectorAll('.item-checkbox').forEach(cb => {
+                cb.checked = isChecked;
+            });
+            recalculateTotal();
+        });
+    }
+
+    // Delegation for checkboxes (in case dynamic)
+    cartContainer.addEventListener('change', function (e) {
+        if (e.target.classList.contains('item-checkbox')) {
+            recalculateTotal();
+        }
+    });
+
+    // Initial calculation
+    recalculateTotal();
+
     // Hàm update số lượng (debounce)
     const debouncedUpdate = debounce(async (productId, quantity) => {
         console.log(`Updating product ${productId} to ${quantity}`);
         const response = await callCartApi('update', productId, quantity);
         if (response && response.success) {
-            updateCartSummary(response.total);
+            // Update data-price based on new quantity
+            const checkbox = document.querySelector(`.item-checkbox[value="${productId}"]`);
+            if (checkbox) {
+                const unitPrice = parseFloat(checkbox.dataset.unitPrice) || 0;
+                checkbox.dataset.price = unitPrice * quantity;
+            }
+            recalculateTotal();
         }
     }, 500);
 

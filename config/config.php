@@ -14,7 +14,7 @@ if (session_status() == PHP_SESSION_NONE) {
     ini_set('session.cookie_httponly', 1);
     ini_set('session.cookie_samesite', 'Lax');
     ini_set('session.use_strict_mode', 1);
-    
+
     // Thiết lập cookie parameters
     session_set_cookie_params([
         'lifetime' => 86400, // 24 giờ
@@ -24,9 +24,9 @@ if (session_status() == PHP_SESSION_NONE) {
         'httponly' => true,
         'samesite' => 'Lax'
     ]);
-    
+
     session_start();
-    
+
     // Regenerate session ID định kỳ để tăng bảo mật
     if (!isset($_SESSION['last_regeneration'])) {
         $_SESSION['last_regeneration'] = time();
@@ -37,9 +37,12 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Hằng số cho đường dẫn (nếu chưa được định nghĩa trong bootstrap.php)
-if (!defined('BASE_PATH')) define('BASE_PATH', realpath(__DIR__ . '/..'));
-if (!defined('APP_PATH')) define('APP_PATH', BASE_PATH . '/app');
-if (!defined('PUBLIC_PATH')) define('PUBLIC_PATH', BASE_PATH . '/public');
+if (!defined('BASE_PATH'))
+    define('BASE_PATH', realpath(__DIR__ . '/..'));
+if (!defined('APP_PATH'))
+    define('APP_PATH', BASE_PATH . '/app');
+if (!defined('PUBLIC_PATH'))
+    define('PUBLIC_PATH', BASE_PATH . '/public');
 
 // Thử load env variables nếu có file .env (Không ghi đè biến môi trường hiện tại)
 $env_file = BASE_PATH . '/.env';
@@ -50,7 +53,9 @@ if (file_exists($env_file)) {
             list($key, $value) = explode('=', $line, 2);
             $key = trim($key);
             $value = trim($value);
-            if (!isset($_ENV[$key])) {
+
+            // Chỉ set nếu chưa có trong environment variables (ưu tiên Docker env)
+            if (getenv($key) === false && !isset($_POST[$key])) {
                 $_ENV[$key] = $value;
                 putenv("$key=$value");
             }
@@ -66,12 +71,12 @@ if (file_exists(BASE_PATH . '/vendor/autoload.php')) {
 $autoloader_file = APP_PATH . '/Core/Autoloader.php';
 if (file_exists($autoloader_file)) {
     require_once $autoloader_file;
-    
+
     // Đăng ký autoloader nếu class tồn tại
     if (class_exists('Autoloader')) {
         Autoloader::register();
     }
-    
+
     // Load helpers.php nếu tồn tại
     $helpers_file = APP_PATH . '/helpers.php';
     if (file_exists($helpers_file)) {
@@ -81,33 +86,34 @@ if (file_exists($autoloader_file)) {
 
 // Database connection
 try {
-    // Thông tin kết nối database
-    $db_host = $_ENV['DB_HOST'] ?? 'localhost';
-    $db_port = $_ENV['DB_PORT'] ?? '3306';
-    $db_name = $_ENV['DB_NAME'] ?? 'muabandocu';
-    $db_user = $_ENV['DB_USER'] ?? 'root';
-    $db_pass = $_ENV['DB_PASS'] ?? '';
-    $db_charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
+    // Thông tin kết nối database (Ưu tiên getenv cho Docker)
+    $db_host = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? 'localhost');
+    $db_port = getenv('DB_PORT') ?: ($_ENV['DB_PORT'] ?? '3306');
+    $db_name = getenv('DB_NAME') ?: ($_ENV['DB_NAME'] ?? 'muabandocu');
+    $db_user = getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? 'root');
+    $db_pass = getenv('DB_PASS') ?: ($_ENV['DB_PASS'] ?? '');
+    $db_charset = getenv('DB_CHARSET') ?: ($_ENV['DB_CHARSET'] ?? 'utf8mb4');
 
     // Tạo DSN
     $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset={$db_charset}";
-    
+
     // Tạo PDO object với error mode hiển thị đầy đủ thông tin
     $pdo = new PDO($dsn, $db_user, $db_pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '+07:00'"
     ]);
-    
+
     // Tạo object Database nếu class tồn tại
     if (class_exists('Database')) {
         $db = Database::getInstance();
     }
-    
+
 } catch (PDOException $e) {
     // Ghi log và hiển thị thông báo lỗi chi tiết hơn
     error_log("Database connection error: " . $e->getMessage());
-    
+
     // Hiển thị thông báo lỗi chi tiết để debug
     echo '<div style="background-color: #f8d7da; color: #721c24; padding: 20px; margin: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">';
     echo '<h2>Lỗi kết nối cơ sở dữ liệu</h2>';
@@ -121,8 +127,10 @@ try {
 
 // Application constants
 $baseUrl = $_ENV['BASE_URL'] ?? '/WebMuaBanDoCu/';
-if (strpos($baseUrl, '/') !== 0) $baseUrl = '/' . $baseUrl; // Đảm bảo bắt đầu bằng /
-if (substr($baseUrl, -1) !== '/') $baseUrl .= '/'; // Đảm bảo kết thúc bằng /
+if (strpos($baseUrl, '/') !== 0)
+    $baseUrl = '/' . $baseUrl; // Đảm bảo bắt đầu bằng /
+if (substr($baseUrl, -1) !== '/')
+    $baseUrl .= '/'; // Đảm bảo kết thúc bằng /
 
 define('BASE_URL', $baseUrl);
 define('ASSETS_URL', BASE_URL . 'public/assets/');
@@ -143,7 +151,8 @@ ini_set('display_errors', 1);
 /**
  * Helper function để lấy config value an toàn
  */
-function getConfig($key, $default = null) {
+function getConfig($key, $default = null)
+{
     return $_ENV[$key] ?? $default;
 }
 
@@ -162,7 +171,7 @@ $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
 
 // Path constants
 define('CONTROLLERS_PATH', APP_PATH . '/Controllers/');
-define('MODELS_PATH', APP_PATH . '/Models/');  
+define('MODELS_PATH', APP_PATH . '/Models/');
 define('VIEWS_PATH', APP_PATH . '/Views/');
 define('COMPONENTS_PATH', APP_PATH . '/Components/');
 
@@ -173,15 +182,17 @@ define('CSRF_TOKEN_EXPIRE', 3600); // 1 hour
 /**
  * Validate CSRF token
  */
-function validateCSRF($token) {
-    return isset($_SESSION[CSRF_TOKEN_NAME]) && 
-           hash_equals($_SESSION[CSRF_TOKEN_NAME], $token);
+function validateCSRF($token)
+{
+    return isset($_SESSION[CSRF_TOKEN_NAME]) &&
+        hash_equals($_SESSION[CSRF_TOKEN_NAME], $token);
 }
 
 /**
  * Generate CSRF token
- */  
-function generateCSRF() {
+ */
+function generateCSRF()
+{
     if (!isset($_SESSION[CSRF_TOKEN_NAME])) {
         $_SESSION[CSRF_TOKEN_NAME] = bin2hex(random_bytes(32));
         $_SESSION[CSRF_TOKEN_NAME . '_time'] = time();

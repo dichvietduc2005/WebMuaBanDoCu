@@ -135,13 +135,14 @@ if (!isset($products)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Load Tailwind (via admin-style.css) -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/admin-style.css">
-    <!-- Mobile Responsive CSS for Product Pages -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
     <!-- Unified Product Card Styles (Home & Search) -->
     <link rel="stylesheet"
         href="<?php echo BASE_URL; ?>public/assets/css/unified-product-cards.css?v=<?php echo time(); ?>">
     <!-- Home Page Improvements - Hero & Product Cards -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/home-improvements.css">
+    <!-- Mobile Responsive CSS for Product Pages (Loaded last) -->
+    <link rel="stylesheet"
+        href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css?v=<?php echo time(); ?>">
     <style>
         .product-badge {
             position: absolute;
@@ -167,7 +168,8 @@ if (!isset($products)) {
         /* Support for second badge (Modern style) */
         .product-badge.badge-new {
             background: linear-gradient(135deg, #22c55e, #10b981);
-            top: 40px; /* Offset if both exist */
+            top: 40px;
+            /* Offset if both exist */
         }
     </style>
 </head>
@@ -208,7 +210,8 @@ if (!isset($products)) {
 
 
 
-        <div class="section-header" style="margin-top: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 30px;">
+        <div class="section-header"
+            style="margin-top: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 30px;">
             <div class="text-left">
                 <h1 class="section-title">
                     <?php if ($category): ?>
@@ -218,9 +221,11 @@ if (!isset($products)) {
                     <?php endif; ?>
                 </h1>
                 <?php if ($search): ?>
-                    <p class="text-gray-600 mt-2">Kết quả tìm kiếm cho: "<strong><?php echo htmlspecialchars($search); ?></strong>"</p>
+                    <p class="text-gray-600 mt-2">Kết quả tìm kiếm cho:
+                        "<strong><?php echo htmlspecialchars($search); ?></strong>"</p>
                 <?php endif; ?>
-                <p class="text-gray-500 mt-1">Tìm thấy <span class="font-semibold text-blue-600"><?php echo $total_products; ?></span> sản phẩm</p>
+                <p class="text-gray-500 mt-1">Tìm thấy <span
+                        class="font-semibold text-blue-600"><?php echo $total_products; ?></span> sản phẩm</p>
             </div>
         </div>
 

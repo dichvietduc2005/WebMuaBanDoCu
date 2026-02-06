@@ -188,7 +188,8 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
                                         </div>
                                         <div class="ml-3">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                <?= htmlspecialchars($product['username']) ?></div>
+                                                <?= htmlspecialchars($product['username']) ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -213,18 +214,7 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
                                             <i class="fas fa-eye"></i>
                                             <span>Chi tiết</span>
                                         </button>
-                                        <a href="<?= BASE_URL ?>app/Models/admin/AdminModelAPI.php?action=approve&id=<?= $product['id'] ?>"
-                                            class="action-btn inline-flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400"
-                                            title="Duyệt">
-                                            <i class="fas fa-check"></i>
-                                            <span>Duyệt</span>
-                                        </a>
-                                        <a href="<?= BASE_URL ?>app/Models/admin/AdminModelAPI.php?action=reject&id=<?= $product['id'] ?>"
-                                            class="action-btn inline-flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-400"
-                                            title="Từ chối">
-                                            <i class="fas fa-times"></i>
-                                            <span>Từ chối</span>
-                                        </a>
+
                                         <a href="<?= BASE_URL ?>app/Models/admin/AdminModelAPI.php?action=delete&id=<?= $product['id'] ?>"
                                             class="delete group relative inline-flex items-center justify-center w-8 h-8 text-gray-500 bg-gray-100 rounded-lg hover:bg-red-600 hover:text-white transition-all dark:bg-gray-800 dark:text-gray-400"
                                             title="Xóa">
@@ -434,16 +424,24 @@ include APP_PATH . '/View/admin/layouts/AdminHeader.php';
 
                 <!-- Actions -->
                 <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <a href="${window.BASE_URL}app/Models/admin/AdminModelAPI.php?action=approve&id=${product.id}" 
-                       class="action-btn flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        Duyệt sản phẩm
-                    </a>
-                    <a href="${window.BASE_URL}app/Models/admin/AdminModelAPI.php?action=reject&id=${product.id}" 
-                       class="action-btn flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        Từ chối
-                    </a>
+                    ${product.status === 'pending' ? `
+                        <a href="${window.BASE_URL}app/Models/admin/AdminModelAPI.php?action=approve&id=${product.id}" 
+                           class="action-btn flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Duyệt sản phẩm
+                        </a>
+                        <a href="${window.BASE_URL}app/Models/admin/AdminModelAPI.php?action=reject&id=${product.id}" 
+                           class="action-btn flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Từ chối
+                        </a>
+                    ` : `
+                        <div class="w-full text-center py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-500 dark:text-gray-400 font-medium">
+                            ${product.status === 'active'
+                ? '<span class="text-green-600 dark:text-green-400"><i class="fas fa-check-circle mr-2"></i>Sản phẩm đã được duyệt</span>'
+                : '<span class="text-red-600 dark:text-red-400"><i class="fas fa-times-circle mr-2"></i>Sản phẩm đã bị từ chối</span>'}
+                        </div>
+                    `}
                 </div>
             </div>
         </div>

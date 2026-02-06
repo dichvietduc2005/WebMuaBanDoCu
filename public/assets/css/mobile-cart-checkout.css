@@ -5,174 +5,266 @@
 /* Cart page mobile */
 @media (max-width: 767px) {
   .cart-container {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    /* Changed from grid to flex column for better control */
+    flex-direction: column;
     gap: 12px;
   }
 
   .cart-items-section {
-    order: 2;
+    order: 1;
+    /* Items first */
   }
 
   .cart-summary-section {
-    order: 1;
-    position: sticky;
-    top: 70px;
-    z-index: 100;
-    background: white;
-    padding: 12px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 12px;
+    order: 2;
+    /* Suggestions/Summary last */
+    position: static;
+    /* Remove top sticky */
+    z-index: 10;
+    margin-bottom: 20px;
+  }
+
+  /* Hide the desktop summary box on mobile since we have the sticky footer */
+  .order-summary-container {
+    display: none !important;
   }
 
   .cart-item {
     display: grid;
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 80px 1fr;
     gap: 12px;
     padding: 12px !important;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    border: none;
     background: white;
     margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* Soft shadow like Shopee */
   }
 
-  .cart-item-image {
-    grid-column: 1;
-    width: 100px;
-    height: 100px;
+  /* Bootstrap Grid Override for Mobile Cart Item */
+  .cart-item>.row {
+    display: flex !important;
+    margin: 0 !important;
+    align-items: center;
+    /* Center items vertically */
+    gap: 10px;
+  }
+
+  /* 1. Checkbox Column (Order 1) */
+  .cart-item .col-3:first-child {
+    order: 1;
+    width: 30px !important;
+    flex: 0 0 30px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Checkbox Scale */
+  .form-check {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .form-check-input {
+    margin: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    position: static !important;
+    /* Disable bootstrap absolute positioning */
+  }
+
+
+
+  /* 2. Image Column (Order 2) */
+  .cart-item .col-3:nth-child(1) {
+    /* This selector targeted the wrapper, now we target the image container wrapper if it was separate, but in HTML they are in the same div. We need to split them in HTML or handle the current structure. 
+     Wait, the HTML structure is: 
+     <div class="col-md-2 col-3 ...">
+        <div class="form-check">...</div>
+        <a href="#" class="product-img-container">...</a>
+     </div>
+     
+     The current HTML puts checkbox AND image in the SAME .col-3. 
+     We need to split them or style the .col-3 to be a flex row itself! 
+  */
+  }
+
+  /* Let's style the wrapper .col-3 to be a flex row of Checkbox + Image */
+  .cart-item .col-md-2.col-3 {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: auto !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  /* Force Image Size */
+  .product-img-container {
+    width: 80px !important;
+    height: 80px !important;
+    display: block;
     border-radius: 8px;
     overflow: hidden;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    flex-shrink: 0;
   }
 
-  .cart-item-image img {
+  .product-img-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
-  .cart-item-details {
-    grid-column: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  /* 3. Content Column (Order 3) */
+  .cart-item .col-md-8.col-9 {
+    flex: 1 !important;
+    padding: 0 0 0 8px !important;
+    min-width: 0;
+    /* Enable truncation */
   }
 
-  .cart-item-title {
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.3;
-    color: #1f2937;
+  /* Layout: Title Top, Price Bottom */
+  .cart-item .col-md-8.col-9 .d-flex.justify-content-between {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100%;
+    justify-content: space-between !important;
   }
 
-  .cart-item-price {
+  /* Title */
+  .cart-item-title,
+  .cart-item .col-md-8.col-9 h5 a {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     font-size: 14px;
-    font-weight: 700;
-    color: #ef4444;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    color: #333;
+    font-weight: 500;
   }
 
-  .cart-item-quantity {
-    font-size: 12px;
-    color: #6b7280;
+  /* Price */
+  .d-md-none.fw-bold.fs-5 {
+    display: block !important;
+    color: #d0021b !important;
+    font-size: 15px !important;
+    margin-top: auto;
+    /* Push to bottom */
   }
 
-  .cart-item-actions {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: 8px;
+  /* Quantity & Delete Row */
+  .d-flex.align-items-center.flex-wrap.gap-2.mt-2 {
+    margin-top: 8px !important;
+    display: flex !important;
     justify-content: space-between;
-    flex-wrap: wrap;
-  }
-
-  .quantity-control {
-    display: flex;
-    gap: 4px;
     align-items: center;
+    width: 100%;
   }
 
-  .quantity-control button {
+  .amazon-qty-select {
+    margin: 0 !important;
+    height: 28px;
+  }
+
+  /* Delete Icon Button */
+  .btn-remove {
+    position: static !important;
+    /* Reset absolute */
+    float: none !important;
+    margin: 0 !important;
+    color: #999;
+    background: transparent !important;
+    padding: 6px !important;
+    font-size: 16px !important;
+    /* Icon size */
     width: 32px;
     height: 32px;
-    padding: 0 !important;
-    font-size: 13px;
-    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .quantity-control input {
-    width: 40px;
-    height: 32px;
-    text-align: center;
-    font-size: 13px;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
-    padding: 4px !important;
-  }
-
-  .btn-remove {
-    padding: 6px 10px !important;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  /* Cart Summary sticky at bottom */
-  .cart-summary {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .summary-row {
-    display: contents;
-  }
-
-  .summary-label {
-    font-size: 12px;
-    color: #6b7280;
-    grid-column: 1;
-  }
-
-  .summary-value {
-    font-size: 12px;
-    text-align: right;
-    grid-column: 2;
-    color: #1f2937;
-  }
-
-  .summary-total-label {
-    font-size: 13px;
-    font-weight: 700;
-    grid-column: 1;
-    color: #1f2937;
-  }
-
-  .summary-total-value {
-    font-size: 14px;
-    font-weight: 700;
-    text-align: right;
-    grid-column: 2;
-    color: #ef4444;
-  }
-
-  .checkout-button {
-    grid-column: 1 / -1;
-    width: 100% !important;
-    height: 48px !important;
-    padding: 0 16px !important;
-    margin-top: 8px;
-    font-size: 14px;
-    border-radius: 10px;
-  }
-
-  .continue-shopping {
-    grid-column: 1 / -1;
-    width: 100% !important;
-    height: 44px !important;
-    padding: 0 12px !important;
-    font-size: 13px;
-    border-radius: 8px;
+  /* ========= CHAT WIDGET OVERRIDE FOR CART PAGE ========= */
+  /* This works because we are on a page that loads this CSS */
+  #chat-trigger {
+    bottom: 140px !important;
+    /* Lift above the ~120px footer/spacer */
   }
 }
+
+/* Cart Summary sticky at bottom */
+.cart-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px;
+}
+
+.summary-row {
+  display: contents;
+}
+
+.summary-label {
+  font-size: 12px;
+  color: #6b7280;
+  grid-column: 1;
+}
+
+.summary-value {
+  font-size: 12px;
+  text-align: right;
+  grid-column: 2;
+  color: #1f2937;
+}
+
+.summary-total-label {
+  font-size: 13px;
+  font-weight: 700;
+  grid-column: 1;
+  color: #1f2937;
+}
+
+.summary-total-value {
+  font-size: 14px;
+  font-weight: 700;
+  text-align: right;
+  grid-column: 2;
+  color: #ef4444;
+}
+
+.checkout-button {
+  grid-column: 1 / -1;
+  width: 100% !important;
+  height: 48px !important;
+  padding: 0 16px !important;
+  margin-top: 8px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.continue-shopping {
+  grid-column: 1 / -1;
+  width: 100% !important;
+  height: 44px !important;
+  padding: 0 12px !important;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
 
 /* Checkout page mobile */
 @media (max-width: 767px) {
@@ -378,6 +470,7 @@
 
 /* Tablet cart/checkout */
 @media (min-width: 768px) and (max-width: 1023px) {
+
   .cart-container,
   .checkout-container {
     display: grid;
@@ -471,4 +564,3 @@
     margin-bottom: 4px !important;
   }
 }
-

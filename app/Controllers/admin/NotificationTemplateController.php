@@ -18,13 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $_POST['id'] ?? null;
         $title = $_POST['title'] ?? '';
         $message_template = $_POST['message_template'] ?? '';
-        
+
         if ($id && $title && $message_template) {
             $result = updateTemplate($pdo, $id, [
                 'title' => $title,
                 'message_template' => $message_template
             ]);
-            
+
             echo json_encode(['success' => $result]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Missing required fields']);
@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         require_once __DIR__ . '/../../Models/admin/NotificationModel.php';
         try {
             $pending = getPendingNotifications($pdo, 50);
+
             $count = 0;
             foreach ($pending as $item) {
                 $data = json_decode($item['data'], true);
