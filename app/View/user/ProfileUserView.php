@@ -181,7 +181,7 @@ require_once __DIR__ . '/../../Components/header/Header.php';
                         <label class="promax-label" for="user_full_name">Họ và tên hiển thị</label>
                         <div class="promax-input-wrapper">
                             <input type="text" class="promax-input" id="user_full_name"
-                                value="<?php echo htmlspecialchars($_SESSION['user_full_name'] ?? ''); ?>" disabled>
+                                value="<?php echo htmlspecialchars($_SESSION['full_name'] ?? ''); ?>" disabled>
                         </div>
                     </div>
 

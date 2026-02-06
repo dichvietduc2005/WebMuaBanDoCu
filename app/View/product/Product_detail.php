@@ -182,7 +182,7 @@ if (isset($_SESSION['user_id'])) {
 
                     <div class="review-inputs-row">
                         <input type="text" class="review-input" placeholder="Họ tên (bắt buộc)"
-                            value="<?php echo htmlspecialchars($_SESSION['username'] ?? ''); ?>" readonly>
+                            value="<?php echo htmlspecialchars($_SESSION['full_name'] ?? ''); ?>" readonly>
                         <input type="text" class="review-input" placeholder="Số điện thoại (bắt buộc)">
                     </div>
 
