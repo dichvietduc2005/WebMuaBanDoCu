@@ -1,6 +1,7 @@
 <?php
 // Sử dụng đường dẫn tuyệt đối thay vì đường dẫn tương đối
-$root_path = $_SERVER['DOCUMENT_ROOT'] . '/WebMuaBanDoCu';
+// Sử dụng đường dẫn tuyệt đối dựa trên __DIR__ để an toàn hơn
+$root_path = dirname(__DIR__, 3);
 require_once $root_path . '/config/config.php';
 require_once $root_path . '/app/Controllers/auth_helper.php'; // For Auth functions
 // Thêm include OrderController để sử dụng hàm getOrderDetails()
@@ -448,8 +449,7 @@ $payment_method = formatPaymentMethod($order['payment_method']);
                                 <div class="product-info">
                                     <?php if (!empty($item['product_image'])): ?>
                                         <img src="../../../public/<?php echo htmlspecialchars($item['product_image']); ?>"
-                                            alt="<?php echo htmlspecialchars($item['product_title']); ?>" 
-                                            class="product-image"
+                                            alt="<?php echo htmlspecialchars($item['product_title']); ?>" class="product-image"
                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                         <div class="product-image"
                                             style="display: none; align-items: center; justify-content: center; background: #f0f0f0;">

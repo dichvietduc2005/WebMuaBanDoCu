@@ -74,11 +74,12 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product_detail.css">
-    <!-- Mobile Responsive CSS for Product Pages -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css">
     <!-- Shopee Style Product Detail -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/product-detail-shopee.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/review-modal.css">
+    <!-- Mobile Responsive CSS for Product Pages (Loaded last for override) -->
+    <link rel="stylesheet"
+        href="<?php echo BASE_URL; ?>public/assets/css/mobile-product-pages.css?v=<?php echo time(); ?>">
 
     <!-- Thêm style inline để đảm bảo review system hiển thị -->
     <style>
@@ -176,10 +177,13 @@ if (isset($_SESSION['user_id'])) {
                             <input type="file" id="reviewImages" hidden multiple accept="image/*">
                         </div>
                     </div>
+                    <div id="image-preview" class="d-flex gap-2 mt-2 flex-wrap"></div>
+
+
 
                     <div class="review-inputs-row">
                         <input type="text" class="review-input" placeholder="Họ tên (bắt buộc)"
-                            value="<?php echo htmlspecialchars($_SESSION['username'] ?? ''); ?>" readonly>
+                            value="<?php echo htmlspecialchars($_SESSION['full_name'] ?? ''); ?>" readonly>
                         <input type="text" class="review-input" placeholder="Số điện thoại (bắt buộc)">
                     </div>
 
@@ -628,7 +632,8 @@ if (isset($_SESSION['user_id'])) {
                 <?php else: ?>
                     <div class="reviews-footer text-center">
                         <div class="login-to-review">
-                            <p>Bạn cần <a href="<?php echo BASE_URL; ?>app/View/user/login.php" class="text-primary fw-bold">đăng nhập</a> để đánh giá sản phẩm</p>
+                            <p>Bạn cần <a href="<?php echo BASE_URL; ?>app/View/user/login.php"
+                                    class="text-primary fw-bold">đăng nhập</a> để đánh giá sản phẩm</p>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -939,8 +944,57 @@ if (isset($_SESSION['user_id'])) {
         <!-- Footer -->
         <?php footer(); ?>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const imageInput = document.getElementById('reviewImages');
+                const previewContainer = document.getElementById('image-preview');
 
+                if (imageInput && previewContainer) {
+                    imageInput.addEventListener('change', function (event) {
+                        // Xóa ảnh cũ nếu chọn lại
+                        previewContainer.innerHTML = '';
+
+                        const files = event.target.files;
+
+                        // Kiểm tra số lượng ảnh (tối đa 3)
+                        if (files.length > 3) {
+                            alert('Bạn chỉ được chọn tối đa 3 ảnh.');
+                            imageInput.value = ''; // Reset input
+                            return;
+                        }
+
+                        // Duyệt qua từng file để hiển thị
+                        for (let i = 0; i < files.length; i++) {
+                            const file = files[i];
+
+                            if (!file.type.startsWith('image/')) { continue; }
+
+                            const reader = new FileReader();
+
+                            reader.onload = function (e) {
+                                const imgDiv = document.createElement('div');
+                                imgDiv.style.position = 'relative';
+                                imgDiv.style.width = '80px';
+                                imgDiv.style.height = '80px';
+
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.className = 'rounded border';
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+
+                                // Thêm vào container
+                                imgDiv.appendChild(img);
+                                previewContainer.appendChild(imgDiv);
+                            }
+
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+            });
+        </script>
 </body>
 
 </html>
-```

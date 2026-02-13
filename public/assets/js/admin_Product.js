@@ -1,67 +1,88 @@
 // Xử lý tất cả action buttons bằng AJAX với confirm + lý do từ chối
-document.addEventListener('DOMContentLoaded', function() {
-    // Hỗ trợ cả table layout (.actions a.action-btn) và card layout (a.action-btn)
-    const actionButtons = document.querySelectorAll('a.action-btn:not(.delete)');
-    actionButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            // Delete được xử lý riêng bên dưới
-            if (this.classList.contains('delete')) return;
+// Sử dụng Event Delegation để hỗ trợ cả nút tĩnh (trong bảng) và nút động (trong modal)
+document.addEventListener('click', function (e) {
+    // Tìm thẻ a.action-btn gần nhất
+    const btn = e.target.closest('a.action-btn:not(.delete)');
+    if (!btn) return;
 
-            e.preventDefault();
+    // Delete được xử lý riêng bên dưới (nếu có logic riêng, nhưng ở đây đã exclude bằng :not(.delete))
+    if (btn.classList.contains('delete')) return;
 
-            const url = new URL(this.href, window.location.origin);
-            const action = url.searchParams.get('action');
-            // Hỗ trợ cả table row và product card
-            const productRow = this.closest('tr') || this.closest('.product-card');
+    e.preventDefault();
 
-            const doRequest = async (extraParams = {}) => {
-                const originalHtml = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                this.classList.add('disabled');
+    const url = new URL(btn.href, window.location.origin);
+    const action = url.searchParams.get('action');
+    // Hỗ trợ cả table row và product card
+    const productRow = btn.closest('tr') || btn.closest('.product-card');
 
-                try {
-                    Object.entries(extraParams).forEach(([key, value]) => {
-                        if (value !== undefined && value !== null) {
-                            url.searchParams.set(key, value);
-                        }
-                    });
+    const doRequest = async (extraParams = {}) => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.classList.add('disabled');
 
-                    const response = await fetch(url.toString(), { credentials: 'same-origin' });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            Object.entries(extraParams).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    url.searchParams.set(key, value);
+                }
+            });
+
+            const response = await fetch(url.toString(), { credentials: 'same-origin' });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const responseText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Response text:', responseText);
+                throw new Error('Server returned invalid JSON format');
+            }
+
+            if (!data.success) {
+                showToast('error', 'Lỗi', data.message);
+                return;
+            }
+
+            showToast('success', 'Thành công', data.message);
+
+            // Xử lý UI update sau khi thành công
+            if (data.action === 'delete') {
+                if (productRow) {
+                    productRow.style.transition = 'opacity 0.5s ease';
+                    productRow.style.opacity = '0';
+                    setTimeout(() => productRow.remove(), 500);
+                } else {
+                    // Nếu là modal, có thể cần reload hoặc update UI khác
+                    if (window.closeProductDetailModal) window.closeProductDetailModal();
+                    // Reload trang để cập nhật danh sách vì không xác định được row
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            } else if (data.action === 'toggle_featured') {
+                if (productRow) updateFeaturedStatus(productRow, data.isFeatured);
+
+                if (data.autoUnfeaturedId) {
+                    const oldRow = document.querySelector(`tr[data-product-id="${data.autoUnfeaturedId}"]`);
+                    if (oldRow) {
+                        updateFeaturedStatus(oldRow, false);
                     }
-
-                    const responseText = await response.text();
-                    let data;
-                    try {
-                        data = JSON.parse(responseText);
-                    } catch (parseError) {
-                        console.error('Response text:', responseText);
-                        throw new Error('Server returned invalid JSON format');
+                }
+            } else if (data.action === 'approve' || data.action === 'reject') {
+                // Nếu đang trong modal
+                if (window.closeProductDetailModal && document.getElementById('productDetailModal') && !document.getElementById('productDetailModal').classList.contains('hidden')) {
+                    window.closeProductDetailModal();
+                    // Reload table hoặc remove row
+                    if (productRow) {
+                        productRow.remove();
+                    } else {
+                        // Nếu gọi từ modal mà không tìm thấy row (case hiếm), reload
+                        setTimeout(() => window.location.reload(), 500);
                     }
-
-                    if (!data.success) {
-                        showToast('error', 'Lỗi', data.message);
-                        return;
-                    }
-
-                    showToast('success', 'Thành công', data.message);
-
-                    if (data.action === 'delete') {
-                        productRow.style.transition = 'opacity 0.5s ease';
-                        productRow.style.opacity = '0';
-                        setTimeout(() => productRow.remove(), 500);
-                    } else if (data.action === 'toggle_featured') {
-                        updateFeaturedStatus(productRow, data.isFeatured);
-
-                        if (data.autoUnfeaturedId) {
-                            const oldRow = document.querySelector(`tr[data-product-id="${data.autoUnfeaturedId}"]`);
-                            if (oldRow) {
-                                updateFeaturedStatus(oldRow, false);
-                            }
-                        }
-                    } else if (data.action === 'approve' || data.action === 'reject') {
-                        // Ẩn các nút action, cập nhật badge trạng thái nếu cần
+                } else {
+                    // Logic cũ cho button trên table
+                    if (productRow) {
                         productRow.querySelectorAll('.action-btn').forEach(b => {
                             b.style.display = 'none';
                         });
@@ -72,71 +93,78 @@ document.addEventListener('DOMContentLoaded', function() {
                                 : '<span class="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-full bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300">Đã từ chối</span>';
                         }
                     }
-
-                    if (document.querySelectorAll('table tbody tr').length === 0) {
-                        document.querySelector('table').insertAdjacentHTML(
-                            'afterend',
-                            '<p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Không còn sản phẩm nào chờ duyệt</p>'
-                        );
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi xử lý');
-                } finally {
-                    this.innerHTML = originalHtml;
-                    this.classList.remove('disabled');
                 }
-            };
-
-            if (action === 'approve') {
-                showConfirmDialog(
-                    'Xác nhận duyệt sản phẩm',
-                    '<p class="text-xs text-gray-600 dark:text-gray-300">Bạn có chắc muốn duyệt sản phẩm này? Thao tác này sẽ hiển thị sản phẩm cho người dùng.</p>',
-                    () => doRequest()
-                );
-            } else if (action === 'reject') {
-                const titleCell = productRow.querySelector('td:nth-child(2) .text-sm');
-                const productTitle = titleCell ? titleCell.textContent.trim() : 'sản phẩm này';
-                const messageHtml = `
-                    <p class="mb-2 text-xs text-gray-600 dark:text-gray-300">
-                        Bạn có chắc muốn từ chối <span class="font-semibold">"${productTitle}"</span>? Thao tác này sẽ gửi thông báo đến người bán.
-                    </p>
-                    <label class="block mb-1 text-[11px] font-medium text-gray-500 dark:text-gray-400">Lý do từ chối</label>
-                    <textarea
-                        id="reject-reason-input"
-                        class="w-full px-2 py-1.5 text-xs border rounded-lg border-gray-200 focus:ring-1 focus:ring-red-500 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                        rows="3"
-                        placeholder="Nhập lý do từ chối tại đây..."></textarea>
-                    <div class="flex flex-wrap items-center gap-1 mt-2 text-[11px]">
-                        <span class="text-gray-400 mr-1">Gợi ý nhanh:</span>
-                        <button type="button" class="px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800" data-reason-chip="Sai giá">Sai giá</button>
-                        <button type="button" class="px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800" data-reason-chip="Hình ảnh mờ">Hình ảnh mờ</button>
-                        <button type="button" class="px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800" data-reason-chip="Nội dung không phù hợp">Nội dung không phù hợp</button>
-                    </div>
-                `;
-                showConfirmDialog(
-                    'Từ chối sản phẩm',
-                    messageHtml,
-                    () => {
-                        const reasonEl = document.getElementById('reject-reason-input');
-                        const reason = reasonEl ? reasonEl.value.trim() : '';
-                        doRequest({ reason });
-                    },
-                    { confirmLabel: 'Xác nhận từ chối', confirmVariant: 'danger' }
-                );
-            } else {
-                // toggle_featured và các action khác
-                doRequest();
             }
-        });
-    });
+
+            if (document.querySelectorAll('table tbody tr').length === 0) {
+                const table = document.querySelector('table');
+                if (table) {
+                    table.insertAdjacentHTML(
+                        'afterend',
+                        '<p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Không còn sản phẩm nào chờ duyệt</p>'
+                    );
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi xử lý');
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.classList.remove('disabled');
+        }
+    };
+
+    if (action === 'approve') {
+        showConfirmDialog(
+            'Xác nhận duyệt sản phẩm',
+            '<p class="text-xs text-gray-600 dark:text-gray-300">Bạn có chắc muốn duyệt sản phẩm này? Thao tác này sẽ hiển thị sản phẩm cho người dùng.</p>',
+            () => doRequest()
+        );
+    } else if (action === 'reject') {
+        let productTitle = 'sản phẩm này';
+        if (productRow) {
+            const titleCell = productRow.querySelector('td:nth-child(2) .text-sm');
+            if (titleCell) productTitle = titleCell.textContent.trim();
+        }
+
+        const messageHtml = `
+            <p class="mb-2 text-xs text-gray-600 dark:text-gray-300">
+                Bạn có chắc muốn từ chối <span class="font-semibold">"${productTitle}"</span>? Thao tác này sẽ gửi thông báo đến người bán.
+            </p>
+            <label class="block mb-1 text-[11px] font-medium text-gray-500 dark:text-gray-400">Lý do từ chối</label>
+            <textarea
+                id="reject-reason-input"
+                class="w-full px-2 py-1.5 text-xs border rounded-lg border-gray-200 focus:ring-1 focus:ring-red-500 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                rows="3"
+                placeholder="Nhập lý do từ chối tại đây..."></textarea>
+            <div class="flex flex-wrap items-center gap-1 mt-2 text-[11px]">
+                <span class="text-gray-400 mr-1">Gợi ý nhanh:</span>
+                <button type="button" class="px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800" data-reason-chip="Sai giá">Sai giá</button>
+                <button type="button" class="px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800" data-reason-chip="Hình ảnh mờ">Hình ảnh mờ</button>
+                <button type="button" class="px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800" data-reason-chip="Nội dung không phù hợp">Nội dung không phù hợp</button>
+            </div>
+        `;
+        showConfirmDialog(
+            'Từ chối sản phẩm',
+            messageHtml,
+            () => {
+                const reasonEl = document.getElementById('reject-reason-input');
+                const reason = reasonEl ? reasonEl.value.trim() : '';
+                doRequest({ reason });
+            },
+            { confirmLabel: 'Xác nhận từ chối', confirmVariant: 'danger' }
+        );
+    } else {
+        // toggle_featured và các action khác
+        doRequest();
+    }
 });
 
 // Xử lý confirm cho action delete
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Hỗ trợ cả table và card layout
     document.querySelectorAll('a.delete').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
 
             const url = this.href;
@@ -190,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateFeaturedStatus(productRow, isFeatured) {
     const toggleBtn = productRow.querySelector('a[href*="toggle_featured"]');
     const badge = productRow.querySelector('.featured-badge');
-    
+
     // Di chuyển dòng sang bảng thích hợp
     const featuredTbody = document.querySelector('#featured-table tbody');
     const regularTbody = document.querySelector('#regular-table tbody');
@@ -205,7 +233,7 @@ function updateFeaturedStatus(productRow, isFeatured) {
         toggleBtn.innerHTML = '<i class="fas fa-star-half-alt"></i> Bỏ nổi bật';
         toggleBtn.className = 'btn btn-warning action-btn';
         productRow.classList.add('featured-row');
-        
+
         // Add badge if not exists
         if (!badge) {
             const titleCell = productRow.querySelector('td:nth-child(2)');
@@ -218,7 +246,7 @@ function updateFeaturedStatus(productRow, isFeatured) {
         toggleBtn.innerHTML = '<i class="fas fa-star"></i> Đặt nổi bật';
         toggleBtn.className = 'btn btn-info action-btn';
         productRow.classList.remove('featured-row');
-        
+
         // Remove badge if exists
         if (badge) {
             badge.remove();
@@ -275,34 +303,34 @@ function showConfirmDialog(title, message, confirmCallback, options = {}) {
     // Gắn sự kiện cho chips gợi ý lý do (nếu có)
     const reasonInput = overlay.querySelector('#reject-reason-input');
     if (reasonInput) {
-      overlay.querySelectorAll('[data-reason-chip]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const val = btn.getAttribute('data-reason-chip') || '';
-          if (!val) return;
-          if (!reasonInput.value) {
-            reasonInput.value = val;
-          } else if (!reasonInput.value.includes(val)) {
-            reasonInput.value = reasonInput.value.trim() + (reasonInput.value.trim().endsWith('.') ? ' ' : '; ') + val;
-          }
-          reasonInput.focus();
+        overlay.querySelectorAll('[data-reason-chip]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = btn.getAttribute('data-reason-chip') || '';
+                if (!val) return;
+                if (!reasonInput.value) {
+                    reasonInput.value = val;
+                } else if (!reasonInput.value.includes(val)) {
+                    reasonInput.value = reasonInput.value.trim() + (reasonInput.value.trim().endsWith('.') ? ' ' : '; ') + val;
+                }
+                reasonInput.focus();
+            });
         });
-      });
     }
 
     const close = () => {
-      overlay.remove();
+        overlay.remove();
     };
 
     cancelBtn.addEventListener('click', close);
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) close();
+        if (e.target === overlay) close();
     });
 
     confirmBtn.addEventListener('click', () => {
-      close();
-      if (typeof confirmCallback === 'function') {
-        confirmCallback();
-      }
+        close();
+        if (typeof confirmCallback === 'function') {
+            confirmCallback();
+        }
     });
 }
 

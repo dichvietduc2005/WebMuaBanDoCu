@@ -38,10 +38,10 @@ class CartModel
             // nên ta không chèn session_id nữa.
             $stmt = $this->pdo->prepare("INSERT INTO carts (user_id) VALUES (?)");
             $stmt->execute([$user_id]);
-            return (int)$this->pdo->lastInsertId();
+            return (int) $this->pdo->lastInsertId();
         }
 
-        return (int)$cart['id'];
+        return (int) $cart['id'];
     }
 
     /**
@@ -71,7 +71,39 @@ class CartModel
         $stmt->execute([$user_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
+    /**
+     * Lấy các items cụ thể trong giỏ hàng (cho chức năng checkout selected).
+     */
+    public function getItemsByUserIdAndProductIds(int $user_id, array $product_ids): array
+    {
+        if (empty($product_ids))
+            return [];
+
+        $placeholders = str_repeat('?,', count($product_ids) - 1) . '?';
+        $sql = "
+            SELECT
+                ci.product_id, ci.quantity, ci.added_price,
+                p.title AS product_title, p.price AS current_price, p.stock_quantity, p.status as product_status,
+                pi.image_path, (ci.quantity * ci.added_price) AS subtotal,u.username as seller_name
+            FROM cart_items ci
+            JOIN carts c ON ci.cart_id = c.id
+            JOIN products p ON ci.product_id = p.id
+            JOIN users u ON p.user_id = u.id
+            LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+            WHERE c.user_id = ? 
+            AND ci.product_id IN ($placeholders)
+            AND (ci.status IS NULL OR ci.status = 'active')
+            AND (ci.is_hidden IS NULL OR ci.is_hidden = 0)
+            ORDER BY ci.added_at DESC
+        ";
+
+        $params = array_merge([$user_id], $product_ids);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Tìm sản phẩm theo ID.
      */
@@ -81,7 +113,7 @@ class CartModel
         $stmt->execute([$product_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
+
     /**
      * Tìm một item trong giỏ hàng.
      */
@@ -109,7 +141,7 @@ class CartModel
         $stmt = $this->pdo->prepare("UPDATE cart_items SET quantity = ? WHERE id = ?");
         return $stmt->execute([$new_quantity, $cart_item_id]);
     }
-    
+
     /**
      * Cập nhật số lượng của một sản phẩm qua user_id.
      */
@@ -132,15 +164,71 @@ class CartModel
             WHERE c.user_id = ? AND ci.product_id = ?");
         return $stmt->execute([$user_id, $product_id]);
     }
-    
+
+    /**
+     * Xóa danh sách sản phẩm đã mua khỏi giỏ hàng.
+     * @param int $user_id
+     * @param array $product_ids Mảng các product_id cần xóa
+     */
+    public function removeBoughtItems(int $user_id, array $product_ids): bool
+    {
+        if (empty($product_ids)) {
+            return true;
+        }
+
+        // 1. Lấy cart_id
+        $cart_id = $this->getOrCreateCartId($user_id);
+
+        // 2. Xóa các sản phẩm trong danh sách
+        // Tạo chuỗi placeholder (?,?,?)
+        $placeholders = str_repeat('?,', count($product_ids) - 1) . '?';
+        $sql = "DELETE FROM cart_items WHERE cart_id = ? AND product_id IN ($placeholders)";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        // Merge cart_id và list product_ids để execute
+        // Merge cart_id và list product_ids để execute
+        $params = array_merge([$cart_id], $product_ids);
+
+        $result = $stmt->execute($params);
+
+        if ($result) {
+            error_log("CartModel: Removed " . $stmt->rowCount() . " bought items for user $user_id");
+        } else {
+            error_log("CartModel: Failed to remove bought items for user $user_id");
+        }
+
+        return $result;
+    }
+
     /**
      * Xóa toàn bộ sản phẩm trong giỏ hàng của người dùng.
      */
     public function clearCart(int $user_id): bool
     {
-        $stmt = $this->pdo->prepare("
-            DELETE ci FROM cart_items ci JOIN carts c ON ci.cart_id = c.id
-            WHERE c.user_id = ?");
-        return $stmt->execute([$user_id]);
+        // 1. Lấy cart_id của user
+        $stmt_get_cart = $this->pdo->prepare("SELECT id FROM carts WHERE user_id = ?");
+        $stmt_get_cart->execute([$user_id]);
+        $cart = $stmt_get_cart->fetch(PDO::FETCH_ASSOC);
+
+        if (!$cart) {
+            // Không tìm thấy giỏ hàng của user -> coi như đã clear thành công
+            return true;
+        }
+
+        $cart_id = $cart['id'];
+
+        // 2. Xóa tất cả items trong giỏ
+        $stmt_delete = $this->pdo->prepare("DELETE FROM cart_items WHERE cart_id = ?");
+        $result = $stmt_delete->execute([$cart_id]);
+
+        // Log kết quả để debug
+        if ($result) {
+            error_log("CartModel: Extracted cart_id $cart_id for user $user_id and deleted {$stmt_delete->rowCount()} items.");
+        } else {
+            error_log("CartModel: Failed to delete items for cart_id $cart_id (User: $user_id)");
+        }
+
+        return $result;
     }
-} 
+}

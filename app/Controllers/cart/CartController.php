@@ -59,18 +59,12 @@ class CartController
 
     public function addToCart($product_id, $quantity = 1)
     {
-        // #region agent log
-        file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:49', 'message' => 'addToCart entry', 'data' => ['product_id' => $product_id, 'quantity' => $quantity], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H4')) . "\n", FILE_APPEND);
-        // #endregion
+
         $user_id = $this->ensureUserIsLoggedIn();
-        // #region agent log
-        file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:52', 'message' => 'user_id obtained', 'data' => ['user_id' => $user_id, 'session_status' => session_status()], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H2')) . "\n", FILE_APPEND);
-        // #endregion
+
         try {
             $product = $this->cartModel->findProductById($product_id);
-            // #region agent log
-            file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:54', 'message' => 'product found', 'data' => ['product_exists' => !empty($product), 'product_status' => $product['status'] ?? null, 'stock_quantity' => $product['stock_quantity'] ?? null, 'product_id' => $product['id'] ?? null], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H4')) . "\n", FILE_APPEND);
-            // #endregion
+
             if (!$product)
                 throw new \Exception("Sản phẩm không tồn tại.");
             if ($product['status'] != 'active')
@@ -119,18 +113,10 @@ class CartController
                 }
             }
 
-            // #region agent log
-            // @phpstan-ignore-next-line - $result is always assigned in both branches of if-else above
-            $logResult = is_bool($result) ? ($result ? 'true' : 'false') : (is_scalar($result) ? $result : 'non-scalar');
-            $logData = array('location' => 'CartController.php:87', 'message' => 'addToCart success', 'data' => array('result' => $logResult), 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H4');
-            file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode($logData) . "\n", FILE_APPEND);
-            // #endregion
+
             return $result;
         } catch (\Exception $e) {
-            // #region agent log
-            $logData = array('location' => 'CartController.php:89', 'message' => 'addToCart exception', 'data' => array('exception_message' => $e->getMessage(), 'exception_code' => $e->getCode(), 'exception_file' => $e->getFile(), 'exception_line' => $e->getLine()), 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H4');
-            file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode($logData) . "\n", FILE_APPEND);
-            // #endregion
+
             throw $e;
         }
     }
@@ -139,6 +125,12 @@ class CartController
     {
         $user_id = $this->ensureUserIsLoggedIn();
         return $this->cartModel->getItemsByUserId($user_id);
+    }
+
+    public function getSelectedCartItems(array $product_ids)
+    {
+        $user_id = $this->ensureUserIsLoggedIn();
+        return $this->cartModel->getItemsByUserIdAndProductIds($user_id, $product_ids);
     }
 
     public function getCartTotal()
@@ -243,7 +235,29 @@ class CartController
             throw new \Exception("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
         }
 
-        $cartTotal = $this->getCartTotal();
+        // --- UPDATE: Kiểm tra xem user đang checkout items nào (Selected hay All) ---
+        $cartTotal = 0;
+        $mode = 'ALL';
+        if (isset($_SESSION['checkout_selected_ids']) && !empty($_SESSION['checkout_selected_ids'])) {
+            // Trường hợp Selective Checkout
+            $mode = 'SELECTED (' . $_SESSION['checkout_selected_ids'] . ')';
+            $selected_ids = array_map('intval', explode(',', $_SESSION['checkout_selected_ids']));
+            $selectedItems = $this->cartModel->getItemsByUserIdAndProductIds($user_id, $selected_ids);
+
+            // Tính tổng tiền thủ công cho các items đã chọn
+            $cartTotal = array_reduce($selectedItems, function ($sum, $item) {
+                return $sum + ($item['quantity'] * $item['added_price']);
+            }, 0);
+        } else {
+            // Trường hợp Checkout All (Mặc định)
+            $cartTotal = $this->getCartTotal();
+        }
+
+        $logMsg = "CouponDebug: User $user_id apply code $code. Mode: $mode. CartTotal: $cartTotal. MinOrder: {$coupon['min_order_value']}\n";
+        file_put_contents(__DIR__ . '/../../../debug_log.txt', $logMsg, FILE_APPEND);
+
+        // --------------------------------------------------------------------------
+
         if ($cartTotal < $coupon['min_order_value']) {
             throw new \Exception("Đơn hàng phải tối thiểu " . number_format($coupon['min_order_value']) . " đ để áp dụng mã này.");
         }
@@ -253,7 +267,8 @@ class CartController
             'code' => $coupon['code'],
             'discount_type' => $coupon['discount_type'],
             'discount_value' => $coupon['discount_value'],
-            'max_discount_amount' => $coupon['max_discount_amount']
+            'max_discount_amount' => $coupon['max_discount_amount'],
+            'min_order_value' => $coupon['min_order_value'] // Store this to re-check in View if needed
         ];
 
         return $coupon;
@@ -275,10 +290,7 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
     require_once(__DIR__ . '/../../../config/config.php');
     require_once(__DIR__ . '/../../Models/cart/CartModel.php');
     header('Content-Type: application/json');
-    // #region agent log
-    $logData = array('action' => $_POST['action'] ?? $_GET['action'] ?? '', 'post' => $_POST, 'session_id' => session_id(), 'user_id' => $_SESSION['user_id'] ?? null, 'session_status' => session_status(), 'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN');
-    file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:157', 'message' => 'Request received', 'data' => $logData, 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H2,H3')) . "\n", FILE_APPEND);
-    // #endregion
+
     $cartController = new CartController($pdo);
     $action = $_POST['action'] ?? $_GET['action'] ?? '';
     $response = ['success' => false, 'message' => 'Hành động không hợp lệ.'];
@@ -288,14 +300,9 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
             case 'add':
                 $product_id = (int) ($_POST['product_id'] ?? 0);
                 $quantity = (int) ($_POST['quantity'] ?? 1);
-                // #region agent log
-                file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:170', 'message' => 'add case - before validation', 'data' => ['product_id' => $product_id, 'quantity' => $quantity, 'product_id_valid' => $product_id > 0, 'quantity_valid' => $quantity > 0], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H3')) . "\n", FILE_APPEND);
-                // #endregion
+
                 if ($product_id > 0 && $quantity > 0) {
-                    // #region agent log
-                    $logData = array('location' => 'CartController.php:173', 'message' => 'calling addToCart', 'data' => array('product_id' => $product_id, 'quantity' => $quantity), 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H4');
-                    file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode($logData) . "\n", FILE_APPEND);
-                    // #endregion
+
                     $cartController->addToCart($product_id, $quantity);
                     $checkout = isset($_POST['checkout']) && $_POST['checkout'] == '1';
                     // Logging đã được xử lý trong method addToCart()
@@ -374,9 +381,7 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
                 break;
         }
     } catch (StockException $e) {
-        // #region agent log
-        file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:232', 'message' => 'catch block - stock exception', 'data' => ['exception_message' => $e->getMessage(), 'exception_code' => $e->getCode(), 'exception_file' => $e->getFile(), 'exception_line' => $e->getLine()], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H1,H2,H3,H4,H5')) . "\n", FILE_APPEND);
-        // #endregion
+
         $response = array(
             'success' => false,
             'message' => $e->getMessage(),
@@ -384,15 +389,11 @@ if (basename($_SERVER['PHP_SELF']) === basename(__FILE__)) {
         );
         http_response_code(422); // Unprocessable Entity - phù hợp cho lỗi validation/tồn kho
     } catch (\Exception $e) {
-        // #region agent log
-        file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:232', 'message' => 'catch block - exception', 'data' => ['exception_message' => $e->getMessage(), 'exception_code' => $e->getCode(), 'exception_file' => $e->getFile(), 'exception_line' => $e->getLine(), 'response' => ['success' => false, 'message' => $e->getMessage()]], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H1,H2,H3,H4,H5')) . "\n", FILE_APPEND);
-        // #endregion
+
         $response = array('success' => false, 'message' => $e->getMessage());
         http_response_code(400); // Bad Request
     }
-    // #region agent log
-    file_put_contents('c:\\wamp64\\www\\WebMuaBanDoCu\\.cursor\\debug.log', json_encode(array('location' => 'CartController.php:237', 'message' => 'sending response', 'data' => ['response' => $response], 'timestamp' => time() * 1000, 'sessionId' => 'debug-session', 'runId' => 'run1', 'hypothesisId' => 'H1,H2,H3,H4,H5')) . "\n", FILE_APPEND);
-    // #endregion
+
 
     echo json_encode($response);
     exit;
